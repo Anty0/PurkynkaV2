@@ -1,11 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme.Launch" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+    </style>
+
+    <style name="AppTheme.Marks" parent="AppTheme.Marks.Base">
+
+    </style>
+
+    <style name="AppTheme.Attendance" parent="AppTheme.Attendance.Base">
+
+    </style>
+
+    <style name="AppTheme.Lunches" parent="AppTheme.Lunches.Base">
+
+    </style>
+
+    <style name="AppTheme.Timetables" parent="AppTheme.Timetables.Base">
+
+    </style>
+
+    <style name="AppTheme.WifiLogin" parent="AppTheme.WifiLogin.Base">
+
+    </style>
+
+    <style name="AppTheme.Marks.Base" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryMarks</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkMarks</item>
+        <item name="colorAccent">@color/colorAccentMarks</item>
+    </style>
+
+    <style name="AppTheme.Attendance.Base" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryAttendance</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkAttendance</item>
+        <item name="colorAccent">@color/colorAccentAttendance</item>
+    </style>
+
+    <style name="AppTheme.Lunches.Base" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryLunches</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
+        <item name="colorAccent">@color/colorAccentLunches</item>
+    </style>
+
+    <style name="AppTheme.Timetables.Base" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryTimetables</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkTimetables</item>
+        <item name="colorAccent">@color/colorAccentTimetables</item>
+    </style>
+
+    <style name="AppTheme.WifiLogin.Base" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryWifiLogin</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
+        <item name="colorAccent">@color/colorAccentWifiLogin</item>
+    </style>
+
+
+    <style name="AppTheme.Dialog.Marks" parent="AppTheme.Dialog.Marks.Base">
+
+    </style>
+
+    <style name="AppTheme.Dialog.Attendance" parent="AppTheme.Dialog.Attendance.Base">
+
+    </style>
+
+    <style name="AppTheme.Dialog.Lunches" parent="AppTheme.Dialog.Lunches.Base">
+
+    </style>
+
+    <style name="AppTheme.Dialog.Timetables" parent="AppTheme.Dialog.Timetables.Base">
+
+    </style>
+
+    <style name="AppTheme.Dialog.WifiLogin" parent="AppTheme.Dialog.WifiLogin.Base">
+
+    </style>
+
+    <style name="AppTheme.Dialog.Marks.Base" parent="AppTheme.Dialog">
+        <item name="colorPrimary">@color/colorPrimaryMarks</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkMarks</item>
+        <item name="colorAccent">@color/colorAccentMarks</item>
+    </style>
+
+    <style name="AppTheme.Dialog.Attendance.Base" parent="AppTheme.Dialog">
+        <item name="colorPrimary">@color/colorPrimaryAttendance</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkAttendance</item>
+        <item name="colorAccent">@color/colorAccentAttendance</item>
+    </style>
+
+    <style name="AppTheme.Dialog.Lunches.Base" parent="AppTheme.Dialog">
+        <item name="colorPrimary">@color/colorPrimaryLunches</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
+        <item name="colorAccent">@color/colorAccentLunches</item>
+    </style>
+
+    <style name="AppTheme.Dialog.Timetables.Base" parent="AppTheme.Dialog">
+        <item name="colorPrimary">@color/colorPrimaryTimetables</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkTimetables</item>
+        <item name="colorAccent">@color/colorAccentTimetables</item>
+    </style>
+
+    <style name="AppTheme.Dialog.WifiLogin.Base" parent="AppTheme.Dialog">
+        <item name="colorPrimary">@color/colorPrimaryWifiLogin</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
+        <item name="colorAccent">@color/colorAccentWifiLogin</item>
+    </style>
+
+
+    <style name="AppTheme" parent="AppTheme.Base">
+
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="AppTheme.NoActionBar.Base">
+
+    </style>
+
+    <style name="AppTheme.Dialog" parent="AppTheme.Dialog.Base">
+
+    </style>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="cardViewTheme">@style/CardView.Dark</item>
+        <item name="appBarOverlay">@style/AppTheme.AppBarOverlay</item>
+        <item name="popupOverlay">@style/AppTheme.PopupOverlay</item>
+        <item name="titleTextAppearance">@style/TextAppearance.AppTheme.Title</item>
+        <item name="textAppearanceListItem">@style/TextAppearance.AppCompat.Subhead</item>
+        <item name="textAppearanceListItemSmall">@style/TextAppearance.AppCompat.Subhead.Grey</item>
+        <item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Bigger</item>
+        <item name="android:progressBarStyleHorizontal">
+            @style/Widget.AppCompat.ProgressBar.Horizontal
+        </item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Base" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="cardViewTheme">@style/CardView.Dark</item>
+        <item name="appBarOverlay">@style/AppTheme.AppBarOverlay</item>
+        <item name="popupOverlay">@style/AppTheme.PopupOverlay</item>
+        <item name="titleTextAppearance">@style/TextAppearance.AppTheme.Title</item>
+        <item name="textAppearanceListItem">@style/TextAppearance.AppCompat.Subhead</item>
+        <item name="textAppearanceListItemSmall">@style/TextAppearance.AppCompat.Subhead.Grey</item>
+        <item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Bigger</item>
+        <item name="android:progressBarStyleHorizontal">
+            @style/Widget.AppCompat.ProgressBar.Horizontal
+        </item>
+    </style>
+
+    <style name="AppTheme.Dialog.Base" parent="Theme.AppCompat.Dialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="cardViewTheme">@style/CardView.Dark</item>
+        <item name="appBarOverlay">@style/AppTheme.AppBarOverlay</item>
+        <item name="popupOverlay">@style/AppTheme.PopupOverlay</item>
+        <item name="titleTextAppearance">@style/TextAppearance.AppTheme.Title</item>
+        <item name="textAppearanceListItem">@style/TextAppearance.AppCompat.Subhead</item>
+        <item name="textAppearanceListItemSmall">@style/TextAppearance.AppCompat.Subhead.Grey</item>
+        <item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Bigger</item>
+        <item name="android:progressBarStyleHorizontal">
+            @style/Widget.AppCompat.ProgressBar.Horizontal
+        </item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat"/>
+
+    <style name="TextAppearance.AppCompat.Subhead.Grey" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textColor">#C0C0C0</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.AppTheme.Title" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Widget.AppCompat.ProgressBar.Bigger" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:minHeight">64dp</item>
+        <item name="android:minWidth">64dp</item>
     </style>
 
 </resources>

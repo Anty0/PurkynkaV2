@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="dark">#323232</color>
+
+    <color name="sideNavBarColorDarker">#148219</color>
+    <color name="sideNavBarColorLighter">#217429</color>
+
+    <color name="colorPrimary">#30a147</color>
+    <color name="colorPrimaryDark">#238232</color>
+    <color name="navigationBarColor">#005000</color>
+    <color name="colorAccent">#11ffbb</color>
+
+    <color name="colorPrimaryMarks">#5f51b5</color>
+    <color name="colorPrimaryDarkMarks">#453282</color>
+    <color name="navigationBarColorMarks">#300050</color>
+    <color name="colorAccentMarks">#a1bbff</color>
+
+    <color name="colorPrimaryAttendance">#3f51b5</color>
+    <color name="colorPrimaryDarkAttendance">#233282</color>
+    <color name="navigationBarColorAttendance">#000050</color>
+    <color name="colorAccentAttendance">#11bbff</color>
+
+    <color name="colorPrimaryLunches">#ed5629</color>
+    <color name="colorPrimaryDarkLunches">#d7441d</color>
+    <color name="navigationBarColorLunches">#501000</color>
+    <color name="colorAccentLunches">#ff8a65</color>
+
+    <color name="colorPrimaryTimetables">#c66d00</color>
+    <color name="colorPrimaryDarkTimetables">#b46e16</color>
+    <color name="navigationBarColorTimetables">#301500</color>
+    <color name="colorAccentTimetables">#b98039</color>
+
+    <color name="colorPrimaryWifiLogin">#556555</color>
+    <color name="colorPrimaryDarkWifiLogin">#334033</color>
+    <color name="navigationBarColorWifiLogin">#151515</color>
+    <color name="colorAccentWifiLogin">#cfc</color>
 </resources>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/menu_group_main"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_home_dashboard"
+            android:title="@string/action_show_dashboard" />
+        <item
+            android:id="@+id/nav_marks"
+            android:icon="@mipmap/ic_launcher_marks"
+            android:title="@string/action_show_marks" />
+        <item
+            android:id="@+id/nav_wifi_login"
+            android:icon="@mipmap/ic_launcher_wifi"
+            android:title="@string/action_show_wifi_login" />
+
+        <item
+            android:id="@+id/nav_lunches"
+            android:icon="@mipmap/ic_launcher_lunches"
+            android:title="@string/action_show_lunches">
+            <menu>
+                <group
+                    android:id="@+id/menu_group_lunches"
+                    android:checkableBehavior="single"
+                    android:visible="false">
+
+                    <item
+                        android:id="@+id/nav_lunches_order"
+                        android:icon="@drawable/ic_list_white_24dp"
+                        android:title="@string/action_show_lunches_order" />
+
+                    <item
+                        android:id="@+id/nav_lunches_burza"
+                        android:icon="@drawable/ic_attach_money_white_24dp"
+                        android:title="@string/action_show_lunches_burza" />
+
+                    <item
+                        android:id="@+id/nav_lunches_burza_watcher"
+                        android:icon="@drawable/ic_auto_fix_white_24dp"
+                        android:title="@string/action_show_lunches_burza_watcher" />
+
+                </group>
+
+            </menu>
+
+        </item>
+
+        <item
+            android:id="@+id/nav_timetables"
+            android:icon="@mipmap/ic_launcher_timetables"
+            android:title="@string/action_show_timetables" />
+
+        <item
+            android:id="@+id/nav_attendance"
+            android:icon="@mipmap/ic_launcher_attendance"
+            android:title="@string/action_show_attendance" />
+
+    </group>
+
+    <group
+        android:id="@+id/menu_group_settings"
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_action_settings"
+            android:title="@string/action_show_settings" />
+
+        <item
+            android:id="@+id/nav_debug"
+            android:icon="@drawable/ic_bug_report_white_24dp"
+            android:title="@string/action_show_debug"
+            android:visible="false" />
+
+    </group>
+
+    <group
+        android:id="@+id/menu_group_contacts"
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/nav_contact_facebook"
+            android:icon="@drawable/ic_facebook_box_white_24dp"
+            android:title="@string/action_contact_facebook" />
+        <item
+            android:id="@+id/nav_contact_web_page"
+            android:icon="@drawable/ic_public_white_24dp"
+            android:title="@string/action_contact_web_page" />
+        <item
+            android:id="@+id/nav_contact_web_page_donate"
+            android:icon="@drawable/ic_monetization_on_white_24dp"
+            android:title="@string/action_contact_web_page_donate" />
+
+    </group>
+
+</menu>

@@ -1,0 +1,3 @@
+[submodule "AndroidUtils"]
+	path = utils
+	url = git@gitlab.com:anty150/AndroidUtils.git
