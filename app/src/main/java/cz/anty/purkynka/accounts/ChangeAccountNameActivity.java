@@ -9,9 +9,9 @@ import eu.codetopic.utils.ui.activity.modular.ModularActivity;
  *
  * @author anty
  */
-public class AccountPropertiesActivity extends ModularActivity {
+public class ChangeAccountNameActivity extends ModularActivity {
 
-    public AccountPropertiesActivity() {
+    public ChangeAccountNameActivity() {
         super(new ToolbarModule(), new BackButtonModule());
     }
 }

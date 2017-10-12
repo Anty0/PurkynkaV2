@@ -50,7 +50,7 @@
             android:label="@string/title_activity_authenticate"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".accounts.AccountPropertiesActivity"
+            android:name=".accounts.ChangeAccountNameActivity"
             android:label="@string/title_activity_account_properties"
             android:theme="@style/AppTheme.NoActionBar"/>
 

@@ -6,7 +6,7 @@
         android:title="Test title"
         android:summary="Test summary">
         <intent
-            android:action="cz.anty.purkynka.accounts.PreferencesChangeReceiver.key1.ACTION"
+            android:action="cz.anty.purkynka.accounts.PreferencesChangeReceiver.key0.ACTION"
             android:targetPackage="cz.anty.purkynka"
             android:targetClass="cz.anty.purkynka.accounts.PreferencesChangeReceiver" />
     </PreferenceScreen>

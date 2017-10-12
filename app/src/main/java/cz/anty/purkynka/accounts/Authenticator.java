@@ -33,9 +33,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
         Log.d(LOG_TAG, String.format("editProperties: (%s)", accountType));
-        return new BundleBuilder()
-                .putParcelable(AccountManager.KEY_INTENT, new Intent(mContext, AccountPropertiesActivity.class))
-                .build();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -44,7 +42,11 @@ public class Authenticator extends AbstractAccountAuthenticator {
         Log.d(LOG_TAG, String.format("addAccount: (%s, %s, %s, %s)", accountType, authTokenType,
                 Arrays.toString(requiredFeatures), Arrays.toString(options.keySet().toArray())));
         return new BundleBuilder()
-                .putParcelable(AccountManager.KEY_INTENT, new Intent(mContext, AuthenticatorActivity.class))
+                .putParcelable(AccountManager.KEY_INTENT,
+                        new Intent(mContext, AuthenticatorActivity.class)
+                                .putExtra(AuthenticatorActivity.KEY_ACCOUNT_TYPE, accountType)
+                                .putExtra(AuthenticatorActivity.KEY_AUTH_TYPE, authTokenType)
+                                .putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response))
                 .build();
     }
 
@@ -71,7 +73,10 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
         Log.d(LOG_TAG, String.format("updateCredentials: (%s, %s, %s)", account, authTokenType, Arrays.toString(options.keySet().toArray())));
-        throw new UnsupportedOperationException(); // TODO: implement
+        // TODO: 10/12/17 check credentials from options
+        return new BundleBuilder()
+                .putParcelable(AccountManager.KEY_INTENT, new Intent(mContext, ChangeAccountNameActivity.class))
+                .build();
     }
 
     @Override
