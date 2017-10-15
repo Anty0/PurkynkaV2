@@ -11,7 +11,7 @@ public final class Constants {
 
     public static final String URL_FACEBOOK_PAGE = ""; // TODO: 6/16/17 add url; use firebase remote config
     public static final String URL_WEB_PAGE = ""; // TODO: 6/16/17 add url; use firebase remote config
-    public static final String URL_WEB_PAGE_DONATE = ""; // TODO: 6/16/17 add url; use firebase remote config
+    public static final String URL_WEB_DONATE_PAGE = ""; // TODO: 6/16/17 add url; use firebase remote config
     //
     //---------------------------------------------------------------------
     //

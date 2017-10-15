@@ -23,7 +23,7 @@ public class MainData extends SharedPreferencesData {
     private static MainData mInstance = null;
 
     private MainData(Context context) {
-        super(context, PREF_FILE_NAME_MAIN_DATA, SAVE_VERSION);
+        super(context, FILE_NAME_MAIN_DATA, SAVE_VERSION);
     }
 
     public static void initialize(Context context) {

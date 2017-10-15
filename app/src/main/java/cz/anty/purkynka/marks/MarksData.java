@@ -23,7 +23,7 @@ public class MarksData extends SharedPreferencesData {
     private static MarksData mInstance = null;
 
     private MarksData(Context context) {
-        super(context, PREF_FILE_NAME_MARKS_DATA, SAVE_VERSION);
+        super(context, FILE_NAME_MARKS_DATA, SAVE_VERSION);
     }
 
     public static void initialize(Context context) {

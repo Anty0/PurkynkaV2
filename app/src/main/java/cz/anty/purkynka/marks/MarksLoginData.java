@@ -23,7 +23,7 @@ public class MarksLoginData extends LoginData {
     private static MarksLoginData mInstance = null;
 
     private MarksLoginData(Context context) {
-        super(context, PREF_FILE_NAME_MARKS_LOGIN_DATA, SAVE_VERSION);
+        super(context, FILE_NAME_MARKS_LOGIN_DATA, SAVE_VERSION);
     }
 
     public static void initialize(Context context) {

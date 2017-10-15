@@ -5,6 +5,7 @@ import android.accounts.AccountManager
 import android.app.Application
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.accounts.AccountsHelper
+import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.marks.MarksData
 import cz.anty.purkynka.marks.MarksLoginData
 import cz.anty.purkynka.settings.SettingsData
@@ -69,6 +70,7 @@ class AppInit : Application() {
                     loadBroadcastConnections()
 
                     MainData.initialize(app)
+                    ActiveAccountManager.initialize(app)
                     SettingsData.initialize(app)
                     MarksData.initialize(app)
                     MarksLoginData.initialize(app)

@@ -21,13 +21,17 @@
     <string name="action_contact_facebook">Facebook page</string>
     <string name="action_contact_web_page">Web page</string>
     <string name="action_contact_web_page_donate">Donate developer</string>
+    <string name="action_add_user">Add user</string>
 
+    <string name="insert_account_name">Account name</string>
     <string name="insert_username">Username</string>
     <string name="insert_password">Password</string>
 
     <string name="but_login">Login</string>
 
-    <string name="toast_browser_failed">Failed to open in browser</string>
+    <string name="toast_browser_failed">Failed to open URL in browser</string>
+
+    <string name="snackbar_invalid_account_name">Invalid account name</string>
 
     <string name="content_description_logo">Logo</string>
 

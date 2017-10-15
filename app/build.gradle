@@ -1,3 +1,5 @@
+import com.google.common.collect.Iterables
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -15,15 +17,13 @@ android {
         // multiDexEnabled true
     }
     buildTypes {
+        def proguardFilesList = [getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro']
+        proguardFilesList.addAll(file('./proguard/').listFiles().collect())
         release {
             // versionNameSuffix '-beta'
-            minifyEnabled true
 
-            List<?> proFiles = new ArrayList<>()
-            proFiles.add(getDefaultProguardFile('proguard-android.txt'))
-            proFiles.addAll(file('./proguard').listFiles().collect())
-            proFiles.add('proguard-rules.pro')
-            setProguardFiles(proFiles)
+            minifyEnabled true
+            proguardFiles Iterables.toArray(proguardFilesList, Object.class)
 
             debuggable false
             jniDebuggable false
@@ -34,13 +34,9 @@ android {
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
-            minifyEnabled false
 
-            List<?> proFiles = new ArrayList<>()
-            proFiles.add(getDefaultProguardFile('proguard-android.txt'))
-            proFiles.addAll(file('./proguard').listFiles().collect())
-            proFiles.add('proguard-rules.pro')
-            setProguardFiles(proFiles)
+            minifyEnabled false
+            proguardFiles Iterables.toArray(proguardFilesList, Object.class)
 
             debuggable true
             jniDebuggable false

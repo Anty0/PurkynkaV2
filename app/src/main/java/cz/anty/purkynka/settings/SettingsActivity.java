@@ -16,7 +16,7 @@ import com.mikepenz.aboutlibraries.util.Colors;
 import cz.anty.purkynka.Constants;
 import cz.anty.purkynka.R;
 import eu.codetopic.utils.timing.TimedComponentsManager;
-import eu.codetopic.utils.ui.activity.BackButtonModule;
+import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule;
 import eu.codetopic.utils.ui.activity.modular.ModularActivity;
 
 /**
@@ -110,7 +110,7 @@ public class SettingsActivity extends ModularActivity {
             });
             findPreference("activity_web_page_donate").setOnPreferenceClickListener(preference -> {
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.URL_WEB_PAGE_DONATE)));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.URL_WEB_DONATE_PAGE)));
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), R.string.toast_browser_failed,
                             Toast.LENGTH_SHORT).show();

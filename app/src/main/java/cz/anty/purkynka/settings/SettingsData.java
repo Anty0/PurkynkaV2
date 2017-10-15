@@ -25,7 +25,7 @@ public class SettingsData extends SharedPreferencesData {
     private static SettingsData mInstance = null;
 
     private SettingsData(Context context) {
-        super(context, PREF_FILE_NAME_SETTINGS_DATA, SAVE_VERSION);
+        super(context, FILE_NAME_SETTINGS_DATA, SAVE_VERSION);
     }
 
     public static void initialize(Context context) {

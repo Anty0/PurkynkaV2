@@ -1,7 +1,7 @@
 package cz.anty.purkynka.accounts;
 
-import eu.codetopic.utils.ui.activity.BackButtonModule;
-import eu.codetopic.utils.ui.activity.ToolbarModule;
+import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule;
+import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule;
 import eu.codetopic.utils.ui.activity.modular.ModularActivity;
 
 /**
