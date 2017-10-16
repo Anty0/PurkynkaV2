@@ -19,13 +19,13 @@ import eu.codetopic.utils.BundleBuilder;
  *
  * @author anty
  */
-public class Authenticator extends AbstractAccountAuthenticator {
+public class AuthenticatorImpl extends AbstractAccountAuthenticator {
 
-    private static final String LOG_TAG = "Authenticator";
+    private static final String LOG_TAG = "AuthenticatorImpl";
 
     private final Context mContext;
 
-    public Authenticator(Context context) {
+    public AuthenticatorImpl(Context context) {
         super(context);
         mContext = context;
     }
@@ -43,9 +43,9 @@ public class Authenticator extends AbstractAccountAuthenticator {
                 Arrays.toString(requiredFeatures), Arrays.toString(options.keySet().toArray())));
         return new BundleBuilder()
                 .putParcelable(AccountManager.KEY_INTENT,
-                        new Intent(mContext, AuthenticatorActivity.class)
-                                .putExtra(AuthenticatorActivity.KEY_ACCOUNT_TYPE, accountType)
-                                .putExtra(AuthenticatorActivity.KEY_AUTH_TYPE, authTokenType)
+                        new Intent(mContext, AccountAddActivity.class)
+                                .putExtra(AccountAddActivity.KEY_ACCOUNT_TYPE, accountType)
+                                .putExtra(AccountAddActivity.KEY_AUTH_TYPE, authTokenType)
                                 .putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response))
                 .build();
     }
@@ -75,7 +75,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
         Log.d(LOG_TAG, String.format("updateCredentials: (%s, %s, %s)", account, authTokenType, Arrays.toString(options.keySet().toArray())));
         // TODO: 10/12/17 check credentials from options
         return new BundleBuilder()
-                .putParcelable(AccountManager.KEY_INTENT, new Intent(mContext, ChangeAccountNameActivity.class))
+                .putParcelable(AccountManager.KEY_INTENT, new Intent(mContext, AccountEditActivity.class))
                 .build();
     }
 

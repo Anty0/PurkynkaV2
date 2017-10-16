@@ -79,8 +79,9 @@ class AppInit : Application() {
                     SingletonJobManager.initialize(app)
                     //SingletonDatabase.initialize(new AppDatabase(app))
 
-                    TimedComponentsManager.initialize(app, SettingsData.getter.get()
-                            .requiredNetworkType/*, MarksService::class.java*/)
+                    TimedComponentsManager.initialize(app,
+                            SettingsData.getter.get().requiredNetworkType/*,
+                            MarksService::class.java*/)
                 }))
     }
 

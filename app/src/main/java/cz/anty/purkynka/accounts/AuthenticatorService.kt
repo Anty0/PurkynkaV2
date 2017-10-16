@@ -11,22 +11,22 @@ import android.os.IBinder
  */
 class AuthenticatorService : Service() {
 
-    private var authenticator: Authenticator? = null
+    private var mAuthenticator: AuthenticatorImpl? = null
 
     override fun onCreate() {
         super.onCreate()
-        authenticator = Authenticator(this)
+        mAuthenticator = AuthenticatorImpl(this)
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         if (intent?.action == AccountManager.ACTION_AUTHENTICATOR_INTENT) {
-            return authenticator?.iBinder
+            return mAuthenticator?.iBinder
         }
         return null
     }
 
     override fun onDestroy() {
-        authenticator = null
+        mAuthenticator = null
         super.onDestroy()
     }
 }

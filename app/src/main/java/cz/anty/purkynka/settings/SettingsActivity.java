@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.mikepenz.aboutlibraries.Libs;
@@ -72,8 +73,9 @@ public class SettingsActivity extends ModularActivity {
             findPreference("activity_about").setOnPreferenceClickListener(preference -> {
                 new LibsBuilder()
                         .withActivityStyle(Libs.ActivityStyle.DARK)
-                        .withActivityColor(new Colors(Color.parseColor("#212121"),
-                                Color.parseColor("#000000")))
+                        .withActivityColor(new Colors(
+                                ContextCompat.getColor(getActivity(), R.color.colorPrimary),
+                                ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)))
                         .withActivityTitle(getString(R.string.pref_header_about))
                         .withAboutIconShown(true)
                         .withAboutAppName(getString(R.string.app_name))

@@ -40,10 +40,6 @@ public class ActiveAccountManager extends SharedPreferencesData {
         mInstance.init();
     }
 
-    public Account[] getAvailableAccounts() {
-        return mAccountManager.getAccountsByType(AccountsHelper.ACCOUNT_TYPE);
-    }
-
     public void setActiveAccount(Account account) {
         setActiveAccount(account.name);
     }
@@ -55,7 +51,7 @@ public class ActiveAccountManager extends SharedPreferencesData {
     @Nullable
     public Account getActiveAccount() {
         String name = getPreferences().getString(ACTIVE_ACCOUNT_NAME, null);
-        Account[] avAccounts = getAvailableAccounts();
+        Account[] avAccounts = AccountsHelper.getAllAccounts(mAccountManager);
 
         if (name != null) {
             for (Account avAccount : avAccounts) {
