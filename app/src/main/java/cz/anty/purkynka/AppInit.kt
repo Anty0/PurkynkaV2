@@ -81,7 +81,7 @@ class AppInit : Application() {
 
                     TimedComponentsManager.initialize(app,
                             SettingsData.getter.get().requiredNetworkType/*,
-                            MarksService::class.java*/)
+                            MarksSyncService::class.java*/)
                 }))
     }
 

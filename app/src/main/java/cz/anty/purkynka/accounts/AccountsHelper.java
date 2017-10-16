@@ -4,10 +4,11 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.os.Build;
+import android.os.Bundle;
 
 import java.util.UUID;
 
+import cz.anty.purkynka.marks.MarksSyncAdapter;
 import eu.codetopic.utils.BundleBuilder;
 
 /**
@@ -52,14 +53,25 @@ public final class AccountsHelper {
                 new BundleBuilder()
                         .putString(KEY_ACCOUNT_ID, accountId)
                         .build())) {
-            // TODO: 10/11/17 Enable sync for account
-            // Inform the system that this account supports sync
-            ///ContentResolver.setIsSyncable(defaultAccount, CONTENT_AUTHORITY, 1);
-            // Inform the system that this account is eligible for auto sync when the network is up
-            ///ContentResolver.setSyncAutomatically(defaultAccount, CONTENT_AUTHORITY, true);
-            // Recommend a schedule for automatic synchronization. The system may modify this based
-            // on other scheduled syncs and network utilization.
-            ///ContentResolver.addPeriodicSync(defaultAccount, CONTENT_AUTHORITY, new Bundle(), SYNC_FREQUENCY);
+
+            class SyncInfo {
+                public final String contentAuthority;
+                public final long syncFrequency;
+
+                public SyncInfo(String contentAuthority, long syncFrequency) {
+                    this.contentAuthority = contentAuthority;
+
+                    this.syncFrequency = syncFrequency;
+                }
+            }
+
+            for (SyncInfo syncInfo : new SyncInfo[] {
+                    new SyncInfo(MarksSyncAdapter.CONTENT_AUTHORITY, MarksSyncAdapter.SYNC_FREQUENCY) // TODO: add here all content authorities
+            }) {
+                ContentResolver.setIsSyncable(account, syncInfo.contentAuthority, 1);
+                ContentResolver.setSyncAutomatically(account, syncInfo.contentAuthority, true);
+                ContentResolver.addPeriodicSync(account, syncInfo.contentAuthority, new Bundle(), syncInfo.syncFrequency);
+            }
             return true;
         }
         return false;

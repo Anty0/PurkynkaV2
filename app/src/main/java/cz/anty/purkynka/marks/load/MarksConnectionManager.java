@@ -1,4 +1,4 @@
-package cz.anty.purkynka.marks;
+package cz.anty.purkynka.marks.load;
 
 /**
  * Created by anty on 10/9/17.

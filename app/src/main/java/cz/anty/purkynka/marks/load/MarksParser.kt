@@ -1,4 +1,4 @@
-package cz.anty.purkynka.marks
+package cz.anty.purkynka.marks.load
 
 import cz.anty.purkynka.marks.data.Mark
 import com.google.common.collect.ImmutableList
