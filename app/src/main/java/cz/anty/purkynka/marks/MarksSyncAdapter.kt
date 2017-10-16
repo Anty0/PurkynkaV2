@@ -17,8 +17,8 @@ class MarksSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, 
     companion object {
         private const val LOG_TAG = "MarksSyncAdapter"
 
-        public const val CONTENT_AUTHORITY = "cz.anty.purkynka.marks.data"
-        public const val SYNC_FREQUENCY: Long = 60 * 15 // 15 minutes in seconds
+        const val CONTENT_AUTHORITY = "cz.anty.purkynka.marks.data"
+        const val SYNC_FREQUENCY: Long = 60 * 15 // 15 minutes in seconds
     }
 
     override fun onPerformSync(account: Account?, extras: Bundle?, authority: String?, provider: ContentProviderClient?, syncResult: SyncResult?) {
