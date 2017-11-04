@@ -54,13 +54,12 @@ public final class AccountsHelper {
                         .putString(KEY_ACCOUNT_ID, accountId)
                         .build())) {
 
-            class SyncInfo {
+            /*class SyncInfo {
                 public final String contentAuthority;
                 public final long syncFrequency;
 
                 public SyncInfo(String contentAuthority, long syncFrequency) {
                     this.contentAuthority = contentAuthority;
-
                     this.syncFrequency = syncFrequency;
                 }
             }
@@ -71,7 +70,7 @@ public final class AccountsHelper {
                 ContentResolver.setIsSyncable(account, syncInfo.contentAuthority, 1);
                 ContentResolver.setSyncAutomatically(account, syncInfo.contentAuthority, true);
                 ContentResolver.addPeriodicSync(account, syncInfo.contentAuthority, new Bundle(), syncInfo.syncFrequency);
-            }
+            }*/
             return true;
         }
         return false;
@@ -108,5 +107,15 @@ public final class AccountsHelper {
                 .putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
                 .putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
                 .build());
+    }
+
+    public static void enableSyncOf(Account account, String contentAuthority, long syncFrequency) {
+        ContentResolver.setIsSyncable(account, contentAuthority, 1);
+        ContentResolver.setSyncAutomatically(account, contentAuthority, true);
+        ContentResolver.addPeriodicSync(account, contentAuthority, new Bundle(), syncFrequency);
+    }
+
+    public static void disableSyncOf(Account account, String contentAuthority) {
+        ContentResolver.setIsSyncable(account, contentAuthority, 0);
     }
 }

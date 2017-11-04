@@ -53,9 +53,10 @@ public class AuthenticatorImpl extends AbstractAccountAuthenticator {
     @Override
     public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options) throws NetworkErrorException {
         Log.d(LOG_TAG, String.format("confirmCredentials: (%s, %s)", account, Arrays.toString(options.keySet().toArray())));
-        return new BundleBuilder()
+        throw new UnsupportedOperationException();
+        /*return new BundleBuilder()
                 .putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true) // TODO: implement activity
-                .build();
+                .build();*/
     }
 
     @Override

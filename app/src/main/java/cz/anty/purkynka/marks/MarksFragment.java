@@ -89,6 +89,7 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
 
         mRecyclerManager = Recycler.inflate().withSwipeToRefresh()
                 .on(localInflater, mRecyclerContainer, true)
+                //.setEmptyImage() // TODO: add
                 .setEmptyText("No marks") // TODO: to strings
                 .setAdapter(mAdapter)
                 .setOnRefreshListener(view -> {}) // TODO: implement

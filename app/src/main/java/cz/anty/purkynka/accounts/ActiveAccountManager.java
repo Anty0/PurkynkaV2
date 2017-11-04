@@ -75,6 +75,12 @@ public class ActiveAccountManager extends SharedPreferencesData {
         return null;
     }
 
+    @Nullable
+    public String getActiveAccountId(Context context) {
+        Account activeAccount = getActiveAccount();
+        return activeAccount == null ? null : AccountsHelper.getAccountId(context, activeAccount);
+    }
+
     private static final class Getter extends PreferencesGetterAbs<ActiveAccountManager> {
 
         @Override
