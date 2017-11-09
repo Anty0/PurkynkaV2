@@ -1,10 +1,12 @@
 package cz.anty.purkynka.marks;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import eu.codetopic.utils.data.getter.DataGetter;
-import eu.codetopic.utils.data.preferences.PreferencesGetterAbs;
-import eu.codetopic.utils.data.preferences.SharedPreferencesData;
+import eu.codetopic.utils.data.preferences.PreferencesData;
+import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider;
+import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs;
 
 import static cz.anty.purkynka.PrefNames.*;
 
@@ -13,7 +15,7 @@ import static cz.anty.purkynka.PrefNames.*;
  *
  * @author anty
  */
-public class MarksData extends SharedPreferencesData {
+public class MarksData extends PreferencesData<SharedPreferences> {
 
     public static final DataGetter<MarksData> getter = new Getter();
 
@@ -23,7 +25,8 @@ public class MarksData extends SharedPreferencesData {
     private static MarksData mInstance = null;
 
     private MarksData(Context context) {
-        super(context, FILE_NAME_MARKS_DATA, SAVE_VERSION);
+        super(context, new BasicSharedPreferencesProvider(context,
+                FILE_NAME_MARKS_DATA, Context.MODE_PRIVATE), SAVE_VERSION);
     }
 
     public static void initialize(Context context) {

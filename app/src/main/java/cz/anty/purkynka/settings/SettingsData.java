@@ -1,12 +1,13 @@
 package cz.anty.purkynka.settings;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
-import eu.codetopic.utils.NetworkManager;
 import eu.codetopic.utils.NetworkManager.NetworkType;
 import eu.codetopic.utils.data.getter.DataGetter;
-import eu.codetopic.utils.data.preferences.PreferencesGetterAbs;
-import eu.codetopic.utils.data.preferences.SharedPreferencesData;
+import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider;
+import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs;
+import eu.codetopic.utils.data.preferences.PreferencesData;
 
 import static cz.anty.purkynka.PrefNames.*;
 
@@ -15,7 +16,7 @@ import static cz.anty.purkynka.PrefNames.*;
  *
  * @author anty
  */
-public class SettingsData extends SharedPreferencesData {
+public class SettingsData extends PreferencesData<SharedPreferences> {
 
     public static final DataGetter<SettingsData> getter = new Getter();
 
@@ -25,7 +26,8 @@ public class SettingsData extends SharedPreferencesData {
     private static SettingsData mInstance = null;
 
     private SettingsData(Context context) {
-        super(context, FILE_NAME_SETTINGS_DATA, SAVE_VERSION);
+        super(context, new BasicSharedPreferencesProvider(context,
+                FILE_NAME_SETTINGS_DATA, Context.MODE_PRIVATE), SAVE_VERSION);
     }
 
     public static void initialize(Context context) {

@@ -52,7 +52,7 @@ class MainActivity : NavigationActivity() {
             else addOnAccountsUpdatedListener(mAccountChangedReceiver, null, true)
         }
         LocalBroadcastManager.getInstance(this).registerReceiver(mAccountChangedReceiver,
-                IntentFilter(PreferencesData.getBroadcastActionChanged(mActiveAccountManager)))
+                IntentFilter(mActiveAccountManager.broadcastActionChanged))
 
         isEnableSwitchingAccounts = true
         isActiveAccountEditButtonEnabled = true

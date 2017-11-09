@@ -21,7 +21,7 @@ android {
         def proguardFilesList = [getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro']
         proguardFilesList.addAll(file('./proguard/').listFiles().collect())
         release {
-            // versionNameSuffix '-beta'
+            versionNameSuffix '-beta'
 
             minifyEnabled true
             proguardFiles Iterables.toArray(proguardFilesList, Object.class)
@@ -36,7 +36,7 @@ android {
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
 
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles Iterables.toArray(proguardFilesList, Object.class)
 
             debuggable true
@@ -80,6 +80,7 @@ dependencies {
     implementation "com.jakewharton:butterknife:$butterknife_version"
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
 
+    implementation 'com.scottyab:secure-preferences-lib:0.1.4'
     implementation('com.mikepenz:aboutlibraries:5.9.7@aar') {
         transitive = true
     }

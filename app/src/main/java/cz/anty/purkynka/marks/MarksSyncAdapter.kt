@@ -23,6 +23,6 @@ class MarksSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, 
 
     override fun onPerformSync(account: Account?, extras: Bundle?, authority: String?, provider: ContentProviderClient?, syncResult: SyncResult?) {
         Log.d(LOG_TAG, "onPerformSync")
-        TODO("not implemented")
+        //TODO("not implemented")
     }
 }

@@ -20,19 +20,23 @@ class MarksProvider : ContentProvider() {
         return null
     }
 
-    override fun query(uri: Uri?, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun query(uri: Uri?, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return null
     }
 
-    override fun insert(uri: Uri?, values: ContentValues?): Uri {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun insert(uri: Uri?, values: ContentValues?): Uri? {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return null
     }
 
     override fun delete(uri: Uri?, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 
     override fun update(uri: Uri?, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 }

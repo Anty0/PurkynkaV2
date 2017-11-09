@@ -3,13 +3,15 @@ package cz.anty.purkynka.accounts;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.Nullable;
 
 import eu.codetopic.java.utils.Objects;
 import eu.codetopic.utils.data.getter.DataGetter;
-import eu.codetopic.utils.data.preferences.PreferencesGetterAbs;
-import eu.codetopic.utils.data.preferences.SharedPreferencesData;
+import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider;
+import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs;
+import eu.codetopic.utils.data.preferences.PreferencesData;
 
 import static cz.anty.purkynka.PrefNames.*;
 
@@ -18,7 +20,7 @@ import static cz.anty.purkynka.PrefNames.*;
  *
  * @author anty
  */
-public class ActiveAccountManager extends SharedPreferencesData {
+public class ActiveAccountManager extends PreferencesData<SharedPreferences> {
 
     public static final DataGetter<ActiveAccountManager> getter = new Getter();
 
@@ -30,7 +32,8 @@ public class ActiveAccountManager extends SharedPreferencesData {
     private final AccountManager mAccountManager;
 
     private ActiveAccountManager(Context context) {
-        super(context, FILE_NAME_ACTIVE_ACCOUNT_DATA, SAVE_VERSION);
+        super(context, new BasicSharedPreferencesProvider(context,
+                FILE_NAME_ACTIVE_ACCOUNT_DATA, Context.MODE_PRIVATE), SAVE_VERSION);
         mAccountManager = AccountManager.get(getContext());
     }
 
@@ -76,9 +79,10 @@ public class ActiveAccountManager extends SharedPreferencesData {
     }
 
     @Nullable
-    public String getActiveAccountId(Context context) {
+    public String getActiveAccountId() {
         Account activeAccount = getActiveAccount();
-        return activeAccount == null ? null : AccountsHelper.getAccountId(context, activeAccount);
+        return activeAccount == null ? null
+                : AccountsHelper.getAccountId(getContext(), activeAccount);
     }
 
     private static final class Getter extends PreferencesGetterAbs<ActiveAccountManager> {

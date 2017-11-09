@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cz.anty.purkynka.R;
+import cz.anty.purkynka.accounts.ActiveAccountManager;
 import cz.anty.purkynka.marks.data.Mark;
 import eu.codetopic.utils.AndroidUtils;
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider;
@@ -83,7 +84,9 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
         mUnbinder = ButterKnife.bind(this, baseView);
 
         mLoginButton.setOnClickListener(view -> {
-            MarksLoginData.getter.get().login(mInputUsername.getText().toString(),
+            MarksLoginData.getter.get().login(
+                    ActiveAccountManager.getter.get().getActiveAccountId(),
+                    mInputUsername.getText().toString(),
                     mInputPassword.getText().toString());
         }); // TODO: implement right way
 
@@ -106,7 +109,8 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
 
     public void updateViews() {
         if (mUnbinder == null) return;
-        if (MarksLoginData.getter.get().isLoggedIn()) {
+        if (MarksLoginData.getter.get().isLoggedIn(
+                ActiveAccountManager.getter.get().getActiveAccountId())) {
             mRecyclerContainer.setVisibility(View.VISIBLE);
             mLoginContainer.setVisibility(View.GONE);
         } else {
