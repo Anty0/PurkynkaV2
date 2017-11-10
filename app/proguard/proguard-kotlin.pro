@@ -1,0 +1,1 @@
+-dontwarn kotlin.reflect.jvm.internal.**
