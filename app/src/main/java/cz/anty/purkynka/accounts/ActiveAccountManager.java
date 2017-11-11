@@ -9,9 +9,9 @@ import android.support.annotation.Nullable;
 
 import eu.codetopic.java.utils.Objects;
 import eu.codetopic.utils.data.getter.DataGetter;
+import eu.codetopic.utils.data.preferences.VersionedPreferencesData;
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider;
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs;
-import eu.codetopic.utils.data.preferences.PreferencesData;
 
 import static cz.anty.purkynka.PrefNames.*;
 
@@ -20,7 +20,7 @@ import static cz.anty.purkynka.PrefNames.*;
  *
  * @author anty
  */
-public class ActiveAccountManager extends PreferencesData<SharedPreferences> {
+public final class ActiveAccountManager extends VersionedPreferencesData<SharedPreferences> {
 
     public static final DataGetter<ActiveAccountManager> getter = new Getter();
 

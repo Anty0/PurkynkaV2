@@ -5,18 +5,16 @@ import android.content.SharedPreferences;
 
 import eu.codetopic.utils.NetworkManager.NetworkType;
 import eu.codetopic.utils.data.getter.DataGetter;
+import eu.codetopic.utils.data.preferences.VersionedPreferencesData;
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider;
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs;
-import eu.codetopic.utils.data.preferences.PreferencesData;
 
 import static cz.anty.purkynka.PrefNames.*;
 
 /**
- * Created by anty on 6/21/17.
- *
  * @author anty
  */
-public class SettingsData extends PreferencesData<SharedPreferences> {
+public final class SettingsData extends VersionedPreferencesData<SharedPreferences> {
 
     public static final DataGetter<SettingsData> getter = new Getter();
 

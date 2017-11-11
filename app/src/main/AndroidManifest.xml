@@ -58,9 +58,22 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
+            android:name=".accounts.AuthenticatorService"
+            android:enabled="true"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
             android:name=".marks.MarksSyncService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:process=":syncs" >
 
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
@@ -69,24 +82,13 @@
             <meta-data android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_marks" />
         </service>
-        <service
-            android:name=".accounts.AuthenticatorService"
-            android:enabled="true"
-            android:exported="false">
-
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-            <meta-data android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-
-        </service>
 
 
         <provider
             android:name=".marks.MarksProvider"
             android:authorities="cz.anty.purkynka.marks.data"
-            android:exported="false" />
+            android:exported="false"
+            android:process=":providers" />
     </application>
 
 </manifest>

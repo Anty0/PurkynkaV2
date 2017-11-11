@@ -6,10 +6,10 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
+import cz.anty.purkynka.Constants
 import eu.codetopic.java.utils.log.Log
 
 /**
- * Created by anty on 10/16/17.
  * @author anty
  */
 class MarksSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, false, true) {
@@ -17,12 +17,16 @@ class MarksSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, 
     companion object {
         private const val LOG_TAG = "MarksSyncAdapter"
 
-        const val CONTENT_AUTHORITY = "cz.anty.purkynka.marks.data"
-        const val SYNC_FREQUENCY: Long = 60 * 15 // 15 minutes in seconds
+        const val CONTENT_AUTHORITY = MarksProvider.AUTHORITY
+        const val SYNC_FREQUENCY: Long = Constants.SYNC_FREQUENCY_MARKS
     }
 
-    override fun onPerformSync(account: Account?, extras: Bundle?, authority: String?, provider: ContentProviderClient?, syncResult: SyncResult?) {
+    override fun onPerformSync(account: Account, extras: Bundle, authority: String,
+                               provider: ContentProviderClient, syncResult: SyncResult) {
         Log.d(LOG_TAG, "onPerformSync")
-        //TODO("not implemented")
+
+        if (authority != CONTENT_AUTHORITY) return
+
+
     }
 }

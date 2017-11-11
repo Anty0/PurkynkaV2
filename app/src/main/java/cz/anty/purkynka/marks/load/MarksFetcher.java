@@ -19,8 +19,6 @@ import cz.anty.purkynka.marks.data.Mark;
 import cz.anty.purkynka.marks.data.Semester;
 
 /**
- * Created by anty on 6/20/17.
- *
  * @author anty
  */
 public class MarksFetcher {
