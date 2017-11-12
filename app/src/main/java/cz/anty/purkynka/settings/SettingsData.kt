@@ -16,11 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka
+package cz.anty.purkynka.settings
 
 import android.content.Context
 import android.content.SharedPreferences
 
+import eu.codetopic.utils.NetworkManager.NetworkType
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
@@ -31,16 +32,21 @@ import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 /**
  * @author anty
  */
-class MainData private constructor(context: Context) :
+class SettingsData private constructor(context: Context) :
         VersionedPreferencesData<SharedPreferences>(context,
-                BasicSharedPreferencesProvider(context, FILE_NAME_MAIN_DATA),
+                BasicSharedPreferencesProvider(context, FILE_NAME_SETTINGS_DATA),
                 SAVE_VERSION) {
 
-    companion object : PreferencesCompanionObject<MainData>(MainData.LOG_TAG, ::MainData, ::Getter) {
+    companion object : PreferencesCompanionObject<SettingsData>(SettingsData.LOG_TAG, ::SettingsData, ::Getter) {
 
-        private const val LOG_TAG = "MainData"
+        private const val LOG_TAG = "SettingsData"
         private const val SAVE_VERSION = 0
     }
+
+    val requiredNetworkType: NetworkType
+        @Synchronized get() =
+            if (preferences.getBoolean(SettingsActivity.PREFERENCE_KEY_REFRESH_ON_WIFI, true))
+                NetworkType.WIFI else NetworkType.ANY
 
     @Synchronized
     override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
@@ -51,14 +57,14 @@ class MainData private constructor(context: Context) :
         }
     }
 
-    private class Getter : PreferencesGetterAbs<MainData>() {
+    private class Getter : PreferencesGetterAbs<SettingsData>() {
 
-        override fun get(): MainData {
+        override fun get(): SettingsData? {
             return instance
         }
 
-        override fun getDataClass(): Class<MainData> {
-            return MainData::class.java
+        override fun getDataClass(): Class<SettingsData> {
+            return SettingsData::class.java
         }
     }
 }

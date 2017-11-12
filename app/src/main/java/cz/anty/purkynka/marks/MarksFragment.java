@@ -90,7 +90,7 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
         super.onCreate(savedInstanceState);
         mAdapter = new CustomItemAdapter<>(getContext());
         getContext().registerReceiver(mMarksLoginDataChangedReceiver,
-                new IntentFilter(MarksLoginData.getter.getDataChangedBroadcastAction()));
+                new IntentFilter(MarksLoginData.Companion.getGetter().getDataChangedBroadcastAction()));
     }
 
     @Nullable
@@ -102,8 +102,8 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
         mUnbinder = ButterKnife.bind(this, baseView);
 
         mLoginButton.setOnClickListener(view -> {
-            MarksLoginData.getter.get().getLoginData().login(
-                    ActiveAccountManager.getter.get().getActiveAccountId(),
+            MarksLoginData.Companion.getGetter().get().getLoginData().login(
+                    ActiveAccountManager.Companion.getGetter().get().getActiveAccountId(),
                     mInputUsername.getText().toString(),
                     mInputPassword.getText().toString());
         }); // TODO: implement right way
@@ -127,8 +127,8 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
 
     public void updateViews() {
         if (mUnbinder == null) return;
-        if (MarksLoginData.getter.get().getLoginData().isLoggedIn(
-                ActiveAccountManager.getter.get().getActiveAccountId())) {
+        if (MarksLoginData.Companion.getGetter().get().getLoginData().isLoggedIn(
+                ActiveAccountManager.Companion.getGetter().get().getActiveAccountId())) {
             mRecyclerContainer.setVisibility(View.VISIBLE);
             mLoginContainer.setVisibility(View.GONE);
         } else {

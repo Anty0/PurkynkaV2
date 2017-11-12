@@ -16,13 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka
+package cz.anty.purkynka.marks
 
 import android.content.Context
 import android.content.SharedPreferences
 
+import com.securepreferences.SecurePreferences
+
+import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
-import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
+import eu.codetopic.utils.data.preferences.provider.SecureSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 
 import cz.anty.purkynka.PrefNames.*
@@ -31,34 +34,35 @@ import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 /**
  * @author anty
  */
-class MainData private constructor(context: Context) :
-        VersionedPreferencesData<SharedPreferences>(context,
-                BasicSharedPreferencesProvider(context, FILE_NAME_MAIN_DATA),
+class MarksLoginData private constructor(context: Context) :
+        VersionedPreferencesData<SecurePreferences>(context,
+                SecureSharedPreferencesProvider(context, FILE_NAME_MARKS_LOGIN_DATA, clearOnFail = true),
                 SAVE_VERSION) {
 
-    companion object : PreferencesCompanionObject<MainData>(MainData.LOG_TAG, ::MainData, ::Getter) {
+    companion object : PreferencesCompanionObject<MarksLoginData>(MarksLoginData.LOG_TAG, ::MarksLoginData, ::Getter) {
 
-        private const val LOG_TAG = "MainData"
-        private const val SAVE_VERSION = 0
+        private val LOG_TAG = "MarksLoginData"
+        private val SAVE_VERSION = 0
     }
 
-    @Synchronized
-    override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
+    val loginData: LoginDataExtension<SecurePreferences> = LoginDataExtension(preferencesAccessor)
+
+    @Synchronized override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
         when (from) {
             -1 -> {
                 // First start, nothing to do
-            } // No more versions yet
-        }
+            }
+        } // No more versions yet
     }
 
-    private class Getter : PreferencesGetterAbs<MainData>() {
+    private class Getter : PreferencesGetterAbs<MarksLoginData>() {
 
-        override fun get(): MainData {
+        override fun get(): MarksLoginData? {
             return instance
         }
 
-        override fun getDataClass(): Class<MainData> {
-            return MainData::class.java
+        override fun getDataClass(): Class<MarksLoginData> {
+            return MarksLoginData::class.java
         }
     }
 }

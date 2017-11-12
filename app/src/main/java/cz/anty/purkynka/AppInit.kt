@@ -38,8 +38,9 @@ import eu.codetopic.java.utils.log.base.Priority
 import eu.codetopic.utils.UtilsBase.ProcessProfile
 import eu.codetopic.utils.UtilsBase
 
-import eu.codetopic.utils.UtilsBase.InitType.DISABLE_UTILS
-import eu.codetopic.utils.UtilsBase.InitType.INIT_NORMAL_MODE
+import eu.codetopic.utils.UtilsBase.InitType.NONE
+import eu.codetopic.utils.UtilsBase.InitType.PRIMARY_PROCESS
+import eu.codetopic.utils.UtilsBase.InitType.ANOTHER_PROCESS
 import eu.codetopic.utils.thread.job.SingletonJobManager
 
 
@@ -51,52 +52,68 @@ class AppInit : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        RecyclerInflater.setDefaultSwipeSchemeColors(
-                ContextCompat.getColor(this, R.color.colorPrimary),
-                ContextCompat.getColor(this, R.color.colorPrimaryMarks),
-                ContextCompat.getColor(this, R.color.colorPrimaryAttendance),
-                ContextCompat.getColor(this, R.color.colorPrimaryLunches),
-                ContextCompat.getColor(this, R.color.colorPrimaryTimetables),
-                ContextCompat.getColor(this, R.color.colorPrimaryWifiLogin)
-        )
 
+        // Alias of this
         val app = this
 
+        // Setup uncaught exception handler
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, ex ->
+            Log.d("UExHandler", "Oh no, something went wrong (uncaught exception). Ok, let's enable Feedback module...")
+            // TODO: 6/16/17 enable feedback module
+            defaultHandler.uncaughtException(thread, ex)
+        }
+
+        // Setup error logged listener
+        Logger.getErrorLogsHandler().addOnLoggedListener(object : LogsHandler.OnLoggedListener {
+            override fun onLogged(logLine: LogLine) {
+                Log.d("UExHandler", "Oh no, something went wrong (error logged). Ok, let's enable Feedback module...")
+                // TODO: 6/16/17 enable feedback module
+            }
+
+            override fun filterPriorities(): Array<Priority> {
+                return arrayOf(Priority.ERROR)
+            }
+        })
+
+        // Set color scheme of loading in RecyclerView
+        RecyclerInflater.setDefaultSwipeSchemeColors(
+                ContextCompat.getColor(app, R.color.colorPrimary),
+                ContextCompat.getColor(app, R.color.colorPrimaryMarks),
+                ContextCompat.getColor(app, R.color.colorPrimaryAttendance),
+                ContextCompat.getColor(app, R.color.colorPrimaryLunches),
+                ContextCompat.getColor(app, R.color.colorPrimaryTimetables),
+                ContextCompat.getColor(app, R.color.colorPrimaryWifiLogin)
+        )
+
+        // Initialize utils base (my own android application framework; brain of this application)
         UtilsBase.initialize(app,
                 // ProcessProfile(app.packageName + ":acra", DISABLE_UTILS), // ACRA reporting process
-                ProcessProfile(app.packageName, INIT_NORMAL_MODE, Runnable {
-                    val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
-                    Thread.setDefaultUncaughtExceptionHandler { thread, ex ->
-                        Log.d("UExHandler", "Enabling Feedback Module...")
-                        // TODO: 6/16/17 enable feedback module
-                        defaultHandler.uncaughtException(thread, ex)
-                    }
+                ProcessProfile(app.packageName + ":providers", ANOTHER_PROCESS), // Data management process (multi-process data access support) // TODO: implement
+                ProcessProfile(app.packageName + ":syncs", ANOTHER_PROCESS), // Data synchronization process // TODO: implement
+                ProcessProfile(app.packageName, PRIMARY_PROCESS, Runnable { // Main process
 
-                    Logger.getErrorLogsHandler().addOnLoggedListener(object : LogsHandler.OnLoggedListener {
-                        override fun onLogged(logLine: LogLine) {
-                            Log.d("UExHandler", "Enabling Feedback Module...")
-                            // TODO: 6/16/17 enable feedback module
-                        }
-
-                        override fun filterPriorities(): Array<Priority> {
-                            return arrayOf(Priority.ERROR)
-                        }
-                    })
-
+                    // Create default user account (if there is none)
                     AccountsHelper.initDefaultAccount(app)
 
+                    // Prepare broadcasts connections (very helpful tool)
                     loadBroadcastConnections()
 
+                    // Initialize data app specific providers
                     MainData.initialize(app)
                     ActiveAccountManager.initialize(app)
                     SettingsData.initialize(app)
                     MarksData.initialize(app)
                     MarksLoginData.initialize(app)
+
+                    // Initialize data provider of dashboard framework
                     DashboardData.initialize(app)
 
+                    // Initialize singletons
                     SingletonJobManager.initialize(app)
                     //SingletonDatabase.initialize(new AppDatabase(app))
 
+                    // Initialize timed components (framework for repeating jobs)
                     TimedComponentsManager.initialize(app,
                             SettingsData.getter.get().requiredNetworkType/*,
                             MarksSyncService::class.java*/)

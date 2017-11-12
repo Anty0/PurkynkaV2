@@ -34,6 +34,7 @@ import com.mikepenz.aboutlibraries.util.Colors;
 
 import cz.anty.purkynka.Constants;
 import cz.anty.purkynka.R;
+import eu.codetopic.utils.AndroidUtils;
 import eu.codetopic.utils.timing.TimedComponentsManager;
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule;
 import eu.codetopic.utils.ui.activity.modular.ModularActivity;
@@ -85,7 +86,7 @@ public class SettingsActivity extends ModularActivity {
 
             findPreference(PREFERENCE_KEY_REFRESH_ON_WIFI).setOnPreferenceChangeListener((preference, o) -> {
                 TimedComponentsManager.getInstance().setRequiredNetwork(
-                        SettingsData.getter.get().getRequiredNetworkType());
+                        SettingsData.Companion.getInstance().getRequiredNetworkType());
                 return true;
             });
             findPreference("activity_about").setOnPreferenceClickListener(preference -> {
@@ -99,7 +100,7 @@ public class SettingsActivity extends ModularActivity {
                         .withAboutAppName(getString(R.string.app_name))
                         .withAboutVersionShownName(true)
                         .withAboutDescription("Copyright (c) 2017 Codetopic, All Rights Reserved. " // TODO: to strings and translate
-                                + " THIS SOFTWARE IS PROVIDED \"AS IS\" WITHOUT WARRANTY "
+                                + " THIS SOFTWARE IS PROVIDED \"AS IS\" WITHOUT WARRANTY " // TODO: add GPLv3 license head
                                 + "OF ANY KIND. IN NO EVENT SHALL THE COPYRIGHT HOLDERS "
                                 + "OR AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR "
                                 + "OTHER LIABILITY, ARISING FROM USE OF THIS SOFTWARE OR IN "
@@ -111,30 +112,15 @@ public class SettingsActivity extends ModularActivity {
                 return true;
             });
             findPreference("activity_facebook").setOnPreferenceClickListener(preference -> {
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.URL_FACEBOOK_PAGE)));
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), R.string.toast_browser_failed,
-                            Toast.LENGTH_SHORT).show();
-                }
+                AndroidUtils.openUri(getActivity(), Constants.URL_FACEBOOK_PAGE, R.string.toast_browser_failed);
                 return true;
             });
             findPreference("activity_web_page").setOnPreferenceClickListener(preference -> {
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.URL_WEB_PAGE)));
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), R.string.toast_browser_failed,
-                            Toast.LENGTH_SHORT).show();
-                }
+                AndroidUtils.openUri(getActivity(), Constants.URL_WEB_PAGE, R.string.toast_browser_failed);
                 return true;
             });
             findPreference("activity_web_page_donate").setOnPreferenceClickListener(preference -> {
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.URL_WEB_DONATE_PAGE)));
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), R.string.toast_browser_failed,
-                            Toast.LENGTH_SHORT).show();
-                }
+                AndroidUtils.openUri(getActivity(), Constants.URL_WEB_DONATE_PAGE, R.string.toast_browser_failed);
                 return true;
             });
         }
