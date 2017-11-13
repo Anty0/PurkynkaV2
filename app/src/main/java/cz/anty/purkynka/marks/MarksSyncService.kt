@@ -16,39 +16,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.accounts
+package cz.anty.purkynka.marks
 
-import android.accounts.AccountManager
+import android.app.IntentService
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 
+import java.util.Calendar
+
+import cz.anty.purkynka.Constants
+import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.timing.info.TimedComponent
+
 /**
  * @author anty
  */
-class AuthenticatorService : Service() {
+class MarksSyncService : Service() {
 
     companion object {
 
-        private const val LOG_TAG = "AuthenticatorService"
-    }
+        private const val LOG_TAG = "MarksSyncService"
 
-    private var sAuthenticator: AuthenticatorImpl? = null
+        private val sSyncAdapterLock = Any()
+        private var sSyncAdapter: MarksSyncAdapter? = null
+    }
 
     override fun onCreate() {
         super.onCreate()
-        sAuthenticator = AuthenticatorImpl(this)
-    }
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return when (intent?.action) {
-            AccountManager.ACTION_AUTHENTICATOR_INTENT -> sAuthenticator?.iBinder
-            else -> null
+        synchronized(sSyncAdapterLock) {
+            if (sSyncAdapter == null) {
+                sSyncAdapter = MarksSyncAdapter(applicationContext)
+            }
         }
     }
 
-    override fun onDestroy() {
-        sAuthenticator = null
-        super.onDestroy()
+    override fun onBind(intent: Intent): IBinder? {
+        return sSyncAdapter?.syncAdapterBinder
     }
 }

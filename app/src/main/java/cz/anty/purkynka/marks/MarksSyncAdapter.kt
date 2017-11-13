@@ -45,6 +45,6 @@ class MarksSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, 
 
         if (authority != CONTENT_AUTHORITY) return
 
-
+        TODO("not implemented")
     }
 }

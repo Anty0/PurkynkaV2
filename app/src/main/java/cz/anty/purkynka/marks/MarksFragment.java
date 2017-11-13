@@ -102,7 +102,7 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
         mUnbinder = ButterKnife.bind(this, baseView);
 
         mLoginButton.setOnClickListener(view -> {
-            MarksLoginData.Companion.getGetter().get().getLoginData().login(
+            MarksLoginData.Companion.getInstance().getLoginData().login(
                     ActiveAccountManager.Companion.getGetter().get().getActiveAccountId(),
                     mInputUsername.getText().toString(),
                     mInputPassword.getText().toString());

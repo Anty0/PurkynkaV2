@@ -20,6 +20,9 @@ package cz.anty.purkynka.marks
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import cz.anty.purkynka.marks.data.Mark
 
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
@@ -48,6 +51,16 @@ class MarksData private constructor(context: Context) :
                 }
             } // No more versions yet
         }
+    }
+
+    private val gson: Gson = GsonBuilder()
+            .create()
+
+    var marks: Map<Int, Mark> get() {
+        return mapOf() // TODO: implement
+    }
+    set(value) {
+        value.size // TODO: implement
     }
 
     // TODO: get + set marks methods

@@ -91,11 +91,12 @@ public class AccountAddActivity extends ModularActivity {
             return;
         }
 
-        final Intent intent = new Intent()
-                .putExtra(AccountManager.KEY_ACCOUNT_NAME, userName)
-                .putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
         final Account account = new Account(userName, mAccountType);
         if (AccountsHelper.addAccountExplicitly(mAccountManager, account)) {
+            final Intent intent = new Intent()
+                    .putExtra(AccountManager.KEY_ACCOUNT_NAME, userName)
+                    .putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
+
             setAccountAuthenticatorResult(intent.getExtras());
             setResult(RESULT_OK, intent);
             finish();

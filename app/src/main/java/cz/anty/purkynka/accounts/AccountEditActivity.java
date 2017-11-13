@@ -80,10 +80,11 @@ public class AccountEditActivity extends ModularActivity {
             return;
         }
 
-        final Intent intent = new Intent()
-                .putExtra(AccountManager.KEY_ACCOUNT_NAME, userName)
-                .putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccount.type);
         if (AccountsHelper.renameAccount(mAccountManager, mAccount, userName)) {
+            final Intent intent = new Intent()
+                    .putExtra(AccountManager.KEY_ACCOUNT_NAME, userName)
+                    .putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccount.type);
+
             setResult(RESULT_OK, intent);
             finish();
             return;
