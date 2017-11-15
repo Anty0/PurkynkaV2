@@ -21,12 +21,16 @@ package cz.anty.purkynka.marks
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import cz.anty.purkynka.PrefNames.MARKS_MAP
+import cz.anty.purkynka.marks.data.Lesson
 import cz.anty.purkynka.marks.data.Mark
+import cz.anty.purkynka.marks.data.Semester
 
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
+import eu.codetopic.utils.data.preferences.support.GsonPreference
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
@@ -53,17 +57,32 @@ class MarksData private constructor(context: Context) :
         }
     }
 
-    private val gson: Gson = GsonBuilder()
-            .create()
+    private val gson: Gson = Gson()
 
-    var marks: Map<Int, Mark> get() {
-        return mapOf() // TODO: implement
-    }
-    set(value) {
-        value.size // TODO: implement
+    var marks by GsonPreference<Map<Int, MutableList<Mark>>>(MARKS_MAP, gson,
+            object: TypeToken<Map<Int, MutableList<Mark>>>(){}.type, preferencesAccessor) {
+        mapOf(Semester.FIRST.value to mutableListOf(),
+            Semester.SECOND.value to mutableListOf())
     }
 
-    // TODO: get + set marks methods
+    val lessons: Map<Int, MutableList<Lesson>>
+        get() {
+            synchronized(this) {
+                return marks.map {
+                    it.key to it.value.let {
+                        mutableMapOf<String, MutableList<Mark>>().apply {
+                            it.forEach {
+                                getOrPut(it.shortLesson, ::mutableListOf).add(it)
+                            }
+                        }.map {
+                            Lesson(it.value.first().longLesson,
+                                    it.value.first().shortLesson,
+                                    it.value.toList())
+                        }.toMutableList()
+                    }
+                }.toMap()
+            }
+        }
 
     private class Getter : PreferencesGetterAbs<MarksData>() {
 

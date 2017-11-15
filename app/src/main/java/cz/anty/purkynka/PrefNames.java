@@ -36,6 +36,7 @@ public final class PrefNames {
     public static final String FILE_NAME_SETTINGS_DATA = "SettingsData";
     // MarksData
     public static final String FILE_NAME_MARKS_DATA = "MarksData";
+    public static final String MARKS_MAP = "MARKS";
     // MarksLoginData
     public static final String FILE_NAME_MARKS_LOGIN_DATA = "MarksLoginData";
 }

@@ -33,6 +33,7 @@ import eu.codetopic.java.utils.log.Log
 class MarksSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, false, true) {
 
     companion object {
+
         private const val LOG_TAG = "MarksSyncAdapter"
 
         const val CONTENT_AUTHORITY = MarksProvider.AUTHORITY

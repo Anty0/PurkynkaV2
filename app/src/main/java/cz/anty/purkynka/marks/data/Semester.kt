@@ -38,7 +38,7 @@ enum class Semester {
             }
         }
 
-    val value: Int?
+    val value: Int
         get() {
             return when (this) {
                 FIRST -> 1

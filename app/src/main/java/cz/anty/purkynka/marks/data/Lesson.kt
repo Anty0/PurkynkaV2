@@ -19,32 +19,33 @@
 package cz.anty.purkynka.marks.data
 
 import android.content.Context
-import com.google.common.collect.ImmutableList
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 
 /**
- * Created by anty on 6/20/17.
  * @author anty
  */
-data class Lesson(val fullName: String, val shortName: String, val marks: ImmutableList<Mark>): CustomItem() {
+data class Lesson(val fullName: String, val shortName: String, val marks: List<Mark>): CustomItem() {
 
-    fun getDiameter(): Double {
-        var tempMark = 0.0
-        var tempWeight = 0
-        for (mark in marks) {
-            if (mark.value == 0.0) continue
-            tempMark += mark.value * mark.weight.toDouble()
-            tempWeight += mark.weight
-        }
-        return tempMark / tempWeight.toDouble()
+    val diameter: Double get() {
+        var tGrade = 0.0
+        var tWeight = 0
+        return marks.filterNot { it.value == 0.0 }
+                .takeIf { it.isNotEmpty() }
+                ?.onEach {
+                    tGrade += it.value * it.weight.toDouble()
+                    tWeight += it.weight
+                }
+                ?.let {
+                    tGrade / tWeight.toDouble()
+                } ?: Double.NaN
     }
 
     override fun onBindViewHolder(holder: ViewHolder?, itemPosition: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
     override fun getItemLayoutResId(context: Context?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
 }
