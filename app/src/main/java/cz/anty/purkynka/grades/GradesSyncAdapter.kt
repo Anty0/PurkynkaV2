@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks
+package cz.anty.purkynka.grades
 
 import android.accounts.Account
 import android.content.AbstractThreadedSyncAdapter
@@ -30,14 +30,14 @@ import eu.codetopic.java.utils.log.Log
 /**
  * @author anty
  */
-class MarksSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, false, true) {
+class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, false, true) {
 
     companion object {
 
-        private const val LOG_TAG = "MarksSyncAdapter"
+        private const val LOG_TAG = "GradesSyncAdapter"
 
-        const val CONTENT_AUTHORITY = MarksProvider.AUTHORITY
-        const val SYNC_FREQUENCY: Long = Constants.SYNC_FREQUENCY_MARKS
+        const val CONTENT_AUTHORITY = GradesProvider.AUTHORITY
+        const val SYNC_FREQUENCY: Long = Constants.SYNC_FREQUENCY_GRADES
     }
 
     override fun onPerformSync(account: Account, extras: Bundle, authority: String,

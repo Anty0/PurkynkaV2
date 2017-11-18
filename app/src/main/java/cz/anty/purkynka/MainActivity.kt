@@ -42,10 +42,9 @@ import cz.anty.purkynka.accounts.AccountEditActivity
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.dashboard.DashboardFragment
-import cz.anty.purkynka.marks.MarksFragment
+import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.settings.SettingsActivity
 import eu.codetopic.utils.AndroidUtils
-import eu.codetopic.utils.data.preferences.PreferencesData
 
 
 class MainActivity : NavigationActivity() {
@@ -56,14 +55,13 @@ class MainActivity : NavigationActivity() {
         private const val REQUEST_CODE_EDIT_ACCOUNT: Int = 1
     }
 
-    private var mAccountChangedReceiver: AccountChangeReceiver? = null
+    private val mAccountChangedReceiver: AccountChangeReceiver = AccountChangeReceiver()
     private val mActiveAccountManager: ActiveAccountManager = ActiveAccountManager.getter.get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
 
-        mAccountChangedReceiver = AccountChangeReceiver()
         with (AccountManager.get(this)) {
             if (Build.VERSION.SDK_INT >= 26) addOnAccountsUpdatedListener(mAccountChangedReceiver,
                     null, true, arrayOf(AccountsHelper.ACCOUNT_TYPE))
@@ -87,7 +85,6 @@ class MainActivity : NavigationActivity() {
     override fun onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mAccountChangedReceiver)
         AccountManager.get(this).removeOnAccountsUpdatedListener(mAccountChangedReceiver)
-        mAccountChangedReceiver = null
         super.onDestroy()
     }
 
@@ -162,7 +159,7 @@ class MainActivity : NavigationActivity() {
         with (menu) {
             when (currentFragment.javaClass) {
                 DashboardFragment::class.java -> findItem(R.id.nav_dashboard).isChecked = true
-                MarksFragment::class.java -> findItem(R.id.nav_marks).isChecked = true
+                GradesFragment::class.java -> findItem(R.id.nav_grades).isChecked = true
                 // WifiLoginFragment::class.java -> findItem(R.id.nav_wifi_login).isChecked = true
                 /*LunchesFragment::class.java, LunchesOrderFragment::class.java,
                 LunchesBurzaFragment::class.java, LunchesBurzaWatcherFragment::class.java -> {
@@ -190,7 +187,7 @@ class MainActivity : NavigationActivity() {
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_dashboard -> replaceFragment(DashboardFragment::class.java)
-            R.id.nav_marks -> replaceFragment(MarksFragment::class.java)
+            R.id.nav_grades -> replaceFragment(GradesFragment::class.java)
             // R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
             // R.id.nav_lunches -> replaceFragment(LunchesFragment::class.java)
             // R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)

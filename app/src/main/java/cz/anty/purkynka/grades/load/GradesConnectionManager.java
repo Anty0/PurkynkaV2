@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks.load;
+package cz.anty.purkynka.grades.load;
 
 /**
  * Created by anty on 10/9/17.
  *
  * @author anty
  */
-public class MarksConnectionManager {
+public class GradesConnectionManager {
 }

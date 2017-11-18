@@ -18,14 +18,12 @@
 
 package cz.anty.purkynka
 
-import android.accounts.Account
-import android.accounts.AccountManager
 import android.app.Application
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
-import cz.anty.purkynka.marks.MarksData
-import cz.anty.purkynka.marks.MarksLoginData
+import cz.anty.purkynka.grades.GradesData
+import cz.anty.purkynka.grades.GradesLoginData
 import cz.anty.purkynka.settings.SettingsData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
 import eu.codetopic.utils.timing.TimedComponentsManager
@@ -38,7 +36,6 @@ import eu.codetopic.java.utils.log.base.Priority
 import eu.codetopic.utils.UtilsBase.ProcessProfile
 import eu.codetopic.utils.UtilsBase
 
-import eu.codetopic.utils.UtilsBase.InitType.NONE
 import eu.codetopic.utils.UtilsBase.InitType.PRIMARY_PROCESS
 import eu.codetopic.utils.UtilsBase.InitType.ANOTHER_PROCESS
 import eu.codetopic.utils.thread.job.SingletonJobManager
@@ -79,7 +76,7 @@ class AppInit : Application() {
         // Set color scheme of loading in RecyclerView
         RecyclerInflater.setDefaultSwipeSchemeColors(
                 ContextCompat.getColor(app, R.color.colorPrimary),
-                ContextCompat.getColor(app, R.color.colorPrimaryMarks),
+                ContextCompat.getColor(app, R.color.colorPrimaryGrades),
                 ContextCompat.getColor(app, R.color.colorPrimaryAttendance),
                 ContextCompat.getColor(app, R.color.colorPrimaryLunches),
                 ContextCompat.getColor(app, R.color.colorPrimaryTimetables),
@@ -103,8 +100,8 @@ class AppInit : Application() {
                     MainData.initialize(app)
                     ActiveAccountManager.initialize(app)
                     SettingsData.initialize(app)
-                    MarksData.initialize(app)
-                    MarksLoginData.initialize(app)
+                    GradesData.initialize(app)
+                    GradesLoginData.initialize(app)
 
                     // Initialize data provider of dashboard framework
                     DashboardData.initialize(app)
@@ -116,7 +113,7 @@ class AppInit : Application() {
                     // Initialize timed components (framework for repeating jobs)
                     TimedComponentsManager.initialize(app,
                             SettingsData.getter.get().requiredNetworkType/*,
-                            MarksSyncService::class.java*/)
+                            GradesSyncService::class.java*/)
                 }))
     }
 

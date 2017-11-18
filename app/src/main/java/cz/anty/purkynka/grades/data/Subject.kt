@@ -16,23 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks.data
+package cz.anty.purkynka.grades.data
 
 import android.content.Context
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import java.util.*
 
 /**
  * @author anty
  */
-data class Mark(val date: Date, val shortLesson: String, val longLesson: String, val valueToShow: String,
-                val value: Double, val type: String, val weight: Int, val note: String, val teacher: String): CustomItem() {
+data class Subject(val fullName: String, val shortName: String, val grades: List<Grade>): CustomItem() {
 
-    override fun onBindViewHolder(holder: CustomItem.ViewHolder?, itemPosition: Int) {
+    val diameter: Double get() {
+        var tGrade = 0.0
+        var tWeight = 0
+        return grades.filterNot { it.value == 0.0 }
+                .takeIf { it.isNotEmpty() }
+                ?.onEach {
+                    tGrade += it.value * it.weight.toDouble()
+                    tWeight += it.weight
+                }
+                ?.let {
+                    tGrade / tWeight.toDouble()
+                } ?: Double.NaN
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder?, itemPosition: Int) {
         TODO("not implemented")
     }
 
     override fun getItemLayoutResId(context: Context?): Int {
         TODO("not implemented")
     }
+
 }

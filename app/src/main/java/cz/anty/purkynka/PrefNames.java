@@ -19,8 +19,6 @@
 package cz.anty.purkynka;
 
 /**
- * Created by anty on 10/8/17.
- *
  * @author anty
  */
 public final class PrefNames {
@@ -34,9 +32,9 @@ public final class PrefNames {
     public static final String ACTIVE_ACCOUNT_NAME = "ACTIVE_ACCOUNT_NAME";
     // SettingsData
     public static final String FILE_NAME_SETTINGS_DATA = "SettingsData";
-    // MarksData
-    public static final String FILE_NAME_MARKS_DATA = "MarksData";
-    public static final String MARKS_MAP = "MARKS";
-    // MarksLoginData
-    public static final String FILE_NAME_MARKS_LOGIN_DATA = "MarksLoginData";
+    // GradesData
+    public static final String FILE_NAME_GRADES_DATA = "GradesData";
+    public static final String GRADES_MAP = "GRADES";
+    // GradesLoginData
+    public static final String FILE_NAME_GRADES_LOGIN_DATA = "GradesLoginData";
 }

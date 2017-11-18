@@ -28,10 +28,10 @@
     <color name="navigationBarColor">#005000</color>
     <color name="colorAccent">#11ffbb</color>
 
-    <color name="colorPrimaryMarks">#5f51b5</color>
-    <color name="colorPrimaryDarkMarks">#453282</color>
-    <color name="navigationBarColorMarks">#300050</color>
-    <color name="colorAccentMarks">#a1bbff</color>
+    <color name="colorPrimaryGrades">#5f51b5</color>
+    <color name="colorPrimaryDarkGrades">#453282</color>
+    <color name="navigationBarColorGrades">#300050</color>
+    <color name="colorAccentGrades">#a1bbff</color>
 
     <color name="colorPrimaryAttendance">#3f51b5</color>
     <color name="colorPrimaryDarkAttendance">#233282</color>

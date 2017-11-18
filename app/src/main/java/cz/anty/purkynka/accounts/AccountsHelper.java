@@ -26,7 +26,6 @@ import android.os.Bundle;
 
 import java.util.UUID;
 
-import cz.anty.purkynka.marks.MarksSyncAdapter;
 import eu.codetopic.utils.BundleBuilder;
 
 /**
@@ -83,7 +82,7 @@ public final class AccountsHelper {
             }
 
             for (SyncInfo syncInfo : new SyncInfo[] {
-                    new SyncInfo(MarksSyncAdapter.CONTENT_AUTHORITY, MarksSyncAdapter.SYNC_FREQUENCY) // TODO: add here all content authorities
+                    new SyncInfo(GradesSyncAdapter.CONTENT_AUTHORITY, GradesSyncAdapter.SYNC_FREQUENCY) // TODO: add here all content authorities
             }) {
                 ContentResolver.setIsSyncable(account, syncInfo.contentAuthority, 1);
                 ContentResolver.setSyncAutomatically(account, syncInfo.contentAuthority, true);

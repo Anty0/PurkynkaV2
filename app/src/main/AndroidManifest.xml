@@ -88,7 +88,7 @@
                 android:resource="@xml/authenticator" />
         </service>
         <service
-            android:name=".marks.MarksSyncService"
+            android:name=".grades.GradesSyncService"
             android:enabled="true"
             android:exported="true"
             android:process=":syncs" >
@@ -98,13 +98,13 @@
             </intent-filter>
 
             <meta-data android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_marks" />
+                android:resource="@xml/sync_grades" />
         </service>
 
 
         <provider
-            android:name=".marks.MarksProvider"
-            android:authorities="cz.anty.purkynka.marks.data"
+            android:name=".grades.GradesProvider"
+            android:authorities="cz.anty.purkynka.grades.data"
             android:exported="false"
             android:process=":providers" />
     </application>

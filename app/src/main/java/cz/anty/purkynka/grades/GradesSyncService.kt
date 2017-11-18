@@ -16,37 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks
+package cz.anty.purkynka.grades
 
-import android.app.IntentService
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 
-import java.util.Calendar
-
-import cz.anty.purkynka.Constants
-import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.timing.info.TimedComponent
-
 /**
  * @author anty
  */
-class MarksSyncService : Service() {
+class GradesSyncService : Service() {
 
     companion object {
 
-        private const val LOG_TAG = "MarksSyncService"
+        private const val LOG_TAG = "GradesSyncService"
 
         private val sSyncAdapterLock = Any()
-        private var sSyncAdapter: MarksSyncAdapter? = null
+        private var sSyncAdapter: GradesSyncAdapter? = null
     }
 
     override fun onCreate() {
         super.onCreate()
         synchronized(sSyncAdapterLock) {
             if (sSyncAdapter == null) {
-                sSyncAdapter = MarksSyncAdapter(applicationContext)
+                sSyncAdapter = GradesSyncAdapter(applicationContext)
             }
         }
     }

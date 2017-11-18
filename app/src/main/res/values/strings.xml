@@ -27,7 +27,7 @@
     <string name="title_activity_account_properties">Account properties</string>
 
     <string name="action_show_dashboard">Dashboard</string>
-    <string name="action_show_marks">Marks</string>
+    <string name="action_show_grades">Grades</string>
     <string name="action_show_wifi_login">Wifi auto login</string>
     <string name="action_show_lunches">Lunches</string>
     <string name="action_show_lunches_order">Order</string>

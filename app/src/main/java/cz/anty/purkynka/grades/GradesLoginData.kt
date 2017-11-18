@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks
+package cz.anty.purkynka.grades
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -34,14 +34,14 @@ import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 /**
  * @author anty
  */
-class MarksLoginData private constructor(context: Context) :
+class GradesLoginData private constructor(context: Context) :
         VersionedPreferencesData<SecurePreferences>(context,
-                SecureSharedPreferencesProvider(context, FILE_NAME_MARKS_LOGIN_DATA, clearOnFail = true),
+                SecureSharedPreferencesProvider(context, FILE_NAME_GRADES_LOGIN_DATA, clearOnFail = true),
                 SAVE_VERSION) {
 
-    companion object : PreferencesCompanionObject<MarksLoginData>(MarksLoginData.LOG_TAG, ::MarksLoginData, ::Getter) {
+    companion object : PreferencesCompanionObject<GradesLoginData>(GradesLoginData.LOG_TAG, ::GradesLoginData, ::Getter) {
 
-        private val LOG_TAG = "MarksLoginData"
+        private val LOG_TAG = "GradesLoginData"
         private val SAVE_VERSION = 0
     }
 
@@ -55,14 +55,14 @@ class MarksLoginData private constructor(context: Context) :
         } // No more versions yet
     }
 
-    private class Getter : PreferencesGetterAbs<MarksLoginData>() {
+    private class Getter : PreferencesGetterAbs<GradesLoginData>() {
 
-        override fun get(): MarksLoginData? {
+        override fun get(): GradesLoginData? {
             return instance
         }
 
-        override fun getDataClass(): Class<MarksLoginData> {
-            return MarksLoginData::class.java
+        override fun getDataClass(): Class<GradesLoginData> {
+            return GradesLoginData::class.java
         }
     }
 }

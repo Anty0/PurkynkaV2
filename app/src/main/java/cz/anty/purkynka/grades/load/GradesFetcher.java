@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks.load;
+package cz.anty.purkynka.grades.load;
 
 import android.os.Build;
 
@@ -26,22 +26,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import cz.anty.purkynka.BuildConfig;
 import cz.anty.purkynka.Constants;
 import cz.anty.purkynka.exceptions.LoginExpiredException;
-import cz.anty.purkynka.marks.data.Mark;
-import cz.anty.purkynka.marks.data.Semester;
+import cz.anty.purkynka.grades.data.Semester;
 
 /**
  * @author anty
  */
-public class MarksFetcher {
+public class GradesFetcher {
 
-    private static final String LOG_TAG = "MarksFetcher";
+    private static final String LOG_TAG = "GradesFetcher";
 
     //private static final String SCHOOL_URL = "http://www.sspbrno.cz";
     private static final String MAIN_URL = "https://isas.sspbrno.cz"; // TODO: use Firebase shared config
@@ -50,7 +48,7 @@ public class MarksFetcher {
     private static final String PASS_FIELD = "login-isas-password";
     private static final String SUBMIT = "login-isas-send";
     private static final String SUBMIT_VALUE = "isas-send";
-    private static final String MARKS_URL_ADD = "/prubezna-klasifikace.php";
+    private static final String GRADES_URL_ADD = "/prubezna-klasifikace.php";
     private static final String SEMESTER = "pololeti";
     private static final String SHORT_BY = "zobraz";
     private static final String SHORT_BY_DATE = "datum";
@@ -69,34 +67,34 @@ public class MarksFetcher {
                 .execute().cookies();
     }
 
-    public static Elements getMarksElements(Map<String, String> loginCookies, Semester semester,
-                                            boolean loadForced) throws IOException {
-        Document marksPage = getMarksPage(loginCookies, semester, loadForced);
-        if (!isLoggedIn(marksPage)) {
+    public static Elements getGradesElements(Map<String, String> loginCookies, Semester semester,
+                                             boolean loadForced) throws IOException {
+        Document gradesPage = getGradesPage(loginCookies, semester, loadForced);
+        if (!isLoggedIn(gradesPage)) {
             throw new LoginExpiredException();
         }
 
-        return marksPage.select("table.isas-tabulka")
+        return gradesPage.select("table.isas-tabulka")
                 .select("tr")
                 .not("tr.zahlavi");
     }
 
     public static boolean isLoggedIn(Map<String, String> loginCookies,
                                            boolean loadForced) throws IOException {
-        return isLoggedIn(getMarksPage(loginCookies, Semester.AUTO, loadForced));
+        return isLoggedIn(getGradesPage(loginCookies, Semester.AUTO, loadForced));
     }
 
-    private static boolean isLoggedIn(Document marksPage) {
-        return marksPage.select("div.isas-varovani").isEmpty() && marksPage.select("form.isas-form")
-                .isEmpty() && !marksPage.select("#isas-menu").isEmpty();
+    private static boolean isLoggedIn(Document gradesPage) {
+        return gradesPage.select("div.isas-varovani").isEmpty() && gradesPage.select("form.isas-form")
+                .isEmpty() && !gradesPage.select("#isas-menu").isEmpty();
     }
 
-    private static Document getMarksPage(Map<String, String> loginCookies, Semester semester,
-                                         boolean loadForced) throws IOException {
+    private static Document getGradesPage(Map<String, String> loginCookies, Semester semester,
+                                          boolean loadForced) throws IOException {
         return Jsoup
-                .connect(MAIN_URL + MARKS_URL_ADD)
+                .connect(MAIN_URL + GRADES_URL_ADD)
                 .userAgent(getUserAgent(loadForced))
-                .data(SEMESTER, semester.getValue().toString(), SHORT_BY, SHORT_BY_DATE)
+                .data(SEMESTER, Integer.toString(semester.getValue()), SHORT_BY, SHORT_BY_DATE)
                 .followRedirects(false)
                 .timeout(Constants.CONNECTION_TIMEOUT_SAS)
                 .method(Connection.Method.GET)

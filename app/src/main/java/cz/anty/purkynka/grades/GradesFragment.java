@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks;
+package cz.anty.purkynka.grades;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,8 +41,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cz.anty.purkynka.R;
 import cz.anty.purkynka.accounts.ActiveAccountManager;
-import cz.anty.purkynka.marks.data.Mark;
-import eu.codetopic.utils.AndroidUtils;
+import cz.anty.purkynka.grades.data.Grade;
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider;
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider;
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment;
@@ -51,11 +50,9 @@ import eu.codetopic.utils.ui.container.recycler.Recycler;
 import eu.codetopic.utils.ui.container.recycler.utils.RecyclerItemClickListener.SimpleClickListener;
 
 /**
- * Created by anty on 6/20/17.
- *
  * @author anty
  */
-public class MarksFragment extends NavigationFragment implements TitleProvider, ThemeProvider {
+public class GradesFragment extends NavigationFragment implements TitleProvider, ThemeProvider {
 
     @BindView(R.id.container_recycler)
     public FrameLayout mRecyclerContainer;
@@ -72,16 +69,16 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
     private Unbinder mUnbinder = null;
 
     private Recycler.RecyclerManagerImpl mRecyclerManager = null;
-    private CustomItemAdapter<Mark> mAdapter = null;
+    private CustomItemAdapter<Grade> mAdapter = null;
 
-    private final BroadcastReceiver mMarksLoginDataChangedReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mGradesLoginDataChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             updateViews();
         }
     };
 
-    public MarksFragment() {
+    public GradesFragment() {
         setHasOptionsMenu(true);
     }
 
@@ -89,20 +86,20 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new CustomItemAdapter<>(getContext());
-        getContext().registerReceiver(mMarksLoginDataChangedReceiver,
-                new IntentFilter(MarksLoginData.Companion.getGetter().getDataChangedBroadcastAction()));
+        getContext().registerReceiver(mGradesLoginDataChangedReceiver,
+                new IntentFilter(GradesLoginData.Companion.getGetter().getDataChangedBroadcastAction()));
     }
 
     @Nullable
     @Override
     public View onCreateContentView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         LayoutInflater localInflater = inflater.cloneInContext(
-                new ContextThemeWrapper(inflater.getContext(), R.style.AppTheme_Marks));
-        View baseView = localInflater.inflate(R.layout.fragment_marks, container, false);
+                new ContextThemeWrapper(inflater.getContext(), R.style.AppTheme_Grades));
+        View baseView = localInflater.inflate(R.layout.fragment_grades, container, false);
         mUnbinder = ButterKnife.bind(this, baseView);
 
         mLoginButton.setOnClickListener(view -> {
-            MarksLoginData.Companion.getInstance().getLoginData().login(
+            GradesLoginData.Companion.getInstance().getLoginData().login(
                     ActiveAccountManager.Companion.getGetter().get().getActiveAccountId(),
                     mInputUsername.getText().toString(),
                     mInputPassword.getText().toString());
@@ -111,7 +108,7 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
         mRecyclerManager = Recycler.inflate().withSwipeToRefresh()
                 .on(localInflater, mRecyclerContainer, true)
                 //.setEmptyImage() // TODO: add
-                .setEmptyText("No marks") // TODO: to strings
+                .setEmptyText("No grades") // TODO: to strings
                 .setAdapter(mAdapter)
                 .setOnRefreshListener(view -> {}) // TODO: implement
                 .setItemTouchListener(new SimpleClickListener() {
@@ -127,7 +124,7 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
 
     public void updateViews() {
         if (mUnbinder == null) return;
-        if (MarksLoginData.Companion.getGetter().get().getLoginData().isLoggedIn(
+        if (GradesLoginData.Companion.getGetter().get().getLoginData().isLoggedIn(
                 ActiveAccountManager.Companion.getGetter().get().getActiveAccountId())) {
             mRecyclerContainer.setVisibility(View.VISIBLE);
             mLoginContainer.setVisibility(View.GONE);
@@ -163,11 +160,11 @@ public class MarksFragment extends NavigationFragment implements TitleProvider, 
 
     @Override
     public CharSequence getTitle() {
-        return getText(R.string.action_show_marks);
+        return getText(R.string.action_show_grades);
     }
 
     @Override
     public int getThemeId() {
-        return R.style.AppTheme_Marks;
+        return R.style.AppTheme_Grades;
     }
 }

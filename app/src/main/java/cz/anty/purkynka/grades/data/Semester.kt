@@ -16,14 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks.data
+package cz.anty.purkynka.grades.data
 
 import java.util.Calendar
 import java.util.Date
 
 /**
- * Created by anty on 6/20/17.
- *
  * @author anty
  */
 enum class Semester {

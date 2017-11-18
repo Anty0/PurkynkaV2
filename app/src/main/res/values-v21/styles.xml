@@ -19,8 +19,8 @@
 
 <resources>
 
-    <style name="AppTheme.Marks" parent="AppTheme.Marks.Base">
-        <item name="android:navigationBarColor">@color/navigationBarColorMarks</item>
+    <style name="AppTheme.Grades" parent="AppTheme.Grades.Base">
+        <item name="android:navigationBarColor">@color/navigationBarColorGrades</item>
     </style>
 
     <style name="AppTheme.Attendance" parent="AppTheme.Attendance.Base">
@@ -40,8 +40,8 @@
     </style>
 
 
-    <style name="AppTheme.Dialog.Marks" parent="AppTheme.Dialog.Marks.Base">
-        <item name="android:navigationBarColor">@color/navigationBarColorMarks</item>
+    <style name="AppTheme.Dialog.Grades" parent="AppTheme.Dialog.Grades.Base">
+        <item name="android:navigationBarColor">@color/navigationBarColorGrades</item>
     </style>
 
     <style name="AppTheme.Dialog.Attendance" parent="AppTheme.Dialog.Attendance.Base">

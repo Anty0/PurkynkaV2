@@ -28,9 +28,9 @@
             android:icon="@drawable/ic_home_dashboard"
             android:title="@string/action_show_dashboard" />
         <item
-            android:id="@+id/nav_marks"
+            android:id="@+id/nav_grades"
             android:icon="@mipmap/ic_launcher_marks"
-            android:title="@string/action_show_marks" />
+            android:title="@string/action_show_grades" />
         <item
             android:id="@+id/nav_wifi_login"
             android:icon="@mipmap/ic_launcher_wifi"

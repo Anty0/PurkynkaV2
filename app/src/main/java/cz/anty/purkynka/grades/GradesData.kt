@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks
+package cz.anty.purkynka.grades
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import cz.anty.purkynka.PrefNames.MARKS_MAP
-import cz.anty.purkynka.marks.data.Lesson
-import cz.anty.purkynka.marks.data.Mark
-import cz.anty.purkynka.marks.data.Semester
+import cz.anty.purkynka.PrefNames.GRADES_MAP
+import cz.anty.purkynka.grades.data.Subject
+import cz.anty.purkynka.grades.data.Grade
+import cz.anty.purkynka.grades.data.Semester
 
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
@@ -38,13 +38,13 @@ import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 /**
  * @author anty
  */
-class MarksData private constructor(context: Context) :
+class GradesData private constructor(context: Context) :
         PreferencesData<ContentProviderSharedPreferences>(context,
-                ContentProviderPreferencesProvider(context, MarksProvider.AUTHORITY)) {
+                ContentProviderPreferencesProvider(context, GradesProvider.AUTHORITY)) {
 
-    companion object : PreferencesCompanionObject<MarksData>(MarksData.LOG_TAG, ::MarksData, ::Getter) {
+    companion object : PreferencesCompanionObject<GradesData>(GradesData.LOG_TAG, ::GradesData, ::Getter) {
 
-        private val LOG_TAG = "MarksData"
+        private val LOG_TAG = "GradesData"
         internal val SAVE_VERSION = 0
 
         internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
@@ -59,23 +59,23 @@ class MarksData private constructor(context: Context) :
 
     private val gson: Gson = Gson()
 
-    var marks by GsonPreference<Map<Int, MutableList<Mark>>>(MARKS_MAP, gson,
-            object: TypeToken<Map<Int, MutableList<Mark>>>(){}.type, preferencesAccessor) {
+    var grades by GsonPreference<Map<Int, MutableList<Grade>>>(GRADES_MAP, gson,
+            object: TypeToken<Map<Int, MutableList<Grade>>>(){}.type, preferencesAccessor) {
         mapOf(Semester.FIRST.value to mutableListOf(),
             Semester.SECOND.value to mutableListOf())
     }
 
-    val lessons: Map<Int, MutableList<Lesson>>
+    val lessons: Map<Int, MutableList<Subject>>
         get() {
             synchronized(this) {
-                return marks.map {
+                return grades.map {
                     it.key to it.value.let {
-                        mutableMapOf<String, MutableList<Mark>>().apply {
+                        mutableMapOf<String, MutableList<Grade>>().apply {
                             it.forEach {
                                 getOrPut(it.shortLesson, ::mutableListOf).add(it)
                             }
                         }.map {
-                            Lesson(it.value.first().longLesson,
+                            Subject(it.value.first().longLesson,
                                     it.value.first().shortLesson,
                                     it.value.toList())
                         }.toMutableList()
@@ -84,14 +84,14 @@ class MarksData private constructor(context: Context) :
             }
         }
 
-    private class Getter : PreferencesGetterAbs<MarksData>() {
+    private class Getter : PreferencesGetterAbs<GradesData>() {
 
-        override fun get(): MarksData? {
+        override fun get(): GradesData? {
             return instance
         }
 
-        override fun getDataClass(): Class<MarksData> {
-            return MarksData::class.java
+        override fun getDataClass(): Class<GradesData> {
+            return GradesData::class.java
         }
     }
 }

@@ -23,7 +23,7 @@
         <item name="android:windowBackground">@drawable/launch_screen</item>
     </style>
 
-    <style name="AppTheme.Marks" parent="AppTheme.Marks.Base">
+    <style name="AppTheme.Grades" parent="AppTheme.Grades.Base">
 
     </style>
 
@@ -43,10 +43,10 @@
 
     </style>
 
-    <style name="AppTheme.Marks.Base" parent="AppTheme">
-        <item name="colorPrimary">@color/colorPrimaryMarks</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkMarks</item>
-        <item name="colorAccent">@color/colorAccentMarks</item>
+    <style name="AppTheme.Grades.Base" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryGrades</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGrades</item>
+        <item name="colorAccent">@color/colorAccentGrades</item>
     </style>
 
     <style name="AppTheme.Attendance.Base" parent="AppTheme">
@@ -74,7 +74,7 @@
     </style>
 
 
-    <style name="AppTheme.Dialog.Marks" parent="AppTheme.Dialog.Marks.Base">
+    <style name="AppTheme.Dialog.Grades" parent="AppTheme.Dialog.Grades.Base">
 
     </style>
 
@@ -94,10 +94,10 @@
 
     </style>
 
-    <style name="AppTheme.Dialog.Marks.Base" parent="AppTheme.Dialog">
-        <item name="colorPrimary">@color/colorPrimaryMarks</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkMarks</item>
-        <item name="colorAccent">@color/colorAccentMarks</item>
+    <style name="AppTheme.Dialog.Grades.Base" parent="AppTheme.Dialog">
+        <item name="colorPrimary">@color/colorPrimaryGrades</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGrades</item>
+        <item name="colorAccent">@color/colorAccentGrades</item>
     </style>
 
     <style name="AppTheme.Dialog.Attendance.Base" parent="AppTheme.Dialog">

@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.marks
+package cz.anty.purkynka.grades
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.PrefNames.FILE_NAME_MARKS_DATA
+import cz.anty.purkynka.PrefNames.FILE_NAME_GRADES_DATA
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPreferences
@@ -28,17 +28,17 @@ import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPrefe
 /**
  * @author anty
  */
-class MarksProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, MarksData.SAVE_VERSION) {
+class GradesProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, GradesData.SAVE_VERSION) {
 
     companion object {
-        const val AUTHORITY = "cz.anty.purkynka.marks.data"
+        const val AUTHORITY = "cz.anty.purkynka.grades.data"
     }
 
     override fun onPreparePreferencesProvider(): ISharedPreferencesProvider<SharedPreferences> {
-        return BasicSharedPreferencesProvider(context, FILE_NAME_MARKS_DATA, Context.MODE_PRIVATE)
+        return BasicSharedPreferencesProvider(context, FILE_NAME_GRADES_DATA, Context.MODE_PRIVATE)
     }
 
     override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
-        MarksData.onUpgrade(editor, from, to)
+        GradesData.onUpgrade(editor, from, to)
     }
 }
