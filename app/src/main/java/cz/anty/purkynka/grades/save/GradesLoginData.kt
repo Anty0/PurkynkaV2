@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades
+package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -39,7 +39,7 @@ class GradesLoginData private constructor(context: Context) :
                 SecureSharedPreferencesProvider(context, FILE_NAME_GRADES_LOGIN_DATA, clearOnFail = true),
                 SAVE_VERSION) {
 
-    companion object : PreferencesCompanionObject<GradesLoginData>(GradesLoginData.LOG_TAG, ::GradesLoginData, ::Getter) {
+    companion object : PreferencesCompanionObject<GradesLoginData>(GradesLoginData.LOG_TAG, ::GradesLoginData, GradesLoginData::Getter) {
 
         private val LOG_TAG = "GradesLoginData"
         private val SAVE_VERSION = 0

@@ -40,26 +40,37 @@ object GradesParser {
 
     val GRADE_DATE_FORMAT = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
-    fun toLessons(elementGrades: Elements): List<Subject> {
-        return parseGrades(elementGrades).toLessons()
+    fun toSubjects(elementGrades: Elements): List<Subject> {
+        return parseGrades(elementGrades).toSubjects()
     }
 
-    fun List<Grade>.toLessons(): List<Subject> {
-        val subjectsMap = HashMap<Array<String>, ArrayList<Grade>>()
-        for (grade in this) {
-            val key = arrayOf(grade.longLesson, grade.shortLesson)
-            if (!subjectsMap.containsKey(key)) {
-                subjectsMap.put(key, ArrayList())
+    fun List<Grade>.toSubjects(): List<Subject> {
+        return mutableMapOf<String, MutableList<Grade>>().apply {
+            this@toSubjects.forEach {
+                getOrPut(it.shortLesson, ::mutableListOf).add(it)
             }
-            subjectsMap[key]!!.add(grade)
+        }.map {
+            Subject(it.value.first().longLesson,
+                    it.value.first().shortLesson,
+                    it.value.toList())
+        }.sortedWith(Comparator { lhs, rhs -> lhs.shortName.compareTo(rhs.shortName) })
+
+
+        /*val subjectsMap = HashMap<String, MutableList<Grade>>()
+        for (grade in this) {
+            if (!subjectsMap.containsKey(grade.shortLesson)) {
+                subjectsMap.put(grade.shortLesson, mutableListOf())
+            }
+            subjectsMap[grade.shortLesson]!!.add(grade)
         }
 
-        val subjects = ArrayList<Subject>()
+        val subjects = mutableListOf<Subject>()
         subjectsMap.forEach {
-            subjects.add(Subject(it.key[0], it.key[1], it.value.toList()))
+            subjects.add(Subject(it.value.first().longLesson,
+                    it.value.first().shortLesson, it.value.toList()))
         }
         Collections.sort(subjects) { lhs, rhs -> lhs.shortName.compareTo(rhs.shortName) }
-        return subjects
+        return subjects*/
     }
 
     fun parseGrades(elementGrades: Elements): List<Grade> {

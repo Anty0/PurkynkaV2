@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades
+package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -26,6 +26,7 @@ import cz.anty.purkynka.PrefNames.GRADES_MAP
 import cz.anty.purkynka.grades.data.Subject
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
+import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
@@ -42,10 +43,10 @@ class GradesData private constructor(context: Context) :
         PreferencesData<ContentProviderSharedPreferences>(context,
                 ContentProviderPreferencesProvider(context, GradesProvider.AUTHORITY)) {
 
-    companion object : PreferencesCompanionObject<GradesData>(GradesData.LOG_TAG, ::GradesData, ::Getter) {
+    companion object : PreferencesCompanionObject<GradesData>(GradesData.LOG_TAG, ::GradesData, GradesData::Getter) {
 
-        private val LOG_TAG = "GradesData"
-        internal val SAVE_VERSION = 0
+        private const val LOG_TAG = "GradesData"
+        internal const val SAVE_VERSION = 0
 
         internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
             // This function will be executed by provider in provider process
@@ -65,21 +66,11 @@ class GradesData private constructor(context: Context) :
             Semester.SECOND.value to mutableListOf())
     }
 
-    val lessons: Map<Int, MutableList<Subject>>
+    val lessons: Map<Int, List<Subject>>
         get() {
             synchronized(this) {
                 return grades.map {
-                    it.key to it.value.let {
-                        mutableMapOf<String, MutableList<Grade>>().apply {
-                            it.forEach {
-                                getOrPut(it.shortLesson, ::mutableListOf).add(it)
-                            }
-                        }.map {
-                            Subject(it.value.first().longLesson,
-                                    it.value.first().shortLesson,
-                                    it.value.toList())
-                        }.toMutableList()
-                    }
+                    it.key to it.value.toSubjects()
                 }.toMap()
             }
         }

@@ -22,8 +22,8 @@ import android.app.Application
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
-import cz.anty.purkynka.grades.GradesData
-import cz.anty.purkynka.grades.GradesLoginData
+import cz.anty.purkynka.grades.save.GradesData
+import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.settings.SettingsData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
 import eu.codetopic.utils.timing.TimedComponentsManager

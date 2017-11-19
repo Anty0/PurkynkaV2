@@ -88,7 +88,7 @@
                 android:resource="@xml/authenticator" />
         </service>
         <service
-            android:name=".grades.GradesSyncService"
+            android:name=".grades.save.GradesSyncService"
             android:enabled="true"
             android:exported="true"
             android:process=":syncs" >
@@ -103,7 +103,7 @@
 
 
         <provider
-            android:name=".grades.GradesProvider"
+            android:name=".grades.save.GradesProvider"
             android:authorities="cz.anty.purkynka.grades.data"
             android:exported="false"
             android:process=":providers" />

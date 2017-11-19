@@ -42,6 +42,7 @@ import butterknife.Unbinder;
 import cz.anty.purkynka.R;
 import cz.anty.purkynka.accounts.ActiveAccountManager;
 import cz.anty.purkynka.grades.data.Grade;
+import cz.anty.purkynka.grades.save.GradesLoginData;
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider;
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider;
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment;

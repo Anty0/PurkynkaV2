@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades
+package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
