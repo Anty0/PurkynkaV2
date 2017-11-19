@@ -19,7 +19,6 @@
 package cz.anty.purkynka.grades.load
 
 import cz.anty.purkynka.grades.data.Grade
-import com.google.common.collect.ImmutableList
 import cz.anty.purkynka.grades.data.Subject
 import eu.codetopic.java.utils.log.Log
 import org.jsoup.nodes.Element
@@ -46,21 +45,21 @@ object GradesParser {
     }
 
     fun List<Grade>.toLessons(): List<Subject> {
-        val lessonsMap = HashMap<Array<String>, ArrayList<Grade>>()
+        val subjectsMap = HashMap<Array<String>, ArrayList<Grade>>()
         for (grade in this) {
             val key = arrayOf(grade.longLesson, grade.shortLesson)
-            if (!lessonsMap.containsKey(key)) {
-                lessonsMap.put(key, ArrayList())
+            if (!subjectsMap.containsKey(key)) {
+                subjectsMap.put(key, ArrayList())
             }
-            lessonsMap[key]!!.add(grade)
+            subjectsMap[key]!!.add(grade)
         }
 
-        val lessons = ArrayList<Subject>()
-        lessonsMap.forEach { entry ->
-            lessons.add(Subject(entry.key[0], entry.key[1], ImmutableList.copyOf(entry.value)))
+        val subjects = ArrayList<Subject>()
+        subjectsMap.forEach {
+            subjects.add(Subject(it.key[0], it.key[1], it.value.toList()))
         }
-        Collections.sort(lessons) { lhs, rhs -> lhs.shortName.compareTo(rhs.shortName) }
-        return lessons
+        Collections.sort(subjects) { lhs, rhs -> lhs.shortName.compareTo(rhs.shortName) }
+        return subjects
     }
 
     fun parseGrades(elementGrades: Elements): List<Grade> {

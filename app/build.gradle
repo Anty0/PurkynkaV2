@@ -104,6 +104,9 @@ dependencies {
     // kapt 'android.arch.lifecycle:compiler:1.0.0'
     // kapt 'android.arch.persistence.room:compiler:1.0.0'
 
+    implementation 'org.jsoup:jsoup:1.10.3'
+    implementation 'com.google.code.gson:gson:2.8.2'
+
     implementation 'com.scottyab:secure-preferences-lib:0.1.4'
     implementation('com.mikepenz:aboutlibraries:5.9.7@aar') {
         transitive = true
