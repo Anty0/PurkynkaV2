@@ -25,27 +25,62 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import cz.anty.purkynka.Constants
+import cz.anty.purkynka.grades.data.Semester
+import cz.anty.purkynka.grades.load.GradesFetcher
+import cz.anty.purkynka.grades.load.GradesParser
 import eu.codetopic.java.utils.log.Log
 
 /**
  * @author anty
  */
-class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, false, true) {
+class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, false, false) {
 
     companion object {
 
         private const val LOG_TAG = "GradesSyncAdapter"
 
         const val CONTENT_AUTHORITY = GradesProvider.AUTHORITY
-        const val SYNC_FREQUENCY: Long = Constants.SYNC_FREQUENCY_GRADES
+        const val SYNC_FREQUENCY = Constants.SYNC_FREQUENCY_GRADES
+
+        const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_SEMESTER"
     }
 
     override fun onPerformSync(account: Account, extras: Bundle, authority: String,
                                provider: ContentProviderClient, syncResult: SyncResult) {
-        Log.d(LOG_TAG, "onPerformSync")
+        Log.d(LOG_TAG, "onPerformSync(" +
+                "account=(type=${account.type}, name=${account.name}), " +
+                "authority=$authority)")
 
         if (authority != CONTENT_AUTHORITY) return
 
-        TODO("not implemented")
+        val semester = (extras.getSerializable(EXTRA_SEMESTER) ?: Semester.AUTO) as Semester
+
+        val data = GradesData.instance
+        val loginData = data.loginData
+
+        // TODO: Use account id, check is logged in (locally and on server)
+
+        data.lastSyncResult = -1
+
+        try {
+            val cookies = GradesFetcher.login(loginData.username, loginData.password)
+            val gradesHtml = GradesFetcher.getGradesElements(cookies, semester)
+
+            val grades = GradesParser.parseGrades(gradesHtml)
+
+            val gradesMap = data.grades
+            gradesMap[semester.value]?.apply {
+                // TODO: check for differences and show notification
+                clear()
+                addAll(grades)
+            }
+            data.grades = gradesMap
+
+            data.lastSyncResult = 1
+        } catch (e: Exception) {
+            Log.w(LOG_TAG, "Failed to refresh grades", e)
+
+            data.lastSyncResult = 1
+        }
     }
 }

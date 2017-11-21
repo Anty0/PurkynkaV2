@@ -26,8 +26,6 @@ import org.jsoup.select.Elements
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 /**
@@ -40,7 +38,7 @@ object GradesParser {
 
     val GRADE_DATE_FORMAT = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
-    fun toSubjects(elementGrades: Elements): List<Subject> {
+    fun parseSubjects(elementGrades: Elements): List<Subject> {
         return parseGrades(elementGrades).toSubjects()
     }
 
@@ -73,8 +71,20 @@ object GradesParser {
         return subjects*/
     }
 
-    fun parseGrades(elementGrades: Elements): List<Grade> {
-        val grades = ArrayList<Grade>()
+    fun parseGrades(gradesHtml: Elements): List<Grade> {
+        return gradesHtml.takeIf { it.isNotEmpty() }?.takeIf {
+            it[0].select("td").let {
+                it.isNotEmpty() && !it[0].text().contains("žádné", true)
+            }
+        }?.mapNotNull {
+            try {
+                parseGrade(it)
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "parseGrades", e); null
+            }
+        } ?: emptyList()
+
+        /*val grades = ArrayList<Grade>()
 
         if (!elementGrades.isEmpty()) {
             val firstGrade = elementGrades[0].select("td")
@@ -88,9 +98,8 @@ object GradesParser {
             } catch (e: IllegalArgumentException) {
                 Log.d(LOG_TAG, "parseGrades", e)
             }
-
         }
-        return grades
+        return grades*/
     }
 
     fun parseGrade(grade: Element): Grade {
@@ -102,7 +111,7 @@ object GradesParser {
                     gradeData[3].text().toDouble(), gradeData[4].text(),
                     gradeData[5].text().toInt(), gradeData[6].text(), gradeData[7].text())
         } catch (e: ParseException) {
-            throw IllegalArgumentException("Parameter error: invalid date " + gradeData[0].text(), e)
+            throw IllegalArgumentException("Parameter error: invalid date ${gradeData[0].text()}", e)
         }
     }
 

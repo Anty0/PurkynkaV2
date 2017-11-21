@@ -64,7 +64,7 @@ class GradesData private constructor(context: Context) :
         LoginDataExtension(SecureSharedPreferencesProvider<SharedPreferences>(accessProvider))
     }
 
-    var lastSyncResult: Int by IntPreference(SYNC_RESULT, accessProvider, -1)
+    var lastSyncResult: Int by IntPreference(SYNC_RESULT, accessProvider, -1) // TODO: use gson and enum
 
     private val gradesPreference = GsonPreference<GradesMap>(GRADES_MAP, gson,
             object : TypeToken<GradesMap>() {}.type, accessProvider) {

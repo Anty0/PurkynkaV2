@@ -55,10 +55,10 @@ public class GradesFetcher {
     //private static final String SHORT_BY_LESSONS = "predmety";
     //private static final String SHORT_BY_SCORE = "hodnoceni";
 
-    public static Map<String, String> login(String username, String password, boolean loadForced) throws IOException {
+    public static Map<String, String> login(String username, String password) throws IOException {
         return Jsoup
                 .connect(MAIN_URL + LOGIN_URL_ADD)
-                .userAgent(getUserAgent(loadForced))
+                .userAgent(getUserAgent())
                 .data(LOGIN_FIELD, username, PASS_FIELD, password, SUBMIT, SUBMIT_VALUE)
                 .followRedirects(false)
                 .timeout(Constants.CONNECTION_TIMEOUT_SAS)
@@ -67,9 +67,8 @@ public class GradesFetcher {
                 .execute().cookies();
     }
 
-    public static Elements getGradesElements(Map<String, String> loginCookies, Semester semester,
-                                             boolean loadForced) throws IOException {
-        Document gradesPage = getGradesPage(loginCookies, semester, loadForced);
+    public static Elements getGradesElements(Map<String, String> loginCookies, Semester semester) throws IOException {
+        Document gradesPage = getGradesPage(loginCookies, semester);
         if (!isLoggedIn(gradesPage)) {
             throw new LoginExpiredException();
         }
@@ -79,9 +78,8 @@ public class GradesFetcher {
                 .not("tr.zahlavi");
     }
 
-    public static boolean isLoggedIn(Map<String, String> loginCookies,
-                                           boolean loadForced) throws IOException {
-        return isLoggedIn(getGradesPage(loginCookies, Semester.AUTO, loadForced));
+    public static boolean isLoggedIn(Map<String, String> loginCookies) throws IOException {
+        return isLoggedIn(getGradesPage(loginCookies, Semester.AUTO));
     }
 
     private static boolean isLoggedIn(Document gradesPage) {
@@ -89,11 +87,10 @@ public class GradesFetcher {
                 .isEmpty() && !gradesPage.select("#isas-menu").isEmpty();
     }
 
-    private static Document getGradesPage(Map<String, String> loginCookies, Semester semester,
-                                          boolean loadForced) throws IOException {
+    private static Document getGradesPage(Map<String, String> loginCookies, Semester semester) throws IOException {
         return Jsoup
                 .connect(MAIN_URL + GRADES_URL_ADD)
-                .userAgent(getUserAgent(loadForced))
+                .userAgent(getUserAgent())
                 .data(SEMESTER, Integer.toString(semester.getValue()), SHORT_BY, SHORT_BY_DATE)
                 .followRedirects(false)
                 .timeout(Constants.CONNECTION_TIMEOUT_SAS)
@@ -102,9 +99,9 @@ public class GradesFetcher {
                 .cookies(loginCookies).get();
     }
 
-    private static String getUserAgent(boolean loadForced) {
-        return String.format(Locale.ENGLISH, "Purkynka/%1$s (Android %2$s; Linux; rv:%3$d;" +
-                        " loadForced:%4$b cz-cs) Gecko/20100101 Firefox/42.0",
-                BuildConfig.VERSION_NAME, Build.VERSION.RELEASE, BuildConfig.VERSION_CODE, loadForced);
+    private static String getUserAgent() {
+        return String.format(Locale.ENGLISH, "Purkynka/%1$s (Android %2$s;" +
+                        " Linux; rv:%3$d; cz-cs) Gecko/20100101 Firefox/42.0",
+                BuildConfig.VERSION_NAME, Build.VERSION.RELEASE, BuildConfig.VERSION_CODE);
     }
 }
