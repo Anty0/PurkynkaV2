@@ -23,13 +23,15 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import cz.anty.purkynka.PrefNames.GRADES_MAP
-import cz.anty.purkynka.grades.data.Subject
+import cz.anty.purkynka.PrefNames.SYNC_RESULT
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
+import eu.codetopic.utils.data.preferences.preference.GsonPreference
+import eu.codetopic.utils.data.preferences.preference.IntPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.SecureSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.*
@@ -62,8 +64,10 @@ class GradesData private constructor(context: Context) :
         LoginDataExtension(SecureSharedPreferencesProvider<SharedPreferences>(accessProvider))
     }
 
-    private val gradesPreference = GsonPreference<Map<Int, MutableList<Grade>>>(GRADES_MAP, gson,
-            object: TypeToken<Map<Int, MutableList<Grade>>>(){}.type, accessProvider) {
+    var lastSyncResult: Int by IntPreference(SYNC_RESULT, accessProvider, -1)
+
+    private val gradesPreference = GsonPreference<GradesMap>(GRADES_MAP, gson,
+            object : TypeToken<GradesMap>() {}.type, accessProvider) {
         mapOf(Semester.FIRST.value to mutableListOf(),
                 Semester.SECOND.value to mutableListOf())
     }
@@ -78,12 +82,9 @@ class GradesData private constructor(context: Context) :
         gradesPreference.setValue(this, id, value)
     }
 
-    val lessons: Map<Int, List<Subject>>
-        get() {
-            return getLessons(null)
-        }
+    val subjects: SubjectsMap get() = getSubjects(null)
 
-    fun getLessons(id: String?): Map<Int, List<Subject>> {
+    fun getSubjects(id: String?): SubjectsMap {
         return synchronized(this) {
             getGrades(id).map {
                 it.key to it.value.toSubjects()
@@ -93,12 +94,8 @@ class GradesData private constructor(context: Context) :
 
     private class Getter : PreferencesGetterAbs<GradesData>() {
 
-        override fun get(): GradesData? {
-            return instance
-        }
+        override fun get(): GradesData? = instance
 
-        override fun getDataClass(): Class<GradesData> {
-            return GradesData::class.java
-        }
+        override fun getDataClass(): Class<GradesData> = GradesData::class.java
     }
 }

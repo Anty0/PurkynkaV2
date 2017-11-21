@@ -16,24 +16,14 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka;
+package cz.anty.purkynka.grades.save
+
+import cz.anty.purkynka.grades.data.Grade
+import cz.anty.purkynka.grades.data.Subject
 
 /**
  * @author anty
  */
-public final class PrefNames {
 
-    private PrefNames() {}
-
-    // MainData
-    public static final String FILE_NAME_MAIN_DATA = "MainData";
-    // ActiveAccountManager
-    public static final String FILE_NAME_ACTIVE_ACCOUNT_DATA = "ActiveAccountData";
-    public static final String ACTIVE_ACCOUNT_NAME = "ACTIVE_ACCOUNT_NAME";
-    // SettingsData
-    public static final String FILE_NAME_SETTINGS_DATA = "SettingsData";
-    // GradesData
-    public static final String FILE_NAME_GRADES_DATA = "GradesData";
-    public static final String SYNC_RESULT = "SYNC_RESULT";
-    public static final String GRADES_MAP = "GRADES";
-}
+typealias GradesMap = Map<Int, MutableList<Grade>>
+typealias SubjectsMap = Map<Int, List<Subject>>
