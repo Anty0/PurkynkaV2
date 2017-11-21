@@ -1,19 +1,17 @@
 /*
- * ApplicationPurkynka
- * Copyright (C)  2017  anty
+ * Copyright 2017 Jiří Kuchyňka (Anty)
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
 
 package cz.anty.purkynka.grades.save
@@ -29,12 +27,10 @@ import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 
 import eu.codetopic.utils.data.preferences.PreferencesData
+import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
-import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
-import eu.codetopic.utils.data.preferences.support.GsonPreference
-import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
-
-import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
+import eu.codetopic.utils.data.preferences.provider.SecureSharedPreferencesProvider
+import eu.codetopic.utils.data.preferences.support.*
 
 /**
  * @author anty
@@ -60,20 +56,38 @@ class GradesData private constructor(context: Context) :
 
     private val gson: Gson = Gson()
 
-    var grades by GsonPreference<Map<Int, MutableList<Grade>>>(GRADES_MAP, gson,
-            object: TypeToken<Map<Int, MutableList<Grade>>>(){}.type, preferencesAccessor) {
+    val loginData: LoginDataExtension<SecurePreferences<SharedPreferences>> by lazy {
+        LoginDataExtension(SecureSharedPreferencesProvider<SharedPreferences>(accessProvider))
+    }
+
+    private val gradesPreference = GsonPreference<Map<Int, MutableList<Grade>>>(GRADES_MAP, gson,
+            object: TypeToken<Map<Int, MutableList<Grade>>>(){}.type, accessProvider) {
         mapOf(Semester.FIRST.value to mutableListOf(),
-            Semester.SECOND.value to mutableListOf())
+                Semester.SECOND.value to mutableListOf())
+    }
+
+    var grades by gradesPreference
+
+    fun getGrades(id: String?): Map<Int, MutableList<Grade>> {
+        return gradesPreference.getValue(this, id)
+    }
+
+    fun setGrades(id: String?, value: Map<Int, MutableList<Grade>>) {
+        gradesPreference.setValue(this, id, value)
     }
 
     val lessons: Map<Int, List<Subject>>
         get() {
-            synchronized(this) {
-                return grades.map {
-                    it.key to it.value.toSubjects()
-                }.toMap()
-            }
+            return getLessons(null)
         }
+
+    fun getLessons(id: String?): Map<Int, List<Subject>> {
+        return synchronized(this) {
+            getGrades(id).map {
+                it.key to it.value.toSubjects()
+            }.toMap()
+        }
+    }
 
     private class Getter : PreferencesGetterAbs<GradesData>() {
 

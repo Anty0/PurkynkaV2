@@ -1,19 +1,17 @@
 /*
- * ApplicationPurkynka
- * Copyright (C)  2017  anty
+ * Copyright 2017 Jiří Kuchyňka (Anty)
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
 
 package cz.anty.purkynka
@@ -23,7 +21,6 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.grades.save.GradesData
-import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.settings.SettingsData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
 import eu.codetopic.utils.timing.TimedComponentsManager
@@ -101,7 +98,6 @@ class AppInit : Application() {
                     ActiveAccountManager.initialize(app)
                     SettingsData.initialize(app)
                     GradesData.initialize(app)
-                    GradesLoginData.initialize(app)
 
                     // Initialize data provider of dashboard framework
                     DashboardData.initialize(app)
