@@ -23,6 +23,7 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.grades.save.GradesData
+import cz.anty.purkynka.grades.save.GradesSyncAdapter
 import cz.anty.purkynka.settings.SettingsData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
 import eu.codetopic.utils.timing.TimedComponentsManager
@@ -49,13 +50,24 @@ class AppInit : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Alias of this
-        val app = this
+        // Initialize stuff, that should be initialized before anything else
+        initAllProcesses()
 
+        // Initialize utils base (my own android application framework; brain of this application)
+        UtilsBase.initialize(this,
+                ProcessProfile(packageName, PRIMARY_PROCESS, Runnable { initPrimaryProcess() }), // Primary process // TODO: use "callable references to class members with empty l h s" in kotlin 1.2
+                ProcessProfile("$packageName:providers", ANOTHER_PROCESS, Runnable { initAnotherProcess() }), // Data management process (multi-process data access support)  // TODO: use "callable references to class members with empty l h s" in kotlin 1.2
+                ProcessProfile("$packageName:syncs", ANOTHER_PROCESS, Runnable { initAnotherProcess() }) // Data synchronization process  // TODO: use "callable references to class members with empty l h s" in kotlin 1.2
+                // ProcessProfile(app.packageName + ":acra", DISABLE_UTILS), // ACRA reporting process
+        )
+    }
+
+    private fun initAllProcesses() {
         // Setup uncaught exception handler
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, ex ->
-            Log.d("UExHandler", "Oh no, something went wrong (uncaught exception). Ok, let's enable Feedback module...")
+            Log.d("UExHandler", "Oh no, something went wrong (uncaught exception). " +
+                    "Ok, let's enable Feedback module...")
             // TODO: 6/16/17 enable feedback module
             defaultHandler.uncaughtException(thread, ex)
         }
@@ -63,56 +75,62 @@ class AppInit : Application() {
         // Setup error logged listener
         Logger.getErrorLogsHandler().addOnLoggedListener(object : LogsHandler.OnLoggedListener {
             override fun onLogged(logLine: LogLine) {
-                Log.d("UExHandler", "Oh no, something went wrong (error logged). Ok, let's enable Feedback module...")
+                Log.d("UExHandler", "Oh no, something went wrong (error logged). " +
+                        "Ok, let's enable Feedback module...")
                 // TODO: 6/16/17 enable feedback module
             }
 
-            override fun filterPriorities(): Array<Priority> {
-                return arrayOf(Priority.ERROR)
-            }
+            override fun filterPriorities() = arrayOf(Priority.ERROR)
         })
 
         // Set color scheme of loading in RecyclerView
         RecyclerInflater.setDefaultSwipeSchemeColors(
-                ContextCompat.getColor(app, R.color.colorPrimary),
-                ContextCompat.getColor(app, R.color.colorPrimaryGrades),
-                ContextCompat.getColor(app, R.color.colorPrimaryAttendance),
-                ContextCompat.getColor(app, R.color.colorPrimaryLunches),
-                ContextCompat.getColor(app, R.color.colorPrimaryTimetables),
-                ContextCompat.getColor(app, R.color.colorPrimaryWifiLogin)
+                ContextCompat.getColor(this, R.color.colorPrimary),
+                ContextCompat.getColor(this, R.color.colorPrimaryGrades),
+                ContextCompat.getColor(this, R.color.colorPrimaryAttendance),
+                ContextCompat.getColor(this, R.color.colorPrimaryLunches),
+                ContextCompat.getColor(this, R.color.colorPrimaryTimetables),
+                ContextCompat.getColor(this, R.color.colorPrimaryWifiLogin)
         )
+    }
 
-        // Initialize utils base (my own android application framework; brain of this application)
-        UtilsBase.initialize(app,
-                // ProcessProfile(app.packageName + ":acra", DISABLE_UTILS), // ACRA reporting process
-                ProcessProfile(app.packageName + ":providers", ANOTHER_PROCESS), // Data management process (multi-process data access support) // TODO: implement
-                ProcessProfile(app.packageName + ":syncs", ANOTHER_PROCESS), // Data synchronization process // TODO: implement
-                ProcessProfile(app.packageName, PRIMARY_PROCESS, Runnable { // Main process
+    private fun initPrimaryProcess() {
 
-                    // Create default user account (if there is none)
-                    AccountsHelper.initDefaultAccount(app)
+        // Create default user account (if there is none)
+        AccountsHelper.initDefaultAccount(this)
 
-                    // Prepare broadcasts connections (very helpful tool)
-                    loadBroadcastConnections()
+        // Prepare broadcasts connections (very helpful tool)
+        loadBroadcastConnections()
 
-                    // Initialize data app specific providers
-                    MainData.initialize(app)
-                    ActiveAccountManager.initialize(app)
-                    SettingsData.initialize(app)
-                    GradesData.initialize(app)
+        // Initialize sync adapters
+        GradesSyncAdapter.init(this)
 
-                    // Initialize data provider of dashboard framework
-                    DashboardData.initialize(app)
+        // Initialize data app specific providers
+        MainData.initialize(this)
+        ActiveAccountManager.initialize(this)
+        SettingsData.initialize(this)
+        GradesData.initialize(this)
 
-                    // Initialize singletons
-                    SingletonJobManager.initialize(app)
-                    //SingletonDatabase.initialize(new AppDatabase(app))
+        // Initialize data provider of dashboard framework
+        DashboardData.initialize(this)
 
-                    // Initialize timed components (framework for repeating jobs)
-                    TimedComponentsManager.initialize(app,
-                            SettingsData.getter.get().requiredNetworkType/*,
-                            GradesSyncService::class.java*/)
-                }))
+        // Initialize singletons
+        SingletonJobManager.initialize(this)
+        //SingletonDatabase.initialize(new AppDatabase(app))
+
+        // Initialize timed components (framework for repeating jobs)
+        /*TimedComponentsManager.initialize(app,
+                SettingsData.getter.get().requiredNetworkType,
+                        GradesSyncService::class.java)*/
+
+    }
+
+    private fun initAnotherProcess() {
+        // Prepare broadcasts connections (very helpful tool)
+        loadBroadcastConnections()
+
+        // Initialize sync adapters
+        GradesSyncAdapter.init(this)
     }
 
     private fun loadBroadcastConnections() {

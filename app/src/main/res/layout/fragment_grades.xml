@@ -43,7 +43,7 @@
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@string/content_description_logo" />
 
-            <!-- Email Label -->
+            <!-- Username Label -->
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -50,6 +50,8 @@
     <string name="but_login">Login</string>
     <string name="but_save">Save</string>
 
+    <string name="text_view_grade">Grade</string>
+
     <string name="toast_browser_failed">Failed to open URL in browser</string>
 
     <string name="snackbar_invalid_account_name">Invalid account name</string>

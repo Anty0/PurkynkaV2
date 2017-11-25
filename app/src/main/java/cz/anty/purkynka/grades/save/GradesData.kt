@@ -31,7 +31,6 @@ import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
 import eu.codetopic.utils.data.preferences.preference.GsonPreference
-import eu.codetopic.utils.data.preferences.preference.IntPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.SecureSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.*
@@ -64,7 +63,12 @@ class GradesData private constructor(context: Context) :
         LoginDataExtension(SecureSharedPreferencesProvider<SharedPreferences>(accessProvider))
     }
 
-    var lastSyncResult: Int by IntPreference(SYNC_RESULT, accessProvider, -1) // TODO: use gson and enum
+    private val lastSyncResultPreference = GsonPreference(SYNC_RESULT, gson,
+            object: TypeToken<SyncResult>() {}.type, accessProvider, SyncResult.UNKNOWN)
+
+    fun getLastSyncResult(id: String): SyncResult = lastSyncResultPreference.getValue(this, id)
+
+    fun setLastSyncResult(id: String, value: SyncResult) = lastSyncResultPreference.setValue(this, id, value)
 
     private val gradesPreference = GsonPreference<GradesMap>(GRADES_MAP, gson,
             object : TypeToken<GradesMap>() {}.type, accessProvider) {
@@ -72,24 +76,20 @@ class GradesData private constructor(context: Context) :
                 Semester.SECOND.value to mutableListOf())
     }
 
-    var grades by gradesPreference
+    fun getGrades(id: String): Map<Int, MutableList<Grade>> = gradesPreference.getValue(this, id)
 
-    fun getGrades(id: String?): Map<Int, MutableList<Grade>> {
-        return gradesPreference.getValue(this, id)
-    }
+    fun setGrades(id: String, value: Map<Int, MutableList<Grade>>) = gradesPreference.setValue(this, id, value)
 
-    fun setGrades(id: String?, value: Map<Int, MutableList<Grade>>) {
-        gradesPreference.setValue(this, id, value)
-    }
-
-    val subjects: SubjectsMap get() = getSubjects(null)
-
-    fun getSubjects(id: String?): SubjectsMap {
+    fun getSubjects(id: String): SubjectsMap {
         return synchronized(this) {
             getGrades(id).map {
                 it.key to it.value.toSubjects()
             }.toMap()
         }
+    }
+
+    enum class SyncResult {
+        UNKNOWN, SYNCING, SUCCESS, FAIL_LOGIN, FAIL_CONNECT, FAIL_UNKNOWN
     }
 
     private class Getter : PreferencesGetterAbs<GradesData>() {

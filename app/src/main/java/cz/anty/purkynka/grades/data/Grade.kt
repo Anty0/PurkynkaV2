@@ -19,8 +19,12 @@
 package cz.anty.purkynka.grades.data
 
 import android.content.Context
+import android.widget.TextView
+import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.load.GradesParser
+import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
 import java.util.*
 
 /**
@@ -31,11 +35,15 @@ data class Grade(val date: Date, val shortLesson: String, val longLesson: String
 
     val dateStr: String get() = GradesParser.GRADE_DATE_FORMAT.format(date)
 
-    override fun onBindViewHolder(holder: CustomItem.ViewHolder?, itemPosition: Int) {
-        TODO("not implemented")
+    override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
+        val gradeView: TextView = holder.itemView.findViewById(R.id.text_view_grade)
+        val weightView: TextView = holder.itemView.findViewById(R.id.text_view_weight)
+
+        gradeView.text = valueToShow
+        weightView.text = weight.toString()
     }
 
-    override fun getItemLayoutResId(context: Context?): Int {
-        TODO("not implemented")
-    }
+    override fun getItemLayoutResId(context: Context) = R.layout.item_grade
+
+    override fun getWrappers(context: Context?): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
 }

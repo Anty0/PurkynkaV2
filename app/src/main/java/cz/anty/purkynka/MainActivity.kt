@@ -30,7 +30,6 @@ import android.support.design.widget.NavigationView
 import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import android.support.design.widget.TabLayout
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
@@ -44,7 +43,9 @@ import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.settings.SettingsActivity
+import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidUtils
+import eu.codetopic.utils.LocalBroadcast
 
 
 class MainActivity : NavigationActivity() {
@@ -55,20 +56,19 @@ class MainActivity : NavigationActivity() {
         private const val REQUEST_CODE_EDIT_ACCOUNT: Int = 1
     }
 
-    private val mAccountChangedReceiver: AccountChangeReceiver = AccountChangeReceiver()
-    private val mActiveAccountManager: ActiveAccountManager = ActiveAccountManager.getter.get()
+    private val accountChangedReceiver: AccountChangeReceiver = AccountChangeReceiver()
+    private val activeAccountManager: ActiveAccountManager = ActiveAccountManager.instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme_NoActionBar)
+        setTheme(R.style.AppTheme_NoActionBar) // TODO: Animated app logo
         super.onCreate(savedInstanceState)
 
         with (AccountManager.get(this)) {
-            if (Build.VERSION.SDK_INT >= 26) addOnAccountsUpdatedListener(mAccountChangedReceiver,
+            if (Build.VERSION.SDK_INT >= 26) addOnAccountsUpdatedListener(accountChangedReceiver,
                     null, true, arrayOf(AccountsHelper.ACCOUNT_TYPE))
-            else addOnAccountsUpdatedListener(mAccountChangedReceiver, null, true)
+            else addOnAccountsUpdatedListener(accountChangedReceiver, null, true)
         }
-        LocalBroadcastManager.getInstance(this).registerReceiver(mAccountChangedReceiver,
-                IntentFilter(mActiveAccountManager.broadcastActionChanged))
+        LocalBroadcast.registerReceiver(accountChangedReceiver, intentFilter(ActiveAccountManager.getter))
 
         isEnableSwitchingAccounts = true
         isActiveAccountEditButtonEnabled = true
@@ -83,8 +83,8 @@ class MainActivity : NavigationActivity() {
     }
 
     override fun onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mAccountChangedReceiver)
-        AccountManager.get(this).removeOnAccountsUpdatedListener(mAccountChangedReceiver)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(accountChangedReceiver)
+        AccountManager.get(this).removeOnAccountsUpdatedListener(accountChangedReceiver)
         super.onDestroy()
     }
 
@@ -96,7 +96,7 @@ class MainActivity : NavigationActivity() {
         super.onCreateAccountNavigationMenu(menu)
         menuInflater.inflate(R.menu.activity_main_accounts, menu)
         val accounts = AccountsHelper.getAllAccounts(this)
-        val activeAccount = mActiveAccountManager.activeAccount
+        val activeAccount = activeAccountManager.activeAccount
         accounts.forEach {
             if (it == activeAccount) return@forEach
             menu.add(R.id.menu_group_main, 0, Menu.NONE, it.name)
@@ -117,19 +117,19 @@ class MainActivity : NavigationActivity() {
                     null, null, this, null, null)
             return true
         }
-        mActiveAccountManager.setActiveAccount(item.title.toString())
+        activeAccountManager.setActiveAccount(item.title.toString())
         return true
     }
 
     override fun onUpdateActiveAccountName(): CharSequence {
-        return mActiveAccountManager.activeAccount?.name ?: ""
+        return activeAccountManager.activeAccount?.name ?: ""
     }
 
     override fun onEditAccountButtonClick(v: View?): Boolean {
         startActivityForResult(
                 Intent(this, AccountEditActivity::class.java)
                         .putExtra(AccountEditActivity.KEY_ACCOUNT,
-                                mActiveAccountManager.activeAccount ?: return false),
+                                activeAccountManager.activeAccount ?: return false),
                 REQUEST_CODE_EDIT_ACCOUNT)
         return true
     }
@@ -137,7 +137,7 @@ class MainActivity : NavigationActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_EDIT_ACCOUNT) {
             if (resultCode != Activity.RESULT_OK || data == null) return
-            mActiveAccountManager.setActiveAccount(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
+            activeAccountManager.setActiveAccount(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
