@@ -42,8 +42,8 @@ class ActiveAccountManager private constructor(context: Context) :
 
     companion object : PreferencesCompanionObject<ActiveAccountManager>(ActiveAccountManager.LOG_TAG, ::ActiveAccountManager, ::Getter) {
 
-        private val LOG_TAG = "ActiveAccountManager"
-        private val SAVE_VERSION = 0
+        private const val LOG_TAG = "ActiveAccountManager"
+        private const val SAVE_VERSION = 0
     }
 
     private val accountManager: AccountManager = AccountManager.get(context)

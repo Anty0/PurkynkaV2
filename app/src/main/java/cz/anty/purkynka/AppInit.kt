@@ -23,6 +23,7 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.grades.save.GradesData
+import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesSyncAdapter
 import cz.anty.purkynka.settings.SettingsData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
@@ -55,9 +56,9 @@ class AppInit : Application() {
 
         // Initialize utils base (my own android application framework; brain of this application)
         UtilsBase.initialize(this,
-                ProcessProfile(packageName, PRIMARY_PROCESS, Runnable { initPrimaryProcess() }), // Primary process // TODO: use "callable references to class members with empty l h s" in kotlin 1.2
-                ProcessProfile("$packageName:providers", ANOTHER_PROCESS, Runnable { initAnotherProcess() }), // Data management process (multi-process data access support)  // TODO: use "callable references to class members with empty l h s" in kotlin 1.2
-                ProcessProfile("$packageName:syncs", ANOTHER_PROCESS, Runnable { initAnotherProcess() }) // Data synchronization process  // TODO: use "callable references to class members with empty l h s" in kotlin 1.2
+                ProcessProfile(packageName, PRIMARY_PROCESS, Runnable(::initPrimaryProcess)), // Primary process
+                ProcessProfile("$packageName:providers", ANOTHER_PROCESS, Runnable(::initProvidersProcess)), // Data management process (multi-process data access support)
+                ProcessProfile("$packageName:syncs", ANOTHER_PROCESS, Runnable(::initSyncsProcess)) // Data synchronization process
                 // ProcessProfile(app.packageName + ":acra", DISABLE_UTILS), // ACRA reporting process
         )
     }
@@ -102,17 +103,18 @@ class AppInit : Application() {
         // Prepare broadcasts connections (very helpful tool)
         loadBroadcastConnections()
 
-        // Initialize sync adapters
-        GradesSyncAdapter.init(this)
-
-        // Initialize data app specific providers
+        // Initialize data providers
         MainData.initialize(this)
         ActiveAccountManager.initialize(this)
         SettingsData.initialize(this)
         GradesData.initialize(this)
+        GradesLoginData.initialize(this)
 
         // Initialize data provider of dashboard framework
         DashboardData.initialize(this)
+
+        // Initialize sync adapters
+        GradesSyncAdapter.init(this)
 
         // Initialize singletons
         SingletonJobManager.initialize(this)
@@ -125,12 +127,18 @@ class AppInit : Application() {
 
     }
 
-    private fun initAnotherProcess() {
+    private fun initProvidersProcess() {
+        // Prepare broadcasts connections (very helpful tool)
+        loadBroadcastConnections()
+    }
+
+    private fun initSyncsProcess() {
         // Prepare broadcasts connections (very helpful tool)
         loadBroadcastConnections()
 
-        // Initialize sync adapters
-        GradesSyncAdapter.init(this)
+        // Initialize data providers
+        GradesData.initialize(this)
+        GradesLoginData.initialize(this)
     }
 
     private fun loadBroadcastConnections() {

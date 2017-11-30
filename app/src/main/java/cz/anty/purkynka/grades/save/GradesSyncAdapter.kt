@@ -28,11 +28,13 @@ import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesFetcher
 import cz.anty.purkynka.grades.load.GradesParser
+import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.BundleBuilder
 import eu.codetopic.utils.LocalBroadcast
+import eu.codetopic.utils.data.preferences.PreferencesData
 import java.io.IOException
 
 /**
@@ -49,8 +51,10 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
 
         const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_SEMESTER"
 
-        private val loginDataChangedReceiver = broadcast { context, _ ->
-            val loginData = GradesData.instance.loginData
+        private val loginDataChangedReceiver = broadcast { context, intent ->
+            Log.d(LOG_TAG, "loginDataChanged(intent=$intent)")
+
+            val loginData = GradesLoginData.loginData
             val accountManager = AccountManager.get(context)
 
             AccountsHelper.getAllAccounts(accountManager).forEach {
@@ -59,23 +63,29 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
                     val syncable = ContentResolver.getIsSyncable(it, CONTENT_AUTHORITY) > 0
                     if (loggedIn == syncable) return@with
 
+                    Log.d(LOG_TAG, "loginDataChanged() -> " +
+                            "differenceFound(loggedIn=$loggedIn, syncable=$syncable, account=$it)")
+
                     ContentResolver.setIsSyncable(it, CONTENT_AUTHORITY, if (loggedIn) 1 else 0)
-                    ContentResolver.setSyncAutomatically(it, CONTENT_AUTHORITY, true)
-                    ContentResolver.addPeriodicSync(it, CONTENT_AUTHORITY, Bundle(), SYNC_FREQUENCY)
+                    ContentResolver.setSyncAutomatically(it, CONTENT_AUTHORITY, loggedIn)
+                    if (loggedIn) ContentResolver.addPeriodicSync(it, CONTENT_AUTHORITY, Bundle(), SYNC_FREQUENCY)
+                    else ContentResolver.removePeriodicSync(it, CONTENT_AUTHORITY, Bundle())
+                    requestSync(it)
                 }
             }
         }
 
         fun init(context: Context) {
-            LocalBroadcast.registerReceiver(loginDataChangedReceiver, intentFilter(GradesData.getter))
+            LocalBroadcast.registerReceiver(loginDataChangedReceiver, intentFilter(GradesLoginData.getter))
             loginDataChangedReceiver.onReceive(context, null)
         }
 
         fun requestSync(account: Account, semester: Semester = Semester.AUTO) {
+            Log.d(LOG_TAG, "requestSync(account=$account, semester=$semester)")
             ContentResolver.requestSync(account, CONTENT_AUTHORITY, BundleBuilder()
                     .putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
                     .putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
-                    .putSerializable(EXTRA_SEMESTER, semester)
+                    .putString(EXTRA_SEMESTER, semester.toString())
                     .build())
         }
     }
@@ -88,14 +98,21 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
 
         if (authority != CONTENT_AUTHORITY) return
 
-        val semester = (extras.getSerializable(EXTRA_SEMESTER) ?: Semester.AUTO) as Semester
+        val semester = if (extras.containsKey(EXTRA_SEMESTER)) {
+            try {
+                Semester.valueOf(extras.getString(EXTRA_SEMESTER))
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, e)
+                Semester.AUTO
+            }
+        } else Semester.AUTO
 
         val data = GradesData.instance
-        val loginData = data.loginData
+        val loginData = GradesLoginData.loginData
 
         val accountId = AccountsHelper.getAccountId(context, account)
 
-        data.setLastSyncResult(accountId, GradesData.SyncResult.SYNCING)
+        data.setLastSyncResult(accountId, SYNCING)
 
         try {
             if (!loginData.isLoggedIn(accountId))
@@ -114,20 +131,20 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
 
             val gradesMap = data.getGrades(accountId)
             gradesMap[semester.value]?.apply {
-                // TODO: check for differences and show notification
+                // TODO: check for differences and show notification (use ids of grades)
                 clear()
                 addAll(grades)
             }
             data.setGrades(accountId, gradesMap)
 
-            data.setLastSyncResult(accountId, GradesData.SyncResult.SUCCESS)
+            data.setLastSyncResult(accountId, SUCCESS)
         } catch (e: Exception) {
             Log.w(LOG_TAG, "Failed to refresh grades", e)
 
             data.setLastSyncResult(accountId, when (e) {
-                is WrongLoginDataException -> GradesData.SyncResult.FAIL_LOGIN
-                is IOException -> GradesData.SyncResult.FAIL_CONNECT
-                else -> GradesData.SyncResult.FAIL_UNKNOWN
+                is WrongLoginDataException -> FAIL_LOGIN
+                is IOException -> FAIL_CONNECT
+                else -> FAIL_UNKNOWN
             })
         }
     }

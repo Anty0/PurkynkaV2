@@ -25,15 +25,19 @@ public final class PrefNames {
 
     private PrefNames() {}
 
-    // MainData
+    // Other
+    /// MainData
     public static final String FILE_NAME_MAIN_DATA = "MainData";
-    // ActiveAccountManager
+    /// ActiveAccountManager
     public static final String FILE_NAME_ACTIVE_ACCOUNT_DATA = "ActiveAccountData";
     public static final String ACTIVE_ACCOUNT_NAME = "ACTIVE_ACCOUNT_NAME";
-    // SettingsData
+    /// SettingsData
     public static final String FILE_NAME_SETTINGS_DATA = "SettingsData";
-    // GradesData
+    // Grades
+    /// GradesData
     public static final String FILE_NAME_GRADES_DATA = "GradesData";
     public static final String SYNC_RESULT = "SYNC_RESULT";
     public static final String GRADES_MAP = "GRADES";
+    /// GradesLoginData
+    public static final String FILE_NAME_GRADES_LOGIN_DATA = "GradesLoginData";
 }

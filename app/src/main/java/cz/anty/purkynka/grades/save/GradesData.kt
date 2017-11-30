@@ -20,7 +20,9 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.github.salomonbrys.kotson.typeToken
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import cz.anty.purkynka.PrefNames.GRADES_MAP
 import cz.anty.purkynka.PrefNames.SYNC_RESULT
@@ -59,26 +61,22 @@ class GradesData private constructor(context: Context) :
 
     private val gson: Gson = Gson()
 
-    val loginData: LoginDataExtension<SecurePreferences<SharedPreferences>> by lazy {
-        LoginDataExtension(SecureSharedPreferencesProvider<SharedPreferences>(accessProvider))
-    }
-
     private val lastSyncResultPreference = GsonPreference(SYNC_RESULT, gson,
-            object: TypeToken<SyncResult>() {}.type, accessProvider, SyncResult.UNKNOWN)
+            typeToken<SyncResult>(), accessProvider, SyncResult.UNKNOWN)
 
     fun getLastSyncResult(id: String): SyncResult = lastSyncResultPreference.getValue(this, id)
 
     fun setLastSyncResult(id: String, value: SyncResult) = lastSyncResultPreference.setValue(this, id, value)
 
     private val gradesPreference = GsonPreference<GradesMap>(GRADES_MAP, gson,
-            object : TypeToken<GradesMap>() {}.type, accessProvider) {
+            typeToken<GradesMap>(), accessProvider) {
         mapOf(Semester.FIRST.value to mutableListOf(),
                 Semester.SECOND.value to mutableListOf())
     }
 
-    fun getGrades(id: String): Map<Int, MutableList<Grade>> = gradesPreference.getValue(this, id)
+    fun getGrades(id: String): GradesMap = gradesPreference.getValue(this, id)
 
-    fun setGrades(id: String, value: Map<Int, MutableList<Grade>>) = gradesPreference.setValue(this, id, value)
+    fun setGrades(id: String, value: GradesMap) = gradesPreference.setValue(this, id, value)
 
     fun getSubjects(id: String): SubjectsMap {
         return synchronized(this) {

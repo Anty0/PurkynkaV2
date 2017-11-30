@@ -110,6 +110,11 @@
             android:authorities="cz.anty.purkynka.grades.data"
             android:exported="false"
             android:process=":providers" />
+        <provider
+            android:name=".grades.save.GradesLoginProvider"
+            android:authorities="cz.anty.purkynka.grades.login"
+            android:exported="false"
+            android:process=":providers" />
     </application>
 
 </manifest>

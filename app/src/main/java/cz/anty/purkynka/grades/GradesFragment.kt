@@ -21,6 +21,7 @@ package cz.anty.purkynka.grades
 import android.accounts.Account
 import android.content.ContentResolver
 import android.os.Bundle
+import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -44,6 +45,7 @@ import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.save.GradesData
+import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesSyncAdapter
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
@@ -83,17 +85,24 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private var adapter: CustomItemAdapter<Grade>? = null
 
     private val gradesData = GradesData.instance
-    private val loginData = gradesData.loginData
+    private val loginData = GradesLoginData.loginData
     private val activeAccountManager = ActiveAccountManager.instance
 
     private var activeAccount: Account? = null
     private var activeAccountId: String? = null
 
-    private val dataChangedReceiver = broadcast { _, _ -> updateViews() }
+    private val accountChangedReceiver = broadcast { _, _ -> updateViews() } // TODO: update only content affected by this change
+
+    private val loginDataChangedReceiver = broadcast { _, _ -> updateViews() } // TODO: update only content affected by this change
+
+    private val dataChangedReceiver = broadcast { _, _ -> updateViews() } // TODO: update only content affected by this change
 
     init {
         setHasOptionsMenu(true)
     }
+
+    private fun showNoAccountSnack(@StringRes messageId: Int) =
+            showNoAccountSnack(getText(messageId))
 
     private fun showNoAccountSnack(message: CharSequence) {
         Snackbar.make(
@@ -105,10 +114,9 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adapter = CustomItemAdapter(context)
-        LocalBroadcast.registerReceiver(
-                dataChangedReceiver,
-                intentFilter(GradesData.getter, ActiveAccountManager.getter)
-        )
+        LocalBroadcast.registerReceiver(loginDataChangedReceiver, intentFilter(GradesLoginData.getter))
+        LocalBroadcast.registerReceiver(dataChangedReceiver, intentFilter(GradesData.getter))
+        LocalBroadcast.registerReceiver(accountChangedReceiver, intentFilter(ActiveAccountManager.getter))
         // TODO: use observer to listen on synchronization state changes
         updateViews()
     }
@@ -128,7 +136,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     GradesSyncAdapter.requestSync(
                             activeAccount ?:
                                     return@setOnRefreshListener showNoAccountSnack(
-                                            "Can't request sync for you, no account available."),
+                                            "Can't request sync for you, no account available."), // TODO: to strings
                             Semester.AUTO) // TODO: option to change semester
                 }
                 .setItemTouchListener(object : SimpleClickListener() {
@@ -144,12 +152,13 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     @OnClick(R.id.but_login)
     fun onLoginClick() {
-            loginData.login(
-                    activeAccountId ?:
-                            return showNoAccountSnack("Can't log you in, no account available."), // TODO: To strings
-                    inputUsername.text.toString(),
-                    inputPassword.text.toString()
-            )
+        loginData.login(
+                activeAccountId ?: return showNoAccountSnack(
+                        "Can't log you in, no account available."), // TODO: To strings
+                inputUsername.text.toString(),
+                inputPassword.text.toString()
+        )
+        recyclerManager?.setRefreshing(true)
     }
 
     private fun updateViews() {
@@ -183,7 +192,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             recyclerContainer.visibility = View.GONE
             loginContainer.visibility = View.VISIBLE
 
-            if (accountId != null) inputUsername.setText(loginData.getUsername(accountId))
+            if (accountId != null && inputUsername.text.isEmpty())
+                loginData.getUsername(accountId)?.let { inputUsername.setText(it) }
         }
     }
 
@@ -203,6 +213,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     }
 
     override fun onDestroy() {
+        LocalBroadcast.unregisterReceiver(accountChangedReceiver)
+        LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
         LocalBroadcast.unregisterReceiver(dataChangedReceiver)
         adapter = null
         super.onDestroy()

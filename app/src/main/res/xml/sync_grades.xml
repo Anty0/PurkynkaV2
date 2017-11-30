@@ -18,7 +18,7 @@
   -->
 
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-    android:contentAuthority="cz.anty.purkynka.marks.data"
+    android:contentAuthority="cz.anty.purkynka.grades.data"
     android:accountType="cz.anty.purkynka.account"
     android:userVisible="true"
     android:supportsUploading="false"

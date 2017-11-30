@@ -106,6 +106,8 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.10.3'
     implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
+    implementation 'com.infstory:proguard-annotations:1.0.2'
 
     //implementation 'com.scottyab:secure-preferences-lib:0.1.4'
     implementation('com.mikepenz:aboutlibraries:5.9.7@aar') {
