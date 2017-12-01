@@ -42,6 +42,15 @@
     <string name="action_contact_web_page_donate">Donate developer</string>
     <string name="action_add_user">Add user</string>
 
+    <string name="menu_item_text_sort">Sort by</string>
+    <string name="menu_item_text_sort_date">Date</string>
+    <string name="menu_item_text_sort_subject">Subject</string>
+    <string name="menu_item_text_semester">Semester</string>
+    <string name="menu_item_text_semester_first">First</string>
+    <string name="menu_item_text_semester_second">Second</string>
+    <string name="menu_item_text_refresh">Refresh</string>
+    <string name="menu_item_text_log_out">Logout</string>
+
     <string name="insert_new_account_name">New account name</string>
     <string name="insert_account_name">Account name</string>
     <string name="insert_username">Username</string>
@@ -51,8 +60,21 @@
     <string name="but_save">Save</string>
 
     <string name="text_view_grade">Grade</string>
+    <string name="text_view_weight">Grade</string>
+
+    <string name="empty_view_text_no_grades">No grades to display…</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
+
+    <string name="snackbar_no_account_sync">"No account available, can't request sync for you."</string>
+    <string name="snackbar_no_account_login">"No account available, can't log you in."</string>
+    <string name="snackbar_grades_refresh_fail_unknown">Last attempt to refresh grades failed.</string>
+    <string name="snackbar_grades_refresh_fail_connect">Connection error. Failed to refresh grades.</string>
+    <string name="snackbar_grades_refresh_fail_login">Failed to login. Are login credentials in order?</string>
+    <string name="snackbar_grades_fail_no_account">"No account available, can't load grades."</string>
+
+    <string name="snackbar_action_grades_retry">Retry</string>
+    <string name="snackbar_action_grades_logout">Logout</string>
 
     <string name="snackbar_invalid_account_name">Invalid account name</string>
     <string name="snackbar_login_failed">Login failed, account with same name probably exists</string>

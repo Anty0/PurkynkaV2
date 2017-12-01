@@ -17,13 +17,14 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <group
-        android:id="@+id/menu_group_main"
-        android:checkableBehavior="single">
+    <TextView
+        android:id="@+id/text_view_subject_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    </group>
-</menu>
+</LinearLayout>

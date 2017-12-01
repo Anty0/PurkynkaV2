@@ -98,23 +98,21 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
 
         if (authority != CONTENT_AUTHORITY) return
 
-        val semester = if (extras.containsKey(EXTRA_SEMESTER)) {
-            try {
-                Semester.valueOf(extras.getString(EXTRA_SEMESTER))
-            } catch (e: Exception) {
-                Log.w(LOG_TAG, e)
-                Semester.AUTO
-            }
-        } else Semester.AUTO
-
         val data = GradesData.instance
         val loginData = GradesLoginData.loginData
 
         val accountId = AccountsHelper.getAccountId(context, account)
 
-        data.setLastSyncResult(accountId, SYNCING)
-
         try {
+            val semester = if (extras.containsKey(EXTRA_SEMESTER)) {
+                try {
+                    Semester.valueOf(extras.getString(EXTRA_SEMESTER))
+                } catch (e: Exception) {
+                    Log.w(LOG_TAG, e)
+                    Semester.AUTO
+                }
+            } else Semester.AUTO
+
             if (!loginData.isLoggedIn(accountId))
                 throw WrongLoginDataException("User is not logged in")
 

@@ -19,12 +19,17 @@
 package cz.anty.purkynka.grades.data
 
 import android.content.Context
+import android.widget.TextView
+import android.widget.Toast
+import cz.anty.purkynka.R
+import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
 
 /**
  * @author anty
  */
-data class Subject(val fullName: String, val shortName: String, val grades: List<Grade>): CustomItem() {
+data class Subject(val fullName: String, val shortName: String, val grades: List<Grade>) {
 
     val diameter: Double get() {
         var tGrade = 0.0
@@ -39,13 +44,4 @@ data class Subject(val fullName: String, val shortName: String, val grades: List
                     tGrade / tWeight.toDouble()
                 } ?: Double.NaN
     }
-
-    override fun onBindViewHolder(holder: ViewHolder?, itemPosition: Int) {
-        TODO("not implemented")
-    }
-
-    override fun getItemLayoutResId(context: Context?): Int {
-        TODO("not implemented")
-    }
-
 }

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ app
+  ~ Copyright (C)   2017  anty
+  ~
+  ~ This program is free  software: you can redistribute it and/or modify
+  ~ it under the terms  of the GNU General Public License as published by
+  ~ the Free Software  Foundation, either version 3 of the License, or
+  ~ (at your option) any  later version.
+  ~
+  ~ This program is distributed in the hope that it  will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied  warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You  should have received a copy of the GNU General Public License
+  ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".grades.GradesFragment">
+
+    <item
+        android:icon="@drawable/ic_list_white_24dp"
+        android:title="@string/menu_item_text_sort"
+        app:showAsAction="ifRoom"><!--TODO: download and use sort material icon-->
+
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/action_sort_date"
+                    android:checked="true"
+                    android:title="@string/menu_item_text_sort_date"
+                    app:showAsAction="never" />
+
+                <item
+                    android:id="@+id/action_sort_subject"
+                    android:title="@string/menu_item_text_sort_subject"
+                    app:showAsAction="never" />
+
+            </group>
+        </menu>
+
+    </item>
+
+    <item
+        android:title="@string/menu_item_text_semester"
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/action_semester_first"
+                    android:title="@string/menu_item_text_semester_first"
+                    app:showAsAction="never" />
+
+                <item
+                    android:id="@+id/action_semester_second"
+                    android:title="@string/menu_item_text_semester_second"
+                    app:showAsAction="never" />
+
+            </group>
+        </menu>
+
+    </item>
+
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="@string/menu_item_text_refresh"
+        app:showAsAction="never" /><!--TODO: download and use refresh material icon-->
+
+    <item
+        android:id="@+id/action_log_out"
+        android:icon="@drawable/ic_action_close"
+        android:title="@string/menu_item_text_log_out"
+        app:showAsAction="never" /><!--TODO: download and use logout material icon-->
+
+</menu>

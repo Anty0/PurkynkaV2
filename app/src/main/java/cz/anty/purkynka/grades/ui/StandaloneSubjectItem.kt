@@ -16,35 +16,40 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.data
+package cz.anty.purkynka.grades.ui
 
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.Typeface
 import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
-import cz.anty.purkynka.grades.load.GradesParser
-import eu.codetopic.java.utils.JavaUtils
+import cz.anty.purkynka.grades.data.Subject
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
-import proguard.annotation.Keep
-import proguard.annotation.KeepClassMemberNames
-import proguard.annotation.KeepClassMembers
-import proguard.annotation.KeepName
-import java.util.*
 
 /**
  * @author anty
  */
-@Keep
-@KeepName
-@KeepClassMembers
-@KeepClassMemberNames
-data class Grade(val date: Date, val shortLesson: String, val longLesson: String, val valueToShow: String,
-                 val value: Double, val type: String, val weight: Int, val note: String, val teacher: String) {
+class StandaloneSubjectItem(private val base: Subject): CustomItem() {
 
-    val dateStr: String get() = GradesParser.GRADE_DATE_FORMAT.format(date)
+    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+        val nameView: TextView = holder.itemView.findViewById(R.id.text_view_subject_name)
+
+        nameView.text = base.fullName
+
+        // TODO: complete layout
+
+        holder.topParentHolder.itemView.setOnClickListener {
+            Toast.makeText(
+                    holder.context,
+                    "onClick(position$itemPosition, subject=$this)",
+                    Toast.LENGTH_LONG
+            ).show()
+            // TODO: show activity of subject grades
+        }
+    }
+
+    override fun getItemLayoutResId(context: Context?): Int = R.layout.item_subject
+
+    override fun getWrappers(context: Context?): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
 }

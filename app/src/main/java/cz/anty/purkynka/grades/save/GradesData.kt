@@ -62,7 +62,7 @@ class GradesData private constructor(context: Context) :
     private val gson: Gson = Gson()
 
     private val lastSyncResultPreference = GsonPreference(SYNC_RESULT, gson,
-            typeToken<SyncResult>(), accessProvider, SyncResult.UNKNOWN)
+            typeToken<SyncResult>(), accessProvider, SyncResult.SUCCESS)
 
     fun getLastSyncResult(id: String): SyncResult = lastSyncResultPreference.getValue(this, id)
 
@@ -87,7 +87,7 @@ class GradesData private constructor(context: Context) :
     }
 
     enum class SyncResult {
-        UNKNOWN, SYNCING, SUCCESS, FAIL_LOGIN, FAIL_CONNECT, FAIL_UNKNOWN
+        SUCCESS, FAIL_LOGIN, FAIL_CONNECT, FAIL_UNKNOWN
     }
 
     private class Getter : PreferencesGetterAbs<GradesData>() {
