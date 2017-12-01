@@ -21,31 +21,24 @@ package cz.anty.purkynka.grades.ui
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.support.annotation.ColorInt
 import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Grade
+import cz.anty.purkynka.Utils.colorForValue
 import eu.codetopic.java.utils.JavaUtils
+import eu.codetopic.java.utils.JavaExtensions.join
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * @author anty
  */
 class StandaloneGradeItem(private val base: Grade): CustomItem() {
-
-    companion object {
-
-        private val colorsOfValues: Array<Int> = arrayOf(
-                Color.parseColor("#bbdefb"),
-                Color.parseColor("#ccff90"),
-                Color.parseColor("#f4ff81"),
-                Color.parseColor("#ffd180"),
-                Color.parseColor("#ff9e80"),
-                Color.parseColor("#ff8a80")
-        )
-    }
 
     override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
         val subjectView: TextView = holder.itemView.findViewById(R.id.text_view_subject)
@@ -59,7 +52,8 @@ class StandaloneGradeItem(private val base: Grade): CustomItem() {
         subjectView.text = JavaUtils.addToLen(base.shortLesson, 4)
 
         gradeView.setTypeface(null, textStyle)
-        gradeView.setTextColor(colorsOfValues[base.value.toInt()])
+        gradeView.setTextColor(colorForValue(base.value.toInt()
+                .let { if (it == 0) null else it - 1 }, 5))
         gradeView.text = base.valueToShow
 
         weightView.setTypeface(null, textStyle)

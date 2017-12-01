@@ -24,6 +24,7 @@ import android.graphics.Typeface
 import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
+import cz.anty.purkynka.Utils
 import cz.anty.purkynka.grades.data.Grade
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
@@ -34,18 +35,6 @@ import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
  */
 class SubjectGradeItem(private val base: Grade): CustomItem() {
 
-    companion object {
-
-        private val colorsOfValues: Array<Int> = arrayOf(
-                Color.parseColor("#bbdefb"),
-                Color.parseColor("#ccff90"),
-                Color.parseColor("#f4ff81"),
-                Color.parseColor("#ffd180"),
-                Color.parseColor("#ff9e80"),
-                Color.parseColor("#ff8a80")
-        )
-    }
-
     override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
         val gradeView: TextView = holder.itemView.findViewById(R.id.text_view_grade)
         val weightView: TextView = holder.itemView.findViewById(R.id.text_view_weight)
@@ -55,7 +44,8 @@ class SubjectGradeItem(private val base: Grade): CustomItem() {
         val textStyle = if (base.weight >= 3) Typeface.BOLD else Typeface.NORMAL
 
         gradeView.setTypeface(null, textStyle)
-        gradeView.setTextColor(colorsOfValues[base.value.toInt()])
+        gradeView.setTextColor(Utils.colorForValue(base.value.toInt()
+                .let { if (it == 0) null else it - 1 }, 5))
         gradeView.text = base.valueToShow
 
         weightView.setTypeface(null, textStyle)

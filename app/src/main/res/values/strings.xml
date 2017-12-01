@@ -60,7 +60,7 @@
     <string name="but_save">Save</string>
 
     <string name="text_view_grade">Grade</string>
-    <string name="text_view_weight">Grade</string>
+    <string name="text_view_weight">Weight</string>
 
     <string name="empty_view_text_no_grades">No grades to display…</string>
 
