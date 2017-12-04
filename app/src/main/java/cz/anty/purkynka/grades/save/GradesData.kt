@@ -44,7 +44,7 @@ class GradesData private constructor(context: Context) :
         PreferencesData<ContentProviderSharedPreferences>(context,
                 ContentProviderPreferencesProvider(context, GradesProvider.AUTHORITY)) {
 
-    companion object : PreferencesCompanionObject<GradesData>(GradesData.LOG_TAG, ::GradesData, GradesData::Getter) {
+    companion object : PreferencesCompanionObject<GradesData>(GradesData.LOG_TAG, ::GradesData, ::Getter) {
 
         private const val LOG_TAG = "GradesData"
         internal const val SAVE_VERSION = 0

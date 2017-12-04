@@ -30,7 +30,7 @@ import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
 /**
  * @author anty
  */
-class StandaloneSubjectItem(private val base: Subject): CustomItem() {
+class SubjectItem(private val base: Subject): CustomItem() {
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
         val nameView: TextView = holder.itemView.findViewById(R.id.text_view_subject_name)

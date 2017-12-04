@@ -54,6 +54,9 @@ class MainActivity : NavigationActivity() {
         private const val LOG_TAG = "MainActivity"
 
         private const val REQUEST_CODE_EDIT_ACCOUNT: Int = 1
+
+        const val EXTRA_FRAGMENT_CLASS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_CLASS"
+        const val EXTRA_FRAGMENT_EXTRAS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_EXTRAS"
     }
 
     private val accountChangedReceiver: AccountChangeReceiver = AccountChangeReceiver()
@@ -62,6 +65,7 @@ class MainActivity : NavigationActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar) // TODO: Animated app logo
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) processIntent(intent)
 
         with (AccountManager.get(this)) {
             if (Build.VERSION.SDK_INT >= 26) addOnAccountsUpdatedListener(accountChangedReceiver,
@@ -80,6 +84,17 @@ class MainActivity : NavigationActivity() {
             itemTextColor = white
             itemIconTintList = white
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        processIntent(intent)
+    }
+
+    private fun processIntent(intent: Intent?) {
+        @Suppress("UNCHECKED_CAST")
+        (intent?.getSerializableExtra(EXTRA_FRAGMENT_CLASS) as Class<out Fragment>?)
+                ?.let { replaceFragment(it, intent?.getBundleExtra(EXTRA_FRAGMENT_EXTRAS)) }
     }
 
     override fun onDestroy() {

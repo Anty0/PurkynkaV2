@@ -34,7 +34,7 @@ data class Subject(val fullName: String, val shortName: String, val grades: List
     val diameter: Double get() {
         var tGrade = 0.0
         var tWeight = 0
-        return grades.filterNot { it.value == 0.0 }
+        return grades.filterNot { it.value == 0F }
                 .takeIf { it.isNotEmpty() }
                 ?.onEach {
                     tGrade += it.value * it.weight.toDouble()

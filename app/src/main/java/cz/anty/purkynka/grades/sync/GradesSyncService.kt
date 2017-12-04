@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.save
+package cz.anty.purkynka.grades.sync
 
 import android.app.Service
 import android.content.Intent

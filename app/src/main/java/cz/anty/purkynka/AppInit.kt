@@ -23,11 +23,11 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.grades.save.GradesData
+import cz.anty.purkynka.grades.notify.GradesDataDifferences
 import cz.anty.purkynka.grades.save.GradesLoginData
-import cz.anty.purkynka.grades.save.GradesSyncAdapter
+import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.settings.SettingsData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
-import eu.codetopic.utils.timing.TimedComponentsManager
 import eu.codetopic.utils.ui.container.adapter.dashboard.DashboardData
 import eu.codetopic.java.utils.log.base.LogLine
 import eu.codetopic.java.utils.log.LogsHandler
@@ -37,8 +37,6 @@ import eu.codetopic.java.utils.log.base.Priority
 import eu.codetopic.utils.UtilsBase.ProcessProfile
 import eu.codetopic.utils.UtilsBase
 
-import eu.codetopic.utils.UtilsBase.InitType.PRIMARY_PROCESS
-import eu.codetopic.utils.UtilsBase.InitType.ANOTHER_PROCESS
 import eu.codetopic.utils.thread.job.SingletonJobManager
 
 
@@ -56,9 +54,9 @@ class AppInit : Application() {
 
         // Initialize utils base (my own android application framework; brain of this application)
         UtilsBase.initialize(this,
-                ProcessProfile(packageName, PRIMARY_PROCESS, Runnable(::initPrimaryProcess)), // Primary process
-                ProcessProfile("$packageName:providers", ANOTHER_PROCESS, Runnable(::initProvidersProcess)), // Data management process (multi-process data access support)
-                ProcessProfile("$packageName:syncs", ANOTHER_PROCESS, Runnable(::initSyncsProcess)) // Data synchronization process
+                ProcessProfile(packageName, true, Runnable(::initPrimaryProcess)), // Primary process
+                ProcessProfile("$packageName:providers", true, Runnable(::initProvidersProcess)), // Data management process (multi-process data access support)
+                ProcessProfile("$packageName:syncs", true, Runnable(::initSyncsProcess)) // Data synchronization process
                 // ProcessProfile(app.packageName + ":acra", DISABLE_UTILS), // ACRA reporting process
         )
     }
@@ -96,14 +94,13 @@ class AppInit : Application() {
     }
 
     private fun initPrimaryProcess() {
-
         // Create default user account (if there is none)
         AccountsHelper.initDefaultAccount(this)
 
         // Prepare broadcasts connections (very helpful tool)
         loadBroadcastConnections()
 
-        // Initialize data providers
+        // Initialize data providers required in this process
         MainData.initialize(this)
         ActiveAccountManager.initialize(this)
         SettingsData.initialize(this)
@@ -136,9 +133,10 @@ class AppInit : Application() {
         // Prepare broadcasts connections (very helpful tool)
         loadBroadcastConnections()
 
-        // Initialize data providers
+        // Initialize data providers required in this process
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
+        GradesDataDifferences.initialize(this)
     }
 
     private fun loadBroadcastConnections() {

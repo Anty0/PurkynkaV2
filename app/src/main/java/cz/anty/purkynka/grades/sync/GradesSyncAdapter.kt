@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.save
+package cz.anty.purkynka.grades.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -25,16 +25,20 @@ import android.os.Bundle
 import cz.anty.purkynka.Constants
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.exceptions.WrongLoginDataException
+import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesFetcher
 import cz.anty.purkynka.grades.load.GradesParser
+import cz.anty.purkynka.grades.notify.GradesDataDifferences
+import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
+import cz.anty.purkynka.grades.save.GradesLoginData
+import cz.anty.purkynka.grades.save.GradesProvider
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.BundleBuilder
 import eu.codetopic.utils.LocalBroadcast
-import eu.codetopic.utils.data.preferences.PreferencesData
 import java.io.IOException
 
 /**
@@ -129,7 +133,8 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
 
             val gradesMap = data.getGrades(accountId)
             gradesMap[semester.value]?.apply {
-                // TODO: check for differences and show notification (use ids of grades)
+                checkForDiffs(accountId, this, grades)
+
                 clear()
                 addAll(grades)
             }
@@ -145,5 +150,26 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
                 else -> FAIL_UNKNOWN
             })
         }
+    }
+
+    private fun checkForDiffs(accountId: String, oldGrades: List<Grade>, newGrades: List<Grade>) {
+        val added = mutableListOf<Grade>()
+        val modified = mutableListOf<Pair<Grade, Grade>>()
+        //val removed = mutableListOf<Grade>()
+
+        newGrades.forEach {
+            val index = oldGrades.indexOf(it)
+            if (index == -1) {
+                added.add(it)
+                return@forEach
+            }
+
+            val oldGrade = oldGrades[index]
+            if (it differentTo oldGrade) modified.add(oldGrade to it)
+        }
+
+        //removed.addAll(oldGrades.filter { !newGrades.contains(it) })
+
+        GradesDataDifferences.instance.addNewDiffs(accountId, added, modified/*, removed*/)
     }
 }

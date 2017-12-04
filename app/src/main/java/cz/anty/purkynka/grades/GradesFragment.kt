@@ -34,7 +34,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ScrollView
-import android.widget.Toast
 
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -43,14 +42,14 @@ import butterknife.Unbinder
 import cz.anty.purkynka.R
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
-import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
+import cz.anty.purkynka.grades.notify.GradesDataDifferences
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import cz.anty.purkynka.grades.save.GradesLoginData
-import cz.anty.purkynka.grades.save.GradesSyncAdapter
-import cz.anty.purkynka.grades.ui.StandaloneGradeItem
-import cz.anty.purkynka.grades.ui.StandaloneSubjectItem
+import cz.anty.purkynka.grades.sync.GradesSyncAdapter
+import cz.anty.purkynka.grades.ui.GradeItem
+import cz.anty.purkynka.grades.ui.SubjectItem
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.LocalBroadcast
@@ -63,7 +62,6 @@ import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import eu.codetopic.utils.ui.container.adapter.CustomItemAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.recycler.Recycler
-import eu.codetopic.utils.ui.container.recycler.utils.RecyclerItemClickListener.SimpleClickListener
 
 /**
  * @author anty
@@ -291,11 +289,14 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 addAll(
                         when(sort) {
                             Sort.DATE -> gradesData.getGrades(accountId)[semester.value]
-                                    ?.map { StandaloneGradeItem(it) }
+                                    ?.map { GradeItem(it) }
                             Sort.SUBJECTS -> gradesData.getSubjects(accountId)[semester.value]
-                                    ?.map { StandaloneSubjectItem(it) }
+                                    ?.map { SubjectItem(it) }
                         } ?: emptyList()
                 )
+
+                // All grades differences will be displayed to user, so let's remove them all
+                context?. let { GradesDataDifferences.requestClear(it, accountId) }
             }
         }
         updateStatusSnackbar()

@@ -91,7 +91,7 @@
                 android:resource="@xml/authenticator" />
         </service>
         <service
-            android:name=".grades.save.GradesSyncService"
+            android:name=".grades.sync.GradesSyncService"
             android:enabled="true"
             android:exported="true"
             android:process=":syncs" >
@@ -115,6 +115,19 @@
             android:authorities="cz.anty.purkynka.grades.login"
             android:exported="false"
             android:process=":providers" />
+
+        <receiver android:name=".grades.notify.GradeNotificationLaunchReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs" />
+        <receiver android:name=".grades.notify.GradeNotificationDeleteReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs" />
+        <receiver android:name=".grades.notify.GradesClearDifferencesReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs" />
     </application>
 
 </manifest>

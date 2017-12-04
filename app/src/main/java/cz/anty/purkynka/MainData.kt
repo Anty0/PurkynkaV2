@@ -53,12 +53,8 @@ class MainData private constructor(context: Context) :
 
     private class Getter : PreferencesGetterAbs<MainData>() {
 
-        override fun get(): MainData {
-            return instance
-        }
+        override fun get() = instance
 
-        override fun getDataClass(): Class<MainData> {
-            return MainData::class.java
-        }
+        override fun getDataClass() = MainData::class.java
     }
 }

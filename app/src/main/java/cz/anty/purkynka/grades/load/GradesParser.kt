@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.grades.load
 
+import android.net.Uri
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Subject
 import eu.codetopic.java.utils.log.Log
@@ -36,6 +37,15 @@ object GradesParser {
 
     private const val LOG_TAG = "GradesParser"
 
+    private const val COL_DATE = 0
+    private const val COL_SUBJECT = 1
+    private const val COL_VALUE_STR = 2
+    private const val COL_VALUE_FLOAT = 3
+    private const val COL_TYPE = 4
+    private const val COL_WEIGHT = 5
+    private const val COL_NOTE = 6
+    private const val COL_TEACHER = 7
+
     val GRADE_DATE_FORMAT = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
     fun parseSubjects(elementGrades: Elements): List<Subject> {
@@ -45,13 +55,13 @@ object GradesParser {
     fun List<Grade>.toSubjects(): List<Subject> {
         return mutableMapOf<String, MutableList<Grade>>().apply {
             this@toSubjects.forEach {
-                getOrPut(it.shortLesson, ::mutableListOf).add(it)
+                getOrPut(it.subjectShort, ::mutableListOf).add(it)
             }
         }.map {
-            Subject(it.value.first().longLesson,
-                    it.value.first().shortLesson,
+            Subject(it.value.first().subjectLong,
+                    it.value.first().subjectShort,
                     it.value.toList())
-        }.sortedWith(Comparator { lhs, rhs -> lhs.shortName.compareTo(rhs.shortName) })
+        }.sortedBy { it.shortName }
 
 
         /*val subjectsMap = HashMap<String, MutableList<Grade>>()
@@ -105,14 +115,33 @@ object GradesParser {
     fun parseGrade(grade: Element): Grade {
         val gradeData = grade.select("td")
 
-        try {
-            return Grade(GRADE_DATE_FORMAT.parse(gradeData[0].text()),
-                    gradeData[1].text(), gradeData[1].attr("title"), gradeData[2].text(),
-                    gradeData[3].text().toDouble(), gradeData[4].text(),
-                    gradeData[5].text().toInt(), gradeData[6].text(), gradeData[7].text())
+        val dateElement = gradeData[COL_DATE].child(0)
+        val id = Uri.parse(dateElement.attr("abs:href"))
+                .getQueryParameter("zaznam").toInt()
+        val date = try {
+            GRADE_DATE_FORMAT.parse(dateElement.text())
         } catch (e: ParseException) {
             throw IllegalArgumentException("Parameter error: invalid date ${gradeData[0].text()}", e)
         }
+
+        val subjectElement = gradeData[COL_SUBJECT]
+        val subjectShort = subjectElement.text()
+        val subjectLong = subjectElement.attr("title")
+
+        val valueStr = gradeData[COL_VALUE_STR].text()
+
+        val valueFloat = gradeData[COL_VALUE_FLOAT].text().toFloat()
+
+        val type = gradeData[COL_TYPE].text()
+
+        val weight = gradeData[COL_WEIGHT].text().toInt()
+
+        val note = gradeData[COL_NOTE].text()
+
+        val teacher = gradeData[COL_TEACHER].text()
+
+        return Grade(id, date, subjectShort, subjectLong,
+                valueStr, valueFloat, type, weight, note, teacher)
     }
 
 }

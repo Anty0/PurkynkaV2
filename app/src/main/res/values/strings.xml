@@ -20,6 +20,19 @@
 <resources>
     <string name="app_name">Purkynka</string>
 
+    <string name="notify_channel_main">Main</string>
+    <string name="notify_channel_grades_add">Grades of %1$s</string>
+
+    <string name="notify_grade_new_title">New grade %1$s from %2$s</string>
+    <string name="notify_grade_new_text_note">%1$s by %2$s</string>
+    <string name="notify_grade_new_text">By %2$s</string>
+    <string name="notify_grade_modified_title">Modified grade %1$s from %2$s</string>
+    <string name="notify_grade_modified_text_note">%1$s by %2$s</string>
+    <string name="notify_grade_modified_text">By %2$s</string>
+    <string name="notify_grade_summary_title">New grades</string>
+    <string name="notify_grade_summary_text">From: %1$s</string>
+    <string name="notify_grade_summary_line">Grade %1$s from %2$s</string>
+
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_debug_info">Debug info</string>
     <string name="title_activity_authenticate">Authentication</string>

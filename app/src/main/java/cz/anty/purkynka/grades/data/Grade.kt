@@ -43,8 +43,32 @@ import java.util.*
 @KeepName
 @KeepClassMembers
 @KeepClassMemberNames
-data class Grade(val date: Date, val shortLesson: String, val longLesson: String, val valueToShow: String,
-                 val value: Double, val type: String, val weight: Int, val note: String, val teacher: String) {
+data class Grade(val id: Int, val date: Date, val subjectShort: String, val subjectLong: String, val valueToShow: String,
+                 val value: Float, val type: String, val weight: Int, val note: String, val teacher: String) {
 
     val dateStr: String get() = GradesParser.GRADE_DATE_FORMAT.format(date)
+
+    override fun hashCode() = id.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Grade
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    infix fun differentTo(other: Grade) = id != other.id
+            || date != other.date
+            || subjectShort != other.subjectShort
+            || subjectLong != other.subjectLong
+            || valueToShow != other.valueToShow
+            || value != other.value
+            || type != other.type
+            || weight != other.weight
+            || note != other.note
+            || teacher != other.teacher
 }

@@ -22,6 +22,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.support.annotation.ColorInt
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
@@ -38,7 +39,7 @@ import kotlin.math.min
 /**
  * @author anty
  */
-class StandaloneGradeItem(private val base: Grade): CustomItem() {
+class GradeItem(private val base: Grade, private val showSubject: Boolean = true): CustomItem() {
 
     override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
         val subjectView: TextView = holder.itemView.findViewById(R.id.text_view_subject)
@@ -49,7 +50,8 @@ class StandaloneGradeItem(private val base: Grade): CustomItem() {
 
         val textStyle = if (base.weight >= 3) Typeface.BOLD else Typeface.NORMAL
 
-        subjectView.text = JavaUtils.addToLen(base.shortLesson, 4)
+        subjectView.visibility = if (showSubject) View.VISIBLE else View.GONE
+        subjectView.text = JavaUtils.addToLen(base.subjectShort, 4)
 
         gradeView.setTypeface(null, textStyle)
         gradeView.setTextColor(colorForValue(base.value.toInt()
