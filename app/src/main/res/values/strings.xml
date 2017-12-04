@@ -74,6 +74,12 @@
 
     <string name="text_view_grade">Grade</string>
     <string name="text_view_weight">Weight</string>
+    <string name="text_view_average">Average</string>
+    <plurals name="text_view_grades_count">
+        <item quantity="zero">No grades</item>
+        <item quantity="one">%1$d Grade</item>
+        <item quantity="other">%1$d Grades</item>
+    </plurals>
 
     <string name="empty_view_text_no_grades">No grades to display…</string>
 

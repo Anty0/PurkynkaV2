@@ -31,7 +31,7 @@ import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
  */
 data class Subject(val fullName: String, val shortName: String, val grades: List<Grade>) {
 
-    val diameter: Double get() {
+    val average: Double get() {
         var tGrade = 0.0
         var tWeight = 0
         return grades.filterNot { it.value == 0F }

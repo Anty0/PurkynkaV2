@@ -22,10 +22,13 @@ import android.content.Context
 import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
+import cz.anty.purkynka.Utils.colorForValue
 import cz.anty.purkynka.grades.data.Subject
+import eu.codetopic.java.utils.JavaUtils
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
+import eu.codetopic.java.utils.JavaExtensions.format
 
 /**
  * @author anty
@@ -33,11 +36,24 @@ import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
 class SubjectItem(private val base: Subject): CustomItem() {
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        val nameView: TextView = holder.itemView.findViewById(R.id.text_view_subject_name)
+        val shortNameView: TextView = holder.itemView.findViewById(R.id.text_view_subject_name_short)
+        val averageView: TextView = holder.itemView.findViewById(R.id.text_view_subject_average)
+        val longNameView: TextView = holder.itemView.findViewById(R.id.text_view_subject_name_long)
+        val gradesCountView: TextView = holder.itemView.findViewById(R.id.text_view_subject_grades_count)
 
-        nameView.text = base.fullName
+        shortNameView.text = JavaUtils.addToLen(base.shortName, 4)
 
-        // TODO: complete layout
+        val average = base.average
+        averageView.setTextColor(colorForValue((average * 100).toInt()
+                .let { if (it == 0) null else it - 100 }, 500))
+        averageView.text = average.format(2)
+
+        longNameView.text = base.fullName
+
+        val gradesCount = base.grades.size
+        gradesCountView.text = holder.context.resources
+                .getQuantityString(R.plurals.text_view_grades_count, gradesCount)
+                .format(gradesCount)
 
         holder.topParentHolder.itemView.setOnClickListener {
             Toast.makeText(
