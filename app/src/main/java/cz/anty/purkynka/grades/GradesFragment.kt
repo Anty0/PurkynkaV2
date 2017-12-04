@@ -292,7 +292,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                                     ?.map { GradeItem(it) }
                             Sort.SUBJECTS -> gradesData.getSubjects(accountId)[semester.value]
                                     ?.map { SubjectItem(it) }
-                        } ?: emptyList()
+                        } ?: emptyList() // TODO: highlight grades differences obtained from GradesDataDifferences
                 )
 
                 // All grades differences will be displayed to user, so let's remove them all

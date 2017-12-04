@@ -126,8 +126,7 @@ class GradesDataDifferences private constructor(context: Context) :
 
     internal fun notifyLaunchReceived(accountId: String, notificationId: Int) {
         if (notificationId == NOTIFY_ID_SUMMARY) {
-            context.startActivity(Intent(context, MainActivity::class.java)
-                    .putExtra(MainActivity.EXTRA_FRAGMENT_CLASS, GradesFragment::class.java))
+            MainActivity.start(context, GradesFragment::class.java)
             return
         }
 
@@ -145,14 +144,13 @@ class GradesDataDifferences private constructor(context: Context) :
         }
 
         // TODO: show grade activity rather then all grades fragment
-        context.startActivity(Intent(context, MainActivity::class.java)
-                .putExtra(MainActivity.EXTRA_FRAGMENT_CLASS, GradesFragment::class.java))
+        MainActivity.start(context, GradesFragment::class.java)
     }
 
     internal fun notifyDeleteReceived(accountId: String, notificationId: Int) {
         if (notificationId == NOTIFY_ID_SUMMARY) {
-            // Summary notification clicked. Let's remove all notifications.
-            clearDiffs(accountId) // FIXME: Solve problem caused by auto-remove of all notifications if summary notification is removed
+            // Summary notification removed. Nothing to do...
+            // (Other notifications will be removed by system and this method will be called for all of them automatically.)
             return
         }
 
@@ -223,74 +221,74 @@ class GradesDataDifferences private constructor(context: Context) :
         )
     }
 
-    private fun buildNotificationBase(accountId: String, notificationId: Int, channelId: String, group: String): NotificationCompat.Builder {
-        return NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.mipmap.ic_launcher_grades)
-                /*.setContentTitle(context.getFormattedText(R.string.notify_grade_new_title,
-                        grade.valueToShow, grade.subjectShort))
-                .setContentText(context.getFormattedText(R.string.notify_grade_new_text, grade.teacher))*/
-                //.setSubText()
-                //.setTicker()
-                //.setUsesChronometer()
-                //.setNumber()
-                /*.setWhen(grade.date.time)*/
-                //.setShowWhen(true)
-                //.setStyle()
+    private fun buildNotificationBase(accountId: String, notificationId: Int, channelId: String, group: String): NotificationCompat.Builder =
+            NotificationCompat.Builder(context, channelId).apply {
+                setSmallIcon(R.mipmap.ic_launcher_grades)
+                /*setContentTitle(context.getFormattedText(R.string.notify_grade_new_title,
+                            grade.valueToShow, grade.subjectShort))
+                  setContentText(context.getFormattedText(R.string.notify_grade_new_text, grade.teacher))*/
+                //setSubText()
+                //setTicker()
+                //setUsesChronometer()
+                //setNumber()
+                /*setWhen(grade.date.time)*/
+                //setShowWhen(true)
+                //setStyle()
 
-                .setContentIntent(PendingIntent.getBroadcast(context, notificationId,
+                setContentIntent(PendingIntent.getBroadcast(context, notificationId,
                         Intent(context, GradeNotificationLaunchReceiver::class.java)
                                 .putExtra(GradeNotificationLaunchReceiver.EXTRA_ACCOUNT_ID, accountId)
                                 .putExtra(GradeNotificationLaunchReceiver.EXTRA_NOTIFICATION_ID, notificationId),
                         PendingIntent.FLAG_UPDATE_CURRENT))
-                .setDeleteIntent(PendingIntent.getBroadcast(context, notificationId,
+                setDeleteIntent(PendingIntent.getBroadcast(context, notificationId,
                         Intent(context, GradeNotificationDeleteReceiver::class.java)
                                 .putExtra(GradeNotificationDeleteReceiver.EXTRA_ACCOUNT_ID, accountId)
                                 .putExtra(GradeNotificationDeleteReceiver.EXTRA_NOTIFICATION_ID, notificationId),
                         PendingIntent.FLAG_UPDATE_CURRENT))
-                .setAutoCancel(true)
+                setAutoCancel(true)
 
-                .setGroup(group)
-                .setGroupSummary(false)
-                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
+                setGroup(group)
+                setGroupSummary(false)
+                setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
 
-                .setCategory(NotificationCompat.CATEGORY_EVENT)
+                setCategory(NotificationCompat.CATEGORY_EVENT)
 
-                //.setColorized(false)
-                .setColor(ContextCompat.getColor(context, R.color.colorPrimaryGrades))
-                //.setLargeIcon()
+                //setColorized(false)
+                color = ContextCompat.getColor(context, R.color.colorPrimaryGrades)
+                //setLargeIcon()
 
-                .setOnlyAlertOnce(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                //.setLights()
-                //.setVibrate()
+                setOnlyAlertOnce(true)
+                setDefaults(NotificationCompat.DEFAULT_ALL)
+                //setLights()
+                //setVibrate()
 
-                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-                //.setTimeoutAfter()
-                //.setOngoing()
-                //.setPublicVersion()
+                setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                //setTimeoutAfter()
+                //setOngoing()
+                //setPublicVersion()
 
-                //.addAction()
-                .extend(NotificationCompat.WearableExtender()
+                //addAction()
+                extend(NotificationCompat.WearableExtender()
                         .setHintContentIntentLaunchesActivity(true))
 
-        //.setContentInfo()
-        //.setBadgeIconType()
-        //.setContent()
-        //.setCustomBigContentView()
-        //.setCustomContentView()
-        //.setCustomHeadsUpContentView()
-        //.setExtras()
-        //.setFullScreenIntent()
-        //.setLocalOnly()
-        //.setPriority()
-        //.setProgress()
-        //.setRemoteInputHistory()
-        //.setShortcutId()
-        //.setSortKey()
-        //.setSound(null)
-        //.addExtras()
-        //.addPerson()
-    }
+                //setContentInfo()
+                //setBadgeIconType()
+                //setContent()
+                //setCustomBigContentView()
+                //setCustomContentView()
+                //setCustomHeadsUpContentView()
+                //setExtras()
+                //setFullScreenIntent()
+                //setLocalOnly()
+                //setPriority()
+                //setProgress()
+                //setRemoteInputHistory()
+                //setShortcutId()
+                //setSortKey()
+                //setSound(null)
+                //addExtras()
+                //addPerson()
+            }
 
     private fun updateDiffNotifications(accountId: String) {
         prepareChannel(accountId)
@@ -316,7 +314,7 @@ class GradesDataDifferences private constructor(context: Context) :
                             else R.string.notify_grade_new_text_note,
                             grade.note, grade.teacher
                     ))
-                    .setWhen(grade.date.time)
+                    //.setWhen(grade.date.time)
                     .build()
 
             notifyManager.notify(tag, notifyId, notification)

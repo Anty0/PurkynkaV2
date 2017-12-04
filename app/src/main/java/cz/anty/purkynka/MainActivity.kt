@@ -55,8 +55,18 @@ class MainActivity : NavigationActivity() {
 
         private const val REQUEST_CODE_EDIT_ACCOUNT: Int = 1
 
-        const val EXTRA_FRAGMENT_CLASS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_CLASS"
-        const val EXTRA_FRAGMENT_EXTRAS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_EXTRAS"
+        private const val EXTRA_FRAGMENT_CLASS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_CLASS"
+        private const val EXTRA_FRAGMENT_EXTRAS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_EXTRAS"
+
+        @JvmOverloads
+        fun getStartIntent(context: Context, fragmentClass: Class<out Fragment>? = null, fragmentExtras: Bundle? = null): Intent =
+                Intent(context, MainActivity::class.java)
+                        .putExtra(EXTRA_FRAGMENT_CLASS, fragmentClass)
+                        .putExtra(EXTRA_FRAGMENT_EXTRAS, fragmentExtras)
+
+        @JvmOverloads
+        fun start(context: Context, fragmentClass: Class<out Fragment>? = null, fragmentExtras: Bundle? = null) =
+                context.startActivity(getStartIntent(context, fragmentClass, fragmentExtras))
     }
 
     private val accountChangedReceiver: AccountChangeReceiver = AccountChangeReceiver()
