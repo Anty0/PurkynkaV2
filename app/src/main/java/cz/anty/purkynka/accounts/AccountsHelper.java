@@ -26,7 +26,7 @@ import android.os.Bundle;
 
 import java.util.UUID;
 
-import eu.codetopic.utils.BundleBuilder;
+import eu.codetopic.utils.bundle.BundleBuilder;
 
 /**
  * Created by anty on 10/11/17.

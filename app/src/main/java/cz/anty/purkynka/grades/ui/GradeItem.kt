@@ -28,8 +28,9 @@ import android.widget.Toast
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.Utils.colorForValue
-import eu.codetopic.java.utils.JavaUtils
+import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.java.utils.JavaExtensions.join
+import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
@@ -51,7 +52,7 @@ class GradeItem(private val base: Grade, private val showSubject: Boolean = true
         val textStyle = if (base.weight >= 3) Typeface.BOLD else Typeface.NORMAL
 
         subjectView.visibility = if (showSubject) View.VISIBLE else View.GONE
-        subjectView.text = JavaUtils.addToLen(base.subjectShort, 4)
+        subjectView.text = base.subjectShort.fillToLen(4, JavaExtensions.Anchor.LEFT)
 
         gradeView.setTypeface(null, textStyle)
         gradeView.setTextColor(colorForValue(base.value.toInt()
@@ -78,4 +79,26 @@ class GradeItem(private val base: Grade, private val showSubject: Boolean = true
     override fun getItemLayoutResId(context: Context) = R.layout.item_grade
 
     override fun getWrappers(context: Context?): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GradeItem
+
+        if (base != other.base) return false
+        if (showSubject != other.showSubject) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = base.hashCode()
+        result = 31 * result + showSubject.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "GradeItem(base=$base, showSubject=$showSubject)"
+    }
 }

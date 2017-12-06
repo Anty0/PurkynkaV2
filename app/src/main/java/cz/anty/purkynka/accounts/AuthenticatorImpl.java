@@ -30,7 +30,7 @@ import android.os.Bundle;
 import java.util.Arrays;
 
 import eu.codetopic.java.utils.log.Log;
-import eu.codetopic.utils.BundleBuilder;
+import eu.codetopic.utils.bundle.BundleBuilder;
 
 /**
  * Created by anty on 10/9/17.

@@ -21,7 +21,7 @@ package cz.anty.purkynka.settings
 import android.content.Context
 import android.content.SharedPreferences
 
-import eu.codetopic.utils.NetworkManager.NetworkType
+import eu.codetopic.utils.network.NetworkManager.NetworkType
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
@@ -59,12 +59,9 @@ class SettingsData private constructor(context: Context) :
 
     private class Getter : PreferencesGetterAbs<SettingsData>() {
 
-        override fun get(): SettingsData? {
-            return instance
-        }
+        override fun get() = instance
 
-        override fun getDataClass(): Class<SettingsData> {
-            return SettingsData::class.java
-        }
+        override val dataClass: Class<out SettingsData>
+            get() = SettingsData::class.java
     }
 }

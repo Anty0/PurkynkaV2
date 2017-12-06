@@ -24,7 +24,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 
-import eu.codetopic.java.utils.Objects
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
@@ -90,12 +89,9 @@ class ActiveAccountManager private constructor(context: Context) :
 
     private class Getter : PreferencesGetterAbs<ActiveAccountManager>() {
 
-        override fun get(): ActiveAccountManager? {
-            return instance
-        }
+        override fun get() = instance
 
-        override fun getDataClass(): Class<ActiveAccountManager> {
-            return ActiveAccountManager::class.java
-        }
+        override val dataClass: Class<out ActiveAccountManager>
+            get() = ActiveAccountManager::class.java
     }
 }

@@ -26,7 +26,6 @@ import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.load.GradesParser
-import eu.codetopic.java.utils.JavaUtils
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper

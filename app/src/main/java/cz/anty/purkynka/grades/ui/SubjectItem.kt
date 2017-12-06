@@ -24,7 +24,8 @@ import android.widget.Toast
 import cz.anty.purkynka.R
 import cz.anty.purkynka.Utils.colorForValue
 import cz.anty.purkynka.grades.data.Subject
-import eu.codetopic.java.utils.JavaUtils
+import eu.codetopic.java.utils.JavaExtensions
+import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
@@ -41,7 +42,7 @@ class SubjectItem(private val base: Subject): CustomItem() {
         val longNameView: TextView = holder.itemView.findViewById(R.id.text_view_subject_name_long)
         val gradesCountView: TextView = holder.itemView.findViewById(R.id.text_view_subject_grades_count)
 
-        shortNameView.text = JavaUtils.addToLen(base.shortName, 4)
+        shortNameView.text = base.shortName.fillToLen(4, JavaExtensions.Anchor.LEFT)
 
         val average = base.average
         averageView.setTextColor(colorForValue((average * 100).toInt()
@@ -68,4 +69,19 @@ class SubjectItem(private val base: Subject): CustomItem() {
     override fun getItemLayoutResId(context: Context?): Int = R.layout.item_subject
 
     override fun getWrappers(context: Context?): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SubjectItem
+
+        if (base != other.base) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int = base.hashCode()
+
+    override fun toString(): String = "SubjectItem(base=$base)"
 }

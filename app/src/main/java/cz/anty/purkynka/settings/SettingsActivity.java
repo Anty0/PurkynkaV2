@@ -18,15 +18,11 @@
 
 package cz.anty.purkynka.settings;
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.v4.content.ContextCompat;
-import android.widget.Toast;
 
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -35,7 +31,6 @@ import com.mikepenz.aboutlibraries.util.Colors;
 import cz.anty.purkynka.Constants;
 import cz.anty.purkynka.R;
 import eu.codetopic.utils.AndroidUtils;
-import eu.codetopic.utils.timing.TimedComponentsManager;
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule;
 import eu.codetopic.utils.ui.activity.modular.ModularActivity;
 
@@ -85,8 +80,8 @@ public class SettingsActivity extends ModularActivity {
             addPreferencesFromResource(R.xml.settings);
 
             findPreference(PREFERENCE_KEY_REFRESH_ON_WIFI).setOnPreferenceChangeListener((preference, o) -> {
-                TimedComponentsManager.getInstance().setRequiredNetwork(
-                        SettingsData.Companion.getInstance().getRequiredNetworkType());
+                /*TimedComponentsManager.getInstance().setRequiredNetwork(
+                        SettingsData.Companion.getInstance().getRequiredNetworkType());*/ // TODO: apply change to runtime
                 return true;
             });
             findPreference("activity_about").setOnPreferenceClickListener(preference -> {
@@ -100,7 +95,7 @@ public class SettingsActivity extends ModularActivity {
                         .withAboutAppName(getString(R.string.app_name))
                         .withAboutVersionShownName(true)
                         .withAboutDescription("Copyright (c) 2017 Codetopic, All Rights Reserved. " // TODO: to strings and translate
-                                + " THIS SOFTWARE IS PROVIDED \"AS IS\" WITHOUT WARRANTY " // TODO: add GPLv3 license head
+                                + " THIS SOFTWARE IS PROVIDED \"AS IS\" WITHOUT WARRANTY " // TODO: add (use) GPLv3 license head
                                 + "OF ANY KIND. IN NO EVENT SHALL THE COPYRIGHT HOLDERS "
                                 + "OR AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR "
                                 + "OTHER LIABILITY, ARISING FROM USE OF THIS SOFTWARE OR IN "

@@ -41,11 +41,12 @@ import cz.anty.purkynka.accounts.AccountEditActivity
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.dashboard.DashboardFragment
+import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.settings.SettingsActivity
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidUtils
-import eu.codetopic.utils.LocalBroadcast
+import eu.codetopic.utils.broadcast.LocalBroadcast
 
 
 class MainActivity : NavigationActivity() {
@@ -69,6 +70,9 @@ class MainActivity : NavigationActivity() {
                 context.startActivity(getStartIntent(context, fragmentClass, fragmentExtras))
     }
 
+    override val mainFragmentClass: Class<out Fragment>?
+        get() = DashboardFragment::class.java
+
     private val accountChangedReceiver: AccountChangeReceiver = AccountChangeReceiver()
     private val activeAccountManager: ActiveAccountManager = ActiveAccountManager.instance
 
@@ -84,8 +88,8 @@ class MainActivity : NavigationActivity() {
         }
         LocalBroadcast.registerReceiver(accountChangedReceiver, intentFilter(ActiveAccountManager.getter))
 
-        isEnableSwitchingAccounts = true
-        isActiveAccountEditButtonEnabled = true
+        enableSwitchingAccounts = true
+        enableActiveAccountEditButton = true
 
         setNavigationViewAppIconResource(R.mipmap.ic_launcher)
 
@@ -111,10 +115,6 @@ class MainActivity : NavigationActivity() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(accountChangedReceiver)
         AccountManager.get(this).removeOnAccountsUpdatedListener(accountChangedReceiver)
         super.onDestroy()
-    }
-
-    override fun getMainFragmentClass(): Class<out Fragment> {
-        return DashboardFragment::class.java
     }
 
     override fun onCreateAccountNavigationMenu(menu: Menu): Boolean {
@@ -150,7 +150,7 @@ class MainActivity : NavigationActivity() {
         return activeAccountManager.activeAccount?.name ?: ""
     }
 
-    override fun onEditAccountButtonClick(v: View?): Boolean {
+    override fun onEditAccountButtonClick(v: View): Boolean {
         startActivityForResult(
                 Intent(this, AccountEditActivity::class.java)
                         .putExtra(AccountEditActivity.KEY_ACCOUNT,
@@ -230,7 +230,7 @@ class MainActivity : NavigationActivity() {
         return true
     }
 
-    override fun onBeforeReplaceFragment(ft: FragmentTransaction, fragment: Fragment) {
+    override fun onBeforeReplaceFragment(ft: FragmentTransaction, fragment: Fragment?) {
         ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
         val tabLayout = window.findViewById<TabLayout>(R.id.tabLayout)
         if (tabLayout != null) {

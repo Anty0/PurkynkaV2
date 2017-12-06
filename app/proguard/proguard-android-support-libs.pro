@@ -1,0 +1,1 @@
+-keepclassmembers class android.support.v7.widget.SearchView { public <init>(...); }

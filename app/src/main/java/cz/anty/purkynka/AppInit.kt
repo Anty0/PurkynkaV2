@@ -37,8 +37,6 @@ import eu.codetopic.java.utils.log.base.Priority
 import eu.codetopic.utils.UtilsBase.ProcessProfile
 import eu.codetopic.utils.UtilsBase
 
-import eu.codetopic.utils.thread.job.SingletonJobManager
-
 
 /**
  * Created by anty on 10/7/17.
@@ -72,14 +70,15 @@ class AppInit : Application() {
         }
 
         // Setup error logged listener
-        Logger.getErrorLogsHandler().addOnLoggedListener(object : LogsHandler.OnLoggedListener {
+        Logger.logsHandler.addOnLoggedListener(object : LogsHandler.OnLoggedListener {
             override fun onLogged(logLine: LogLine) {
                 Log.d("UExHandler", "Oh no, something went wrong (error logged). " +
                         "Ok, let's enable Feedback module...")
                 // TODO: 6/16/17 enable feedback module
             }
 
-            override fun filterPriorities() = arrayOf(Priority.ERROR)
+            override val filterPriorities: Array<Priority>?
+                get() = arrayOf(Priority.ERROR)
         })
 
         // Set color scheme of loading in RecyclerView
@@ -112,10 +111,6 @@ class AppInit : Application() {
 
         // Initialize sync adapters
         GradesSyncAdapter.init(this)
-
-        // Initialize singletons
-        SingletonJobManager.initialize(this)
-        //SingletonDatabase.initialize(new AppDatabase(app))
 
         // Initialize timed components (framework for repeating jobs)
         /*TimedComponentsManager.initialize(app,

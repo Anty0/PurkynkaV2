@@ -37,8 +37,8 @@ import cz.anty.purkynka.grades.save.GradesProvider
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.BundleBuilder
-import eu.codetopic.utils.LocalBroadcast
+import eu.codetopic.utils.bundle.BundleBuilder
+import eu.codetopic.utils.broadcast.LocalBroadcast
 import java.io.IOException
 
 /**

@@ -63,7 +63,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DebugActivity"
+            android:name=".debug.DebugActivity"
             android:label="@string/title_activity_debug_info"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

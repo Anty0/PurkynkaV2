@@ -52,10 +52,10 @@ import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.LocalBroadcast
+import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.thread.JobUtils
+import eu.codetopic.utils.thread.LooperUtils
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -91,6 +91,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     private var unbinder: Unbinder? = null
 
+    override val title: CharSequence
+        get() = getText(R.string.action_show_grades)
+    override val themeId: Int
+        get() = R.style.AppTheme_Grades
+
     private var recyclerManager: Recycler.RecyclerManagerImpl? = null
     private var adapter: CustomItemAdapter<CustomItem>? = null
 
@@ -123,7 +128,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         updateLoading()
     }
     private val syncObserver = SyncStatusObserver {
-        JobUtils.runOnMainThread {
+        LooperUtils.runOnMainThread {
             if (unbinder == null) return@runOnMainThread
             updateRecycler()
             updateLoading()
@@ -293,7 +298,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                             Sort.SUBJECTS -> gradesData.getSubjects(accountId)[semester.value]
                                     ?.map { SubjectItem(it) }
                         } ?: emptyList() // TODO: highlight grades differences obtained from GradesDataDifferences
-                )
+                ) // TODO: use thread to load grades (loading on main thread causes lags)
 
                 // All grades differences will be displayed to user, so let's remove them all
                 context?. let { GradesDataDifferences.requestClear(it, accountId) }
@@ -408,10 +413,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         super.onDestroy()
     }
-
-    override fun getTitle() = getText(R.string.action_show_grades)
-
-    override fun getThemeId() = R.style.AppTheme_Grades
 
     enum class Sort {
         DATE, SUBJECTS

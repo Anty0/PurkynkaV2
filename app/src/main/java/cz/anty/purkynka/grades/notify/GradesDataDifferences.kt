@@ -368,8 +368,9 @@ class GradesDataDifferences private constructor(context: Context) :
 
     private class Getter : PreferencesGetterAbs<GradesDataDifferences>() {
 
-        override fun get(): GradesDataDifferences? = instance
+        override fun get() = instance
 
-        override fun getDataClass(): Class<GradesDataDifferences> = GradesDataDifferences::class.java
+        override val dataClass: Class<out GradesDataDifferences>
+            get() = GradesDataDifferences::class.java
     }
 }

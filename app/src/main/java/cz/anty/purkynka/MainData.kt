@@ -55,6 +55,7 @@ class MainData private constructor(context: Context) :
 
         override fun get() = instance
 
-        override fun getDataClass() = MainData::class.java
+        override val dataClass: Class<out MainData>
+            get() = MainData::class.java
     }
 }
