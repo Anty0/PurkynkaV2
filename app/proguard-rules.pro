@@ -20,4 +20,11 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+# Keep BuildConfig
 -keep class cz.anty.purkynkamanager.BuildConfig { *; }
+
+# Remove kotlin's runtime null checks.
+# This will cause performance improvement in minified (release) builds.
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+}
