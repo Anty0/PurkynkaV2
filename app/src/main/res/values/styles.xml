@@ -46,30 +46,35 @@
     <style name="AppTheme.Grades.Base" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimaryGrades</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkGrades</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkGrades</item>
         <item name="colorAccent">@color/colorAccentGrades</item>
     </style>
 
     <style name="AppTheme.Attendance.Base" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimaryAttendance</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkAttendance</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkAttendance</item>
         <item name="colorAccent">@color/colorAccentAttendance</item>
     </style>
 
     <style name="AppTheme.Lunches.Base" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimaryLunches</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkLunches</item>
         <item name="colorAccent">@color/colorAccentLunches</item>
     </style>
 
     <style name="AppTheme.Timetables.Base" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimaryTimetables</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkTimetables</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkTimetables</item>
         <item name="colorAccent">@color/colorAccentTimetables</item>
     </style>
 
     <style name="AppTheme.WifiLogin.Base" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimaryWifiLogin</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkWifiLogin</item>
         <item name="colorAccent">@color/colorAccentWifiLogin</item>
     </style>
 
@@ -97,30 +102,35 @@
     <style name="AppTheme.Dialog.Grades.Base" parent="AppTheme.Dialog">
         <item name="colorPrimary">@color/colorPrimaryGrades</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkGrades</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkGrades</item>
         <item name="colorAccent">@color/colorAccentGrades</item>
     </style>
 
     <style name="AppTheme.Dialog.Attendance.Base" parent="AppTheme.Dialog">
         <item name="colorPrimary">@color/colorPrimaryAttendance</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkAttendance</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkAttendance</item>
         <item name="colorAccent">@color/colorAccentAttendance</item>
     </style>
 
     <style name="AppTheme.Dialog.Lunches.Base" parent="AppTheme.Dialog">
         <item name="colorPrimary">@color/colorPrimaryLunches</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkLunches</item>
         <item name="colorAccent">@color/colorAccentLunches</item>
     </style>
 
     <style name="AppTheme.Dialog.Timetables.Base" parent="AppTheme.Dialog">
         <item name="colorPrimary">@color/colorPrimaryTimetables</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkTimetables</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkTimetables</item>
         <item name="colorAccent">@color/colorAccentTimetables</item>
     </style>
 
     <style name="AppTheme.Dialog.WifiLogin.Base" parent="AppTheme.Dialog">
         <item name="colorPrimary">@color/colorPrimaryWifiLogin</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkWifiLogin</item>
         <item name="colorAccent">@color/colorAccentWifiLogin</item>
     </style>
 
@@ -140,6 +150,7 @@
     <style name="AppTheme.Base" parent="Theme.AppCompat">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="cardViewTheme">@style/CardView.Dark</item>
@@ -157,6 +168,7 @@
     <style name="AppTheme.NoActionBar.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="cardViewTheme">@style/CardView.Dark</item>
@@ -174,6 +186,7 @@
     <style name="AppTheme.Dialog.Base" parent="Theme.AppCompat.Dialog">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="cardViewTheme">@style/CardView.Dark</item>

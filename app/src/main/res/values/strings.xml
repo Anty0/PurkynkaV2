@@ -81,7 +81,8 @@
         <item quantity="other">%1$d Grades</item>
     </plurals>
 
-    <string name="empty_view_text_no_grades">No grades to display…</string>
+    <string name="empty_view_text_no_grades">No grades</string>
+    <string name="empty_view_text_small_no_grades">All your grades from selected semester will appear here.</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
 

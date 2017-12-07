@@ -93,7 +93,7 @@ class MainActivity : NavigationActivity() {
 
         setNavigationViewAppIconResource(R.mipmap.ic_launcher)
 
-        findViewById<NavigationView>(R.id.nav_view).apply {
+        findViewById<NavigationView>(R.id.navigationView).apply {
             val white = ContextCompat.getColorStateList(this@MainActivity, android.R.color.white)
             itemTextColor = white
             itemIconTintList = white

@@ -20,36 +20,39 @@
 <resources>
     <color name="dark">#323232</color>
 
-    <color name="sideNavBarColorDarker">#148219</color>
-    <color name="sideNavBarColorLighter">#217429</color>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorPrimaryExtraDark">#2E7D32</color>
+    <color name="navigationBarColor">#1B5E20</color>
+    <color name="colorAccent">#536DFE</color>
 
-    <color name="colorPrimary">#30a147</color>
-    <color name="colorPrimaryDark">#238232</color>
-    <color name="navigationBarColor">#005000</color>
-    <color name="colorAccent">#11ffbb</color>
+    <color name="colorPrimaryGrades">#3F51B5</color>
+    <color name="colorPrimaryDarkGrades">#303F9F</color>
+    <color name="colorPrimaryExtraDarkGrades">#283593</color>
+    <color name="navigationBarColorGrades">#1A237E</color>
+    <color name="colorAccentGrades">#00BCD4</color>
 
-    <color name="colorPrimaryGrades">#5f51b5</color>
-    <color name="colorPrimaryDarkGrades">#453282</color>
-    <color name="navigationBarColorGrades">#300050</color>
-    <color name="colorAccentGrades">#a1bbff</color>
+    <color name="colorPrimaryAttendance">#009688</color>
+    <color name="colorPrimaryDarkAttendance">#00796B</color>
+    <color name="colorPrimaryExtraDarkAttendance">#00695C</color>
+    <color name="navigationBarColorAttendance">#004D40</color>
+    <color name="colorAccentAttendance">#00BCD4</color>
 
-    <color name="colorPrimaryAttendance">#3f51b5</color>
-    <color name="colorPrimaryDarkAttendance">#233282</color>
-    <color name="navigationBarColorAttendance">#000050</color>
-    <color name="colorAccentAttendance">#11bbff</color>
+    <color name="colorPrimaryLunches">#FF5722</color>
+    <color name="colorPrimaryDarkLunches">#E64A19</color>
+    <color name="colorPrimaryExtraDarkLunches">#D84315</color>
+    <color name="navigationBarColorLunches">#BF360C</color>
+    <color name="colorAccentLunches">#795548</color>
 
-    <color name="colorPrimaryLunches">#ed5629</color>
-    <color name="colorPrimaryDarkLunches">#d7441d</color>
-    <color name="navigationBarColorLunches">#501000</color>
-    <color name="colorAccentLunches">#ff8a65</color>
+    <color name="colorPrimaryTimetables">#FF9800</color>
+    <color name="colorPrimaryDarkTimetables">#F57C00</color>
+    <color name="colorPrimaryExtraDarkTimetables">#EF6C00</color>
+    <color name="navigationBarColorTimetables">#E65100</color>
+    <color name="colorAccentTimetables">#795548</color>
 
-    <color name="colorPrimaryTimetables">#c66d00</color>
-    <color name="colorPrimaryDarkTimetables">#b46e16</color>
-    <color name="navigationBarColorTimetables">#301500</color>
-    <color name="colorAccentTimetables">#b98039</color>
-
-    <color name="colorPrimaryWifiLogin">#556555</color>
-    <color name="colorPrimaryDarkWifiLogin">#334033</color>
-    <color name="navigationBarColorWifiLogin">#151515</color>
-    <color name="colorAccentWifiLogin">#cfc</color>
+    <color name="colorPrimaryWifiLogin">#607D8B</color>
+    <color name="colorPrimaryDarkWifiLogin">#455A64</color>
+    <color name="colorPrimaryExtraDarkWifiLogin">#37474F</color>
+    <color name="navigationBarColorWifiLogin">#263238</color>
+    <color name="colorAccentWifiLogin">#009688</color>
 </resources>

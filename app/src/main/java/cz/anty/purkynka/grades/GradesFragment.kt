@@ -197,6 +197,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 .on(themedInflater, recyclerContainer, true)
                 .setEmptyImage(R.mipmap.ic_launcher_grades) // TODO: better image
                 .setEmptyText(R.string.empty_view_text_no_grades)
+                .setSmallEmptyText(R.string.empty_view_text_small_no_grades)
                 .setAdapter(adapter)
                 .setOnRefreshListener(::requestSync)
 
