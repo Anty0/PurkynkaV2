@@ -93,26 +93,26 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private var sort: Sort = Sort.DATE
         set(value) {
             field = value
-            if (isResumed) updateRecycler()
+            if (view != null) updateRecycler()
         }
     private var semester: Semester = Semester.AUTO.stableSemester
         set(value) {
             field = value
-            if (isResumed) updateRecycler()
+            if (view != null) updateRecycler()
         }
 
     private var syncObserverHandle: Any? = null
 
     private val accountChangedReceiver = broadcast { _, _ -> updateActiveAccount() }
-    private val loginDataChangedReceiver = broadcast { _, _ -> if (isResumed) updateVisibility() }
+    private val loginDataChangedReceiver = broadcast { _, _ -> if (view != null) updateVisibility() }
     private val dataChangedReceiver = broadcast { _, _ ->
-        if (!isResumed) return@broadcast
+        if (view == null) return@broadcast
         updateRecycler()
         updateLoading()
     }
     private val syncObserver = SyncStatusObserver {
         LooperUtils.runOnMainThread {
-            if (!isResumed) return@runOnMainThread
+            if (view == null) return@runOnMainThread
             updateRecycler()
             updateLoading()
         }
@@ -126,7 +126,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             showNoAccountSnackbar(getText(messageId))
 
     private fun showNoAccountSnackbar(message: CharSequence) {
-        if (!isResumed) return Log.w(LOG_TAG, "showNoAccountSnackbar($message) -> " +
+        if (view == null) return Log.w(LOG_TAG, "showNoAccountSnackbar($message) -> " +
                 "Can't show snackbar: No view available.")
         Snackbar.make(baseView, message, Snackbar.LENGTH_LONG).show()
     }
@@ -198,6 +198,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         syncObserverHandle = ContentResolver.addStatusChangeListener(mask, syncObserver)
 
         updateActiveAccount()
+        updateVisibility()
     }
 
     override fun onPause() {
@@ -261,7 +262,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         // Check if views are initialized, fixes possible problems
         // if data change occur after onCreate(), but before onCreateContentView()
-        if (!isResumed) return
+        if (view == null) return
 
         updateVisibility()
     }
@@ -323,7 +324,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private fun updateStatusSnackbar() {
         val accountId = activeAccountId
         val syncResult = if (accountId != null) gradesData.getLastSyncResult(accountId) else null
-        if (!isResumed) return Log.w(LOG_TAG,
+        if (view == null) return Log.w(LOG_TAG,
                 "updateStatusSnackbar(): Can't show snackbar, no view available.")
 
         when (syncResult) {
