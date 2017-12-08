@@ -20,12 +20,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".grades.GradesFragment"
-    android:id="@+id/base_view"
+    android:id="@+id/baseView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ScrollView
-        android:id="@+id/container_login"
+        android:id="@+id/boxLogin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
@@ -55,7 +55,7 @@
                 android:layout_marginBottom="8dp">
 
                 <android.support.design.widget.TextInputEditText
-                    android:id="@+id/edit_username"
+                    android:id="@+id/inUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -71,7 +71,7 @@
                 android:layout_marginBottom="8dp">
 
                 <android.support.design.widget.TextInputEditText
-                    android:id="@+id/edit_password"
+                    android:id="@+id/inPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -80,7 +80,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.v7.widget.AppCompatButton
-                android:id="@+id/but_login"
+                android:id="@+id/butLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -92,7 +92,7 @@
     </ScrollView>
 
     <FrameLayout
-        android:id="@+id/container_recycler"
+        android:id="@+id/boxRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"/>

@@ -31,14 +31,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ScrollView
 
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
-import butterknife.Unbinder
 import cz.anty.purkynka.R
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
@@ -62,10 +55,15 @@ import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import eu.codetopic.utils.ui.container.adapter.CustomItemAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.recycler.Recycler
+import kotlinx.android.extensions.CacheImplementation
+import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.synthetic.main.fragment_grades.*
+import kotlinx.android.synthetic.main.fragment_grades.view.*
 
 /**
  * @author anty
  */
+@ContainerOptions(CacheImplementation.SPARSE_ARRAY)
 class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     companion object {
@@ -75,21 +73,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         private const val SAVE_EXTRA_SORT = "$LOG_TAG.SORT"
         private const val SAVE_EXTRA_SEMESTER = "$LOG_TAG.SEMESTER"
     }
-
-    @BindView(R.id.base_view)
-    lateinit var baseView: FrameLayout
-
-    @BindView(R.id.container_recycler)
-    lateinit var recyclerContainer: FrameLayout
-    @BindView(R.id.container_login)
-    lateinit var loginContainer: ScrollView
-
-    @BindView(R.id.edit_username)
-    lateinit var inputUsername: EditText
-    @BindView(R.id.edit_password)
-    lateinit var inputPassword: EditText
-
-    private var unbinder: Unbinder? = null
 
     override val title: CharSequence
         get() = getText(R.string.action_show_grades)
@@ -110,26 +93,26 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private var sort: Sort = Sort.DATE
         set(value) {
             field = value
-            if (unbinder != null) updateRecycler()
+            if (isResumed) updateRecycler()
         }
     private var semester: Semester = Semester.AUTO.stableSemester
         set(value) {
             field = value
-            if (unbinder != null) updateRecycler()
+            if (isResumed) updateRecycler()
         }
 
     private var syncObserverHandle: Any? = null
 
     private val accountChangedReceiver = broadcast { _, _ -> updateActiveAccount() }
-    private val loginDataChangedReceiver = broadcast { _, _ -> if (unbinder != null) updateVisibility() }
+    private val loginDataChangedReceiver = broadcast { _, _ -> if (isResumed) updateVisibility() }
     private val dataChangedReceiver = broadcast { _, _ ->
-        if (unbinder == null) return@broadcast
+        if (!isResumed) return@broadcast
         updateRecycler()
         updateLoading()
     }
     private val syncObserver = SyncStatusObserver {
         LooperUtils.runOnMainThread {
-            if (unbinder == null) return@runOnMainThread
+            if (!isResumed) return@runOnMainThread
             updateRecycler()
             updateLoading()
         }
@@ -143,8 +126,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             showNoAccountSnackbar(getText(messageId))
 
     private fun showNoAccountSnackbar(message: CharSequence) {
-        if (unbinder == null) return Log.w(LOG_TAG,
-                "showNoAccountSnackbar($message): Can't show snackbar, no view available.")
+        if (!isResumed) return Log.w(LOG_TAG, "showNoAccountSnackbar($message) -> " +
+                "Can't show snackbar: No view available.")
         Snackbar.make(baseView, message, Snackbar.LENGTH_LONG).show()
     }
 
@@ -167,8 +150,44 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 Semester.AUTO.stableSemester
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable(SAVE_EXTRA_SORT, sort)
+        outState.putSerializable(SAVE_EXTRA_SEMESTER, semester)
+    }
+
+    override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
+                                     savedInstanceState: Bundle?): View? {
+        val themedInflater = inflater.cloneInContext(
+                ContextThemeWrapper(inflater.context, R.style.AppTheme_Grades)
+        )
+        val view = themedInflater
+                .inflate(R.layout.fragment_grades, container, false)
 
         adapter = CustomItemAdapter(context)
+
+        view.butLogin.setOnClickListener { login() }
+
+        recyclerManager = Recycler.inflate().withSwipeToRefresh()
+                .on(themedInflater, view.boxRecycler, true)
+                .setEmptyImage(R.mipmap.ic_launcher_grades) // TODO: better image
+                .setEmptyText(R.string.empty_view_text_no_grades)
+                .setSmallEmptyText(R.string.empty_view_text_small_no_grades)
+                .setAdapter(adapter)
+                .setOnRefreshListener(::requestSync)
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        updateVisibility()
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         LocalBroadcast.registerReceiver(loginDataChangedReceiver, intentFilter(GradesLoginData.getter))
         LocalBroadcast.registerReceiver(dataChangedReceiver, intentFilter(GradesData.getter))
@@ -181,32 +200,25 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         updateActiveAccount()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putSerializable(SAVE_EXTRA_SORT, sort)
-        outState.putSerializable(SAVE_EXTRA_SEMESTER, semester)
+    override fun onPause() {
+        LocalBroadcast.unregisterReceiver(accountChangedReceiver)
+        LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
+        LocalBroadcast.unregisterReceiver(dataChangedReceiver)
+
+        syncObserverHandle?.let {
+            ContentResolver.removeStatusChangeListener(it)
+            syncObserverHandle = null
+        }
+
+        super.onPause()
     }
 
-    override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val themedInflater = inflater.cloneInContext(
-                ContextThemeWrapper(inflater.context, R.style.AppTheme_Grades))
-        val baseView = themedInflater.inflate(R.layout.fragment_grades, container, false)
-        unbinder = ButterKnife.bind(this, baseView)
+    override fun onDestroyView() {
+        recyclerManager = null
+        adapter = null
 
-        recyclerManager = Recycler.inflate().withSwipeToRefresh()
-                .on(themedInflater, recyclerContainer, true)
-                .setEmptyImage(R.mipmap.ic_launcher_grades) // TODO: better image
-                .setEmptyText(R.string.empty_view_text_no_grades)
-                .setSmallEmptyText(R.string.empty_view_text_small_no_grades)
-                .setAdapter(adapter)
-                .setOnRefreshListener(::requestSync)
-
-        updateVisibility()
-        return baseView
+        super.onDestroyView()
     }
-
-    @OnClick(R.id.but_login)
-    fun onLoginClick() = login()
 
     private fun requestSyncWithLoading() {
         holder.takeIf { !it.isLoadingShowed }?.showLoading()
@@ -226,8 +238,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         loginData.login(
                 activeAccountId ?: return showNoAccountSnackbar(
                         R.string.snackbar_no_account_login),
-                inputUsername.text.toString(),
-                inputPassword.text.toString()
+                inUsername.text.toString(),
+                inPassword.text.toString()
         )
     }
 
@@ -249,7 +261,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         // Check if views are initialized, fixes possible problems
         // if data change occur after onCreate(), but before onCreateContentView()
-        if (unbinder == null) return
+        if (!isResumed) return
 
         updateVisibility()
     }
@@ -257,13 +269,13 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private fun updateVisibility() {
         val accountId = activeAccountId
         if (accountId != null && loginData.isLoggedIn(accountId)) {
-            recyclerContainer.visibility = View.VISIBLE
-            loginContainer.visibility = View.GONE
+            boxRecycler.visibility = View.VISIBLE
+            boxLogin.visibility = View.GONE
 
             updateRecycler()
         } else {
-            recyclerContainer.visibility = View.GONE
-            loginContainer.visibility = View.VISIBLE
+            boxRecycler.visibility = View.GONE
+            boxLogin.visibility = View.VISIBLE
 
             updateLoginScreen()
         }
@@ -282,8 +294,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     private fun updateLoginScreen() {
         val accountId = activeAccountId
-        if (accountId != null && inputUsername.text.isEmpty())
-            loginData.getUsername(accountId)?.let { inputUsername.setText(it) }
+        if (accountId != null && inUsername.text.isEmpty())
+            loginData.getUsername(accountId)?.let { inUsername.setText(it) }
     }
 
     private fun updateRecycler() {
@@ -311,7 +323,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private fun updateStatusSnackbar() {
         val accountId = activeAccountId
         val syncResult = if (accountId != null) gradesData.getLastSyncResult(accountId) else null
-        if (unbinder == null) return Log.w(LOG_TAG,
+        if (!isResumed) return Log.w(LOG_TAG,
                 "updateStatusSnackbar(): Can't show snackbar, no view available.")
 
         when (syncResult) {
@@ -391,28 +403,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             else -> return false
         }
         return true
-    }
-
-    override fun onDestroyView() {
-        recyclerManager = null
-        unbinder?.unbind()
-        unbinder = null
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        LocalBroadcast.unregisterReceiver(accountChangedReceiver)
-        LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
-        LocalBroadcast.unregisterReceiver(dataChangedReceiver)
-
-        syncObserverHandle?.let {
-            ContentResolver.removeStatusChangeListener(it)
-            syncObserverHandle = null
-        }
-
-        adapter = null
-
-        super.onDestroy()
     }
 
     enum class Sort {

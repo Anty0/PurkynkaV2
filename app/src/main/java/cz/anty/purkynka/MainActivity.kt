@@ -81,13 +81,6 @@ class MainActivity : NavigationActivity() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) processIntent(intent)
 
-        with (AccountManager.get(this)) {
-            if (Build.VERSION.SDK_INT >= 26) addOnAccountsUpdatedListener(accountChangedReceiver,
-                    null, true, arrayOf(AccountsHelper.ACCOUNT_TYPE))
-            else addOnAccountsUpdatedListener(accountChangedReceiver, null, true)
-        }
-        LocalBroadcast.registerReceiver(accountChangedReceiver, intentFilter(ActiveAccountManager.getter))
-
         enableSwitchingAccounts = true
         enableActiveAccountEditButton = true
 
@@ -111,10 +104,24 @@ class MainActivity : NavigationActivity() {
                 ?.let { replaceFragment(it, intent?.getBundleExtra(EXTRA_FRAGMENT_EXTRAS)) }
     }
 
-    override fun onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(accountChangedReceiver)
+    override fun onResume() {
+        super.onResume()
+
+        with (AccountManager.get(this)) {
+            if (Build.VERSION.SDK_INT >= 26) addOnAccountsUpdatedListener(accountChangedReceiver,
+                    null, true, arrayOf(AccountsHelper.ACCOUNT_TYPE))
+            else addOnAccountsUpdatedListener(accountChangedReceiver, null, true)
+        }
+        LocalBroadcast.registerReceiver(accountChangedReceiver, intentFilter(ActiveAccountManager.getter))
+
+        invalidateNavigationMenu()
+    }
+
+    override fun onPause() {
+        LocalBroadcast.unregisterReceiver(accountChangedReceiver)
         AccountManager.get(this).removeOnAccountsUpdatedListener(accountChangedReceiver)
-        super.onDestroy()
+
+        super.onPause()
     }
 
     override fun onCreateAccountNavigationMenu(menu: Menu): Boolean {
