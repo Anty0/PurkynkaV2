@@ -66,9 +66,9 @@ class SubjectItem(private val base: Subject): CustomItem() {
         }
     }
 
-    override fun getItemLayoutResId(context: Context?): Int = R.layout.item_subject
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_subject
 
-    override fun getWrappers(context: Context?): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+    override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

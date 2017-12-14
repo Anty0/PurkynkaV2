@@ -110,7 +110,7 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
         try {
             val semester = if (extras.containsKey(EXTRA_SEMESTER)) {
                 try {
-                    Semester.valueOf(extras.getString(EXTRA_SEMESTER))
+                    Semester.valueOf(extras.getString(EXTRA_SEMESTER)).stableSemester
                 } catch (e: Exception) {
                     Log.w(LOG_TAG, e)
                     Semester.AUTO
@@ -131,13 +131,11 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
             val gradesHtml = GradesFetcher.getGradesElements(cookies, semester)
             val grades = GradesParser.parseGrades(gradesHtml)
 
-            val gradesMap = data.getGrades(accountId)
-            gradesMap[semester.value]?.apply {
-                checkForDiffs(accountId, this, grades)
-
-                clear()
-                addAll(grades)
+            val gradesMap = data.getGrades(accountId).toMutableMap()
+            gradesMap.getOrElse(semester.value) { emptyList() }.let {
+                checkForDiffs(accountId, it, grades)
             }
+            gradesMap[semester.value] = grades
             data.setGrades(accountId, gradesMap)
 
             data.setLastSyncResult(accountId, SUCCESS)

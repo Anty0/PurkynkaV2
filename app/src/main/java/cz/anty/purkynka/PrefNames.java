@@ -34,6 +34,11 @@ public final class PrefNames {
     /// SettingsData
     public static final String FILE_NAME_SETTINGS_DATA = "SettingsData";
     // Grades
+    /// GradesUiData
+    public static final String FILE_NAME_GRADES_UI_DATA = "GradesUI";
+    public static final String LAST_SORT_GRADES = "SORT_GRADES";
+    /// GradesLoginData
+    public static final String FILE_NAME_GRADES_LOGIN_DATA = "GradesLoginData";
     /// GradesData
     public static final String FILE_NAME_GRADES_DATA = "GradesData";
     public static final String SYNC_RESULT = "SYNC_RESULT";
@@ -43,6 +48,4 @@ public final class PrefNames {
     public static final String GRADES_ADDED = "GRADES_ADDED";
     public static final String GRADES_MODIFIED = "GRADES_MODIFIED";
     public static final String GRADES_REMOVED = "GRADES_REMOVED";
-    /// GradesLoginData
-    public static final String FILE_NAME_GRADES_LOGIN_DATA = "GradesLoginData";
 }

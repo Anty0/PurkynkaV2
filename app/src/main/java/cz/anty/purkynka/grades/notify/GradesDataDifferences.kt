@@ -29,14 +29,13 @@ import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
-import com.github.salomonbrys.kotson.typeToken
-import com.google.gson.Gson
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.PrefNames.*
 import cz.anty.purkynka.R
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.grades.data.Grade
+import eu.codetopic.java.utils.JavaExtensions.kSerializer
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.preference.BasePreference
@@ -44,8 +43,11 @@ import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvid
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
-import eu.codetopic.utils.data.preferences.preference.GsonPreference
+import eu.codetopic.utils.data.preferences.preference.KotlinSerializedPreference
 import eu.codetopic.utils.ids.Identifiers
+import kotlinx.serialization.internal.IntSerializer
+import kotlinx.serialization.internal.PairSerializer
+import kotlinx.serialization.map
 
 /**
  * @author anty
@@ -53,7 +55,7 @@ import eu.codetopic.utils.ids.Identifiers
 class GradesDataDifferences private constructor(context: Context) :
         VersionedPreferencesData<SharedPreferences>(context,
                 BasicSharedPreferencesProvider(context, FILE_NAME_GRADES_DATA_DIFFERENCES),
-                SAVE_VERSION) {
+                SAVE_VERSION) { // TODO: create NotificationsManager and use it to replace this class
 
     companion object : PreferencesCompanionObject<GradesDataDifferences>(GradesDataDifferences.LOG_TAG,
             ::GradesDataDifferences, GradesDataDifferences::Getter) {
@@ -87,41 +89,55 @@ class GradesDataDifferences private constructor(context: Context) :
         } // No more versions yet
     }
 
-    private val gson: Gson = Gson()
-
     private fun formatNotifyChannelId(accountId: String) = "$NOTIFY_BASE_STR_ID.channelId(ID={$accountId})"
 
     private fun formatNotifyTag(accountId: String) = "$NOTIFY_BASE_STR_ID.tag(ID={$accountId})"
 
     private fun formatNotifyGroup(accountId: String) = "$NOTIFY_BASE_STR_ID.group(ID={$accountId})"
 
-    private val addedPreference = GsonPreference<MutableMap<Int, Grade>>(GRADES_ADDED, gson,
-            typeToken<MutableMap<Int, Grade>>(), accessProvider) { mutableMapOf() }
+    private val addedPreference = KotlinSerializedPreference<Map<Int, Grade>>(
+            GRADES_ADDED,
+            (IntSerializer to kSerializer<Grade>()).map,
+            accessProvider,
+            ::mutableMapOf
+    )
 
-    private val modifiedPreference = GsonPreference<MutableMap<Int, Pair<Grade, Grade>>>(GRADES_MODIFIED, gson,
-            typeToken<MutableMap<Int, Pair<Grade, Grade>>>(), accessProvider) { mutableMapOf() }
+    private val modifiedPreference = KotlinSerializedPreference<Map<Int, Pair<Grade, Grade>>>(
+            GRADES_MODIFIED,
+            (IntSerializer to PairSerializer<Grade, Grade>(kSerializer(), kSerializer())).map,
+            accessProvider,
+            ::mutableMapOf
+    )
 
-    //private val removedPreference = CachedGsonPreference<MutableMap<Int, Grade>>(GRADES_REMOVED, gson,
-    //        typeToken<MutableMap<Int, Grade>>(), accessProvider) { mutableMapOf() }
-
-    private fun <T> BasePreference<MutableMap<Int, T>, *>.addWithIds(accountId: String, toAdd: List<T>) {
-        getValue(this, accountId)
+    private fun <T> BasePreference<Map<Int, T>, *>.addWithIds(accountId: String, toAdd: List<T>) {
+        getValue(this@GradesDataDifferences, accountId).toMutableMap()
                 .apply {
                     putAll(toAdd.map { Identifiers.next(NOTIFY_TYPE_GRADES_DIFF) to it })
                 }
-                .let { setValue(this, accountId, it) }
+                .let { setValue(this@GradesDataDifferences, accountId, it) }
     }
 
-    private fun <T> BasePreference<MutableMap<Int, T>, *>.clearChanges(accountId: String) {
+    private fun <T> BasePreference<Map<Int, T>, *>.cancelAll(accountId: String) {
         val tag = formatNotifyTag(accountId)
         val notifyManager = NotificationManagerCompat.from(context)
 
-        getValue(this, accountId)
+        getValue(this@GradesDataDifferences, accountId).toMutableMap()
                 .apply {
                     forEach { notifyManager.cancel(tag, it.key) }
                     clear()
                 }
-                .let { setValue(this, accountId, it) }
+                .let { setValue(this@GradesDataDifferences, accountId, it) }
+    }
+
+    private fun <T> BasePreference<Map<Int, T>, *>.cancel(accountId: String, notificationId: Int): T? {
+        val tag = formatNotifyTag(accountId)
+
+        return getValue(this@GradesDataDifferences, accountId).toMutableMap().let {
+            it.remove(notificationId)?.apply {
+                setValue(this@GradesDataDifferences, accountId, it)
+                NotificationManagerCompat.from(context).cancel(tag, notificationId)
+            }
+        }
     }
 
     internal fun notifyLaunchReceived(accountId: String, notificationId: Int) {
@@ -155,17 +171,8 @@ class GradesDataDifferences private constructor(context: Context) :
         }
 
 
-        val grade = addedPreference.getValue(this, accountId).let {
-            it[notificationId]?.apply {
-                it.remove(notificationId)
-                addedPreference.setValue(this, accountId, it)
-            } ?: modifiedPreference.getValue(this, accountId).let {
-                it[notificationId]?.apply {
-                    it.remove(notificationId)
-                    modifiedPreference.setValue(this, accountId, it)
-                }?.second
-            }
-        }
+        val grade = addedPreference.cancel(accountId, notificationId) ?:
+                modifiedPreference.cancel(accountId, notificationId)?.second
 
         if (grade == null) {
             Log.w(LOG_TAG, "notifyDeleteReceived(accountId=$accountId, notificationId=$notificationId) -> " +
@@ -173,19 +180,14 @@ class GradesDataDifferences private constructor(context: Context) :
             return
         }
 
-        // Make sure, that notification doesn't exist any more
-        val tag = formatNotifyTag(accountId)
-        NotificationManagerCompat.from(context).cancel(tag, notificationId)
-
         updateDiffNotifications(accountId)
     }
 
-    fun addNewDiffs(accountId: String, added: List<Grade>, modified: List<Pair<Grade, Grade>>/*, removed: List<Grade>*/) {
-        Log.d(LOG_TAG, "addNewDiffs(accountId=$accountId, added=$added, modified=$modified)") // , removed=$removed
+    fun addNewDiffs(accountId: String, added: List<Grade>, modified: List<Pair<Grade, Grade>>) {
+        Log.d(LOG_TAG, "addNewDiffs(accountId=$accountId, added=$added, modified=$modified)")
 
         addedPreference.addWithIds(accountId, added)
         modifiedPreference.addWithIds(accountId, modified)
-        //removedPreference.addWithIds(accountId, removed)
 
         updateDiffNotifications(accountId)
     }
@@ -193,9 +195,8 @@ class GradesDataDifferences private constructor(context: Context) :
     fun clearDiffs(accountId: String) {
         Log.d(LOG_TAG, "clearDiffs(accountId=$accountId)")
 
-        addedPreference.clearChanges(accountId)
-        modifiedPreference.clearChanges(accountId)
-        //removedPreference.clearChanges(accountId)
+        addedPreference.cancelAll(accountId)
+        modifiedPreference.cancelAll(accountId)
 
         updateDiffNotifications(accountId)
     }

@@ -119,7 +119,7 @@ object GradesParser {
         val id = Uri.parse(dateElement.attr("abs:href"))
                 .getQueryParameter("zaznam").toInt()
         val date = try {
-            GRADE_DATE_FORMAT.parse(dateElement.text())
+            GRADE_DATE_FORMAT.parse(dateElement.text()).time
         } catch (e: ParseException) {
             throw IllegalArgumentException("Parameter error: invalid date ${gradeData[0].text()}", e)
         }

@@ -70,6 +70,7 @@
     <string name="insert_password">Password</string>
 
     <string name="but_login">Login</string>
+    <string name="but_create">Create</string>
     <string name="but_save">Save</string>
 
     <string name="text_view_grade">Grade</string>
@@ -88,6 +89,7 @@
 
     <string name="snackbar_no_account_sync">"No account available, can't request sync for you."</string>
     <string name="snackbar_no_account_login">"No account available, can't log you in."</string>
+    <string name="snackbar_no_account_logout">"No account available, can't log you out."</string>
     <string name="snackbar_grades_refresh_fail_unknown">Last attempt to refresh grades failed.</string>
     <string name="snackbar_grades_refresh_fail_connect">Connection error. Failed to refresh grades.</string>
     <string name="snackbar_grades_refresh_fail_login">Failed to login. Are login credentials in order?</string>

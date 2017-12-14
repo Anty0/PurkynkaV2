@@ -78,7 +78,7 @@ class GradeItem(private val base: Grade, private val showSubject: Boolean = true
 
     override fun getItemLayoutResId(context: Context) = R.layout.item_grade
 
-    override fun getWrappers(context: Context?): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+    override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

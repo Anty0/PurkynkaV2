@@ -20,22 +20,23 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.github.salomonbrys.kotson.typeToken
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import cz.anty.purkynka.PrefNames.GRADES_MAP
 import cz.anty.purkynka.PrefNames.SYNC_RESULT
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
+import eu.codetopic.java.utils.JavaExtensions.kSerializer
 
 import eu.codetopic.utils.data.preferences.PreferencesData
-import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
-import eu.codetopic.utils.data.preferences.preference.GsonPreference
+import eu.codetopic.utils.data.preferences.preference.EnumPreference
+import eu.codetopic.utils.data.preferences.preference.KotlinSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
-import eu.codetopic.utils.data.preferences.provider.SecureSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.internal.IntSerializer
+import kotlinx.serialization.list
+import kotlinx.serialization.map
+import kotlin.reflect.KClass
 
 /**
  * @author anty
@@ -59,19 +60,24 @@ class GradesData private constructor(context: Context) :
         }
     }
 
-    private val gson: Gson = Gson()
+    private val lastSyncResultPref = EnumPreference(
+            SYNC_RESULT,
+            SyncResult::class,
+            accessProvider,
+            SyncResult.SUCCESS
+    )
 
-    private val lastSyncResultPreference = GsonPreference(SYNC_RESULT, gson,
-            typeToken<SyncResult>(), accessProvider, SyncResult.SUCCESS)
+    fun getLastSyncResult(id: String): SyncResult = lastSyncResultPref.getValue(this, id)
 
-    fun getLastSyncResult(id: String): SyncResult = lastSyncResultPreference.getValue(this, id)
+    fun setLastSyncResult(id: String, value: SyncResult) = lastSyncResultPref.setValue(this, id, value)
 
-    fun setLastSyncResult(id: String, value: SyncResult) = lastSyncResultPreference.setValue(this, id, value)
-
-    private val gradesPreference = GsonPreference<GradesMap>(GRADES_MAP, gson,
-            typeToken<GradesMap>(), accessProvider) {
-        mapOf(Semester.FIRST.value to mutableListOf(),
-                Semester.SECOND.value to mutableListOf())
+    private val gradesPreference = KotlinSerializedPreference<GradesMap>(
+            GRADES_MAP,
+            (IntSerializer to kSerializer<Grade>().list).map,
+            accessProvider
+    ) {
+        mapOf(Semester.FIRST.value to emptyList(),
+                Semester.SECOND.value to emptyList())
     }
 
     fun getGrades(id: String): GradesMap = gradesPreference.getValue(this, id)

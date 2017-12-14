@@ -60,7 +60,7 @@ class AccountAddActivity : ModularActivity(ToolbarModule(), CoordinatorLayoutMod
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_account)
 
-        butLogin.setOnClickListener(::login)
+        butCreate.setOnClickListener(::login)
 
         accountManager = AccountManager.get(this)
         accountAuthenticatorResponse = intent.getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)

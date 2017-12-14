@@ -29,6 +29,8 @@ import cz.anty.purkynka.grades.load.GradesParser
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import proguard.annotation.Keep
 import proguard.annotation.KeepClassMemberNames
 import proguard.annotation.KeepClassMembers
@@ -42,10 +44,12 @@ import java.util.*
 @KeepName
 @KeepClassMembers
 @KeepClassMemberNames
-data class Grade(val id: Int, val date: Date, val subjectShort: String, val subjectLong: String, val valueToShow: String,
+@Serializable
+data class Grade(val id: Int, val date: Long, val subjectShort: String, val subjectLong: String, val valueToShow: String,
                  val value: Float, val type: String, val weight: Int, val note: String, val teacher: String) {
 
-    val dateStr: String get() = GradesParser.GRADE_DATE_FORMAT.format(date)
+    @Transient
+    val dateStr: String get() = GradesParser.GRADE_DATE_FORMAT.format(Date(date))
 
     override fun hashCode() = id.hashCode()
 

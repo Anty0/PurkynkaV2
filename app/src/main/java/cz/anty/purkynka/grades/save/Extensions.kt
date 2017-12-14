@@ -25,5 +25,5 @@ import cz.anty.purkynka.grades.data.Subject
  * @author anty
  */
 
-typealias GradesMap = Map<Int, MutableList<Grade>>
+typealias GradesMap = Map<Int, List<Grade>>
 typealias SubjectsMap = Map<Int, List<Subject>>

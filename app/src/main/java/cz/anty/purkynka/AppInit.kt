@@ -25,6 +25,7 @@ import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.notify.GradesDataDifferences
 import cz.anty.purkynka.grades.save.GradesLoginData
+import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.settings.SettingsData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
@@ -103,6 +104,7 @@ class AppInit : Application() {
         MainData.initialize(this)
         ActiveAccountManager.initialize(this)
         SettingsData.initialize(this)
+        GradesUiData.initialize(this)
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
 

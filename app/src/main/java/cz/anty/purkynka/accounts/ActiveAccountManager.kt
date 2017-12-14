@@ -56,7 +56,7 @@ class ActiveAccountManager private constructor(context: Context) :
                     avAccounts[0]
                 } else null
             }
-            val name = preferences.getString(ACTIVE_ACCOUNT_NAME, null) ?: return getFirstAccount()
+            val name = preferences.getString(ACTIVE_ACCOUNT_NAME, null) ?: return run(getFirstAccount)
 
             avAccounts.filter { name == it.name }.forEach { return it }
             if (Build.VERSION.SDK_INT >= 21) {
@@ -66,13 +66,15 @@ class ActiveAccountManager private constructor(context: Context) :
                 }
             }
 
-            return getFirstAccount()
+            return run(getFirstAccount)
         }
         set(account) = setActiveAccount(account?.name)
 
-    val activeAccountId: String? get() {
-        return AccountsHelper.getAccountId(context, activeAccount ?: return null)
-    }
+    val activeAccountId: String? get() =
+        activeAccount?.let { AccountsHelper.getAccountId(context, it) }
+
+    val activeAccountWithId : Pair<Account?, String?> get() =
+        activeAccount.let { it to it?.let { AccountsHelper.getAccountId(context, it) } }
 
     fun setActiveAccount(accountName: String?) {
         edit { putString(ACTIVE_ACCOUNT_NAME, accountName) }
