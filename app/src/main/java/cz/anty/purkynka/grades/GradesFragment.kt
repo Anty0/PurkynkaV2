@@ -25,6 +25,8 @@ import android.content.SyncStatusObserver
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.Menu
@@ -517,6 +519,13 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     .setSmallEmptyText(R.string.empty_view_text_small_no_grades)
                     .setAdapter(adapter)
                     .setOnRefreshListener(::requestSyncWithRecyclerRefreshing)
+                    .apply {
+                        val layoutManager = LinearLayoutManager(context)
+                        setLayoutManager(layoutManager)
+                        recyclerView.addItemDecoration(
+                                DividerItemDecoration(context, layoutManager.orientation)
+                        )
+                    }
         }
 
         fun unbindView() {

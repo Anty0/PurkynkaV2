@@ -19,23 +19,16 @@
 package cz.anty.purkynka.grades.ui
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
-import android.support.annotation.ColorInt
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.Utils.colorForValue
 import eu.codetopic.java.utils.JavaExtensions
-import eu.codetopic.java.utils.JavaExtensions.join
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
-import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
-import kotlin.math.max
-import kotlin.math.min
+import kotlinx.android.synthetic.main.item_grade.*
 
 /**
  * @author anty
@@ -43,28 +36,28 @@ import kotlin.math.min
 class GradeItem(private val base: Grade, private val showSubject: Boolean = true): CustomItem() {
 
     override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
-        val subjectView: TextView = holder.itemView.findViewById(R.id.text_view_subject)
-        val gradeView: TextView = holder.itemView.findViewById(R.id.text_view_grade)
-        val weightView: TextView = holder.itemView.findViewById(R.id.text_view_weight)
-        val noteView: TextView = holder.itemView.findViewById(R.id.text_view_note)
-        val teacherView: TextView = holder.itemView.findViewById(R.id.text_view_teacher)
-
         val textStyle = if (base.weight >= 3) Typeface.BOLD else Typeface.NORMAL
 
-        subjectView.visibility = if (showSubject) View.VISIBLE else View.GONE
-        subjectView.text = base.subjectShort.fillToLen(4, JavaExtensions.Anchor.LEFT)
+        holder.txtSubject.apply {
+            visibility = if (showSubject) View.VISIBLE else View.GONE
+            text = base.subjectShort.fillToLen(4, JavaExtensions.Anchor.LEFT)
+        }
 
-        gradeView.setTypeface(null, textStyle)
-        gradeView.setTextColor(colorForValue(base.value.toInt()
-                .let { if (it == 0) null else it - 1 }, 5))
-        gradeView.text = base.valueToShow
+        holder.txtGrade.apply {
+            setTypeface(null, textStyle)
+            setTextColor(colorForValue(base.value.toInt()
+                    .let { if (it == 0) null else it - 1 }, 5))
+            text = base.valueToShow
+        }
 
-        weightView.setTypeface(null, textStyle)
-        weightView.text = base.weight.toString()
+        holder.txtWeight.apply {
+            setTypeface(null, textStyle)
+            text = base.weight.toString()
+        }
 
-        noteView.text = base.note
+        holder.txtNote.text = base.note
 
-        teacherView.text = base.teacher
+        holder.txtTeacher.text = base.teacher
 
         holder.topParentHolder.itemView.setOnClickListener {
             Toast.makeText(
@@ -78,7 +71,7 @@ class GradeItem(private val base: Grade, private val showSubject: Boolean = true
 
     override fun getItemLayoutResId(context: Context) = R.layout.item_grade
 
-    override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+    //override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

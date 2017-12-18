@@ -57,6 +57,8 @@ android {
         release {
             versionNameSuffix '-beta'
 
+            pseudoLocalesEnabled false
+
             minifyEnabled true
             proguardFiles Iterables.toArray(proguardFilesList, Object.class)
 
@@ -69,6 +71,8 @@ android {
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
+
+            pseudoLocalesEnabled true
 
             minifyEnabled false
             proguardFiles Iterables.toArray(proguardFilesList, Object.class)

@@ -25,7 +25,7 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/text_view_subject_name_short"
+        android:id="@+id/txtNameShort"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -50,7 +50,7 @@
             android:text="@string/text_view_average" />
 
         <TextView
-            android:id="@+id/text_view_subject_average"
+            android:id="@+id/txtAverage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
@@ -65,14 +65,14 @@
         android:gravity="start">
 
         <TextView
-            android:id="@+id/text_view_subject_name_long"
+            android:id="@+id/txtNameLong"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="1"
             android:textSize="20sp"/>
 
         <TextView
-            android:id="@+id/text_view_subject_grades_count"
+            android:id="@+id/txtGradesCount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"

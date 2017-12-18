@@ -26,10 +26,9 @@ import cz.anty.purkynka.Utils.colorForValue
 import cz.anty.purkynka.grades.data.Subject
 import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
-import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
 import eu.codetopic.java.utils.JavaExtensions.format
+import kotlinx.android.synthetic.main.item_subject.*
 
 /**
  * @author anty
@@ -37,22 +36,20 @@ import eu.codetopic.java.utils.JavaExtensions.format
 class SubjectItem(private val base: Subject): CustomItem() {
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        val shortNameView: TextView = holder.itemView.findViewById(R.id.text_view_subject_name_short)
-        val averageView: TextView = holder.itemView.findViewById(R.id.text_view_subject_average)
-        val longNameView: TextView = holder.itemView.findViewById(R.id.text_view_subject_name_long)
-        val gradesCountView: TextView = holder.itemView.findViewById(R.id.text_view_subject_grades_count)
+        holder.txtNameShort.text = base.shortName.fillToLen(4, JavaExtensions.Anchor.LEFT)
 
-        shortNameView.text = base.shortName.fillToLen(4, JavaExtensions.Anchor.LEFT)
+        holder.txtAverage.apply {
+            val average = base.average
+            setTextColor(colorForValue((average * 100).toInt()
+                    .let { if (it == 0) null else it - 100 }, 500))
+            text = average.format(2)
+        }
 
-        val average = base.average
-        averageView.setTextColor(colorForValue((average * 100).toInt()
-                .let { if (it == 0) null else it - 100 }, 500))
-        averageView.text = average.format(2)
 
-        longNameView.text = base.fullName
+        holder.txtNameLong.text = base.fullName
 
         val gradesCount = base.grades.size
-        gradesCountView.text = holder.context.resources
+        holder.txtGradesCount.text = holder.context.resources
                 .getQuantityString(R.plurals.text_view_grades_count, gradesCount)
                 .format(gradesCount)
 
@@ -68,7 +65,7 @@ class SubjectItem(private val base: Subject): CustomItem() {
 
     override fun getItemLayoutResId(context: Context): Int = R.layout.item_subject
 
-    override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+    //override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
