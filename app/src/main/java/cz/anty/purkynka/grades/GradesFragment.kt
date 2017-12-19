@@ -23,7 +23,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncStatusObserver
 import android.os.Bundle
-import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -37,9 +36,10 @@ import android.view.ViewGroup
 
 import cz.anty.purkynka.R
 import cz.anty.purkynka.accounts.ActiveAccountManager
+import cz.anty.purkynka.accounts.notify.AccountNotificationChannel
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
-import cz.anty.purkynka.grades.notify.GradesDataDifferences
+import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import cz.anty.purkynka.grades.save.GradesLoginData
@@ -53,6 +53,8 @@ import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.notifications.manager.NotificationsManager
+import eu.codetopic.utils.notifications.manager.data.NotificationId
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -72,8 +74,6 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
-import kotlin.coroutines.experimental.Continuation
-import kotlin.coroutines.experimental.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
@@ -463,6 +463,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private var userLoggedIn = false
         private var gradesMap: GradesMap? = null
+        private val gradesChangesMap: MutableMap<NotificationId, Bundle> = mutableMapOf() // TODO: preserve screen rotation
 
         private var recyclerManager: Recycler.RecyclerManagerImpl? = null
         private var adapter: CustomItemAdapter<CustomItem>? = null
@@ -558,8 +559,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             }
             accountHolder.accountId?.let { accountId ->
                 boxRecycler?.context?.let { context ->
-                    // All grades differences will be displayed to user, so let's remove them all
-                    GradesDataDifferences.requestClear(context, accountId)
+                    // All grades changes will be displayed to user, so let's remove them all
+                    gradesChangesMap.putAll(NotificationsManager
+                            .cancelAll(context, GradesChangesNotificationGroup.ID,
+                                    AccountNotificationChannel.idFor(accountId)))
                 }
             }
 
@@ -576,7 +579,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                         addAll(when (sort) {
                             GradesUiData.Sort.DATE -> it.map { GradeItem(it) }
                             GradesUiData.Sort.SUBJECTS -> it.toSubjects().map { SubjectItem(it) }
-                        }) // TODO: highlight grades differences obtained from GradesDataDifferences
+                        }) // TODO: highlight grades changes obtained from NotificationsManager
                     }
                 }
 

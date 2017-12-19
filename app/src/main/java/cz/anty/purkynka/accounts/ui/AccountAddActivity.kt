@@ -16,9 +16,10 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.accounts
+package cz.anty.purkynka.accounts.ui
 
 import android.accounts.Account
+import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager
 import android.content.Intent
 import android.os.Bundle
@@ -26,60 +27,87 @@ import android.support.design.widget.Snackbar
 import android.view.View
 
 import cz.anty.purkynka.R
-import eu.codetopic.utils.ui.activity.modular.ModularActivity
+import cz.anty.purkynka.accounts.AccountsHelper
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
+import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
-import kotlinx.android.synthetic.main.activity_edit_account.*
+import kotlinx.android.synthetic.main.activity_new_account.*
 
 /**
- * Created by anty on 10/15/17.
+ * Created by anty on 10/9/17.
  *
  * @author anty
  */
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class AccountEditActivity : ModularActivity(ToolbarModule(), CoordinatorLayoutModule(), BackButtonModule()) {
+class AccountAddActivity : ModularActivity(ToolbarModule(), CoordinatorLayoutModule(), BackButtonModule()) {
 
     companion object {
 
-        const val KEY_ACCOUNT = "cz.anty.purkynka.accounts.AccountEditActivity.KEY_ACCOUNT"
+        const val KEY_ACCOUNT_TYPE = "cz.anty.purkynka.accounts.ui.AccountAddActivity.KEY_ACCOUNT_TYPE"
+        const val KEY_AUTH_TYPE = "cz.anty.purkynka.accounts.ui.AccountAddActivity.KEY_AUTH_TOKEN_TYPE"
     }
 
     private lateinit var accountManager: AccountManager
-    private lateinit var account: Account
+    private lateinit var accountType: String
+
+    private var accountAuthenticatorResponse: AccountAuthenticatorResponse? = null
+
+    var accountAuthenticatorResult: Bundle? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_account)
+        setContentView(R.layout.activity_new_account)
 
-        butSave.setOnClickListener(::save)
+        butCreate.setOnClickListener(::login)
 
         accountManager = AccountManager.get(this)
-        account = intent.getParcelableExtra(KEY_ACCOUNT)
+        accountAuthenticatorResponse = intent.getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)
+        accountType = intent.getStringExtra(KEY_ACCOUNT_TYPE)
 
-        inAccountName.setText(account.name)
+        accountAuthenticatorResponse?.onRequestContinued()
     }
 
-    fun save(v: View) {
+    fun login(v: View) {
         val userName = inAccountName.text.toString()
                 .trim().takeIf { it.isNotEmpty() } ?:
                 run {
                     Snackbar.make(v, R.string.snackbar_invalid_account_name, Snackbar.LENGTH_LONG).show()
                     return
                 }
+        val account = Account(userName, accountType)
 
-        if (AccountsHelper.renameAccount(accountManager, account, userName)) {
+        if (AccountsHelper.addAccountExplicitly(accountManager, this, account)) {
             val intent = Intent()
                     .putExtra(AccountManager.KEY_ACCOUNT_NAME, userName)
-                    .putExtra(AccountManager.KEY_ACCOUNT_TYPE, account.type)
+                    .putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType)
 
+            accountAuthenticatorResult = intent.extras
             setResult(RESULT_OK, intent)
             finish()
             return
         }
 
-        Snackbar.make(v, R.string.snackbar_edit_failed, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(v, R.string.snackbar_login_failed, Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun finish() {
+        accountAuthenticatorResponse?.apply {
+            // send the result bundle back if set, otherwise send an error.
+            accountAuthenticatorResult
+                    ?.also { onResult(it) }
+                    ?: onError(AccountManager.ERROR_CODE_CANCELED, "canceled")
+
+            accountAuthenticatorResponse = null
+        }
+        super.finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        accountAuthenticatorResponse = null
     }
 }

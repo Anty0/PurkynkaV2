@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.notify
+package cz.anty.purkynka.grades.notifyold
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -26,25 +26,23 @@ import eu.codetopic.java.utils.log.Log
 /**
  * @author anty
  */
-class GradeNotificationLaunchReceiver : BroadcastReceiver() {
+class GradesClearDifferencesReceiver : BroadcastReceiver() {
 
     companion object {
-        private const val LOG_TAG = "GradeNotificationLaunchReceiver"
+        private const val LOG_TAG = "GradesClearDifferencesReceiver"
 
         const val EXTRA_ACCOUNT_ID = "cz.anty.purkynka.grades.notify.$LOG_TAG.EXTRA_ACCOUNT_ID"
-        const val EXTRA_NOTIFICATION_ID = "cz.anty.purkynka.grades.notify.$LOG_TAG.EXTRA_NOTIFICATION_ID"
     }
 
-    override fun onReceive(context: Context, intent: Intent?) {
+    override fun onReceive(context: Context?, intent: Intent?) {
         val accountId = intent?.getStringExtra(EXTRA_ACCOUNT_ID)
-        val notificationId = intent?.getIntExtra(EXTRA_NOTIFICATION_ID, -1) ?: -1
 
-        if (accountId == null || notificationId == -1) {
-            Log.w(LOG_TAG, "onReceive(accountId=$accountId, notificationId=$notificationId)",
-                    IllegalArgumentException("AccountId or NotificationId is invalid"))
+        if (accountId == null) {
+            Log.w(LOG_TAG, "onReceive(accountId=$accountId)",
+                    IllegalArgumentException("AccountId is invalid"))
             return
         }
 
-        GradesDataDifferences.instance.notifyLaunchReceived(accountId, notificationId)
+        GradesDataDifferences.instance.clearDiffs(accountId)
     }
 }

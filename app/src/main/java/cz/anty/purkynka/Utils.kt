@@ -23,6 +23,7 @@ import android.support.annotation.ColorInt
 import eu.codetopic.java.utils.JavaExtensions.join
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.round
 
 /**
  * @author anty
@@ -51,14 +52,14 @@ object Utils {
 
             val segmentSize = size / 5F
             val segment = (fixedValue / segmentSize).toInt()
-            val segmentMove = fixedValue % segmentSize
+            val segmentMove = (fixedValue % segmentSize) / segmentSize
 
             val segmentColor = colorSegments[segment]
             if (segmentMove == 0F) return segmentColor.let { Color.rgb(it[0], it[1], it[2]) }
 
             val nextSegmentColor = colorSegments[segment + 1]
 
-            val rgbColor = segmentColor.join(nextSegmentColor) { sc, nsc -> (sc + (nsc - sc) * segmentMove).toInt() }
+            val rgbColor = segmentColor.join(nextSegmentColor) { sc, nsc -> round(sc + (nsc - sc) * segmentMove).toInt() }
             return Color.rgb(rgbColor[0], rgbColor[1], rgbColor[2])
         }
 }

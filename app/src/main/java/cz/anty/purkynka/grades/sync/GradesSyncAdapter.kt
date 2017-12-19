@@ -24,12 +24,13 @@ import android.content.*
 import android.os.Bundle
 import cz.anty.purkynka.Constants
 import cz.anty.purkynka.accounts.AccountsHelper
+import cz.anty.purkynka.accounts.notify.AccountNotificationChannel
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesFetcher
 import cz.anty.purkynka.grades.load.GradesParser
-import cz.anty.purkynka.grades.notify.GradesDataDifferences
+import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import cz.anty.purkynka.grades.save.GradesLoginData
@@ -39,6 +40,7 @@ import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.bundle.BundleBuilder
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.notifications.manager.NotificationsManager
 import java.io.IOException
 
 /**
@@ -168,6 +170,14 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
 
         //removed.addAll(oldGrades.filter { !newGrades.contains(it) })
 
-        GradesDataDifferences.instance.addNewDiffs(accountId, added, modified/*, removed*/)
+        val allChanges = added.map {
+            GradesChangesNotificationGroup.dataForNewGarde(it)
+        } + modified.map {
+            GradesChangesNotificationGroup.dataForModifiedGarde(it.first, it.second)
+        }
+
+        NotificationsManager.requestNotifyAll(context, GradesChangesNotificationGroup.ID,
+                AccountNotificationChannel.idFor(accountId), allChanges)
+        //GradesDataDifferences.instance.addNewDiffs(accountId, added, modified/*, removed*/)
     }
 }

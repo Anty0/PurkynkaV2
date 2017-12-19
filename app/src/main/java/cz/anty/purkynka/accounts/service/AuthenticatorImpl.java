@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.accounts;
+package cz.anty.purkynka.accounts.service;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -29,6 +29,8 @@ import android.os.Bundle;
 
 import java.util.Arrays;
 
+import cz.anty.purkynka.accounts.ui.AccountAddActivity;
+import cz.anty.purkynka.accounts.ui.AccountEditActivity;
 import eu.codetopic.java.utils.log.Log;
 import eu.codetopic.utils.bundle.BundleBuilder;
 

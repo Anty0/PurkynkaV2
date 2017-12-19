@@ -16,33 +16,39 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.notify
+package cz.anty.purkynka.accounts.service
 
-import android.content.BroadcastReceiver
-import android.content.Context
+import android.accounts.AccountManager
+import android.app.Service
 import android.content.Intent
-import eu.codetopic.java.utils.log.Log
+import android.os.IBinder
 
 /**
  * @author anty
  */
-class GradesClearDifferencesReceiver : BroadcastReceiver() {
+class AuthenticatorService : Service() {
 
     companion object {
-        private const val LOG_TAG = "GradesClearDifferencesReceiver"
 
-        const val EXTRA_ACCOUNT_ID = "cz.anty.purkynka.grades.notify.$LOG_TAG.EXTRA_ACCOUNT_ID"
+        private const val LOG_TAG = "AuthenticatorService"
     }
 
-    override fun onReceive(context: Context?, intent: Intent?) {
-        val accountId = intent?.getStringExtra(EXTRA_ACCOUNT_ID)
+    private var sAuthenticator: AuthenticatorImpl? = null
 
-        if (accountId == null) {
-            Log.w(LOG_TAG, "onReceive(accountId=$accountId)",
-                    IllegalArgumentException("AccountId is invalid"))
-            return
+    override fun onCreate() {
+        super.onCreate()
+        sAuthenticator = AuthenticatorImpl(this)
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return when (intent?.action) {
+            AccountManager.ACTION_AUTHENTICATOR_INTENT -> sAuthenticator?.iBinder
+            else -> null
         }
+    }
 
-        GradesDataDifferences.instance.clearDiffs(accountId)
+    override fun onDestroy() {
+        sAuthenticator = null
+        super.onDestroy()
     }
 }

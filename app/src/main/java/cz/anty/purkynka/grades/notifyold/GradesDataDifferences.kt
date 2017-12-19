@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.notify
+package cz.anty.purkynka.grades.notifyold
 
 import android.accounts.AccountManager
 import android.app.NotificationChannel
@@ -52,6 +52,7 @@ import kotlinx.serialization.map
 /**
  * @author anty
  */
+@Deprecated("Use NotificationsManager instead")
 class GradesDataDifferences private constructor(context: Context) :
         VersionedPreferencesData<SharedPreferences>(context,
                 BasicSharedPreferencesProvider(context, FILE_NAME_GRADES_DATA_DIFFERENCES),

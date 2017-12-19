@@ -26,6 +26,7 @@ import android.os.Bundle;
 
 import java.util.UUID;
 
+import cz.anty.purkynka.accounts.notify.AccountNotificationChannel;
 import eu.codetopic.utils.bundle.BundleBuilder;
 
 /**
@@ -44,7 +45,7 @@ public final class AccountsHelper {
         AccountManager accountMan = AccountManager.get(ctx);
         if (accountMan.getAccountsByType(ACCOUNT_TYPE).length == 0) {
             Account defaultAccount = new Account("User", ACCOUNT_TYPE);
-            return addAccountExplicitly(accountMan, defaultAccount);
+            return addAccountExplicitly(accountMan, ctx, defaultAccount);
         }
         return false;
     }
@@ -58,52 +59,40 @@ public final class AccountsHelper {
     }
 
     public static boolean addAccountExplicitly(Context ctx, Account account) {
-        return addAccountExplicitly(AccountManager.get(ctx), account);
+        return addAccountExplicitly(AccountManager.get(ctx), ctx, account);
     }
 
-    public static boolean addAccountExplicitly(AccountManager accountManager, Account account) {
-        return addAccountExplicitly(accountManager, account, UUID.randomUUID().toString());
+    public static boolean addAccountExplicitly(AccountManager accountManager,
+                                               Context ctx, Account account) {
+        return addAccountExplicitly(accountManager, ctx, account, UUID.randomUUID().toString());
     }
 
-    private static boolean addAccountExplicitly(AccountManager accountManager, Account account, String accountId) {
+    private static boolean addAccountExplicitly(AccountManager accountManager, Context ctx,
+                                                Account account, String accountId) {
         if (accountManager.addAccountExplicitly(account, null,
                 new BundleBuilder()
                         .putString(KEY_ACCOUNT_ID, accountId)
                         .build())) {
 
-            /*class SyncInfo {
-                public final String contentAuthority;
-                public final long syncFrequency;
-
-                public SyncInfo(String contentAuthority, long syncFrequency) {
-                    this.contentAuthority = contentAuthority;
-                    this.syncFrequency = syncFrequency;
-                }
-            }
-
-            for (SyncInfo syncInfo : new SyncInfo[] {
-                    new SyncInfo(GradesSyncAdapter.CONTENT_AUTHORITY, GradesSyncAdapter.SYNC_FREQUENCY) // TODO: add here all content authorities
-            }) {
-                ContentResolver.setIsSyncable(account, syncInfo.contentAuthority, 1);
-                ContentResolver.setSyncAutomatically(account, syncInfo.contentAuthority, true);
-                ContentResolver.addPeriodicSync(account, syncInfo.contentAuthority, new Bundle(), syncInfo.syncFrequency);
-            }*/
+            // FIXME: listen on accounts changes and do all refreshing there
+            AccountNotificationChannel.Companion.refresh(ctx);
             return true;
         }
         return false;
     }
 
     public static boolean renameAccount(Context ctx, Account account, String newName) {
-        return renameAccount(AccountManager.get(ctx), account, newName);
+        return renameAccount(AccountManager.get(ctx), ctx, account, newName);
     }
 
-    public static boolean renameAccount(AccountManager accountManager, Account account, String newName) {
+    public static boolean renameAccount(AccountManager accountManager, Context ctx,
+                                        Account account, String newName) {
         /*if (Build.VERSION.SDK_INT >= 21) {
             accountManager.renameAccount(account, newName, null, null);
             return true;
         } else {*/
         String accountId = accountManager.getUserData(account, AccountsHelper.KEY_ACCOUNT_ID);
-        if (addAccountExplicitly(accountManager, new Account(newName, account.type), accountId)) {
+        if (addAccountExplicitly(accountManager, ctx, new Account(newName, account.type), accountId)) {
             accountManager.removeAccount(account, null, null);
             return true;
         }

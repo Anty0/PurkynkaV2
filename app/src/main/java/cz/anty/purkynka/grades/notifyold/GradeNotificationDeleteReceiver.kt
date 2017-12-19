@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.notify
+package cz.anty.purkynka.grades.notifyold
 
 import android.content.BroadcastReceiver
 import android.content.Context

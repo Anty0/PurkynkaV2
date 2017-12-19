@@ -40,10 +40,10 @@ import java.util.*
 /**
  * @author anty
  */
-@Keep
+/*@Keep
 @KeepName
 @KeepClassMembers
-@KeepClassMemberNames
+@KeepClassMemberNames*/ // TODO: are this keeps really required?
 @Serializable
 data class Grade(val id: Int, val date: Long, val subjectShort: String, val subjectLong: String, val valueToShow: String,
                  val value: Float, val type: String, val weight: Int, val note: String, val teacher: String) {

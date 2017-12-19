@@ -70,16 +70,16 @@
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"/>
         <activity
-            android:name=".accounts.AccountAddActivity"
+            android:name=".accounts.ui.AccountAddActivity"
             android:label="@string/title_activity_authenticate"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".accounts.AccountEditActivity"
+            android:name=".accounts.ui.AccountEditActivity"
             android:label="@string/title_activity_edit_account"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
-            android:name=".accounts.AuthenticatorService"
+            android:name=".accounts.service.AuthenticatorService"
             android:enabled="true"
             android:exported="false">
 
@@ -116,15 +116,15 @@
             android:exported="false"
             android:process=":providers" />
 
-        <receiver android:name=".grades.notify.GradeNotificationLaunchReceiver"
+        <receiver android:name=".grades.notifyold.GradeNotificationLaunchReceiver"
             android:enabled="true"
             android:exported="false"
             android:process=":syncs" />
-        <receiver android:name=".grades.notify.GradeNotificationDeleteReceiver"
+        <receiver android:name=".grades.notifyold.GradeNotificationDeleteReceiver"
             android:enabled="true"
             android:exported="false"
             android:process=":syncs" />
-        <receiver android:name=".grades.notify.GradesClearDifferencesReceiver"
+        <receiver android:name=".grades.notifyold.GradesClearDifferencesReceiver"
             android:enabled="true"
             android:exported="false"
             android:process=":syncs" />

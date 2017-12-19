@@ -33,11 +33,10 @@ import android.content.Intent
 import android.os.Build
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
-import android.support.v4.content.LocalBroadcastManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import cz.anty.purkynka.accounts.AccountEditActivity
+import cz.anty.purkynka.accounts.ui.AccountEditActivity
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
 import cz.anty.purkynka.dashboard.DashboardFragment

@@ -22,8 +22,9 @@ import android.app.Application
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.accounts.AccountsHelper
 import cz.anty.purkynka.accounts.ActiveAccountManager
+import cz.anty.purkynka.accounts.notify.AccountNotificationChannel
+import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
 import cz.anty.purkynka.grades.save.GradesData
-import cz.anty.purkynka.grades.notify.GradesDataDifferences
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
@@ -37,6 +38,7 @@ import eu.codetopic.java.utils.log.Logger
 import eu.codetopic.java.utils.log.base.Priority
 import eu.codetopic.utils.UtilsBase.ProcessProfile
 import eu.codetopic.utils.UtilsBase
+import eu.codetopic.utils.notifications.manager.NotificationsManager
 
 
 /**
@@ -111,6 +113,13 @@ class AppInit : Application() {
         // Initialize data provider of dashboard framework
         DashboardData.initialize(this)
 
+        // Initialize NotificationsManager
+        NotificationsManager.initialize(this, true) // TODO: detect if app was updated
+
+        // Init notifications Groups and Channels
+        NotificationsManager.initGroup(this, GradesChangesNotificationGroup())
+        AccountNotificationChannel.refresh(this)
+
         // Initialize sync adapters
         GradesSyncAdapter.init(this)
 
@@ -133,7 +142,7 @@ class AppInit : Application() {
         // Initialize data providers required in this process
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
-        GradesDataDifferences.initialize(this)
+        //GradesDataDifferences.initialize(this)
     }
 
     private fun loadBroadcastConnections() {
