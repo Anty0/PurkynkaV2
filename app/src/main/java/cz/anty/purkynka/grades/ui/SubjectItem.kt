@@ -28,12 +28,16 @@ import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.java.utils.JavaExtensions.format
+import eu.codetopic.utils.notifications.manager.data.NotificationId
 import kotlinx.android.synthetic.main.item_subject.*
 
 /**
  * @author anty
  */
-class SubjectItem(private val base: Subject): CustomItem() {
+class SubjectItem(val base: Subject,
+                  val changes: Map<Int, List<String>> = emptyMap()): CustomItem() { // TODO: use changes
+
+    val isChnaged get() = changes.isNotEmpty()
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
         holder.txtNameShort.text = base.shortName.fillToLen(4, JavaExtensions.Anchor.LEFT)
@@ -53,7 +57,12 @@ class SubjectItem(private val base: Subject): CustomItem() {
                 .getQuantityString(R.plurals.text_view_grades_count, gradesCount)
                 .format(gradesCount)
 
-        holder.topParentHolder.itemView.setOnClickListener {
+        holder.boxColoredBackground.setBackgroundResource(
+                if (!isChnaged) android.R.color.transparent
+                else R.color.colorPrimaryExtraDarkGrades
+        )
+
+        holder.boxClickTarget.setOnClickListener {
             Toast.makeText(
                     holder.context,
                     "onClick(position$itemPosition, subject=$this)",

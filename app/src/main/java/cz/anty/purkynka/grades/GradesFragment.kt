@@ -40,6 +40,8 @@ import cz.anty.purkynka.accounts.notify.AccountNotificationChannel
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
+import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup.Companion.readDataChanges
+import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup.Companion.readDataGrade
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import cz.anty.purkynka.grades.save.GradesLoginData
@@ -48,8 +50,12 @@ import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
+import eu.codetopic.java.utils.JavaExtensions
+import eu.codetopic.java.utils.JavaExtensions.kSerializer
+import eu.codetopic.utils.AndroidExtensions.serialize
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
+import eu.codetopic.utils.AndroidExtensions.deserializeBundle
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.intentFilter
@@ -70,6 +76,12 @@ import kotlinx.android.synthetic.main.fragment_grades.*
 import kotlinx.android.synthetic.main.fragment_grades.view.*
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.serialization.internal.IntSerializer
+import kotlinx.serialization.internal.PairSerializer
+import kotlinx.serialization.internal.StringSerializer
+import kotlinx.serialization.json.JSON
+import kotlinx.serialization.list
+import kotlinx.serialization.map
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.indefiniteSnackbar
@@ -88,6 +100,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private const val SAVE_EXTRA_SORT = "$LOG_TAG.SORT"
         private const val SAVE_EXTRA_SEMESTER = "$LOG_TAG.SEMESTER"
+        private const val SAVE_EXTRA_CHANGES_MAP = "$LOG_TAG.CHANGES_MAP"
 
         suspend fun aWaitForSyncStart(account: Account) = aWaitForSyncState {
             (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
@@ -130,44 +143,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 }
             }
         }
-
-        /*fun aWaitForSync(account: Account) = async(UI) {
-            val condition = {
-                !ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) &&
-                        !ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY)
-            }
-
-            Log.d(LOG_TAG, "aWaitForSync(account=$account) -> condition() -> 1 -> ${run(condition)}")
-            if (run(condition)) return@async Unit
-
-            var observerHandle: Any? = null
-            val observer = SyncStatusObserver {
-                Log.d(LOG_TAG, "aWaitForSync(account=$account) -> condition() -> 3 -> ${run(condition)}")
-                if (run(condition)) {
-                    observerHandle?.let {
-                        observerHandle = null
-                        ContentResolver.removeStatusChangeListener(it)
-
-                        @Suppress("UNCHECKED_CAST")
-                        (this@async as Continuation<Unit>).resume(Unit)
-                    }
-                }
-            }
-            val mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
-            observerHandle = ContentResolver.addStatusChangeListener(mask, observer)
-
-            Log.d(LOG_TAG, "aWaitForSync(account=$account) -> condition() -> 2 -> ${run(condition)}")
-            if (run(condition)) {
-                observerHandle?.let {
-                    observerHandle = null
-                    ContentResolver.removeStatusChangeListener(it)
-
-                    return@async Unit
-                }
-            }
-
-            return@async COROUTINE_SUSPENDED
-        }*/
     }
 
     override val title: CharSequence
@@ -432,10 +407,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 bg { GradesLoginData.loginData.logout(accountId) }.await()
 
-                // Sync will be triggered later by change broadcast, so we must wait for sync start before we can wait for sync end
-                aWaitForSyncStart(account)
-                aWaitForSyncEnd(account)
-
                 delay(500) // Wait few loops to make sure, that content was updated.
                 holder.hideLoading()
             }
@@ -463,12 +434,12 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private var userLoggedIn = false
         private var gradesMap: GradesMap? = null
-        private val gradesChangesMap: MutableMap<NotificationId, Bundle> = mutableMapOf() // TODO: preserve screen rotation
+        private var gradesChangesMap: MutableMap<Int, List<String>> = mutableMapOf() // TODO: preserve screen rotation
 
         private var recyclerManager: Recycler.RecyclerManagerImpl? = null
         private var adapter: CustomItemAdapter<CustomItem>? = null
 
-        var sort: GradesUiData.Sort = GradesUiData.instance.lastSort
+        var sort: GradesUiData.Sort = GradesUiData.instance.lastSort // TODO: more sorting options
             set(value) {
                 field = value
                 GradesUiData.instance.lastSort = value
@@ -501,11 +472,27 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     Semester.AUTO.stableSemester
                 }
             }
+            savedInstanceState?.takeIf { it.containsKey(SAVE_EXTRA_CHANGES_MAP) }?.let {
+                gradesChangesMap = try {
+                    savedInstanceState.getString(SAVE_EXTRA_CHANGES_MAP)?.let {
+                        JSON.parse((IntSerializer to StringSerializer.list).map, it)
+                    }?.toMutableMap() ?: throw RuntimeException()
+                } catch (e: Exception) {
+                    Log.w(LOG_TAG, "onCreate() -> restoreChangesMapState()", e)
+                    mutableMapOf()
+                }
+            }
         }
 
         fun save(outState: Bundle) {
             outState.putSerializable(SAVE_EXTRA_SORT, sort)
             outState.putSerializable(SAVE_EXTRA_SEMESTER, semester)
+            outState.putString(SAVE_EXTRA_CHANGES_MAP,
+                    JSON.stringify(
+                            (IntSerializer to StringSerializer.list).map,
+                            gradesChangesMap
+                    )
+            )
         }
 
         fun bindView(context: Context, inflater: LayoutInflater, view: View) {
@@ -560,9 +547,16 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             accountHolder.accountId?.let { accountId ->
                 boxRecycler?.context?.let { context ->
                     // All grades changes will be displayed to user, so let's remove them all
-                    gradesChangesMap.putAll(NotificationsManager
-                            .cancelAll(context, GradesChangesNotificationGroup.ID,
-                                    AccountNotificationChannel.idFor(accountId)))
+                    gradesChangesMap.putAll(
+                            NotificationsManager.cancelAll(
+                                    context,
+                                    GradesChangesNotificationGroup.ID,
+                                    AccountNotificationChannel.idFor(accountId)
+                            ).mapNotNull {
+                                (readDataGrade(it.value)?.id ?: return@mapNotNull null) to
+                                        (readDataChanges(it.value) ?: return@mapNotNull null)
+                            }
+                    )
                 }
             }
 
@@ -577,9 +571,15 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     clear()
                     gradesMap?.let { it[semester.value] }?.let {
                         addAll(when (sort) {
-                            GradesUiData.Sort.DATE -> it.map { GradeItem(it) }
-                            GradesUiData.Sort.SUBJECTS -> it.toSubjects().map { SubjectItem(it) }
-                        }) // TODO: highlight grades changes obtained from NotificationsManager
+                            GradesUiData.Sort.DATE -> it.map {
+                                GradeItem(it, changes = gradesChangesMap[it.id])
+                            } // TODO: sort new and changed on top and add before them title "New grades" or "Changed grades"
+                            GradesUiData.Sort.SUBJECTS -> it.toSubjects().map {
+                                SubjectItem(it, it.grades.mapNotNull {
+                                    grade -> gradesChangesMap[grade.id]?.let { grade.id to it }
+                                }.toMap())
+                            } // TODO: sort changed on top and add before them title "Changed subjects"
+                        })
                     }
                 }
 

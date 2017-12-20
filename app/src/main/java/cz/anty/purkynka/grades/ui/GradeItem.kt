@@ -19,6 +19,7 @@
 package cz.anty.purkynka.grades.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
 import android.widget.Toast
@@ -33,7 +34,14 @@ import kotlinx.android.synthetic.main.item_grade.*
 /**
  * @author anty
  */
-class GradeItem(private val base: Grade, private val showSubject: Boolean = true): CustomItem() {
+class GradeItem(val base: Grade, val showSubject: Boolean = true,
+                val changes: List<String>? = null): CustomItem() { // TODO: use changes
+
+    val isNew = changes?.isEmpty() == true
+
+    val isChanged = changes?.isNotEmpty() == true
+
+    val hasChnges = changes != null
 
     override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
         val textStyle = if (base.weight >= 3) Typeface.BOLD else Typeface.NORMAL
@@ -59,7 +67,12 @@ class GradeItem(private val base: Grade, private val showSubject: Boolean = true
 
         holder.txtTeacher.text = base.teacher
 
-        holder.topParentHolder.itemView.setOnClickListener {
+        holder.boxColoredBackground.setBackgroundResource(
+                if (!hasChnges) android.R.color.transparent
+                else R.color.colorPrimaryExtraDarkGrades
+        )
+
+        holder.boxClickTarget.setOnClickListener {
             Toast.makeText(
                     holder.context,
                     "onClick(position$itemPosition, grade=$base)",

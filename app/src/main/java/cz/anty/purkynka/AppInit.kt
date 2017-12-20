@@ -113,12 +113,12 @@ class AppInit : Application() {
         // Initialize data provider of dashboard framework
         DashboardData.initialize(this)
 
-        // Initialize NotificationsManager
-        NotificationsManager.initialize(this, true) // TODO: detect if app was updated
-
-        // Init notifications Groups and Channels
+        // Init notifications Groups and Channels (prepare them for NotificationsManager)
         NotificationsManager.initGroup(this, GradesChangesNotificationGroup())
         AccountNotificationChannel.refresh(this)
+
+        // Initialize NotificationsManager
+        NotificationsManager.initialize(this, true) // TODO: detect if app was updated
 
         // Initialize sync adapters
         GradesSyncAdapter.init(this)

@@ -61,12 +61,12 @@ class GradesChangesNotificationGroup :
         private const val PARAM_GRADE = "GRADE"
         private const val PARAM_CHANGES_LIST = "CHANGES"
 
-        fun dataForNewGarde(grade: Grade): Bundle = Bundle().apply {
+        fun dataForNewGrade(grade: Grade): Bundle = Bundle().apply {
             putString(PARAM_TYPE, PARAM_TYPE_VAL_NEW)
             putString(PARAM_GRADE, JSON.stringify(grade))
         }
 
-        fun dataForModifiedGarde(oldGrade: Grade, newGrade: Grade): Bundle = Bundle().apply {
+        fun dataForModifiedGrade(oldGrade: Grade, newGrade: Grade): Bundle = Bundle().apply {
             putString(PARAM_TYPE, PARAM_TYPE_VAL_MODIFIED)
             putString(PARAM_GRADE, JSON.stringify(newGrade))
             putString(
@@ -87,6 +87,19 @@ class GradesChangesNotificationGroup :
                     )
             )
         }
+
+        fun readDataGrade(data: Bundle): Grade? =
+                data.getString(PARAM_GRADE)?.let { JSON.parse(it) }
+
+
+        fun readDataChanges(data: Bundle): List<String>? =
+                when (data.getString(PARAM_TYPE)) {
+                    PARAM_TYPE_VAL_NEW -> emptyList()
+                    PARAM_TYPE_VAL_MODIFIED -> data.getString(PARAM_CHANGES_LIST)
+                            ?.let { JSON.parse(StringSerializer.list, it) }
+                            ?: emptyList()
+                    else -> null
+                }
     }
 
     override fun nextId(context: Context, channel: NotificationChannel,
@@ -98,13 +111,13 @@ class GradesChangesNotificationGroup :
 
     override fun handleContentIntent(context: Context, id: NotificationId,
                                      channel: NotificationChannel, data: Bundle) {
-        if (id.isSummary) {
-            MainActivity.start(context, GradesFragment::class.java)
-            return
-        }
-
         // TODO: show grade info activity rather then all grades fragment
         // (use context.startActivities() to start main activity with grade info activity on top of it]
+        MainActivity.start(context, GradesFragment::class.java)
+    }
+
+    override fun handleSummaryContentIntent(context: Context, id: NotificationId,
+                                            channel: NotificationChannel, data: List<Bundle>) {
         MainActivity.start(context, GradesFragment::class.java)
     }
 
@@ -127,7 +140,6 @@ class GradesChangesNotificationGroup :
                 color = ContextCompat.getColor(context, R.color.colorPrimaryGrades)
                 //setColorized(false)
 
-                setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
                 setDefaults(NotificationCompat.DEFAULT_ALL)
 
                 setAutoCancel(true)

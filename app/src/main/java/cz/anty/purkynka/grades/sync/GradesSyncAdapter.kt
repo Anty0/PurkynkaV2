@@ -55,6 +55,7 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
         const val CONTENT_AUTHORITY = GradesProvider.AUTHORITY
         const val SYNC_FREQUENCY = Constants.SYNC_FREQUENCY_GRADES
 
+        const val EXTRA_FIRST_SYNC = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_FIRST_SYNC"
         const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_SEMESTER"
 
         private val loginDataChangedReceiver = broadcast { context, intent ->
@@ -76,7 +77,7 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
                     ContentResolver.setSyncAutomatically(it, CONTENT_AUTHORITY, loggedIn)
                     if (loggedIn) ContentResolver.addPeriodicSync(it, CONTENT_AUTHORITY, Bundle(), SYNC_FREQUENCY)
                     else ContentResolver.removePeriodicSync(it, CONTENT_AUTHORITY, Bundle())
-                    requestSync(it)
+                    if (loggedIn) requestSync(it, firstSync = true)
                 }
             }
         }
@@ -86,12 +87,14 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
             loginDataChangedReceiver.onReceive(context, null)
         }
 
-        fun requestSync(account: Account, semester: Semester = Semester.AUTO) {
+        fun requestSync(account: Account, semester: Semester = Semester.AUTO,
+                        firstSync: Boolean = false) {
             Log.d(LOG_TAG, "requestSync(account=$account, semester=$semester)")
             ContentResolver.requestSync(account, CONTENT_AUTHORITY, BundleBuilder()
                     .putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
                     .putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
                     .putString(EXTRA_SEMESTER, semester.toString())
+                    .putBoolean(EXTRA_FIRST_SYNC, firstSync)
                     .build())
         }
     }
@@ -171,9 +174,9 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
         //removed.addAll(oldGrades.filter { !newGrades.contains(it) })
 
         val allChanges = added.map {
-            GradesChangesNotificationGroup.dataForNewGarde(it)
+            GradesChangesNotificationGroup.dataForNewGrade(it)
         } + modified.map {
-            GradesChangesNotificationGroup.dataForModifiedGarde(it.first, it.second)
+            GradesChangesNotificationGroup.dataForModifiedGrade(it.first, it.second)
         }
 
         NotificationsManager.requestNotifyAll(context, GradesChangesNotificationGroup.ID,
