@@ -36,13 +36,14 @@ import android.support.v4.app.FragmentTransaction
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import cz.anty.purkynka.accounts.ui.AccountEditActivity
-import cz.anty.purkynka.accounts.AccountsHelper
-import cz.anty.purkynka.accounts.ActiveAccountManager
+import cz.anty.purkynka.account.Accounts
+import cz.anty.purkynka.account.ActiveAccount
+import cz.anty.purkynka.account.ui.AccountEditActivity
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.settings.SettingsActivity
+import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.broadcast.LocalBroadcast
@@ -59,24 +60,28 @@ class MainActivity : NavigationActivity() {
         private const val EXTRA_FRAGMENT_EXTRAS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_EXTRAS"
 
         @JvmOverloads
-        fun getStartIntent(context: Context, fragmentClass: Class<out Fragment>? = null, fragmentExtras: Bundle? = null): Intent =
+        fun getStartIntent(context: Context, fragmentClass: Class<out Fragment>? = null,
+                           fragmentExtras: Bundle? = null): Intent =
                 Intent(context, MainActivity::class.java)
                         .putExtra(EXTRA_FRAGMENT_CLASS, fragmentClass)
                         .putExtra(EXTRA_FRAGMENT_EXTRAS, fragmentExtras)
 
         @JvmOverloads
-        fun start(context: Context, fragmentClass: Class<out Fragment>? = null, fragmentExtras: Bundle? = null) =
+        fun start(context: Context, fragmentClass: Class<out Fragment>? = null,
+                  fragmentExtras: Bundle? = null) =
                 context.startActivity(getStartIntent(context, fragmentClass, fragmentExtras))
     }
 
     override val mainFragmentClass: Class<out Fragment>?
         get() = DashboardFragment::class.java
 
-    private val accountChangedReceiver: AccountChangeReceiver = AccountChangeReceiver()
-    private val activeAccountManager: ActiveAccountManager = ActiveAccountManager.instance
+    private val accountsChangedReceiver: BroadcastReceiver =
+            broadcast { _, _ ->
+                invalidateNavigationMenu()
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme_NoActionBar) // TODO: Animated app logo
+        setTheme(R.style.AppTheme_NoActionBar) // TODO: Animated app splash screen
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) processIntent(intent)
 
@@ -106,19 +111,19 @@ class MainActivity : NavigationActivity() {
     override fun onResume() {
         super.onResume()
 
-        with (AccountManager.get(this)) {
-            if (Build.VERSION.SDK_INT >= 26) addOnAccountsUpdatedListener(accountChangedReceiver,
-                    null, true, arrayOf(AccountsHelper.ACCOUNT_TYPE))
-            else addOnAccountsUpdatedListener(accountChangedReceiver, null, true)
-        }
-        LocalBroadcast.registerReceiver(accountChangedReceiver, intentFilter(ActiveAccountManager.getter))
+        LocalBroadcast.registerReceiver(
+                accountsChangedReceiver,
+                intentFilter(
+                        Accounts.ACTION_ACCOUNTS_CHANGED,
+                        ActiveAccount.getter
+                )
+        )
 
         invalidateNavigationMenu()
     }
 
     override fun onPause() {
-        LocalBroadcast.unregisterReceiver(accountChangedReceiver)
-        AccountManager.get(this).removeOnAccountsUpdatedListener(accountChangedReceiver)
+        LocalBroadcast.unregisterReceiver(accountsChangedReceiver)
 
         super.onPause()
     }
@@ -126,14 +131,14 @@ class MainActivity : NavigationActivity() {
     override fun onCreateAccountNavigationMenu(menu: Menu): Boolean {
         super.onCreateAccountNavigationMenu(menu)
         menuInflater.inflate(R.menu.activity_main_accounts, menu)
-        val accounts = AccountsHelper.getAllAccounts(this)
-        val activeAccount = activeAccountManager.activeAccount
+        val accounts = Accounts.getAll(this)
+        val activeAccount = ActiveAccount.get()
         accounts.forEach {
             if (it == activeAccount) return@forEach
-            menu.add(R.id.menu_group_main, 0, Menu.NONE, it.name)
+            menu.add(R.id.menu_group_main, R.id.menu_item_account, Menu.NONE, it.name)
                     .setIcon(R.drawable.ic_account)
         }
-        menu.add(R.id.menu_group_main, 0, Menu.NONE, R.string.action_add_user)
+        menu.add(R.id.menu_group_main, R.id.menu_item_add_account, Menu.NONE, R.string.action_add_user)
                 .setIcon(R.drawable.ic_action_add)
         return true
     }
@@ -143,24 +148,26 @@ class MainActivity : NavigationActivity() {
     }
 
     override fun onAccountNavigationItemSelected(item: MenuItem): Boolean {
-        if (item.title == getText(R.string.action_add_user)) {
-            AccountManager.get(this).addAccount(AccountsHelper.ACCOUNT_TYPE, null,
+        when (item.itemId) {
+            R.id.menu_item_add_account -> {
+                AccountManager.get(this).addAccount(Accounts.ACCOUNT_TYPE, null,
                     null, null, this, null, null)
-            return true
+            }
+            R.id.menu_item_account -> ActiveAccount.set(item.title.toString())
+            else -> return super.onAccountNavigationItemSelected(item)
         }
-        activeAccountManager.setActiveAccount(item.title.toString())
         return true
     }
 
     override fun onUpdateActiveAccountName(): CharSequence {
-        return activeAccountManager.activeAccount?.name ?: ""
+        return ActiveAccount.get()?.name ?: ""
     }
 
     override fun onEditAccountButtonClick(v: View): Boolean {
         startActivityForResult(
                 Intent(this, AccountEditActivity::class.java)
                         .putExtra(AccountEditActivity.KEY_ACCOUNT,
-                                activeAccountManager.activeAccount ?: return false),
+                                ActiveAccount.get() ?: return false),
                 REQUEST_CODE_EDIT_ACCOUNT)
         return true
     }
@@ -168,7 +175,7 @@ class MainActivity : NavigationActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_EDIT_ACCOUNT) {
             if (resultCode != Activity.RESULT_OK || data == null) return
-            activeAccountManager.setActiveAccount(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
+            ActiveAccount.set(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -241,16 +248,6 @@ class MainActivity : NavigationActivity() {
         val tabLayout = window.findViewById<TabLayout>(R.id.tabLayout)
         if (tabLayout != null) {
             tabLayout.visibility = View.GONE
-        }
-    }
-
-    inner class AccountChangeReceiver : BroadcastReceiver(), OnAccountsUpdateListener {
-        override fun onAccountsUpdated(accounts: Array<out Account>?) {
-            super@MainActivity.invalidateNavigationMenu()
-        }
-
-        override fun onReceive(context: Context, intent: Intent) {
-            super@MainActivity.invalidateNavigationMenu()
         }
     }
 }

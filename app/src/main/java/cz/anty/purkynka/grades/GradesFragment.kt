@@ -35,8 +35,8 @@ import android.view.View
 import android.view.ViewGroup
 
 import cz.anty.purkynka.R
-import cz.anty.purkynka.accounts.ActiveAccountManager
-import cz.anty.purkynka.accounts.notify.AccountNotificationChannel
+import cz.anty.purkynka.account.ActiveAccount
+import cz.anty.purkynka.account.notify.AccountNotifyChannel
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
@@ -281,7 +281,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             val self = this.asReference()
 
             return launch(UI) {
-                val accountWithId = bg { ActiveAccountManager.instance.activeAccountWithId }.await()
+                val accountWithId = bg { ActiveAccount.getWithId() }.await()
                 val nAccount = accountWithId.first
                 val nAccountId = accountWithId.second
 
@@ -300,7 +300,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         fun register(): Job {
             LocalBroadcast.registerReceiver(accountChangedReceiver,
-                    intentFilter(ActiveAccountManager.getter))
+                    intentFilter(ActiveAccount.getter))
 
             return updateData()
         }
@@ -551,7 +551,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                             NotificationsManager.cancelAll(
                                     context,
                                     GradesChangesNotificationGroup.ID,
-                                    AccountNotificationChannel.idFor(accountId)
+                                    AccountNotifyChannel.idFor(accountId)
                             ).mapNotNull {
                                 (readDataGrade(it.value)?.id ?: return@mapNotNull null) to
                                         (readDataChanges(it.value) ?: return@mapNotNull null)

@@ -20,9 +20,7 @@ package cz.anty.purkynka
 
 import android.app.Application
 import android.support.v4.content.ContextCompat
-import cz.anty.purkynka.accounts.AccountsHelper
-import cz.anty.purkynka.accounts.ActiveAccountManager
-import cz.anty.purkynka.accounts.notify.AccountNotificationChannel
+import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
@@ -38,6 +36,7 @@ import eu.codetopic.java.utils.log.Logger
 import eu.codetopic.java.utils.log.base.Priority
 import eu.codetopic.utils.UtilsBase.ProcessProfile
 import eu.codetopic.utils.UtilsBase
+import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.notifications.manager.NotificationsManager
 
 
@@ -55,9 +54,12 @@ class AppInit : Application() {
 
         // Initialize utils base (my own android application framework; brain of this application)
         UtilsBase.initialize(this,
-                ProcessProfile(packageName, true, Runnable(::initPrimaryProcess)), // Primary process
-                ProcessProfile("$packageName:providers", true, Runnable(::initProvidersProcess)), // Data management process (multi-process data access support)
-                ProcessProfile("$packageName:syncs", true, Runnable(::initSyncsProcess)) // Data synchronization process
+                ProcessProfile(packageName, true,
+                        Runnable(::initProcessPrimary)), // Primary process
+                ProcessProfile("$packageName:providers", true,
+                        Runnable(::initProcessProviders)), // Data management process (multi-process data access support)
+                ProcessProfile("$packageName:syncs", true,
+                        Runnable(::initProcessSyncs)) // Data synchronization process
                 // ProcessProfile(app.packageName + ":acra", DISABLE_UTILS), // ACRA reporting process
         )
     }
@@ -95,16 +97,15 @@ class AppInit : Application() {
         )
     }
 
-    private fun initPrimaryProcess() {
-        // Create default user account (if there is none)
-        AccountsHelper.initDefaultAccount(this)
-
+    private fun initProcessPrimary() {
         // Prepare broadcasts connections (very helpful tool)
-        loadBroadcastConnections()
+        initBroadcastConnections()
+
+        // Initialize accounts (create default account, initialize accounts channels, etc.)
+        Accounts.initialize(this)
 
         // Initialize data providers required in this process
         MainData.initialize(this)
-        ActiveAccountManager.initialize(this)
         SettingsData.initialize(this)
         GradesUiData.initialize(this)
         GradesData.initialize(this)
@@ -113,12 +114,14 @@ class AppInit : Application() {
         // Initialize data provider of dashboard framework
         DashboardData.initialize(this)
 
-        // Init notifications Groups and Channels (prepare them for NotificationsManager)
-        NotificationsManager.initGroup(this, GradesChangesNotificationGroup())
-        AccountNotificationChannel.refresh(this)
+        // Init notifications groups (prepare them for NotificationsManager)
+        NotificationsManager.initGroups(
+                this,
+                GradesChangesNotificationGroup()
+        )
 
         // Initialize NotificationsManager
-        NotificationsManager.initialize(this, true) // TODO: detect if app was updated
+        NotificationsManager.initialize(this)
 
         // Initialize sync adapters
         GradesSyncAdapter.init(this)
@@ -130,14 +133,14 @@ class AppInit : Application() {
 
     }
 
-    private fun initProvidersProcess() {
+    private fun initProcessProviders() {
         // Prepare broadcasts connections (very helpful tool)
-        loadBroadcastConnections()
+        initBroadcastConnections()
     }
 
-    private fun initSyncsProcess() {
+    private fun initProcessSyncs() {
         // Prepare broadcasts connections (very helpful tool)
-        loadBroadcastConnections()
+        initBroadcastConnections()
 
         // Initialize data providers required in this process
         GradesData.initialize(this)
@@ -145,7 +148,7 @@ class AppInit : Application() {
         //GradesDataDifferences.initialize(this)
     }
 
-    private fun loadBroadcastConnections() {
+    private fun initBroadcastConnections() {
         // TODO: 6/16/17 initialize broadcast connections
     }
 }

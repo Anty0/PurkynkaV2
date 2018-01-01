@@ -23,8 +23,9 @@ import android.accounts.AccountManager
 import android.content.*
 import android.os.Bundle
 import cz.anty.purkynka.Constants
-import cz.anty.purkynka.accounts.AccountsHelper
-import cz.anty.purkynka.accounts.notify.AccountNotificationChannel
+import cz.anty.purkynka.account.Accounts
+import cz.anty.purkynka.account.Syncs
+import cz.anty.purkynka.account.notify.AccountNotifyChannel
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
@@ -41,6 +42,7 @@ import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.bundle.BundleBuilder
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.notifications.manager.NotificationsManager
+import org.jetbrains.anko.bundleOf
 import java.io.IOException
 
 /**
@@ -64,21 +66,24 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
             val loginData = GradesLoginData.loginData
             val accountManager = AccountManager.get(context)
 
-            AccountsHelper.getAllAccounts(accountManager).forEach {
-                with(AccountsHelper.getAccountId(accountManager, it)) {
-                    val loggedIn = loginData.isLoggedIn(this)
-                    val syncable = ContentResolver.getIsSyncable(it, CONTENT_AUTHORITY) > 0
-                    if (loggedIn == syncable) return@with
+            Accounts.getAllWIthIds(accountManager).forEach {
+                val accountId = it.key
+                val account = it.value
 
-                    Log.d(LOG_TAG, "loginDataChanged() -> " +
-                            "differenceFound(loggedIn=$loggedIn, syncable=$syncable, account=$it)")
+                val loggedIn = loginData.isLoggedIn(accountId)
+                val syncable = ContentResolver.getIsSyncable(account, CONTENT_AUTHORITY) > 0
+                if (loggedIn == syncable) return@forEach
 
-                    ContentResolver.setIsSyncable(it, CONTENT_AUTHORITY, if (loggedIn) 1 else 0)
-                    ContentResolver.setSyncAutomatically(it, CONTENT_AUTHORITY, loggedIn)
-                    if (loggedIn) ContentResolver.addPeriodicSync(it, CONTENT_AUTHORITY, Bundle(), SYNC_FREQUENCY)
-                    else ContentResolver.removePeriodicSync(it, CONTENT_AUTHORITY, Bundle())
-                    if (loggedIn) requestSync(it, firstSync = true)
-                }
+                Log.d(LOG_TAG, "loginDataChanged() -> " +
+                        "differenceFound(loggedIn=$loggedIn, syncable=$syncable, account=$it)")
+
+                Syncs.updateEnabled(
+                        loggedIn,
+                        account,
+                        CONTENT_AUTHORITY,
+                        SYNC_FREQUENCY
+                )
+                if (loggedIn) requestSync(account, firstSync = true)
             }
         }
 
@@ -89,13 +94,17 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
 
         fun requestSync(account: Account, semester: Semester = Semester.AUTO,
                         firstSync: Boolean = false) {
-            Log.d(LOG_TAG, "requestSync(account=$account, semester=$semester)")
-            ContentResolver.requestSync(account, CONTENT_AUTHORITY, BundleBuilder()
-                    .putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
-                    .putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
-                    .putString(EXTRA_SEMESTER, semester.toString())
-                    .putBoolean(EXTRA_FIRST_SYNC, firstSync)
-                    .build())
+            Log.d(LOG_TAG, "requestSync(account=$account, " +
+                    "semester=$semester, firstSync=$firstSync)")
+
+            Syncs.trigger(
+                    account,
+                    CONTENT_AUTHORITY,
+                    bundleOf(
+                            EXTRA_SEMESTER to semester.toString(),
+                            EXTRA_FIRST_SYNC to firstSync
+                    )
+            )
         }
     }
 
@@ -110,7 +119,7 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
         val data = GradesData.instance
         val loginData = GradesLoginData.loginData
 
-        val accountId = AccountsHelper.getAccountId(context, account)
+        val accountId = Accounts.getId(context, account)
 
         try {
             val semester = if (extras.containsKey(EXTRA_SEMESTER)) {
@@ -122,8 +131,10 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
                 }
             } else Semester.AUTO
 
+            val firstSync = extras.getBoolean(EXTRA_FIRST_SYNC, false)
+
             if (!loginData.isLoggedIn(accountId))
-                throw WrongLoginDataException("User is not logged in")
+                throw IllegalStateException("User is not logged in")
 
             val cookies = GradesFetcher.login(
                     loginData.getUsername(accountId),
@@ -137,9 +148,11 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
             val grades = GradesParser.parseGrades(gradesHtml)
 
             val gradesMap = data.getGrades(accountId).toMutableMap()
-            gradesMap.getOrElse(semester.value) { emptyList() }.let {
-                checkForDiffs(accountId, it, grades)
-            }
+            gradesMap.takeIf { !firstSync }
+                    ?.getOrElse(semester.value) { emptyList() }
+                    ?.let {
+                        checkForDiffs(accountId, it, grades)
+                    }
             gradesMap[semester.value] = grades
             data.setGrades(accountId, gradesMap)
 
@@ -180,7 +193,6 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
         }
 
         NotificationsManager.requestNotifyAll(context, GradesChangesNotificationGroup.ID,
-                AccountNotificationChannel.idFor(accountId), allChanges)
-        //GradesDataDifferences.instance.addNewDiffs(accountId, added, modified/*, removed*/)
+                AccountNotifyChannel.idFor(accountId), allChanges)
     }
 }

@@ -1,6 +1,6 @@
 /*
  * app
- * Copyright (C)   2017  anty
+ * Copyright (C)   2018  anty
  *
  * This program is free  software: you can redistribute it and/or modify
  * it under the terms  of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.accounts.ui
+package cz.anty.purkynka.account.ui
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -24,24 +24,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
-
 import cz.anty.purkynka.R
-import cz.anty.purkynka.accounts.AccountsHelper
+import cz.anty.purkynka.account.Accounts
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
-import kotlinx.android.extensions.CacheImplementation
-import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.activity_edit_account.*
 
 /**
- * Created by anty on 10/15/17.
- *
  * @author anty
  */
-@ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class AccountEditActivity : ModularActivity(ToolbarModule(), CoordinatorLayoutModule(), BackButtonModule()) {
+class AccountEditActivity : ModularActivity(ToolbarModule(), BackButtonModule()) {
 
     companion object {
 
@@ -60,7 +54,7 @@ class AccountEditActivity : ModularActivity(ToolbarModule(), CoordinatorLayoutMo
         accountManager = AccountManager.get(this)
         account = intent.getParcelableExtra(KEY_ACCOUNT)
 
-        inAccountName.setText(account.name)
+        if (savedInstanceState == null) inAccountName.setText(account.name)
     }
 
     fun save(v: View) {
@@ -71,10 +65,11 @@ class AccountEditActivity : ModularActivity(ToolbarModule(), CoordinatorLayoutMo
                     return
                 }
 
-        if (AccountsHelper.renameAccount(accountManager, this, account, userName)) {
+        val newAccount = Accounts.rename(accountManager, account, userName)
+        if (newAccount != null) {
             val intent = Intent()
-                    .putExtra(AccountManager.KEY_ACCOUNT_NAME, userName)
-                    .putExtra(AccountManager.KEY_ACCOUNT_TYPE, account.type)
+                    .putExtra(AccountManager.KEY_ACCOUNT_NAME, newAccount.name)
+                    .putExtra(AccountManager.KEY_ACCOUNT_TYPE, newAccount.type)
 
             setResult(RESULT_OK, intent)
             finish()
