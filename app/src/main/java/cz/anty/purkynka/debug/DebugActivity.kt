@@ -16,24 +16,20 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.debug;
+package cz.anty.purkynka.debug
 
-import java.util.List;
-
-import eu.codetopic.utils.debug.BaseDebugActivity;
-import eu.codetopic.utils.ui.container.items.custom.CustomItem;
+import eu.codetopic.utils.debug.BaseDebugActivity
+import eu.codetopic.utils.ui.container.items.custom.CustomItem
 
 /**
  * Created by anty on 6/16/17.
  *
  * @author anty
  */
-public class DebugActivity extends BaseDebugActivity {
+class DebugActivity : BaseDebugActivity() {
 
-    @Override
-    protected void prepareDebugItems(List<CustomItem> items) {
+    override fun prepareDebugItems(items: MutableList<CustomItem>) {
         // add here App debug items
-        super.prepareDebugItems(items);
+        super.prepareDebugItems(items)
     }
-
 }

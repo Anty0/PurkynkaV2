@@ -18,7 +18,12 @@
 
 package cz.anty.purkynka.grades.ui
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.content.ContextCompat
 import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
@@ -28,15 +33,26 @@ import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.java.utils.JavaExtensions.format
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.notifications.manager.data.NotificationId
+import eu.codetopic.utils.AndroidExtensions.baseActivity
 import kotlinx.android.synthetic.main.item_subject.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * @author anty
  */
+@Serializable
 class SubjectItem(val base: Subject,
                   val changes: Map<Int, List<String>> = emptyMap()): CustomItem() { // TODO: use changes
 
+    companion object {
+        private const val LOG_TAG = "SubjectItem"
+
+    }
+
+    @Transient
     val isChnaged get() = changes.isNotEmpty()
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
@@ -62,13 +78,32 @@ class SubjectItem(val base: Subject,
                 else R.color.colorPrimaryExtraDarkGrades
         )
 
-        holder.boxClickTarget.setOnClickListener {
-            Toast.makeText(
+        if (itemPosition != NO_POSITION) { // detects usage in header
+            holder.boxClickTarget.setOnClickListener {
+                /*Toast.makeText(
                     holder.context,
                     "onClick(position$itemPosition, subject=$this)",
                     Toast.LENGTH_LONG
-            ).show()
-            // TODO: show activity of subject grades
+            ).show()*/
+
+                val context = holder.context
+                val options = context.baseActivity?.let {
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            it,
+                            holder.boxColoredBackground,
+                            context.getString(R.string.id_transition_subject_item)
+                    ).toBundle()
+                }
+
+                if (options == null) Log.w(LOG_TAG, "Can't start SubjectActivity " +
+                        "with transition: Cannot find Activity in context hierarchy")
+
+                ContextCompat.startActivity(
+                        context,
+                        SubjectActivity.getStartIntent(context, this),
+                        options
+                )
+            }
         }
     }
 

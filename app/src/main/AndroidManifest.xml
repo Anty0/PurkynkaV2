@@ -77,6 +77,10 @@
             android:name=".account.ui.AccountEditActivity"
             android:label="@string/title_activity_edit_account"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".grades.ui.SubjectActivity"
+            android:label="@string/title_activity_subject"
+            android:theme="@style/AppTheme.NoActionBar.Grades"/>
 
         <service
             android:name=".account.service.AuthenticatorService"

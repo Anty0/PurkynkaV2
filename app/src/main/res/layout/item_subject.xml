@@ -18,11 +18,12 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".grades.ui.SubjectItem"
     android:id="@+id/boxColoredBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
-    tools:context=".grades.ui.SubjectItem">
+    android:transitionName="@string/id_transition_subject_item">
 
     <LinearLayout
         android:id="@+id/boxClickTarget"

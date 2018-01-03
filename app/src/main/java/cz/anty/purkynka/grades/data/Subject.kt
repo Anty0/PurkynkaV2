@@ -25,12 +25,16 @@ import cz.anty.purkynka.R
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * @author anty
  */
+@Serializable
 data class Subject(val fullName: String, val shortName: String, val grades: List<Grade>) {
 
+    @Transient
     val average: Double get() {
         var tGrade = 0.0
         var tWeight = 0

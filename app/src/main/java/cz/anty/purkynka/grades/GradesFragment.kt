@@ -180,37 +180,47 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         launch(UI) {
             holder.showLoading()
 
             // TODO: Create superclass for these layouts and call onEach register
             arrayOf(
-                    layLogin.register(),
-                    layGrades.register(),
-                    laySyncStatus.register(),
-                    accountHolder.register()
+                    layLogin.updateData(),
+                    layGrades.updateData(),
+                    laySyncStatus.updateData(),
+                    accountHolder.updateData()
             ).forEach { it.join() }
 
             holder.hideLoading()
         }
     }
 
-    override fun onPause() {
+    override fun onStart() {
+        super.onStart()
+
+        layLogin.register()
+        layGrades.register()
+        laySyncStatus.register()
+        accountHolder.register()
+    }
+
+    override fun onStop() {
         accountHolder.unregister()
         laySyncStatus.unregister()
         layGrades.unregister()
         layLogin.unregister()
 
-        super.onPause()
+        super.onStop()
     }
 
     override fun onDestroyView() {
         laySyncStatus.unbindView()
         layLogin.unbindView()
         layGrades.unbindView()
+
         super.onDestroyView()
     }
 
@@ -270,14 +280,14 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             updateData()
         }
 
-        private val listeners = mutableListOf<() -> Unit>()
+        private val listeners = mutableListOf<suspend () -> Unit>()
 
         var account: Account? = null
             private set
         var accountId: String? = null
             private set
 
-        private fun updateData(): Job {
+        fun updateData(): Job {
             val self = this.asReference()
 
             return launch(UI) {
@@ -294,7 +304,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             }
         }
 
-        fun addChangeListener(listener: () -> Unit) {
+        fun addChangeListener(listener: suspend () -> Unit) {
             listeners.add(listener)
         }
 
@@ -329,7 +339,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         private var username = ""
 
         init {
-            accountHolder.addChangeListener { updateData() }
+            accountHolder.addChangeListener { updateData().join() }
         }
 
         fun bindView(view: View) {
@@ -353,7 +363,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
         }
 
-        private fun updateData(): Job = launch(UI) {
+        fun updateData(): Job = launch(UI) {
             userLoggedIn = accountHolder.accountId?.let {
                 bg { GradesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
@@ -452,7 +462,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             }
 
         init {
-            accountHolder.addChangeListener { updateData() }
+            accountHolder.addChangeListener { updateData().join() }
         }
 
         fun restore(savedInstanceState: Bundle?) {
@@ -537,7 +547,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
         }
 
-        private fun updateData(): Job = launch(UI) {
+        fun updateData(): Job = launch(UI) {
             userLoggedIn = accountHolder.accountId?.let {
                 bg { GradesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
@@ -655,7 +665,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         private var statusSnackbar: Snackbar? = null
 
         init {
-            accountHolder.addChangeListener { updateData() }
+            accountHolder.addChangeListener { updateData().join() }
         }
 
         fun bindView(view: View) {
@@ -681,7 +691,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
         }
 
-        private fun updateData(): Job = launch(UI) {
+        fun updateData(): Job = launch(UI) {
             val userLoggedIn = accountHolder.accountId?.let {
                 bg { GradesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false

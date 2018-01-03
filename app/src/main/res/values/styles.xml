@@ -135,6 +135,62 @@
     </style>
 
 
+    <style name="AppTheme.NoActionBar.Grades" parent="AppTheme.NoActionBar.Grades.Base">
+
+    </style>
+
+    <style name="AppTheme.NoActionBar.Attendance" parent="AppTheme.NoActionBar.Attendance.Base">
+
+    </style>
+
+    <style name="AppTheme.NoActionBar.Lunches" parent="AppTheme.NoActionBar.Lunches.Base">
+
+    </style>
+
+    <style name="AppTheme.NoActionBar.Timetables" parent="AppTheme.NoActionBar.Timetables.Base">
+
+    </style>
+
+    <style name="AppTheme.NoActionBar.WifiLogin" parent="AppTheme.NoActionBar.WifiLogin.Base">
+
+    </style>
+
+    <style name="AppTheme.NoActionBar.Grades.Base" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryGrades</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGrades</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkGrades</item>
+        <item name="colorAccent">@color/colorAccentGrades</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Attendance.Base" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryAttendance</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkAttendance</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkAttendance</item>
+        <item name="colorAccent">@color/colorAccentAttendance</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Lunches.Base" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryLunches</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkLunches</item>
+        <item name="colorAccent">@color/colorAccentLunches</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Timetables.Base" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryTimetables</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkTimetables</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkTimetables</item>
+        <item name="colorAccent">@color/colorAccentTimetables</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.WifiLogin.Base" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryWifiLogin</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
+        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkWifiLogin</item>
+        <item name="colorAccent">@color/colorAccentWifiLogin</item>
+    </style>
+
+
     <style name="AppTheme" parent="AppTheme.Base">
 
     </style>

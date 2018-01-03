@@ -61,6 +61,27 @@
     </style>
 
 
+    <style name="AppTheme.NoActionBar.Grades" parent="AppTheme.NoActionBar.Grades.Base">
+        <item name="android:navigationBarColor">@color/navigationBarColorGrades</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Attendance" parent="AppTheme.NoActionBar.Attendance.Base">
+        <item name="android:navigationBarColor">@color/navigationBarColorAttendance</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Lunches" parent="AppTheme.NoActionBar.Lunches.Base">
+        <item name="android:navigationBarColor">@color/navigationBarColorLunches</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Timetables" parent="AppTheme.NoActionBar.Timetables.Base">
+        <item name="android:navigationBarColor">@color/navigationBarColorTimetables</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.WifiLogin" parent="AppTheme.NoActionBar.WifiLogin.Base">
+        <item name="android:navigationBarColor">@color/navigationBarColorWifiLogin</item>
+    </style>
+
+
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
         <item name="android:windowContentTransitions">true</item>
