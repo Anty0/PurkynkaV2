@@ -39,6 +39,7 @@
     <string name="title_activity_edit_account">Edit account</string>
     <string name="title_activity_account_properties">Account properties</string>
     <string name="title_activity_subject">Subject</string>
+    <string name="title_activity_grade">Grade</string>
 
     <string name="action_show_dashboard">Dashboard</string>
     <string name="action_show_grades">Grades</string>
@@ -112,4 +113,5 @@
     <string name="pref_about">About</string>
 
     <string name="id_transition_subject_item" translatable="false">subject_item</string>
+    <string name="id_transition_grade_item" translatable="false">grade_item</string>
 </resources>

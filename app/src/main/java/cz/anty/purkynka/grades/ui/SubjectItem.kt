@@ -81,10 +81,10 @@ class SubjectItem(val base: Subject,
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
                 /*Toast.makeText(
-                    holder.context,
-                    "onClick(position$itemPosition, subject=$this)",
-                    Toast.LENGTH_LONG
-            ).show()*/
+                        holder.context,
+                        "onClick(position$itemPosition, subject=$this)",
+                        Toast.LENGTH_LONG
+                ).show()*/
 
                 val context = holder.context
                 val options = context.baseActivity?.let {

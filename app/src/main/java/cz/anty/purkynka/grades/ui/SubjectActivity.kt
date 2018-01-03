@@ -18,11 +18,22 @@
 
 package cz.anty.purkynka.grades.ui
 
+import android.animation.Animator
+import android.animation.AnimatorInflater
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.support.graphics.drawable.AnimatorInflaterCompat
+import android.support.transition.TransitionInflater
+import android.support.transition.TransitionManager
+import android.transition.Transition
+import android.view.View
+import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.simple.SimpleAnimatorListener
+import eu.codetopic.utils.simple.SimpleTransitionListener
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
@@ -80,5 +91,19 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
                             )
                         }
                 )
+
+        val recyclerAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
+        val showRecycler = {
+            boxRecycler.apply {
+                visibility = View.VISIBLE
+                startAnimation(recyclerAnimation)
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.sharedElementEnterTransition.addListener(object : SimpleTransitionListener() {
+                override fun onTransitionEnd(transition: Transition) { run(showRecycler) }
+            })
+        } else run(showRecycler)
     }
 }

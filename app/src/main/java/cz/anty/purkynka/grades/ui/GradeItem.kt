@@ -19,8 +19,9 @@
 package cz.anty.purkynka.grades.ui
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Toast
 import cz.anty.purkynka.R
@@ -28,19 +29,32 @@ import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.Utils.colorForValue
 import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
+import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.baseActivity
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.item_grade.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * @author anty
  */
+@Serializable
 class GradeItem(val base: Grade, val showSubject: Boolean = true,
                 val changes: List<String>? = null): CustomItem() { // TODO: use changes
 
+    companion object {
+
+        private const val LOG_TAG = "GradeItem"
+    }
+
+    @Transient
     val isNew = changes?.isEmpty() == true
 
+    @Transient
     val isChanged = changes?.isNotEmpty() == true
 
+    @Transient
     val hasChnges = changes != null
 
     override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
@@ -53,8 +67,12 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
 
         holder.txtGrade.apply {
             setTypeface(null, textStyle)
-            setTextColor(colorForValue(base.value.toInt()
-                    .let { if (it == 0) null else it - 1 }, 5))
+            setTextColor(colorForValue(
+                    base.value.toInt().let {
+                        if (it == 0) null else it - 1
+                    },
+                    5
+            ))
             text = base.valueToShow
         }
 
@@ -72,13 +90,32 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
                 else R.color.colorPrimaryExtraDarkGrades
         )
 
-        holder.boxClickTarget.setOnClickListener {
-            Toast.makeText(
-                    holder.context,
-                    "onClick(position$itemPosition, grade=$base)",
-                    Toast.LENGTH_LONG
-            ).show()
-            // TODO: show grade info and stats in new activity
+        if (itemPosition != NO_POSITION) { // detects usage in header
+            holder.boxClickTarget.setOnClickListener {
+                /*Toast.makeText(
+                        holder.context,
+                        "onClick(position$itemPosition, grade=$base)",
+                        Toast.LENGTH_LONG
+                ).show()*/
+
+                val context = holder.context
+                val options = context.baseActivity?.let {
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            it,
+                            holder.boxColoredBackground,
+                            context.getString(R.string.id_transition_grade_item)
+                    ).toBundle()
+                }
+
+                if (options == null) Log.w(LOG_TAG, "Can't start GradeActivity " +
+                        "with transition: Cannot find Activity in context hierarchy")
+
+                ContextCompat.startActivity(
+                        context,
+                        GradeActivity.getStartIntent(context, this),
+                        options
+                )
+            }
         }
     }
 

@@ -81,6 +81,10 @@
             android:name=".grades.ui.SubjectActivity"
             android:label="@string/title_activity_subject"
             android:theme="@style/AppTheme.NoActionBar.Grades"/>
+        <activity
+            android:name=".grades.ui.GradeActivity"
+            android:label="@string/title_activity_grade"
+            android:theme="@style/AppTheme.NoActionBar.Grades"/>
 
         <service
             android:name=".account.service.AuthenticatorService"

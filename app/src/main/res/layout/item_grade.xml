@@ -22,7 +22,8 @@
     android:id="@+id/boxColoredBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent">
+    android:background="@android:color/transparent"
+    android:transitionName="@string/id_transition_grade_item">
 
     <LinearLayout
         android:id="@+id/boxClickTarget"

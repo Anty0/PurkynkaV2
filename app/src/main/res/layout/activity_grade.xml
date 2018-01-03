@@ -21,14 +21,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".grades.ui.SubjectActivity"
+    tools:context=".grades.ui.GradeActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         style="?attr/cardViewTheme"
-        android:id="@+id/boxSubject"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
@@ -36,12 +35,20 @@
         app:cardCornerRadius="2dp"
         app:cardUseCompatPadding="true"
         app:contentPaddingTop="4dp"
-        app:contentPaddingBottom="4dp" />
+        app:contentPaddingBottom="4dp">
 
-    <FrameLayout
-        android:id="@+id/boxRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
+        <LinearLayout
+            android:id="@+id/boxGrade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!--TODO: Other grade info (date, type and subject name)-->
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <!--TODO: Grade statistics -->
 
 </LinearLayout>
