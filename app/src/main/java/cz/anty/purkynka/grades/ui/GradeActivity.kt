@@ -61,7 +61,7 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
                             base = it.base,
                             showSubject = true,
                             changes = it.changes
-                    ) // Force showSubject = true
+                    ) // Force showSubject = true // FIXME: causes problems (maybe remove)
                 }
                 ?:
                 run {
