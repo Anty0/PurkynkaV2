@@ -87,7 +87,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
 
         holder.boxColoredBackground.setBackgroundResource(
                 if (!hasChnges) android.R.color.transparent
-                else R.color.colorPrimaryExtraDarkGrades
+                else R.color.colorListHighlight
         )
 
         if (itemPosition != NO_POSITION) { // detects usage in header
@@ -104,7 +104,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
                             it,
                             holder.boxColoredBackground,
                             context.getString(R.string.id_transition_grade_item)
-                    ).toBundle()
+                    )
                 }
 
                 if (options == null) Log.w(LOG_TAG, "Can't start GradeActivity " +
@@ -113,7 +113,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
                 ContextCompat.startActivity(
                         context,
                         GradeActivity.getStartIntent(context, this),
-                        options
+                        options?.toBundle()
                 )
             }
         }

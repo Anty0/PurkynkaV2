@@ -50,7 +50,7 @@ import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
-import eu.codetopic.java.utils.JavaExtensions
+import eu.codetopic.java.utils.JavaExtensions.runIfNull
 import eu.codetopic.java.utils.JavaExtensions.kSerializer
 import eu.codetopic.utils.AndroidExtensions.serialize
 import eu.codetopic.java.utils.log.Log
@@ -98,6 +98,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private const val LOG_TAG = "GradesFragment"
 
+        private const val TIMEOUT_SYNC_ACTIVE = 10000L
+
         private const val SAVE_EXTRA_SORT = "$LOG_TAG.SORT"
         private const val SAVE_EXTRA_SEMESTER = "$LOG_TAG.SEMESTER"
         private const val SAVE_EXTRA_CHANGES_MAP = "$LOG_TAG.CHANGES_MAP"
@@ -107,6 +109,19 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
                     .also { Log.d(LOG_TAG, "aWaitForSyncStart(account=$account) -> $it") }
         }
+
+        suspend fun aWaitForSyncActiveOrEnd(account: Account) = withTimeoutOrNull(TIMEOUT_SYNC_ACTIVE) {
+            aWaitForSyncState {
+                (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
+                        !ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
+                        .also {
+                            Log.d(LOG_TAG, "aWaitForSyncActiveOrEnd(account=$account)" +
+                                    " -> Condition result: $it")
+                        }
+            }
+        }.runIfNull {
+            Log.d(LOG_TAG, "aWaitForSyncActiveOrEnd(account=$account) -> Timeout reached")
+        } != null
 
         suspend fun aWaitForSyncEnd(account: Account) = aWaitForSyncState {
             (!ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) &&
@@ -399,7 +414,12 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 // Sync will be triggered later by change broadcast, so we must wait for sync start before we can wait for sync end
                 aWaitForSyncStart(account)
-                aWaitForSyncEnd(account)
+                if (aWaitForSyncActiveOrEnd(account)) {
+                    aWaitForSyncEnd(account)
+                } else {
+                    longSnackbar(baseView, R.string.snackbar_sync_start_fail).show()
+                    bg { GradesLoginData.loginData.logout(accountId) }.await()
+                }
 
                 delay(500) // Wait few loops to make sure, that content was updated.
                 holder.hideLoading()
@@ -614,7 +634,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 // Sync sometimes reports, that is not started, at the beginning. So we must wait for sync start before we can wait for sync end.
                 aWaitForSyncStart(account)
-                aWaitForSyncEnd(account)
+                if (aWaitForSyncActiveOrEnd(account)) {
+                    aWaitForSyncEnd(account)
+                } else {
+                    longSnackbar(baseView, R.string.snackbar_sync_start_fail).show()
+                }
 
                 //delay(500) // Wait few loops to make sure, that content was updated.
                 holder.hideLoading()
@@ -632,7 +656,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 // Sync sometimes reports, that is not started, at the beginning. So we must wait for sync start before we can wait for sync end.
                 aWaitForSyncStart(account)
-                aWaitForSyncEnd(account)
+                if (aWaitForSyncActiveOrEnd(account)) {
+                    aWaitForSyncEnd(account)
+                } else {
+                    longSnackbar(baseView, R.string.snackbar_sync_start_fail).show()
+                }
 
                 recyclerManagerRef?.invoke()?.setRefreshing(false)
             }

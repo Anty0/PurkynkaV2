@@ -20,9 +20,14 @@ package cz.anty.purkynka.grades.ui
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.transition.Transition
+import android.view.View
+import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.simple.SimpleTransitionListener
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
@@ -56,13 +61,6 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
 
         val gradeItem = intent?.getStringExtra(EXTRA_GRADE_ITEM)
                 ?.let { JSON.parse<GradeItem>(it) }
-                ?.let {
-                    GradeItem(
-                            base = it.base,
-                            showSubject = true,
-                            changes = it.changes
-                    ) // Force showSubject = true // FIXME: causes problems (maybe remove)
-                }
                 ?:
                 run {
                     Log.e(LOG_TAG, "Can't create $LOG_TAG: No GradeItem received")
@@ -77,6 +75,31 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
         }
         gradeItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)
 
-        // TODO: setup grade info views in layout
+        txtDate.text = gradeItem.base.dateStr
+        txtType.text = gradeItem.base.type
+        txtSubjectName.text = gradeItem.base.subjectLong
+        if (!gradeItem.showSubject) {
+            boxSubjectSymbol.visibility = View.VISIBLE
+            txtSubjectSymbol.text = gradeItem.base.subjectShort
+        }
+
+        val gradeInfoAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
+        val gradeStatisticsAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        val showGradeInfo = {
+            boxGradeInfo.apply {
+                visibility = View.VISIBLE
+                startAnimation(gradeInfoAnimation)
+            }
+            boxGradeStatistics.apply {
+                visibility = View.VISIBLE
+                startAnimation(gradeStatisticsAnimation)
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.sharedElementEnterTransition.addListener(object : SimpleTransitionListener() {
+                override fun onTransitionEnd(transition: Transition) { run(showGradeInfo) }
+            })
+        } else run(showGradeInfo)
     }
 }

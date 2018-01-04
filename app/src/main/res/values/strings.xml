@@ -75,6 +75,13 @@
     <string name="but_create">Create</string>
     <string name="but_save">Save</string>
 
+    <string name="txt_here_date">Date:</string>
+    <string name="txt_here_type">Type:</string>
+    <string name="txt_here_subject">Subject:</string>
+    <string name="txt_here_subject_symbol">Subject symbol:</string>
+
+    <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
+
     <string name="text_view_grade">Grade</string>
     <string name="text_view_weight">Weight</string>
     <string name="text_view_average">Average</string>
@@ -92,6 +99,7 @@
     <string name="snackbar_no_account_sync">"No account available, can't request sync for you."</string>
     <string name="snackbar_no_account_login">"No account available, can't log you in."</string>
     <string name="snackbar_no_account_logout">"No account available, can't log you out."</string>
+    <string name="snackbar_sync_start_fail">"Can't start sync, are you connected to internet?"</string>
     <string name="snackbar_grades_refresh_fail_unknown">Last attempt to refresh grades failed.</string>
     <string name="snackbar_grades_refresh_fail_connect">Connection error. Failed to refresh grades.</string>
     <string name="snackbar_grades_refresh_fail_login">Failed to login. Are login credentials in order?</string>

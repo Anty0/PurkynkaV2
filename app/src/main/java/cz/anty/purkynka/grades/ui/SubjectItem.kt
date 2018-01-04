@@ -75,7 +75,7 @@ class SubjectItem(val base: Subject,
 
         holder.boxColoredBackground.setBackgroundResource(
                 if (!isChnaged) android.R.color.transparent
-                else R.color.colorPrimaryExtraDarkGrades
+                else R.color.colorListHighlight
         )
 
         if (itemPosition != NO_POSITION) { // detects usage in header
