@@ -56,11 +56,12 @@ class GradesUiData private constructor(context: Context) :
             LAST_SORT_GRADES,
             Sort::class,
             accessProvider,
-            Sort.DATE
+            Sort.GRADES_DATE
     )
 
     enum class Sort {
-        DATE, SUBJECTS // TODO: more sort options
+        GRADES_DATE, GRADES_VALUE, GRADES_SUBJECT,
+        SUBJECTS_NAME, SUBJECTS_AVERAGE_BEST, SUBJECTS_AVERAGE_WORSE
     }
 
     private class Getter : PreferencesGetterAbs<GradesUiData>() {

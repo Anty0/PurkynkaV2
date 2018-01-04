@@ -57,9 +57,13 @@
     <string name="action_contact_web_page_donate">Donate developer</string>
     <string name="action_add_user">Add user</string>
 
-    <string name="menu_item_text_sort">Sort by</string>
-    <string name="menu_item_text_sort_date">Date</string>
-    <string name="menu_item_text_sort_subject">Subject</string>
+    <string name="menu_item_text_show">Show</string>
+    <string name="menu_item_text_show_grades_date">Grades → Date</string>
+    <string name="menu_item_text_show_grades_value">Grades → Value</string>
+    <string name="menu_item_text_show_grades_subject">Grades → Subject</string>
+    <string name="menu_item_text_show_subjects_name">Subjects → Name</string>
+    <string name="menu_item_text_show_subjects_average_best">Subjects → Average ↓</string>
+    <string name="menu_item_text_show_subjects_average_worse">Subjects → Average ↑</string>
     <string name="menu_item_text_semester">Semester</string>
     <string name="menu_item_text_semester_first">First</string>
     <string name="menu_item_text_semester_second">Second</string>

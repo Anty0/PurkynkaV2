@@ -19,6 +19,7 @@
 package cz.anty.purkynka.grades
 
 import android.accounts.Account
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncStatusObserver
@@ -47,6 +48,7 @@ import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesMap
 import cz.anty.purkynka.grades.save.GradesUiData
+import cz.anty.purkynka.grades.save.GradesUiData.Sort.*
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
@@ -167,7 +169,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     private val accountHolder = ActiveAccountHolder()
     private val layLogin = LayoutLogin(accountHolder, holder)
-    private val layGrades = LayoutGrades(accountHolder, holder)
+    private val layGrades = LayoutGrades(accountHolder, layLogin, holder)
     private val laySyncStatus = LayoutSyncStatus(accountHolder, layLogin, layGrades)
 
     init { setHasOptionsMenu(true) }
@@ -188,7 +190,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         val themedInflater = inflater.cloneInContext(themedContext)
         val view = themedInflater.inflate(R.layout.fragment_grades, container, false)
 
-        layGrades.bindView(themedContext, themedInflater, view)
+        layGrades.bindView(activity, themedContext, themedInflater, view)
         layLogin.bindView(view)
         laySyncStatus.bindView(view)
 
@@ -241,46 +243,14 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.fragment_grades_menu, menu) // FIXME: hide options menu on login screen
-        // TODO: here only inflate menu, all other logic should be in layouts
 
-        menu.findItem(
-                if (layGrades.sort == GradesUiData.Sort.DATE) R.id.action_sort_date
-                else R.id.action_sort_subject
-        ).isChecked = true
-
-        menu.findItem(
-                if (layGrades.semester == Semester.FIRST) R.id.action_semester_first
-                else R.id.action_semester_second
-        ).isChecked = true
+        layGrades.createOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (super.onOptionsItemSelected(item)) return true
-        // TODO: all logic should be in layouts
 
-        when (item.itemId) {
-            R.id.action_sort_date -> {
-                item.isChecked = true
-                layGrades.sort = GradesUiData.Sort.DATE
-            }
-            R.id.action_sort_subject -> {
-                item.isChecked = true
-                layGrades.sort = GradesUiData.Sort.SUBJECTS
-            }
-            R.id.action_semester_first -> {
-                item.isChecked = true
-                layGrades.semester = Semester.FIRST
-            }
-            R.id.action_semester_second -> {
-                item.isChecked = true
-                layGrades.semester = Semester.SECOND
-            }
-            R.id.action_refresh -> layGrades.requestSyncWithLoading()
-            R.id.action_log_out -> layLogin.logout()
-            else -> return false
-        }
-        return true
+        return layGrades.optionsItemSelected(item)
     }
 
     private class ActiveAccountHolder {
@@ -444,6 +414,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     }
 
     private class LayoutGrades(private val accountHolder: ActiveAccountHolder,
+                               private val layoutLogin: LayoutLogin,
                                private val holder: LoadingVH) : LayoutContainer {
 
         companion object {
@@ -464,12 +435,13 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private var userLoggedIn = false
         private var gradesMap: GradesMap? = null
-        private var gradesChangesMap: MutableMap<Int, List<String>> = mutableMapOf() // TODO: preserve screen rotation
+        private var gradesChangesMap: MutableMap<Int, List<String>> = mutableMapOf()
 
+        private var activity: Activity? = null
         private var recyclerManager: Recycler.RecyclerManagerImpl? = null
         private var adapter: CustomItemAdapter<CustomItem>? = null
 
-        var sort: GradesUiData.Sort = GradesUiData.instance.lastSort // TODO: more sorting options
+        var sort: GradesUiData.Sort = GradesUiData.instance.lastSort
             set(value) {
                 field = value
                 GradesUiData.instance.lastSort = value
@@ -491,7 +463,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     savedInstanceState.getSerializable(SAVE_EXTRA_SORT) as GradesUiData.Sort
                 } catch (e: Exception) {
                     Log.w(LOG_TAG, "onCreate() -> restoreSortState()", e)
-                    GradesUiData.Sort.DATE
+                    GradesUiData.Sort.GRADES_DATE
                 }
             }
             savedInstanceState?.takeIf { it.containsKey(SAVE_EXTRA_SEMESTER) }?.let {
@@ -525,8 +497,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             )
         }
 
-        fun bindView(context: Context, inflater: LayoutInflater, view: View) {
+        fun bindView(activity: Activity?, context: Context, inflater: LayoutInflater, view: View) {
             containerView = view.boxRecycler
+
+            this.activity = activity
 
             adapter = CustomItemAdapter(context)
 
@@ -549,6 +523,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         fun unbindView() {
             recyclerManager = null
             adapter = null
+            activity = null
             containerView = null
             clearFindViewByIdCache()
         }
@@ -565,6 +540,69 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         fun unregister() {
             LocalBroadcast.unregisterReceiver(dataChangedReceiver)
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
+        }
+
+        fun createOptionsMenu(menu: Menu, inflater: MenuInflater) {
+            if (!userLoggedIn) return
+
+            inflater.inflate(R.menu.fragment_grades_menu, menu)
+
+            menu.findItem(
+                    when(sort) {
+                        GRADES_DATE -> R.id.action_show_grades_date
+                        GRADES_VALUE -> R.id.action_show_grades_value
+                        GRADES_SUBJECT -> R.id.action_show_grades_subject
+                        SUBJECTS_NAME -> R.id.action_show_subjects_name
+                        SUBJECTS_AVERAGE_BEST -> R.id.action_show_subjects_average_best
+                        SUBJECTS_AVERAGE_WORSE -> R.id.action_show_subjects_average_worse
+                    }
+            ).isChecked = true
+
+            menu.findItem(
+                    if (semester == Semester.FIRST) R.id.action_semester_first
+                    else R.id.action_semester_second
+            ).isChecked = true
+        }
+
+        fun optionsItemSelected(item: MenuItem): Boolean {
+            when (item.itemId) {
+                R.id.action_show_grades_date -> {
+                    item.isChecked = true
+                    sort = GRADES_DATE
+                }
+                R.id.action_show_grades_value -> {
+                    item.isChecked = true
+                    sort = GRADES_VALUE
+                }
+                R.id.action_show_grades_subject -> {
+                    item.isChecked = true
+                    sort = GRADES_SUBJECT
+                }
+                R.id.action_show_subjects_name -> {
+                    item.isChecked = true
+                    sort = SUBJECTS_NAME
+                }
+                R.id.action_show_subjects_average_best -> {
+                    item.isChecked = true
+                    sort = SUBJECTS_AVERAGE_BEST
+                }
+                R.id.action_show_subjects_average_worse -> {
+                    item.isChecked = true
+                    sort = SUBJECTS_AVERAGE_WORSE
+                }
+                R.id.action_semester_first -> {
+                    item.isChecked = true
+                    semester = Semester.FIRST
+                }
+                R.id.action_semester_second -> {
+                    item.isChecked = true
+                    semester = Semester.SECOND
+                }
+                R.id.action_refresh -> requestSyncWithLoading()
+                R.id.action_log_out -> layoutLogin.logout()
+                else -> return false
+            }
+            return true
         }
 
         fun updateData(): Job = launch(UI) {
@@ -600,15 +638,26 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 adapter?.edit {
                     clear()
                     gradesMap?.let { it[semester.value] }?.let {
-                        addAll(when (sort) {
-                            GradesUiData.Sort.DATE -> it.map {
+                        val grades = {
+                            it.map {
                                 GradeItem(it, changes = gradesChangesMap[it.id])
-                            } // TODO: sort new and changed on top and add before them title "New grades" or "Changed grades"
-                            GradesUiData.Sort.SUBJECTS -> it.toSubjects().map {
-                                SubjectItem(it, it.grades.mapNotNull {
-                                    grade -> gradesChangesMap[grade.id]?.let { grade.id to it }
+                            }
+                        }
+                        val subjects = {
+                            it.toSubjects().map {
+                                SubjectItem(it, it.grades.mapNotNull { grade ->
+                                    gradesChangesMap[grade.id]?.let { grade.id to it }
                                 }.toMap())
-                            } // TODO: sort changed on top and add before them title "Changed subjects"
+                            }
+                        }
+                        addAll(when (sort) {
+                            GRADES_DATE -> run(grades)
+                            GRADES_VALUE -> run(grades).sortedBy { it.base.value }
+                            GRADES_SUBJECT -> run(grades).sortedBy { it.base.subjectShort }
+                            SUBJECTS_NAME -> run(subjects)
+                            SUBJECTS_AVERAGE_BEST -> run(subjects).sortedBy { it.base.average }
+                            SUBJECTS_AVERAGE_WORSE ->
+                                run(subjects).sortedByDescending { it.base.average }
                         })
                     }
                 }
@@ -619,6 +668,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 View.GONE
             }
+
+            activity?.invalidateOptionsMenu()
         }
 
         fun requestSyncWithLoading() {
