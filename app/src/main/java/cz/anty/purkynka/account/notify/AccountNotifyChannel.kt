@@ -85,7 +85,7 @@ class AccountNotifyChannel(val accountId: String, val account: Account) : Notifi
     override fun createChannel(context: Context): android.app.NotificationChannel =
             android.app.NotificationChannel(
                     id,
-                    context.getFormattedText(R.string.notify_channel_grades_add, accountId), // TODO: better name
+                    account.name,
                     NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 enableLights(true)

@@ -107,7 +107,7 @@ class GradesChangesNotificationGroup :
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun createGroup(context: Context): NotificationChannelGroup =
-            NotificationChannelGroup(id, LOG_TAG/*TODO name*/)
+            NotificationChannelGroup(id, context.getText(R.string.notify_group_name_grades_changes))
 
     override fun handleContentIntent(context: Context, id: NotificationId,
                                      channel: NotificationChannel, data: Bundle) {

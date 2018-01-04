@@ -20,8 +20,7 @@
 <resources>
     <string name="app_name">Purkynka</string>
 
-    <string name="notify_channel_main">Main</string>
-    <string name="notify_channel_grades_add">Grades of %1$s</string>
+    <string name="notify_group_name_grades_changes">Grades changes</string>
 
     <string name="notify_grade_new_title">New grade %1$s from %2$s</string>
     <string name="notify_grade_new_text_note">%1$s by %2$s</string>
