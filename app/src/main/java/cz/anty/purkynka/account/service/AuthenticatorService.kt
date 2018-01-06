@@ -22,6 +22,7 @@ import android.accounts.AccountManager
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import eu.codetopic.java.utils.log.Log
 
 /**
  * @author anty
@@ -41,6 +42,7 @@ class AuthenticatorService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
+        Log.d(LOG_TAG, "onBind(intent=$intent)")
         return when (intent?.action) {
             AccountManager.ACTION_AUTHENTICATOR_INTENT -> sAuthenticator?.iBinder
             else -> null

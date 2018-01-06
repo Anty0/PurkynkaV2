@@ -71,11 +71,12 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
                 val account = it.value
 
                 val loggedIn = loginData.isLoggedIn(accountId)
-                val syncable = ContentResolver.getIsSyncable(account, CONTENT_AUTHORITY) > 0
-                if (loggedIn == syncable) return@forEach
+                val syncable = ContentResolver.getIsSyncable(account, CONTENT_AUTHORITY)
+                        .takeIf { it >= 0 }?.let { it > 0 }
+                if (syncable != null && loggedIn == syncable) return@forEach
 
-                Log.d(LOG_TAG, "loginDataChanged() -> " +
-                        "differenceFound(loggedIn=$loggedIn, syncable=$syncable, account=$it)")
+                Log.d(LOG_TAG, "loginDataChanged() -> differenceFound(loggedIn=$loggedIn," +
+                        " syncable=${syncable ?: "Unknown"}, account=$it)")
 
                 Syncs.updateEnabled(
                         loggedIn,

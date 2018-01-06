@@ -26,6 +26,8 @@ import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.ui.AccountCreateActivity
 import cz.anty.purkynka.account.ui.AccountEditActivity
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.java.utils.reflect.field.FieldsSearch
+import eu.codetopic.java.utils.reflect.field.SimpleFieldsFilter
 import org.jetbrains.anko.bundleOf
 import java.util.*
 
@@ -39,35 +41,44 @@ class AuthenticatorImpl(private val context: Context) : AbstractAccountAuthentic
         private const val LOG_TAG = "AuthenticatorImpl"
     }
 
-    override fun editProperties(response: AccountAuthenticatorResponse, accountType: String): Bundle {
+    override fun editProperties(response: AccountAuthenticatorResponse,
+                                accountType: String): Bundle {
         Log.d(LOG_TAG, "editProperties(accountType=$accountType")
         throw UnsupportedOperationException()
     }
 
     @Throws(NetworkErrorException::class)
-    override fun addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String,
-                            requiredFeatures: Array<String>, options: Bundle): Bundle {
+    override fun addAccount(response: AccountAuthenticatorResponse, accountType: String,
+                            authTokenType: String?, requiredFeatures: Array<String>?,
+                            options: Bundle): Bundle {
         Log.d(LOG_TAG, "addAccount(accountType=$accountType, authTokenType=$authTokenType, " +
                 "requiredFeatures=${Arrays.toString(requiredFeatures)}, " +
                 "options=${Arrays.toString(options.keySet().toTypedArray())}")
 
-        if (accountType != Accounts.ACCOUNT_TYPE) throw UnsupportedOperationException()
+        if (accountType != Accounts.ACCOUNT_TYPE)
+            throw IllegalArgumentException("Unsupported accountType")
 
         return bundleOf(
-                AccountManager.KEY_INTENT to Intent(context, AccountCreateActivity::class.java)
-                                .putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
+                AccountManager.KEY_INTENT to
+                        Intent(context, AccountCreateActivity::class.java)
+                                .putExtra(
+                                        AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
+                                        response
+                                )
         )
     }
 
     @Throws(NetworkErrorException::class)
-    override fun confirmCredentials(response: AccountAuthenticatorResponse, account: Account, options: Bundle): Bundle {
+    override fun confirmCredentials(response: AccountAuthenticatorResponse, account: Account,
+                                    options: Bundle): Bundle {
         Log.d(LOG_TAG, "confirmCredentials(account=%$account, " +
                 "options=${Arrays.toString(options.keySet().toTypedArray())}")
         throw UnsupportedOperationException()
     }
 
     @Throws(NetworkErrorException::class)
-    override fun getAuthToken(response: AccountAuthenticatorResponse, account: Account, authTokenType: String, options: Bundle): Bundle {
+    override fun getAuthToken(response: AccountAuthenticatorResponse, account: Account,
+                              authTokenType: String?, options: Bundle): Bundle {
         Log.d(LOG_TAG, "getAuthToken(account=$account, authTokenType=$authTokenType, " +
                 "options=${Arrays.toString(options.keySet().toTypedArray())}")
         throw UnsupportedOperationException()
@@ -86,17 +97,20 @@ class AuthenticatorImpl(private val context: Context) : AbstractAccountAuthentic
 
         // TODO: 10/12/17 check credentials from options
         return bundleOf(
-                AccountManager.KEY_INTENT to Intent(context, AccountEditActivity::class.java)
-                        .putExtra(AccountEditActivity.KEY_ACCOUNT, account)
+                AccountManager.KEY_INTENT to
+                        Intent(context, AccountEditActivity::class.java)
+                                .putExtra(AccountEditActivity.KEY_ACCOUNT, account)
         )
     }
 
     @Throws(NetworkErrorException::class)
-    override fun hasFeatures(response: AccountAuthenticatorResponse, account: Account, features: Array<String>): Bundle {
-        Log.d(LOG_TAG, "hasFeatures(account=$account, features=${Arrays.toString(features)})")
+    override fun hasFeatures(response: AccountAuthenticatorResponse, account: Account,
+                             features: Array<String>?): Bundle {
+        Log.d(LOG_TAG, "hasFeatures(account=$account, " +
+                "features=${features?.let { Arrays.toString(it) }})")
 
         return bundleOf(
-                AccountManager.KEY_BOOLEAN_RESULT to features.isEmpty()
+                AccountManager.KEY_BOOLEAN_RESULT to (features?.isEmpty() != false)
         )
     }
 }

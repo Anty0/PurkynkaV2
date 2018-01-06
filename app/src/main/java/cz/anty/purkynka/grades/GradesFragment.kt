@@ -392,13 +392,13 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 }
 
                 delay(500) // Wait few loops to make sure, that content was updated.
-                holder.hideLoading()
+                holder.hideLoading() // FIXME: why is loading being hidden hidden before grades are loaded???
             }
         }
 
         fun logout() {
-            val account = accountHolder.account ?:
-                    return longSnackbar(boxLogin, R.string.snackbar_no_account_logout).show()
+            //val account = accountHolder.account ?:
+            //        return longSnackbar(boxLogin, R.string.snackbar_no_account_logout).show()
             val accountId = accountHolder.accountId ?:
                     return longSnackbar(boxLogin, R.string.snackbar_no_account_logout).show()
 

@@ -20,21 +20,31 @@ package cz.anty.purkynka.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.accounts.AccountManagerCallback
+import android.accounts.AccountManagerFuture
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
+import android.os.Handler
 import cz.anty.purkynka.account.notify.AccountNotifyChannel
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.broadcast.BroadcastsConnector.Connection
 import eu.codetopic.utils.broadcast.BroadcastsConnector.BroadcastTargetingType
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import org.jetbrains.anko.bundleOf
+import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.getStackTraceString
 import java.util.*
 
 /**
  * @author anty
  */
 object Accounts {
+
+    private const val LOG_TAG = "Accounts"
 
     const val ACCOUNT_TYPE = "cz.anty.purkynka.account"
 
@@ -126,6 +136,12 @@ object Accounts {
         return null
     }
 
+    fun requestAdd(activity: Activity, handler: Handler? = null,
+                   callback: ((future: AccountManagerFuture<Bundle>) -> Unit)? = null) {
+        AccountManager.get(activity).addAccount(Accounts.ACCOUNT_TYPE, null,
+                null, null, activity, callback, handler)
+    }
+
     fun remove(context: Context, account: Account): Boolean =
             remove(AccountManager.get(context), account)
 
@@ -171,6 +187,8 @@ object Accounts {
 
     fun rename(accountManager: AccountManager, account: Account, newName: String): Account? {
         account.checkType()
+
+        if (account.name == newName) return account
 
         val accountId = getId(accountManager, account)
         val newAccount = Account(newName, ACCOUNT_TYPE)

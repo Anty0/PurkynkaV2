@@ -21,6 +21,7 @@ package cz.anty.purkynka.grades.sync
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import eu.codetopic.java.utils.log.Log
 
 /**
  * @author anty
@@ -45,6 +46,7 @@ class GradesSyncService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder? {
+        Log.d(LOG_TAG, "onBind(intent=$intent)")
         return sSyncAdapter?.syncAdapterBinder
     }
 }

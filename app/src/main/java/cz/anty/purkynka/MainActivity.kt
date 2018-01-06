@@ -43,10 +43,12 @@ import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.settings.SettingsActivity
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import kotlinx.android.synthetic.main.activity_module_toolbar.*
 
 
 class MainActivity : NavigationActivity() {
@@ -143,16 +145,14 @@ class MainActivity : NavigationActivity() {
         return true
     }
 
-    override fun onUpdateSelectedAccountNavigationMenuItem(currentFragment: Fragment?, menu: Menu): Boolean {
+    override fun onUpdateSelectedAccountNavigationMenuItem(currentFragment: Fragment?,
+                                                           menu: Menu): Boolean {
         return false
     }
 
     override fun onAccountNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_item_add_account -> {
-                AccountManager.get(this).addAccount(Accounts.ACCOUNT_TYPE, null,
-                    null, null, this, null, null)
-            }
+            R.id.menu_item_add_account -> Accounts.requestAdd(this)
             R.id.menu_item_account -> ActiveAccount.set(item.title.toString())
             else -> return super.onAccountNavigationItemSelected(item)
         }
@@ -228,9 +228,9 @@ class MainActivity : NavigationActivity() {
             R.id.nav_grades -> replaceFragment(GradesFragment::class.java)
             // R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
             // R.id.nav_lunches -> replaceFragment(LunchesFragment::class.java)
-            // R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
-            // R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
-            // R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)
+            //// R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
+            //// R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
+            //// R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)
             // R.id.nav_timetables -> replaceFragment(TimetablesFragment::class.java)
             // R.id.nav_attendance -> replaceFragment(AttendanceFragment::class.java)
             R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
@@ -245,9 +245,5 @@ class MainActivity : NavigationActivity() {
 
     override fun onBeforeReplaceFragment(ft: FragmentTransaction, fragment: Fragment?) {
         ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-        val tabLayout = window.findViewById<TabLayout>(R.id.tabLayout)
-        if (tabLayout != null) {
-            tabLayout.visibility = View.GONE
-        }
     }
 }
