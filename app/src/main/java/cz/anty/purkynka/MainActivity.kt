@@ -48,7 +48,6 @@ import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.broadcast.LocalBroadcast
-import kotlinx.android.synthetic.main.activity_module_toolbar.*
 
 
 class MainActivity : NavigationActivity() {
