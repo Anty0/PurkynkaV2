@@ -19,6 +19,8 @@
 import com.google.common.collect.Iterables
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
@@ -126,4 +128,14 @@ dependencies {
     implementation('com.mikepenz:aboutlibraries:5.9.7@aar') {
         transitive = true
     }
+
+    implementation 'com.google.firebase:firebase-core:11.8.0'
+    implementation 'com.google.firebase:firebase-perf:11.8.0'
+    implementation 'com.google.firebase:firebase-config:11.8.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+       transitive = true
+    }
+
 }
+
+apply plugin: 'com.google.gms.google-services'

@@ -28,9 +28,13 @@ buildscript {
         jcenter()
         mavenCentral()
         maven { url "http://dl.bintray.com/kotlin/kotlinx" }
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.google.gms:google-services:3.1.2'
+        classpath 'com.google.firebase:firebase-plugins:1.1.5'
+        classpath 'io.fabric.tools:gradle:1.24.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$kotlin_serialization_version"
 
