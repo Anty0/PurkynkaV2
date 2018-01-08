@@ -53,16 +53,12 @@ import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
 import eu.codetopic.java.utils.JavaExtensions.runIfNull
-import eu.codetopic.java.utils.JavaExtensions.kSerializer
-import eu.codetopic.utils.AndroidExtensions.serialize
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.AndroidExtensions.deserializeBundle
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.notifications.manager.NotificationsManager
-import eu.codetopic.utils.notifications.manager.data.NotificationId
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -79,7 +75,6 @@ import kotlinx.android.synthetic.main.fragment_grades.view.*
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.serialization.internal.IntSerializer
-import kotlinx.serialization.internal.PairSerializer
 import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
@@ -106,10 +101,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         private const val SAVE_EXTRA_SEMESTER = "$LOG_TAG.SEMESTER"
         private const val SAVE_EXTRA_CHANGES_MAP = "$LOG_TAG.CHANGES_MAP"
 
-        suspend fun aWaitForSyncStart(account: Account) = aWaitForSyncState {
+        suspend fun aWaitForSyncAdd(account: Account) = aWaitForSyncState {
             (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
                     ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
-                    .also { Log.d(LOG_TAG, "aWaitForSyncStart(account=$account) -> $it") }
+                    .also { Log.d(LOG_TAG, "aWaitForSyncAdd(account=$account) -> $it") }
         }
 
         suspend fun aWaitForSyncActiveOrEnd(account: Account) = withTimeoutOrNull(TIMEOUT_SYNC_ACTIVE) {
@@ -131,35 +126,37 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     .also { Log.d(LOG_TAG, "aWaitForSyncEnd(account=$account) -> $it") }
         }
 
-        inline suspend fun aWaitForSyncState(crossinline condition: () -> Boolean) = suspendCoroutine<Unit> { cont ->
-            if (run(condition)) {
-                cont.resume(Unit)
-                return@suspendCoroutine
-            }
-
-            var observerHandle: Any? = null
-            val observer = SyncStatusObserver {
-                if (run(condition)) {
-                    observerHandle?.let {
-                        observerHandle = null
-                        ContentResolver.removeStatusChangeListener(it)
+        private inline suspend fun aWaitForSyncState(crossinline condition: () -> Boolean) =
+                suspendCoroutine<Unit> { cont ->
+                    if (run(condition)) {
                         cont.resume(Unit)
+                        return@suspendCoroutine
+                    }
+
+                    var observerHandle: Any? = null
+                    val observer = SyncStatusObserver {
+                        if (run(condition)) {
+                            observerHandle?.let {
+                                observerHandle = null
+                                ContentResolver.removeStatusChangeListener(it)
+                                cont.resume(Unit)
+                            }
+                        }
+                    }
+                    val mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING or
+                            ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
+                    observerHandle = ContentResolver.addStatusChangeListener(mask, observer)
+
+                    if (run(condition)) {
+                        observerHandle?.let {
+                            observerHandle = null
+                            ContentResolver.removeStatusChangeListener(it)
+
+                            cont.resume(Unit)
+                            return@suspendCoroutine
+                        }
                     }
                 }
-            }
-            val mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
-            observerHandle = ContentResolver.addStatusChangeListener(mask, observer)
-
-            if (run(condition)) {
-                observerHandle?.let {
-                    observerHandle = null
-                    ContentResolver.removeStatusChangeListener(it)
-
-                    cont.resume(Unit)
-                    return@suspendCoroutine
-                }
-            }
-        }
     }
 
     override val title: CharSequence
@@ -171,6 +168,21 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private val layLogin = LayoutLogin(accountHolder, holder)
     private val layGrades = LayoutGrades(accountHolder, layLogin, holder)
     private val laySyncStatus = LayoutSyncStatus(accountHolder, layLogin, layGrades)
+
+    private var syncObserverHandle: Any? = null
+    private val syncObserverMask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING or
+            ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
+    private val syncObserver = SyncStatusObserver blk@{
+        val account = accountHolder.account
+                ?: return@blk Log.d(LOG_TAG, "syncObserver() -> No account available")
+
+        val syncable = ContentResolver.getIsSyncable(account, GradesSyncAdapter.CONTENT_AUTHORITY)
+        val pending = ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY)
+        val active = ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY)
+
+        Log.d(LOG_TAG, "syncObserver() -> " +
+                "(syncable=$syncable, pending=$pending, active=$active)")
+    }
 
     init { setHasOptionsMenu(true) }
 
@@ -218,6 +230,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     override fun onStart() {
         super.onStart()
 
+        syncObserverHandle = ContentResolver.addStatusChangeListener(syncObserverMask, syncObserver)
+
         layLogin.register()
         layGrades.register()
         laySyncStatus.register()
@@ -229,6 +243,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         laySyncStatus.unregister()
         layGrades.unregister()
         layLogin.unregister()
+
+        syncObserverHandle?.let {
+            ContentResolver.removeStatusChangeListener(it)
+            syncObserverHandle = null
+        }
 
         super.onStop()
     }
@@ -383,7 +402,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 bg { GradesLoginData.loginData.login(accountId, username, password) }.await()
 
                 // Sync will be triggered later by change broadcast, so we must wait for sync start before we can wait for sync end
-                aWaitForSyncStart(account)
+                aWaitForSyncAdd(account)
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
                 } else {
@@ -684,7 +703,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 GradesSyncAdapter.requestSync(account, semester)
 
                 // Sync sometimes reports, that is not started, at the beginning. So we must wait for sync start before we can wait for sync end.
-                aWaitForSyncStart(account)
+                aWaitForSyncAdd(account)
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
                 } else {
@@ -706,7 +725,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 GradesSyncAdapter.requestSync(account, semester)
 
                 // Sync sometimes reports, that is not started, at the beginning. So we must wait for sync start before we can wait for sync end.
-                aWaitForSyncStart(account)
+                aWaitForSyncAdd(account)
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
                 } else {

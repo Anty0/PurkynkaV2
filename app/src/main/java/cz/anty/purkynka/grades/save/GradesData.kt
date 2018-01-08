@@ -20,14 +20,14 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.PrefNames.GRADES_MAP
-import cz.anty.purkynka.PrefNames.SYNC_RESULT
+import cz.anty.purkynka.PrefNames.*
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 import eu.codetopic.java.utils.JavaExtensions.kSerializer
 
 import eu.codetopic.utils.data.preferences.PreferencesData
+import eu.codetopic.utils.data.preferences.preference.BooleanPreference
 import eu.codetopic.utils.data.preferences.preference.EnumPreference
 import eu.codetopic.utils.data.preferences.preference.KotlinSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
@@ -66,6 +66,16 @@ class GradesData private constructor(context: Context) :
             accessProvider,
             SyncResult.SUCCESS
     )
+
+    private val firstSyncPref = BooleanPreference(
+            FIRST_SYNC,
+            accessProvider,
+            true
+    )
+
+    fun isFirstSync(id: String): Boolean = firstSyncPref.getValue(this, id)
+
+    fun notifyFirstSyncDone(id: String) = firstSyncPref.setValue(this, id, false)
 
     fun getLastSyncResult(id: String): SyncResult = lastSyncResultPref.getValue(this, id)
 

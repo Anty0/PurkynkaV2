@@ -48,7 +48,8 @@ import java.io.IOException
 /**
  * @author anty
  */
-class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context, false, false) {
+class GradesSyncAdapter(context: Context) :
+        AbstractThreadedSyncAdapter(context, false, false) {
 
     companion object {
 
@@ -57,7 +58,6 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
         const val CONTENT_AUTHORITY = GradesProvider.AUTHORITY
         const val SYNC_FREQUENCY = Constants.SYNC_FREQUENCY_GRADES
 
-        const val EXTRA_FIRST_SYNC = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_FIRST_SYNC"
         const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_SEMESTER"
 
         private val loginDataChangedReceiver = broadcast { context, intent ->
@@ -84,7 +84,6 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
                         CONTENT_AUTHORITY,
                         SYNC_FREQUENCY
                 )
-                if (loggedIn) requestSync(account, firstSync = true)
             }
         }
 
@@ -93,17 +92,15 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
             loginDataChangedReceiver.onReceive(context, null)
         }
 
-        fun requestSync(account: Account, semester: Semester = Semester.AUTO,
-                        firstSync: Boolean = false) {
+        fun requestSync(account: Account, semester: Semester = Semester.AUTO) {
             Log.d(LOG_TAG, "requestSync(account=$account, " +
-                    "semester=$semester, firstSync=$firstSync)")
+                    "semester=$semester)")
 
             Syncs.trigger(
                     account,
                     CONTENT_AUTHORITY,
                     bundleOf(
-                            EXTRA_SEMESTER to semester.toString(),
-                            EXTRA_FIRST_SYNC to firstSync
+                            EXTRA_SEMESTER to semester.toString()
                     )
             )
         }
@@ -132,7 +129,7 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
                 }
             } else Semester.AUTO
 
-            val firstSync = extras.getBoolean(EXTRA_FIRST_SYNC, false)
+            val firstSync = data.isFirstSync(accountId)
 
             if (!loginData.isLoggedIn(accountId))
                 throw IllegalStateException("User is not logged in")
@@ -157,6 +154,7 @@ class GradesSyncAdapter(context: Context) : AbstractThreadedSyncAdapter(context,
             gradesMap[semester.value] = grades
             data.setGrades(accountId, gradesMap)
 
+            data.notifyFirstSyncDone(accountId)
             data.setLastSyncResult(accountId, SUCCESS)
         } catch (e: Exception) {
             Log.w(LOG_TAG, "Failed to refresh grades", e)

@@ -41,6 +41,7 @@ public final class PrefNames {
     public static final String FILE_NAME_GRADES_LOGIN_DATA = "GradesLoginData";
     /// GradesData
     public static final String FILE_NAME_GRADES_DATA = "GradesData";
+    public static final String FIRST_SYNC = "FIRST_SYNC";
     public static final String SYNC_RESULT = "SYNC_RESULT";
     public static final String GRADES_MAP = "GRADES";
     /// GradesDataDifferences
