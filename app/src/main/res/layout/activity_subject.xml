@@ -26,17 +26,29 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
+    <FrameLayout
+        android:id="@+id/boxSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_dark_background"
+        android:outlineProvider="bounds"
+        android:elevation="4dp"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp">
+
+        <!--Here will be inflated layout subject_item-->
+    </FrameLayout>
+
+    <!--<android.support.v7.widget.CardView
         style="?attr/cardViewTheme"
         android:id="@+id/boxSubject"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        app:cardCornerRadius="2dp"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="0dp"
         app:cardUseCompatPadding="true"
         app:contentPaddingTop="4dp"
-        app:contentPaddingBottom="4dp" />
+        app:contentPaddingBottom="4dp" />-->
 
     <FrameLayout
         android:id="@+id/boxRecycler"

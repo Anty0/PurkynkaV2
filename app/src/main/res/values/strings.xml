@@ -78,10 +78,10 @@
     <string name="but_create">Create</string>
     <string name="but_save">Save</string>
 
-    <string name="txt_here_date">Date:</string>
-    <string name="txt_here_type">Type:</string>
-    <string name="txt_here_subject">Subject:</string>
-    <string name="txt_here_subject_symbol">Subject symbol:</string>
+    <string name="item_title_date">Date</string>
+    <string name="item_title_type">Type</string>
+    <string name="item_title_subject">Subject</string>
+    <string name="item_title_subject_symbol">Subject symbol</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 

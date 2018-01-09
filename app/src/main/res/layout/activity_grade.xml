@@ -26,134 +26,197 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
-        style="?attr/cardViewTheme"
+    <FrameLayout
+        android:id="@+id/boxGrade"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        app:cardCornerRadius="2dp"
-        app:cardUseCompatPadding="true"
-        app:contentPaddingTop="4dp"
-        app:contentPaddingBottom="4dp">
+        android:background="@color/cardview_dark_background"
+        android:outlineProvider="bounds"
+        android:elevation="4dp"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp">
+
+        <!--Here will be inflated layout grade_item-->
+    </FrameLayout>
+
+    <ScrollView
+        android:id="@+id/boxGradeInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone">
 
         <LinearLayout
-            android:id="@+id/boxGrade"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
 
-            <!--Here will be inflated layout grade_item-->
-
-            <ScrollView
-                android:id="@+id/boxGradeInfo"
+            <android.support.v7.widget.CardView
+                style="?attr/cardViewTheme"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="invisible">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                app:cardUseCompatPadding="true"
+                app:contentPaddingTop="16dp"
+                app:contentPaddingBottom="16dp"
+                app:contentPaddingLeft="16dp"
+                app:contentPaddingRight="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp">
+                    android:orientation="vertical">
 
-                    <LinearLayout
+                    <TextView
+                        style="?attr/textAppearanceListItem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:textSize="14sp"
+                        android:text="@string/item_title_date" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/txt_here_date" />
-
-                        <TextView
-                            android:id="@+id/txtDate"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2" />
-                    </LinearLayout>
-
-                    <LinearLayout
+                    <TextView
+                        style="?attr/textAppearanceListItemSecondary"
+                        android:id="@+id/txtDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/txt_here_type" />
-
-                        <TextView
-                            android:id="@+id/txtType"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/txt_here_subject" />
-
-                        <TextView
-                            android:id="@+id/txtSubjectName"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/boxSubjectSymbol"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="gone">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/txt_here_subject_symbol" />
-
-                        <TextView
-                            android:id="@+id/txtSubjectSymbol"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2" />
-                    </LinearLayout>
+                        android:textSize="24sp" />
                 </LinearLayout>
-            </ScrollView>
+            </android.support.v7.widget.CardView>
+
+
+
+            <android.support.v7.widget.CardView
+                style="?attr/cardViewTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                app:cardUseCompatPadding="true"
+                app:contentPaddingTop="16dp"
+                app:contentPaddingBottom="16dp"
+                app:contentPaddingLeft="16dp"
+                app:contentPaddingRight="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:text="@string/item_title_type" />
+
+                    <TextView
+                        style="?attr/textAppearanceListItemSecondary"
+                        android:id="@+id/txtType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="24sp" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                style="?attr/cardViewTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                app:cardUseCompatPadding="true"
+                app:contentPaddingTop="16dp"
+                app:contentPaddingBottom="16dp"
+                app:contentPaddingLeft="16dp"
+                app:contentPaddingRight="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:text="@string/title_activity_subject" />
+
+                    <TextView
+                        style="?attr/textAppearanceListItemSecondary"
+                        android:id="@+id/txtSubjectName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="24sp" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                style="?attr/cardViewTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                app:cardUseCompatPadding="true"
+                app:contentPaddingTop="16dp"
+                app:contentPaddingBottom="16dp"
+                app:contentPaddingLeft="16dp"
+                app:contentPaddingRight="16dp">
+
+                <LinearLayout
+                    android:id="@+id/boxSubjectSymbol"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:text="@string/item_title_subject_symbol" />
+
+                    <TextView
+                        style="?attr/textAppearanceListItemSecondary"
+                        android:id="@+id/txtSubjectSymbol"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="24sp" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                style="?attr/cardViewTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                app:cardUseCompatPadding="true"
+                app:contentPaddingTop="16dp"
+                app:contentPaddingBottom="16dp"
+                app:contentPaddingLeft="16dp"
+                app:contentPaddingRight="16dp">
+
+                <FrameLayout
+                    android:id="@+id/boxGradeStatistics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:text="@string/txt_grade_statistics_coming_soon" />
+
+                    <!--TODO: Grade statistics -->
+                </FrameLayout>
+            </android.support.v7.widget.CardView>
         </LinearLayout>
-    </android.support.v7.widget.CardView>
-
-    <FrameLayout
-        android:id="@+id/boxGradeStatistics"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:visibility="invisible">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/txt_grade_statistics_coming_soon" />
-
-        <!--TODO: Grade statistics -->
-    </FrameLayout>
+    </ScrollView>
 </LinearLayout>
