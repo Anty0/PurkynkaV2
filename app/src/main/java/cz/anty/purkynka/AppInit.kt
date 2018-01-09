@@ -19,6 +19,7 @@
 package cz.anty.purkynka
 
 import android.app.Application
+import android.support.multidex.MultiDexApplication
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
@@ -44,7 +45,7 @@ import eu.codetopic.utils.notifications.manager.NotificationsManager
  * Created by anty on 10/7/17.
  * @author anty
  */
-class AppInit : Application() {
+class AppInit : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
