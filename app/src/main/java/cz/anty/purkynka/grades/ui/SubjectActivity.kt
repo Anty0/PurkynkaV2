@@ -92,7 +92,7 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
                         }
                 )
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
             val recyclerAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
             val showRecycler = {
                 boxRecycler.apply {

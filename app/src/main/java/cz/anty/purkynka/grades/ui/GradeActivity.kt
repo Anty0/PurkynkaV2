@@ -83,17 +83,12 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
             txtSubjectSymbol.text = gradeItem.base.subjectShort
         } else boxSubjectSymbol.visibility = View.GONE
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
             val gradeInfoAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
-            val gradeStatisticsAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
             val showGradeInfo = {
                 boxGradeInfo.apply {
                     visibility = View.VISIBLE
                     startAnimation(gradeInfoAnimation)
-                }
-                boxGradeStatistics.apply {
-                    visibility = View.VISIBLE
-                    startAnimation(gradeStatisticsAnimation)
                 }
             }
 
@@ -108,7 +103,6 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
             } else run(showGradeInfo)
         } else {
             boxGradeInfo.visibility = View.VISIBLE
-            boxGradeStatistics.visibility = View.VISIBLE
         }
     }
 }
