@@ -20,8 +20,11 @@ package cz.anty.purkynka.update
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.PrefNames
+import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.PrefNames.*
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
+import eu.codetopic.utils.data.preferences.preference.IntPreference
+import eu.codetopic.utils.data.preferences.preference.StringPreference
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
@@ -32,7 +35,7 @@ import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 class UpdateData private constructor(context: Context) :
         VersionedPreferencesData<SharedPreferences>(
                 context,
-                BasicSharedPreferencesProvider(context, PrefNames.FILE_NAME_UPDATE_DATA),
+                BasicSharedPreferencesProvider(context, FILE_NAME_UPDATE_DATA),
                 SAVE_VERSION
         ) {
 
@@ -55,9 +58,23 @@ class UpdateData private constructor(context: Context) :
         }
     }
 
-    // TODO: add latestVersionCode
+    var jobScheduleVersion by IntPreference(
+            SCHEDULE_VERSION,
+            accessProvider,
+            -1
+    )
 
-    // TODO: add latestVersionName
+    var latestVersionCode by IntPreference(
+            LATEST_VERSION_CODE,
+            accessProvider,
+            BuildConfig.VERSION_CODE
+    )
+
+    var latestVersionName by StringPreference(
+            LATEST_VERSION_NAME,
+            accessProvider,
+            BuildConfig.VERSION_NAME
+    )
 
     private class Getter : PreferencesGetterAbs<UpdateData>() {
 

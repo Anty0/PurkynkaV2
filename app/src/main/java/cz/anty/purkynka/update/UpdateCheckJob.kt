@@ -19,7 +19,9 @@
 package cz.anty.purkynka.update
 
 import com.evernote.android.job.Job
+import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
+import cz.anty.purkynka.BuildConfig
 import eu.codetopic.java.utils.log.Log
 
 /**
@@ -36,18 +38,26 @@ class UpdateCheckJob : Job() {
 
         const val TAG = "UPDATE_CHECK"
 
-        fun schedule(): Int = JobRequest.Builder(TAG)
-                .setPeriodic(INTERVAL, FLEX)
-                .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(true)
-                .setUpdateCurrent(true)
-                .build()
-                .schedule()
+        fun schedule() {
+            if (UpdateData.instance.jobScheduleVersion != BuildConfig.VERSION_CODE
+                    || JobManager.instance().getAllJobsForTag(TAG).isNotEmpty())
+                return
+
+            JobRequest.Builder(TAG)
+                    .setPeriodic(INTERVAL, FLEX)
+                    .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+                    .setRequiresBatteryNotLow(true)
+                    .setUpdateCurrent(true)
+                    .build()
+                    .schedule()
+
+            UpdateData.instance.jobScheduleVersion = BuildConfig.VERSION_CODE
+        }
     }
 
     override fun onRunJob(params: Params): Result {
-        // TODO: implement
         Log.w(LOG_TAG, "onRunJob(params=$params) -> Received request to check for update.")
+        // TODO: implement (but first implement server side)
         return Result.SUCCESS
     }
 }

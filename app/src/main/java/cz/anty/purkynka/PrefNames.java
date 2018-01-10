@@ -30,6 +30,9 @@ public final class PrefNames {
     public static final String FILE_NAME_MAIN_DATA = "MainData";
     /// UpdateData
     public static final String FILE_NAME_UPDATE_DATA = "UpdateData";
+    public static final String SCHEDULE_VERSION = "SCHEDULE_VERSION";
+    public static final String LATEST_VERSION_CODE = "LATEST_VERSION_CODE";
+    public static final String LATEST_VERSION_NAME = "LATEST_VERSION_NAME";
     /// ActiveAccountManager
     public static final String FILE_NAME_ACTIVE_ACCOUNT_DATA = "ActiveAccountData";
     public static final String ACTIVE_ACCOUNT_NAME = "ACTIVE_ACCOUNT_NAME";
@@ -46,9 +49,4 @@ public final class PrefNames {
     public static final String FIRST_SYNC = "FIRST_SYNC";
     public static final String SYNC_RESULT = "SYNC_RESULT";
     public static final String GRADES_MAP = "GRADES";
-    /// GradesDataDifferences
-    public static final String FILE_NAME_GRADES_DATA_DIFFERENCES = "GradesDataDifferences";
-    public static final String GRADES_ADDED = "GRADES_ADDED";
-    public static final String GRADES_MODIFIED = "GRADES_MODIFIED";
-    public static final String GRADES_REMOVED = "GRADES_REMOVED";
 }

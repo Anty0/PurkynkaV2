@@ -92,18 +92,26 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
                         }
                 )
 
-        val recyclerAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
-        val showRecycler = {
-            boxRecycler.apply {
-                visibility = View.VISIBLE
-                startAnimation(recyclerAnimation)
+        if (savedInstanceState != null) {
+            val recyclerAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
+            val showRecycler = {
+                boxRecycler.apply {
+                    visibility = View.VISIBLE
+                    startAnimation(recyclerAnimation)
+                }
             }
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.sharedElementEnterTransition.addListener(object : SimpleTransitionListener() {
-                override fun onTransitionEnd(transition: Transition) { run(showRecycler) }
-            })
-        } else run(showRecycler)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.sharedElementEnterTransition?.apply {
+                    addListener(object : SimpleTransitionListener() {
+                        override fun onTransitionEnd(transition: Transition) {
+                            run(showRecycler)
+                        }
+                    })
+                } ?: run(showRecycler)
+            } else run(showRecycler)
+        } else {
+            boxRecycler.visibility = View.VISIBLE
+        }
     }
 }

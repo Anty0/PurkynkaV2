@@ -83,23 +83,32 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
             txtSubjectSymbol.text = gradeItem.base.subjectShort
         } else boxSubjectSymbol.visibility = View.GONE
 
-        val gradeInfoAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
-        val gradeStatisticsAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
-        val showGradeInfo = {
-            boxGradeInfo.apply {
-                visibility = View.VISIBLE
-                startAnimation(gradeInfoAnimation)
+        if (savedInstanceState != null) {
+            val gradeInfoAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
+            val gradeStatisticsAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+            val showGradeInfo = {
+                boxGradeInfo.apply {
+                    visibility = View.VISIBLE
+                    startAnimation(gradeInfoAnimation)
+                }
+                boxGradeStatistics.apply {
+                    visibility = View.VISIBLE
+                    startAnimation(gradeStatisticsAnimation)
+                }
             }
-            boxGradeStatistics.apply {
-                visibility = View.VISIBLE
-                startAnimation(gradeStatisticsAnimation)
-            }
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.sharedElementEnterTransition.addListener(object : SimpleTransitionListener() {
-                override fun onTransitionEnd(transition: Transition) { run(showGradeInfo) }
-            })
-        } else run(showGradeInfo)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.sharedElementEnterTransition?.apply {
+                    addListener(object : SimpleTransitionListener() {
+                        override fun onTransitionEnd(transition: Transition) {
+                            run(showGradeInfo)
+                        }
+                    })
+                } ?: run(showGradeInfo)
+            } else run(showGradeInfo)
+        } else {
+            boxGradeInfo.visibility = View.VISIBLE
+            boxGradeStatistics.visibility = View.VISIBLE
+        }
     }
 }

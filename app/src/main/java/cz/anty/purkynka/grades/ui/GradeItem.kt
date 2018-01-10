@@ -87,7 +87,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
 
         holder.boxColoredBackground.setBackgroundResource(
                 if (!hasChnges) android.R.color.transparent
-                else R.color.abc_color_highlight_material
+                else R.color.cardview_dark_background
         )
 
         if (itemPosition != NO_POSITION) { // detects usage in header

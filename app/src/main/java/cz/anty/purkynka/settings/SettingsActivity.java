@@ -91,7 +91,7 @@ public class SettingsActivity extends ModularActivity {
             });
             findPreference("activity_about").setOnPreferenceClickListener(preference -> {
                 new LibsBuilder()
-                        //.withActivityTheme(R.style.AppTheme_NoActionBar)
+                        .withActivityTheme(R.style.AppTheme_NoActionBar)
                         .withActivityStyle(Libs.ActivityStyle.DARK)
                         //.withActivityColor(new Colors(
                         //        ContextCompat.getColor(getActivity(), R.color.colorPrimary),
