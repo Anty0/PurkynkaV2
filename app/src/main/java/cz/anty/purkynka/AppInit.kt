@@ -21,6 +21,8 @@ package cz.anty.purkynka
 import android.app.Application
 import android.support.multidex.MultiDexApplication
 import android.support.v4.content.ContextCompat
+import com.evernote.android.job.JobConfig
+import com.evernote.android.job.JobManager
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
 import cz.anty.purkynka.grades.save.GradesData
@@ -28,6 +30,9 @@ import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.settings.SettingsData
+import cz.anty.purkynka.update.UpdateCheckJob
+import cz.anty.purkynka.update.UpdateCheckJobCreator
+import cz.anty.purkynka.update.UpdateData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
 import eu.codetopic.utils.ui.container.adapter.dashboard.DashboardData
 import eu.codetopic.java.utils.log.base.LogLine
@@ -107,6 +112,7 @@ class AppInit : MultiDexApplication() {
 
         // Initialize data providers required in this process
         MainData.initialize(this)
+        UpdateData.initialize(this)
         SettingsData.initialize(this)
         GradesUiData.initialize(this)
         GradesData.initialize(this)
@@ -132,6 +138,7 @@ class AppInit : MultiDexApplication() {
                 SettingsData.getter.get().requiredNetworkType,
                         GradesSyncService::class.java)*/
 
+        initJobManager()
     }
 
     private fun initProcessProviders() {
@@ -151,5 +158,15 @@ class AppInit : MultiDexApplication() {
 
     private fun initBroadcastConnections() {
         // TODO: 6/16/17 initialize broadcast connections
+    }
+
+    private fun initJobManager() {
+        // JobConfig.addLogger() // TODO: add own logger to JobConfig
+        // JobConfig.setLogcatEnabled(false)
+
+        JobManager.create(this) // TODO: add here job creators
+                .addJobCreator(UpdateCheckJobCreator())
+
+        UpdateCheckJob.schedule()
     }
 }

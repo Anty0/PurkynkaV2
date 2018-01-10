@@ -117,7 +117,8 @@ class GradesChangesNotificationGroup :
     }
 
     override fun handleSummaryContentIntent(context: Context, id: NotificationId,
-                                            channel: NotificationChannel, data: List<Bundle>) {
+                                            channel: NotificationChannel,
+                                            data: Map<NotificationId, Bundle>) {
         MainActivity.start(context, GradesFragment::class.java)
     }
 
@@ -200,8 +201,8 @@ class GradesChangesNotificationGroup :
     override fun createSummaryNotification(context: Context,
                                            id: NotificationId,
                                            channel: NotificationChannel,
-                                           data: List<Bundle>): NotificationCompat.Builder {
-        val allGrades = data.mapNotNull {
+                                           data: Map<NotificationId, Bundle>): NotificationCompat.Builder {
+        val allGrades = data.values.mapNotNull {
             it.getString(PARAM_GRADE)?.let { JSON.parse<Grade>(it) }.also {
                 if (it == null) Log.w(LOG_TAG, "Data doesn't contains grade")
             }

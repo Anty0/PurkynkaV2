@@ -28,6 +28,8 @@ public final class PrefNames {
     // Other
     /// MainData
     public static final String FILE_NAME_MAIN_DATA = "MainData";
+    /// UpdateData
+    public static final String FILE_NAME_UPDATE_DATA = "UpdateData";
     /// ActiveAccountManager
     public static final String FILE_NAME_ACTIVE_ACCOUNT_DATA = "ActiveAccountData";
     public static final String ACTIVE_ACCOUNT_NAME = "ACTIVE_ACCOUNT_NAME";

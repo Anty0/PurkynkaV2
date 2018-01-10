@@ -30,6 +30,7 @@ import com.mikepenz.aboutlibraries.util.Colors;
 
 import cz.anty.purkynka.Constants;
 import cz.anty.purkynka.R;
+import cz.anty.purkynka.update.UpdateActivity;
 import eu.codetopic.utils.AndroidUtils;
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule;
 import eu.codetopic.utils.ui.activity.modular.ModularActivity;
@@ -84,13 +85,18 @@ public class SettingsActivity extends ModularActivity {
                         SettingsData.Companion.getInstance().getRequiredNetworkType());*/ // TODO: apply change to runtime
                 return true;
             });
+            findPreference("activity_update").setOnPreferenceClickListener(preference -> {
+                UpdateActivity.Companion.start(getActivity());
+                return true;
+            });
             findPreference("activity_about").setOnPreferenceClickListener(preference -> {
                 new LibsBuilder()
+                        //.withActivityTheme(R.style.AppTheme_NoActionBar)
                         .withActivityStyle(Libs.ActivityStyle.DARK)
-                        .withActivityColor(new Colors(
-                                ContextCompat.getColor(getActivity(), R.color.colorPrimary),
-                                ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)))
-                        .withActivityTitle(getString(R.string.pref_header_about))
+                        //.withActivityColor(new Colors(
+                        //        ContextCompat.getColor(getActivity(), R.color.colorPrimary),
+                        //        ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)))
+                        .withActivityTitle(getString(R.string.pref_about))
                         .withAboutIconShown(true)
                         .withAboutAppName(getString(R.string.app_name))
                         .withAboutVersionShownName(true)
@@ -101,7 +107,7 @@ public class SettingsActivity extends ModularActivity {
                                 + "OTHER LIABILITY, ARISING FROM USE OF THIS SOFTWARE OR IN "
                                 + "CONNECTION WITH THIS SOFTWARE.")
                         .withLicenseShown(true)
-                        .withAutoDetect(false)
+                        .withAutoDetect(true)
                         .withFields(R.string.class.getFields())
                         .start(getActivity());
                 return true;

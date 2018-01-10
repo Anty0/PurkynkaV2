@@ -18,17 +18,27 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory android:title="@string/pref_header_global">
+
         <SwitchPreference
             android:key="REFRESH_ON_WIFI"
             android:defaultValue="false"
-            android:title="@string/pref_switch_refresh_on_wifi"/>
+            android:title="@string/pref_switch_refresh_on_wifi"/> <!-- TODO: Remove (unused and not required) -->
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_header_about">
+    <PreferenceCategory android:title="@string/pref_header_system">
+
+        <Preference
+            android:key="activity_update"
+            android:title="@string/pref_update" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_other">
+
         <Preference
             android:key="activity_about"
-            android:title="@string/pref_about"/>
+            android:title="@string/pref_about" />
         <Preference
             android:key="activity_facebook"
             android:title="@string/action_contact_facebook" />

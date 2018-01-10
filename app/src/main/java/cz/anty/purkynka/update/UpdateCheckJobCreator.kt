@@ -1,6 +1,6 @@
 /*
  * app
- * Copyright (C)   2017  anty
+ * Copyright (C)   2018  anty
  *
  * This program is free  software: you can redistribute it and/or modify
  * it under the terms  of the GNU General Public License as published by
@@ -16,15 +16,18 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.save
+package cz.anty.purkynka.update
 
-import cz.anty.purkynka.grades.data.Grade
-import cz.anty.purkynka.grades.data.Subject
+import com.evernote.android.job.Job
+import com.evernote.android.job.JobCreator
 
 /**
  * @author anty
  */
+class UpdateCheckJobCreator : JobCreator {
 
-typealias GradesMap = Map<Int, List<Grade>>
-typealias MutableGradesMap = MutableMap<Int, List<Grade>>
-typealias SubjectsMap = Map<Int, List<Subject>>
+    override fun create(tag: String): Job? = when(tag) {
+        UpdateCheckJob.TAG -> UpdateCheckJob()
+        else -> null
+    }
+}

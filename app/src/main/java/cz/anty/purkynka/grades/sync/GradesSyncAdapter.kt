@@ -32,10 +32,8 @@ import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesFetcher
 import cz.anty.purkynka.grades.load.GradesParser
 import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
-import cz.anty.purkynka.grades.save.GradesData
+import cz.anty.purkynka.grades.save.*
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
-import cz.anty.purkynka.grades.save.GradesLoginData
-import cz.anty.purkynka.grades.save.GradesProvider
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
@@ -125,11 +123,15 @@ class GradesSyncAdapter(context: Context) :
                     Semester.valueOf(extras.getString(EXTRA_SEMESTER)).stableSemester
                 } catch (e: Exception) {
                     Log.w(LOG_TAG, e)
-                    Semester.AUTO
+                    Semester.AUTO.stableSemester
                 }
-            } else Semester.AUTO
+            } else Semester.AUTO.stableSemester
 
             val firstSync = data.isFirstSync(accountId)
+
+            val semestersToFetch =
+                    if (firstSync) arrayOf(Semester.FIRST, Semester.SECOND)
+                    else arrayOf(semester)
 
             if (!loginData.isLoggedIn(accountId))
                 throw IllegalStateException("User is not logged in")
@@ -146,12 +148,11 @@ class GradesSyncAdapter(context: Context) :
             val grades = GradesParser.parseGrades(gradesHtml)
 
             val gradesMap = data.getGrades(accountId).toMutableMap()
-            gradesMap.takeIf { !firstSync }
-                    ?.getOrElse(semester.value) { emptyList() }
-                    ?.let {
-                        checkForDiffs(accountId, it, grades)
-                    }
-            gradesMap[semester.value] = grades
+
+            semestersToFetch.forEach {
+                fetchGradesToMap(accountId, cookies, it, !firstSync, gradesMap)
+            }
+
             data.setGrades(accountId, gradesMap)
 
             data.notifyFirstSyncDone(accountId)
@@ -165,6 +166,19 @@ class GradesSyncAdapter(context: Context) :
                 else -> FAIL_UNKNOWN
             })
         }
+    }
+
+    private fun fetchGradesToMap(accountId: String, cookies: Map<String, String>, semester: Semester,
+                                 checkForChanges: Boolean, gradesMap: MutableGradesMap) {
+        val gradesHtml = GradesFetcher.getGradesElements(cookies, semester)
+        val grades = GradesParser.parseGrades(gradesHtml)
+
+        gradesMap.takeIf { checkForChanges }
+                ?.getOrElse(semester.value) { emptyList() }
+                ?.let {
+                    checkForDiffs(accountId, it, grades)
+                }
+        gradesMap[semester.value] = grades
     }
 
     private fun checkForDiffs(accountId: String, oldGrades: List<Grade>, newGrades: List<Grade>) {
@@ -190,6 +204,8 @@ class GradesSyncAdapter(context: Context) :
         } + modified.map {
             GradesChangesNotificationGroup.dataForModifiedGrade(it.first, it.second)
         }
+
+        if (allChanges.isEmpty()) return
 
         NotificationsManager.requestNotifyAll(context, GradesChangesNotificationGroup.ID,
                 AccountNotifyChannel.idFor(accountId), allChanges)

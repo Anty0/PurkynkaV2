@@ -160,7 +160,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     }
 
     override val title: CharSequence
-        get() = getText(R.string.action_show_grades)
+        get() = getText(R.string.title_fragment_grades)
     override val themeId: Int
         get() = R.style.AppTheme_Grades
 
@@ -198,7 +198,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {
-        val themedContext = ContextThemeWrapper(inflater.context, R.style.AppTheme_Grades)
+        val themedContext = ContextThemeWrapper(inflater.context, themeId)
         val themedInflater = inflater.cloneInContext(themedContext)
         val view = themedInflater.inflate(R.layout.fragment_grades, container, false)
 
@@ -405,13 +405,18 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 aWaitForSyncAdd(account)
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
+                    val syncResult = bg { GradesData.instance.getLastSyncResult(accountId) }.await()
+                    if (syncResult == FAIL_LOGIN) {
+                        longSnackbar(baseView, R.string.snackbar_grades_login_fail).show()
+                        bg { GradesLoginData.loginData.logout(accountId) }.await()
+                    }
                 } else {
                     longSnackbar(baseView, R.string.snackbar_sync_start_fail).show()
                     bg { GradesLoginData.loginData.logout(accountId) }.await()
                 }
 
                 delay(500) // Wait few loops to make sure, that content was updated.
-                holder.hideLoading() // FIXME: why is loading being hidden hidden before grades are loaded???
+                holder.hideLoading()
             }
         }
 
@@ -517,7 +522,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun bindView(activity: Activity?, context: Context, inflater: LayoutInflater, view: View) {
-            containerView = view.boxRecycler
+            containerView = view.boxGrades
 
             this.activity = activity
 
@@ -653,7 +658,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         fun update() {
             if (containerView == null) return
 
-            boxRecycler.visibility = if (userLoggedIn) {
+            boxGrades.visibility = if (userLoggedIn) {
                 adapter?.edit {
                     clear()
                     gradesMap?.let { it[semester.value] }?.let {
@@ -693,8 +698,9 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         fun requestSyncWithLoading() {
             val account = accountHolder.account ?:
-                    return longSnackbar(boxRecycler, R.string.snackbar_no_account_sync).show()
+                    return longSnackbar(boxGrades, R.string.snackbar_no_account_sync).show()
             val semester = semester
+            val boxGradesRef = boxGrades.asReference()
             val holder = holder
 
             launch(UI) {
@@ -707,7 +713,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
                 } else {
-                    longSnackbar(baseView, R.string.snackbar_sync_start_fail).show()
+                    longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail).show()
                 }
 
                 //delay(500) // Wait few loops to make sure, that content was updated.
@@ -717,8 +723,9 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         fun requestSyncWithRecyclerRefreshing() {
             val account = accountHolder.account ?:
-                    return longSnackbar(boxRecycler, R.string.snackbar_no_account_sync).show()
+                    return longSnackbar(boxGrades, R.string.snackbar_no_account_sync).show()
             val semester = semester
+            val boxGradesRef = boxGrades.asReference()
             val recyclerManagerRef = recyclerManager?.asReference()
 
             launch(UI) {
@@ -729,7 +736,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
                 } else {
-                    longSnackbar(baseView, R.string.snackbar_sync_start_fail).show()
+                    longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail).show()
                 }
 
                 recyclerManagerRef?.invoke()?.setRefreshing(false)
@@ -767,7 +774,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun bindView(view: View) {
-            containerView = view
+            containerView = view.boxGrades
         }
 
         fun unbindView() {

@@ -46,6 +46,7 @@
     <application
         android:name=".AppInit"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_config"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -67,8 +68,13 @@
             android:label="@string/title_activity_debug_info"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".update.UpdateActivity"
+            android:label="@string/title_activity_update"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".settings.SettingsActivity"
-            android:label="@string/title_activity_settings"/>
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".account.ui.AccountCreateActivity"
             android:label="@string/title_activity_create_account"
@@ -112,7 +118,6 @@
                 android:resource="@xml/sync_grades" />
         </service>
 
-
         <provider
             android:name=".grades.save.GradesProvider"
             android:authorities="cz.anty.purkynka.grades.data"
@@ -123,6 +128,13 @@
             android:authorities="cz.anty.purkynka.grades.login"
             android:exported="false"
             android:process=":providers" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher_foreground" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimary" />
     </application>
 
 </manifest>

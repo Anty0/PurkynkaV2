@@ -43,6 +43,7 @@ import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.settings.SettingsActivity
+import cz.anty.purkynka.wifilogin.WifiLoginFragment
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
@@ -197,7 +198,7 @@ class MainActivity : NavigationActivity() {
             when (currentFragment.javaClass) {
                 DashboardFragment::class.java -> findItem(R.id.nav_dashboard).isChecked = true
                 GradesFragment::class.java -> findItem(R.id.nav_grades).isChecked = true
-                // WifiLoginFragment::class.java -> findItem(R.id.nav_wifi_login).isChecked = true
+                WifiLoginFragment::class.java -> findItem(R.id.nav_wifi_login).isChecked = true
                 /*LunchesFragment::class.java, LunchesOrderFragment::class.java,
                 LunchesBurzaFragment::class.java, LunchesBurzaWatcherFragment::class.java -> {
                     findItem(R.id.nav_lunches).isChecked = true
@@ -225,7 +226,7 @@ class MainActivity : NavigationActivity() {
         when (item.itemId) {
             R.id.nav_dashboard -> replaceFragment(DashboardFragment::class.java)
             R.id.nav_grades -> replaceFragment(GradesFragment::class.java)
-            // R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
+            R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
             // R.id.nav_lunches -> replaceFragment(LunchesFragment::class.java)
             //// R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
             //// R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
