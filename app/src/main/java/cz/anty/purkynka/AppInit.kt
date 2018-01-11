@@ -33,6 +33,7 @@ import cz.anty.purkynka.settings.SettingsData
 import cz.anty.purkynka.update.UpdateCheckJob
 import cz.anty.purkynka.update.UpdateCheckJobCreator
 import cz.anty.purkynka.update.UpdateData
+import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
 import eu.codetopic.utils.ui.container.adapter.dashboard.DashboardData
 import eu.codetopic.java.utils.log.base.LogLine
@@ -117,6 +118,7 @@ class AppInit : MultiDexApplication() {
         GradesUiData.initialize(this)
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
+        WifiLoginData.initialize(this)
 
         // Initialize data provider of dashboard framework
         DashboardData.initialize(this)

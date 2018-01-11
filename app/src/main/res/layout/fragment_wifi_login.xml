@@ -17,9 +17,92 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<FrameLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".wifilogin.WifiLoginFragment"
+    android:id="@+id/boxScrollView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-</FrameLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="56dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:animateLayoutChanges="true">
+
+        <ImageView
+            android:src="@mipmap/ic_launcher_wifi"
+            android:layout_width="wrap_content"
+            android:layout_height="72dp"
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/content_description_logo" />
+
+        <!-- Username Label -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/boxInUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/inUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textNoSuggestions"
+                android:hint="@string/insert_username" />
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- Password Label -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/boxInPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/inPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:hint="@string/insert_password" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/butEnable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:padding="12dp"
+            android:text="@string/but_save_and_enable"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/butDisable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:padding="12dp"
+            android:text="@string/but_disable"
+            android:visibility="gone"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/butLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:padding="12dp"
+            android:text="@string/but_login"/>
+    </LinearLayout>
+</ScrollView>

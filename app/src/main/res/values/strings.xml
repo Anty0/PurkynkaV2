@@ -81,6 +81,8 @@
     <string name="but_login">Login</string>
     <string name="but_create">Create</string>
     <string name="but_save">Save</string>
+    <string name="but_save_and_enable">Save &amp; Enable</string>
+    <string name="but_disable">Disable</string>
 
     <string name="item_title_date">Date</string>
     <string name="item_title_type">Type</string>
@@ -103,15 +105,18 @@
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
 
-    <string name="snackbar_no_account_sync">"No account available, can't request sync for you."</string>
-    <string name="snackbar_no_account_login">"No account available, can't log you in."</string>
-    <string name="snackbar_no_account_logout">"No account available, can't log you out."</string>
+    <string name="snackbar_no_account_sync">"No account available, I can't request sync for you."</string>
+    <string name="snackbar_no_account_login">"No account available, I can't log you in."</string>
+    <string name="snackbar_no_account_logout">"No account available, I can't log you out."</string>
+    <string name="snackbar_no_account_enable">"No account available, I can't enable it."</string>
+    <string name="snackbar_no_account_disable">"No account available, I can't disable it."</string>
     <string name="snackbar_sync_start_fail">"Can't start sync, are you connected to internet?"</string>
     <string name="snackbar_grades_refresh_fail_unknown">Last attempt to refresh grades failed.</string>
     <string name="snackbar_grades_refresh_fail_connect">Connection error. Failed to refresh grades.</string>
     <string name="snackbar_grades_refresh_fail_login">Failed to login. Are login credentials in order?</string>
     <string name="snackbar_grades_fail_no_account">"No account available, can't load grades."</string>
     <string name="snackbar_grades_login_fail">Failed to login. Are login credentials in order?</string>
+    <string name="snackbar_failed_to_retrieve_login_data">"Failed to retrieve user credentials, I can't log you in."</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>

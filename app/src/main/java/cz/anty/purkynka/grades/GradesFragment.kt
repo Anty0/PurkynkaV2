@@ -815,7 +815,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
             when (syncLastResult) {
                 FAIL_UNKNOWN -> statusSnackbar = indefiniteSnackbar(
-                        baseView, R.string.snackbar_grades_refresh_fail_unknown
+                        boxGrades, R.string.snackbar_grades_refresh_fail_unknown
                 ).apply {
                     setAction(R.string.snackbar_action_grades_retry) {
                         layoutGrades.requestSyncWithLoading()
@@ -823,7 +823,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     show()
                 }
                 FAIL_CONNECT -> statusSnackbar = indefiniteSnackbar(
-                        baseView, R.string.snackbar_grades_refresh_fail_connect
+                        boxGrades, R.string.snackbar_grades_refresh_fail_connect
                 ).apply {
                     setAction(R.string.snackbar_action_grades_retry) {
                         layoutGrades.requestSyncWithLoading()
@@ -831,13 +831,13 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     show()
                 }
                 FAIL_LOGIN -> statusSnackbar = indefiniteSnackbar(
-                        baseView, R.string.snackbar_grades_refresh_fail_login
+                        boxGrades, R.string.snackbar_grades_refresh_fail_login
                 ).apply {
                     setAction(R.string.snackbar_action_grades_logout) { layoutLogin.logout() }
                     show()
                 }
                 null -> statusSnackbar = indefiniteSnackbar(
-                        baseView, R.string.snackbar_grades_fail_no_account
+                        boxGrades, R.string.snackbar_grades_fail_no_account
                 ).apply { show() }
                 else -> statusSnackbar?.apply {
                     dismiss()

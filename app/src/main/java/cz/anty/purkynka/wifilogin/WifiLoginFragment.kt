@@ -18,29 +18,51 @@
 
 package cz.anty.purkynka.wifilogin
 
-import android.content.Context
+import android.accounts.Account
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cz.anty.purkynka.R
+import cz.anty.purkynka.account.ActiveAccount
+import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
+import cz.anty.purkynka.wifilogin.save.WifiLoginData
+import eu.codetopic.utils.AndroidExtensions.broadcast
+import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.synthetic.main.fragment_wifi_login.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
+import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.design.longSnackbar
 
 /**
  * @author anty
  */
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider { // TODO: implement
+class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     override val title: CharSequence
         get() = getText(R.string.title_fragment_wifi_login)
     override val themeId: Int
         get() = R.style.AppTheme_WifiLogin
+
+
+    private var account: Account? = null
+    private var accountId: String? = null
+
+    private var userLoggedIn = false
+    private var username = ""
+
+    private val wifiLoginDataChangeReceiver = broadcast { _, _ -> updateData() }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {
@@ -51,5 +73,134 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider { /
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        butEnable.setOnClickListener(::onEnableClick)
+        butDisable.setOnClickListener(::onDisableClick)
+        butLogin.setOnClickListener(::onLoginClick)
+
+        launch(UI) {
+            holder.showLoading()
+            updateData().join()
+            holder.hideLoading()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        LocalBroadcast.registerReceiver(
+                wifiLoginDataChangeReceiver,
+                intentFilter(WifiLoginData.getter)
+        )
+
+        updateData()
+    }
+
+    override fun onStop() {
+        LocalBroadcast.unregisterReceiver(wifiLoginDataChangeReceiver)
+
+        super.onStop()
+    }
+
+    private fun updateData() = launch(UI) {
+        val accountWithId = bg { ActiveAccount.getWithId() }.await()
+        account = accountWithId.first
+        accountId = accountWithId.second
+
+        userLoggedIn = accountId?.let {
+            bg { WifiLoginData.loginData.isLoggedIn(it) }.await()
+        } ?: false
+        username = accountId?.let {
+            bg { WifiLoginData.loginData.getUsername(it) }.await()
+        } ?: ""
+
+        update()
+    }
+
+    private fun update() {
+        if (userLoggedIn) {
+            boxInPassword.visibility = View.GONE
+            butEnable.visibility = View.GONE
+
+            butDisable.visibility = View.VISIBLE
+
+            boxInUsername.isEnabled = false
+            //inUsername.isEnabled = false
+            inUsername.setText(username)
+
+            inPassword.setText("") // reset password input
+        } else {
+            boxInPassword.visibility = View.VISIBLE
+            butEnable.visibility = View.VISIBLE
+
+            butDisable.visibility = View.GONE
+
+            boxInUsername.isEnabled = true
+            //inUsername.isEnabled = true
+            inUsername.takeIf { it.text.isEmpty() }?.setText(username)
+        }
+    }
+
+    private fun onEnableClick(v: View) {
+        val accountId = accountId ?:
+                return longSnackbar(boxScrollView, R.string.snackbar_no_account_enable).show()
+        val username = inUsername.text.toString()
+        val password = inPassword.text.toString()
+        val holder = holder
+
+        launch(UI) {
+            holder.showLoading()
+
+            bg { WifiLoginData.loginData.login(accountId, username, password) }.await()
+
+            delay(500) // Wait few loops to make sure, that content was updated.
+            holder.hideLoading()
+        }
+    }
+
+    private fun onDisableClick(v: View) {
+        val accountId = accountId ?:
+                return longSnackbar(boxScrollView, R.string.snackbar_no_account_disable).show()
+        val holder = holder
+
+        launch(UI) {
+            holder.showLoading()
+
+            bg { WifiLoginData.loginData.logout(accountId) }.await()
+
+            delay(500) // Wait few loops to make sure, that content was updated.
+            holder.hideLoading()
+        }
+    }
+
+    private fun onLoginClick(v: View) {
+        val accountId = accountId ?:
+                return longSnackbar(boxScrollView, R.string.snackbar_no_account_login).show()
+        val loggedIn = userLoggedIn
+        val username = inUsername.text.toString()
+        val password = inPassword.text.toString()
+        val holder = holder
+        val boxScrollViewRef = boxScrollView.asReference()
+
+        launch(UI) {
+            holder.showLoading()
+
+            val (fUsername, fPassword) = if (loggedIn) {
+                bg {
+                    WifiLoginData.loginData.let {
+                        it.getUsername(accountId) to it.getPassword(accountId)
+                    }
+                }.await()
+            } else username to password
+
+            if (fUsername == null || fPassword == null) {
+                longSnackbar(boxScrollViewRef(), R.string.snackbar_failed_to_retrieve_login_data).show()
+            } else {
+                WifiLoginFetcher.tryLogin(fUsername, fPassword)
+                // TODO: report result to user
+            }
+
+            holder.hideLoading()
+        }
     }
 }
