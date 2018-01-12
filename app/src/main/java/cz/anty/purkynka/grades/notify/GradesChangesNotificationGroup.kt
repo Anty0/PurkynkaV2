@@ -30,7 +30,10 @@ import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.grades.data.Grade
+import cz.anty.purkynka.grades.ui.GradeActivity
+import cz.anty.purkynka.grades.ui.GradeItem
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.java.utils.JavaExtensions.runIfNull
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.notifications.manager.data.NotificationId
@@ -111,9 +114,23 @@ class GradesChangesNotificationGroup :
 
     override fun handleContentIntent(context: Context, id: NotificationId,
                                      channel: NotificationChannel, data: Bundle) {
-        // TODO: show grade info activity rather then all grades fragment
-        // (use context.startActivities() to start main activity with grade info activity on top of it]
-        MainActivity.start(context, GradesFragment::class.java)
+        val grade = readDataGrade(data).runIfNull {
+            Log.e(LOG_TAG, "handleContentIntent(id=$id, channel=$channel, data=$data)",
+                    IllegalArgumentException("Data doesn't contains grade"))
+        }
+        val changes = readDataChanges(data).runIfNull {
+            Log.e(LOG_TAG, "handleContentIntent(id=$id, channel=$channel, data=$data)",
+                    IllegalArgumentException("Failed to read grade changes"))
+        }
+
+        if (grade != null) {
+            context.startActivities(arrayOf(
+                    MainActivity.getStartIntent(context, GradesFragment::class.java),
+                    GradeActivity.getStartIntent(context, GradeItem(grade, changes = changes))
+            ))
+        } else {
+            MainActivity.start(context, GradesFragment::class.java)
+        }
     }
 
     override fun handleSummaryContentIntent(context: Context, id: NotificationId,
@@ -143,7 +160,7 @@ class GradesChangesNotificationGroup :
 
                 setDefaults(NotificationCompat.DEFAULT_ALL)
 
-                setAutoCancel(true)
+                setAutoCancel(false) // will be canceled by GradesFragment
                 setCategory(NotificationCompat.CATEGORY_EVENT)
 
                 setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
@@ -161,7 +178,7 @@ class GradesChangesNotificationGroup :
                                     channel: NotificationChannel,
                                     data: Bundle): NotificationCompat.Builder =
             buildNotificationBase(context, channel).apply {
-                val grade = data.getString(PARAM_GRADE)?.let { JSON.parse<Grade>(it) }
+                val grade = readDataGrade(data)
                         ?: throw IllegalArgumentException("Data doesn't contains grade")
                 when (data.getString(PARAM_TYPE)) {
                     PARAM_TYPE_VAL_NEW -> {
@@ -203,7 +220,7 @@ class GradesChangesNotificationGroup :
                                            channel: NotificationChannel,
                                            data: Map<NotificationId, Bundle>): NotificationCompat.Builder {
         val allGrades = data.values.mapNotNull {
-            it.getString(PARAM_GRADE)?.let { JSON.parse<Grade>(it) }.also {
+            readDataGrade(it).also {
                 if (it == null) Log.w(LOG_TAG, "Data doesn't contains grade")
             }
         }
