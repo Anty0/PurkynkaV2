@@ -18,112 +18,172 @@
 
 package cz.anty.purkynka.wifilogin.load
 
+import android.content.Context
+import android.support.annotation.MainThread
+import android.support.annotation.StringRes
+import android.support.annotation.UiThread
+import cz.anty.purkynka.R
+import eu.codetopic.utils.AndroidExtensions.wifiManager
+import eu.codetopic.utils.AndroidExtensions.getFormattedText
+import eu.codetopic.java.utils.log.Log
+import eu.codetopic.java.utils.JavaExtensions.substringOrNull
+import eu.codetopic.java.utils.JavaExtensions.runIfNull
+import kotlinx.coroutines.experimental.CompletableDeferred
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.jetbrains.anko.coroutines.experimental.Ref
+import org.jetbrains.anko.coroutines.experimental.asReference
+import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.toast
+import org.jsoup.Connection
+import org.jsoup.Jsoup
+import kotlin.coroutines.experimental.suspendCoroutine
+
+
 /**
  * @author anty
  */
 object WifiLoginFetcher {
 
-    fun tryLogin(username: String, password:String) {
-        // TODO: implement
+    private const val LOG_TAG = "WifiLoginFetcher"
+
+    private val WIFI_NAME = "ISSWF1"
+
+    private const val TEST_URL = "http://www.sspbrno.cz/"
+    private const val LOGIN_URL_BASE = "wifi.sspbrno.cz"
+    //private const val LOGIN_URL = "http://wifi.sspbrno.cz/login.html";
+    //private const val LOGOUT_URL = "http://wifi.sspbrno.cz/logout.html";
+    private const val LOGIN_FIELD = "username"
+    private const val PASS_FIELD = "password"
+    //private const val SUBMIT = "Submit";
+    //private const val SUBMIT_VALUE = "Submit";
+
+    @MainThread
+    fun tryLoginBackground(context: Context, username: String, password: String,
+                           force: Boolean = false): Deferred<LoginResult> {
+        val (wifiCorrect, wifiName) = testWifi(context)
+
+        if (!force && !wifiCorrect) return CompletableDeferred(LoginResult.FAIL_INVALID_WIFI)
+
+        val contextRef = context.applicationContext.asReference()
+
+        return async login@ {
+            try {
+                return@login (checkForLoginUrl() ?: return@login LoginResult.FAIL_NO_LOGIN_PAGE)
+                        .also {
+                            contextRef.toastCh {
+                                if (wifiName == null)
+                                    it.getText(R.string.toast_wifi_logging_start_unknown)
+                                else it.getFormattedText(R.string.toast_wifi_logging_start, wifiName)
+                            }
+                        }
+                        .also { requestLogin(it, username, password) }
+                        .also { contextRef.toastR { R.string.toast_wifi_logging_success } }
+                        .let { LoginResult.SUCCESS }
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "tryLoginGui(force=$force)", e)
+                contextRef.toastR { R.string.toast_wifi_logging_fail }
+                return@login LoginResult.FAIL_CONNECTION
+            }
+        }
     }
 
-    /*val WIFI_NAME = "ISSWF"
-    private val LOG_TAG = "WifiLogin"
-    private val TEST_URL = "http://www.sspbrno.cz/"
-    //private static final String LOGIN_URL = "http://wifi.sspbrno.cz/login.html";
-    //private static final String LOGOUT_URL = "http://wifi.sspbrno.cz/logout.html";
-    private val LOGIN_FIELD = "username"
-    private val PASS_FIELD = "password"
-    //private static final String SUBMIT = "Submit";
-    //private static final String SUBMIT_VALUE = "Submit";
+    @UiThread
+    fun tryLoginGui(context: Context, username: String, password: String,
+                    force: ForceLogin = ForceLogin.ASK): Deferred<LoginResult> {
+        val (wifiCorrect, _) = testWifi(context)
 
-    private fun showToast(context: Context, threadHandler: Handler,
-                          text: CharSequence, showToasts: Boolean) {
-        if (showToasts)
-            threadHandler.post(Runnable { Toast.makeText(context, text, Toast.LENGTH_SHORT).show() })
-    }
+        val contextRef = context.asReference()
 
-    @Throws(IOException::class)
-    fun tryLogin(context: Context, username: String, password: String,
-                 threadHandler: Handler, wifiName: String,
-                 showToasts: Boolean): Boolean {
-        var showFailNotification = false
-        try {
-            val loginUrl = getLoginUrl()
-            if (loginUrl == null || !loginUrl
-                    .contains("wifi.sspbrno.cz/login.html"))
-                return false
-
-            showToast(context, threadHandler, Utils.getFormattedText(context, R.string
-                    .toast_text_logging_to_wifi, wifiName), showToasts)
-            showFailNotification = true
-            sendLoginRequest(loginUrl, username, password)
-            showToast(context, threadHandler, Utils.getFormattedText(context, R.string
-                    .toast_text_logged_in_wifi, wifiName), showToasts)
-            return true
-        } catch (t: Throwable) {
-            showToast(context, threadHandler, Utils.getFormattedText(context, R.string
-                    .toast_text_failed_logging_to_wifi, wifiName),
-                    showToasts && showFailNotification)
-            throw t
+        if (force != ForceLogin.YES && !wifiCorrect) {
+            return if (force == ForceLogin.ASK)
+                async(UI) { contextRef.alertWifiCheckFail(username, password) }
+            else CompletableDeferred(LoginResult.FAIL_INVALID_WIFI)
         }
 
+        return async login@ {
+            try {
+                return@login (checkForLoginUrl() ?: return@login LoginResult.FAIL_NO_LOGIN_PAGE)
+                        .also { requestLogin(it, username, password) }
+                        .let { LoginResult.SUCCESS }
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "tryLoginGui(force=$force)", e)
+                return@login LoginResult.FAIL_CONNECTION
+            }
+        }
     }
 
-    @Throws(IOException::class)
-    private fun getLoginUrl(): String? {
-        var exception: IOException? = null
-        for (i in 0 until Constants.MAX_TRY) {
-            try {
-                val body = Jsoup.connect(TEST_URL)
-                        .validateTLSCertificates(false)
-                        .execute().body()
-                Log.d(LOG_TAG, "getLoginUrl body: " + body)
-                val toFind = "<META http-equiv=\"refresh\" content=\"1; URL="
-                var url: String
-                var index = body.indexOf(toFind)
-                if (index != -1) {
-                    index += toFind.length
-                    url = body.substring(index, body.indexOf("\">", index))
-                    Log.d(LOG_TAG, "getLoginUrl loginUrlBefore: " + url)
-                    index = url.indexOf("?")
-                    if (index != -1)
-                        url = url.substring(0, index)
-                    Log.d(LOG_TAG, "getLoginUrl loginUrl: " + url)
-                    return url
+    private suspend fun Ref<Context>.alertWifiCheckFail(username: String, password: String): LoginResult {
+        val context = this()
+        return suspendCoroutine { continuation ->
+            context.alert(Appcompat, R.string.dialog_text_wifi_unknown,
+                    R.string.dialog_title_wifi_unknown) {
+                positiveButton(R.string.but_continue) {
+                    it.dismiss()
+                    launch(UI) {
+                        continuation.resume(tryLoginGui(context,
+                                username, password, ForceLogin.YES).await())
+                    }
                 }
-                return null
-            } catch (e: IOException) {
-                if (e.getCause() == null && exception != null)
-                    e.initCause(exception)
-                exception = e
-                Log.d(LOG_TAG, "getLoginUrl", exception)
-            }
-
+                negativeButton(R.string.but_cancel) {
+                    it.dismiss()
+                    continuation.resume(LoginResult.FAIL_INVALID_WIFI)
+                }
+                onCancelled {
+                    continuation.resume(LoginResult.FAIL_INVALID_WIFI)
+                }
+            }.show()
         }
-        throw exception
     }
 
-    @Throws(IOException::class)
-    private fun sendLoginRequest(url: String, username: String, password: String) {
-        var exception: IOException? = null
-        for (i in 0 until Constants.MAX_TRY) {
-            try {
-                Jsoup.connect(url)
-                        .data("buttonClicked", "4", "err_flag", "0", "err_msg", "", "info_flag", "0", "info_msg", "",
-                                "redirect_url", "", LOGIN_FIELD, username, PASS_FIELD, password)
-                        .method(Connection.Method.POST)
-                        .validateTLSCertificates(false)
-                        .execute()
-                return
-            } catch (e: IOException) {
-                if (e.getCause() == null && exception != null)
-                    e.initCause(exception)
-                exception = e
-                Log.d(LOG_TAG, "sendLoginRequest", exception)
-            }
+    private inline fun Ref<Context>.toastCh(crossinline block: (context: Context) -> CharSequence) =
+            launch(UI) { this@toastCh().also { it.toast(block(it)) } }
 
-        }
-        throw exception
-    }*/
+    private inline fun Ref<Context>.toastR(crossinline block: (context: Context) -> Int) =
+            toastCh { it.getText(block(it)) }
+
+    private fun testWifi(context: Context): Pair<Boolean, String?> =
+            context.wifiManager.connectionInfo?.ssid
+                    .let { (it == WIFI_NAME) to it }
+
+    private fun checkForLoginUrl(): String? = try {
+        Jsoup.connect(TEST_URL)
+                .followRedirects(true)
+                .validateTLSCertificates(false) // FIXME: use ThrustManager to allow only one certificate
+                .execute().body()
+                //.also { Log.d(LOG_TAG, "checkForLoginUrl() -> (testPageBody=$it)") }
+                .substringOrNull("<META http-equiv=\"refresh\" content=\"1; URL=", "\">")
+                .also { Log.d(LOG_TAG, "checkForLoginUrl() -> (loginUrl=$it)") }
+                ?.takeIf { it.contains(LOGIN_URL_BASE) }
+    } catch (e: Exception) {
+        Log.w(LOG_TAG, "checkForLoginUrl()", e); null
+    }
+
+    private fun requestLogin(loginUrl: String, username: String, password: String) =
+            Jsoup.connect(loginUrl)
+                    .data(
+                            "buttonClicked", "4", // -\
+                            "err_flag", "0", // ---------------\
+                            "err_msg", "", // ------------------> Just some stuff required by login page.
+                            "info_flag", "0", // --------------/
+                            "info_msg", "", // ---------------/
+                            "redirect_url", "", // ----------/
+                            LOGIN_FIELD, username,
+                            PASS_FIELD, password
+                    )
+                    .method(Connection.Method.POST)
+                    .validateTLSCertificates(false) // FIXME: use ThrustManager to allow only one certificate
+                    .execute()
+
+    enum class LoginResult {
+        SUCCESS, FAIL_INVALID_WIFI, FAIL_NO_LOGIN_PAGE, FAIL_CONNECTION
+    }
+
+    enum class ForceLogin {
+        YES, ASK, NO
+    }
 }

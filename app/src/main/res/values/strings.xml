@@ -83,6 +83,8 @@
     <string name="but_save">Save</string>
     <string name="but_save_and_enable">Save &amp; Enable</string>
     <string name="but_disable">Disable</string>
+    <string name="but_continue">Continue</string>
+    <string name="but_cancel">Cancel</string>
 
     <string name="item_title_date">Date</string>
     <string name="item_title_type">Type</string>
@@ -104,6 +106,10 @@
     <string name="empty_view_text_small_no_grades">All your grades from selected semester will appear here.</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
+    <string name="toast_wifi_logging_start">Sending login request to wifi <i>%1$s</i></string>
+    <string name="toast_wifi_logging_start_unknown">Sending login request to unknown wifi</string>
+    <string name="toast_wifi_logging_fail">Failed to sent login request to wifi</string>
+    <string name="toast_wifi_logging_success">Successfully sent login request to wifi</string>
 
     <string name="snackbar_no_account_sync">"No account available, I can't request sync for you."</string>
     <string name="snackbar_no_account_login">"No account available, I can't log you in."</string>
@@ -117,6 +123,9 @@
     <string name="snackbar_grades_fail_no_account">"No account available, can't load grades."</string>
     <string name="snackbar_grades_login_fail">Failed to login. Are login credentials in order?</string>
     <string name="snackbar_failed_to_retrieve_login_data">"Failed to retrieve user credentials, I can't log you in."</string>
+    <string name="snackbar_wifi_logging_fail">Failed to sent login request to wifi.</string>
+    <string name="snackbar_wifi_logging_success">Successfully sent login request to wifi.</string>
+    <string name="snackbar_wifi_logging_fail_no_page">Failed to sent login request to wifi, you are probably still logged in.</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>
@@ -124,6 +133,9 @@
     <string name="snackbar_invalid_account_name">Invalid account name</string>
     <string name="snackbar_login_failed">Login failed, account with same name probably exists</string>
     <string name="snackbar_edit_failed">Edit failed, account with same name probably exists</string>
+
+    <string name="dialog_title_wifi_unknown">Unknown wifi</string>
+    <string name="dialog_text_wifi_unknown">"You're connected to unknown wifi. Do you want to continue?"</string>
 
     <string name="content_description_logo">Logo</string>
 

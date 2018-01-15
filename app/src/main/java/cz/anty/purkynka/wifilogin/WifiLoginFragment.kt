@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccount
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
+import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher.LoginResult.*
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
@@ -196,8 +197,14 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             if (fUsername == null || fPassword == null) {
                 longSnackbar(boxScrollViewRef(), R.string.snackbar_failed_to_retrieve_login_data).show()
             } else {
-                WifiLoginFetcher.tryLogin(fUsername, fPassword)
-                // TODO: report result to user
+                val result = WifiLoginFetcher.tryLoginGui(v.context,
+                        fUsername, fPassword, WifiLoginFetcher.ForceLogin.ASK).await()
+                when (result) {
+                    SUCCESS -> longSnackbar(boxScrollViewRef(), R.string.snackbar_wifi_logging_success).show()
+                    FAIL_CONNECTION -> longSnackbar(boxScrollViewRef(), R.string.snackbar_wifi_logging_fail).show()
+                    FAIL_NO_LOGIN_PAGE -> longSnackbar(boxScrollViewRef(), R.string.snackbar_wifi_logging_fail_no_page).show()
+                    else -> {} // ignored
+                }
             }
 
             holder.hideLoading()
