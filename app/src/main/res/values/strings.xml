@@ -102,6 +102,14 @@
         <item quantity="other">%1$d Grades</item>
     </plurals>
 
+    <string name="updates_text_up_to_date">Application is up to date (%1$s)</string>
+    <string name="updates_text_update_available">Update available (%1$s -> %2$s)</string>
+    <string name="updates_text_update_downloading">Downloading update (%1$s -> %2$s)</string>
+    <string name="updates_text_update_downloaded">Update downloaded (%1$s -> %2$s)</string>
+    <string name="updates_but_download_update">Download update</string>
+    <string name="updates_but_install_update">Install update</string>
+    <string name="updates_but_show_changelog">Show changelog</string>
+
     <string name="empty_view_text_no_grades">No grades</string>
     <string name="empty_view_text_small_no_grades">All your grades from selected semester will appear here.</string>
 

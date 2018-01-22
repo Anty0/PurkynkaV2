@@ -30,24 +30,152 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:animateLayoutChanges="true"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin">
 
-        <com.mikepenz.iconics.view.IconicsImageView
-            android:layout_width="144dp"
-            android:layout_height="144dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="48dp"
-            app:iiv_icon="gmd-done"
-            app:iiv_color="?attr/colorDrawable" />
+        <LinearLayout
+            android:id="@+id/boxUpToDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-        <TextView
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:layout_width="144dp"
+                android:layout_height="144dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="48dp"
+                android:layout_marginBottom="24dp"
+                app:iiv_icon="gmd-done"
+                app:iiv_color="@color/materialGreen" />
+
+            <TextView
+                android:id="@+id/txtUpToDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="18sp"
+                android:text="@string/updates_text_up_to_date" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/boxUpdateAvailable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:layout_width="144dp"
+                android:layout_height="144dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="48dp"
+                android:layout_marginBottom="24dp"
+                app:iiv_icon="gmd-close"
+                app:iiv_color="@color/materialRed" />
+
+            <TextView
+                android:id="@+id/txtUpdateAvailable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="18sp"
+                android:text="@string/updates_text_update_available" />
+
+            <Button
+                android:id="@+id/butDownloadUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/updates_but_download_update" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/boxUpdateDownloading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:layout_width="144dp"
+                android:layout_height="144dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="48dp"
+                android:layout_marginBottom="24dp"
+                app:iiv_icon="gmd-file-download"
+                app:iiv_color="@color/materialYellow" />
+
+            <ProgressBar
+                android:id="@+id/progressDownload"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/txtDownloadProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:id="@+id/txtUpdateDownloading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="18sp"
+                android:text="@string/updates_text_update_downloading" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/boxUpdateDownloaded"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:layout_width="144dp"
+                android:layout_height="144dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="48dp"
+                android:layout_marginBottom="24dp"
+                app:iiv_icon="gmd-system-update"
+                app:iiv_color="@color/materialYellow" />
+
+            <TextView
+                android:id="@+id/txtUpdateDownloaded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="18sp"
+                android:text="@string/updates_text_update_downloaded" />
+
+            <Button
+                android:id="@+id/butInstallUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/updates_but_install_update" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/butShowChangelog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:layout_gravity="center_horizontal"
-            android:text="Application is up to date" />
+            android:text="@string/updates_but_show_changelog" />
 
     </LinearLayout>
 </ScrollView>
