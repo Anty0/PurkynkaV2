@@ -125,6 +125,8 @@ class GradesChangesNotificationGroup :
                     IllegalArgumentException("Failed to read grade changes"))
         }
 
+        // TODO: change active account to correct account
+
         if (grade != null) {
             context.startActivities(arrayOf(
                     MainActivity.getStartIntent(context, GradesFragment::class.java),
@@ -138,6 +140,7 @@ class GradesChangesNotificationGroup :
     override fun handleSummaryContentIntent(context: Context, id: NotificationId,
                                             channel: NotificationChannel,
                                             data: Map<NotificationId, Bundle>) {
+        // TODO: change active account to correct account
         MainActivity.start(context, GradesFragment::class.java)
     }
 

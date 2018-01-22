@@ -448,8 +448,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                                private val holder: LoadingVH) : LayoutContainer {
 
         companion object {
+
             private const val LOG_TAG = "${GradesFragment.LOG_TAG}\$LayoutGrades"
 
+            private val gradesChangesMapSerializer =
+                    (StringSerializer to (IntSerializer to StringSerializer.list).map).map
         }
 
         override var containerView: View? = null
@@ -465,7 +468,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private var userLoggedIn = false
         private var gradesMap: GradesMap? = null
-        private var gradesChangesMap: MutableMap<Int, List<String>> = mutableMapOf()
+        private var gradesChangesMap: MutableMap<String, MutableMap<Int, List<String>>> = mutableMapOf()
 
         private var activity: Activity? = null
         private var recyclerManager: Recycler.RecyclerManagerImpl? = null
@@ -506,9 +509,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             }
             savedInstanceState?.takeIf { it.containsKey(SAVE_EXTRA_CHANGES_MAP) }?.let {
                 gradesChangesMap = try {
-                    savedInstanceState.getString(SAVE_EXTRA_CHANGES_MAP)?.let {
-                        JSON.parse((IntSerializer to StringSerializer.list).map, it)
-                    }?.toMutableMap() ?: throw RuntimeException()
+                    savedInstanceState.getString(SAVE_EXTRA_CHANGES_MAP)
+                            ?.let { JSON.parse(gradesChangesMapSerializer, it) }
+                            ?.map { it.key to it.value.toMutableMap() }
+                            ?.toMap()?.toMutableMap()
+                            ?: throw RuntimeException()
                 } catch (e: Exception) {
                     Log.w(LOG_TAG, "onCreate() -> restoreChangesMapState()", e)
                     mutableMapOf()
@@ -521,7 +526,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             outState.putSerializable(SAVE_EXTRA_SEMESTER, semester)
             outState.putString(SAVE_EXTRA_CHANGES_MAP,
                     JSON.stringify(
-                            (IntSerializer to StringSerializer.list).map,
+                            gradesChangesMapSerializer,
                             gradesChangesMap
                     )
             )
@@ -657,15 +662,18 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             accountHolder.accountId?.let { accountId ->
                 boxRecycler?.context?.let { context ->
                     // All grades changes will be displayed to user, so let's remove them all
-                    gradesChangesMap.putAll(
-                            NotificationsManager.cancelAll(
-                                    context,
-                                    GradesChangesNotificationGroup.ID,
-                                    AccountNotifyChannel.idFor(accountId)
-                            ).mapNotNull {
-                                (readDataGrade(it.value)?.id ?: return@mapNotNull null) to
-                                        (readDataChanges(it.value) ?: return@mapNotNull null)
-                            }
+                    gradesChangesMap.getOrPut(accountId, ::mutableMapOf).putAll(
+                            NotificationsManager
+                                    .cancelAll(
+                                            context = context,
+                                            groupId = GradesChangesNotificationGroup.ID,
+                                            channelId = AccountNotifyChannel.idFor(accountId)
+                                    )
+                                    .mapNotNull {
+                                        (readDataGrade(it.value)?.id ?: return@mapNotNull null) to
+                                                (readDataChanges(it.value)
+                                                        ?: return@mapNotNull null)
+                                    }
                     )
                 }
             }
@@ -679,28 +687,31 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             boxGrades.visibility = if (userLoggedIn) {
                 adapter?.edit {
                     clear()
-                    gradesMap?.let { it[semester.value] }?.let {
-                        val grades = {
-                            it.map {
-                                GradeItem(it, changes = gradesChangesMap[it.id])
+                    accountHolder.accountId?.let { accountId ->
+                        gradesMap?.let { it[semester.value] }?.let {
+                            val grades = {
+                                it.map {
+                                    GradeItem(it, changes = gradesChangesMap[accountId]?.get(it.id))
+                                }
                             }
-                        }
-                        val subjects = {
-                            it.toSubjects().map {
-                                SubjectItem(it, it.grades.mapNotNull { grade ->
-                                    gradesChangesMap[grade.id]?.let { grade.id to it }
-                                }.toMap())
+                            val subjects = {
+                                it.toSubjects().map {
+                                    SubjectItem(it, it.grades.mapNotNull { grade ->
+                                        gradesChangesMap[accountId]?.get(grade.id)
+                                                ?.let { grade.id to it }
+                                    }.toMap())
+                                }
                             }
+                            addAll(when (sort) {
+                                GRADES_DATE -> run(grades)
+                                GRADES_VALUE -> run(grades).sortedBy { it.base.value }
+                                GRADES_SUBJECT -> run(grades).sortedBy { it.base.subjectShort }
+                                SUBJECTS_NAME -> run(subjects)
+                                SUBJECTS_AVERAGE_BEST -> run(subjects).sortedBy { it.base.average }
+                                SUBJECTS_AVERAGE_WORSE ->
+                                    run(subjects).sortedByDescending { it.base.average }
+                            })
                         }
-                        addAll(when (sort) {
-                            GRADES_DATE -> run(grades)
-                            GRADES_VALUE -> run(grades).sortedBy { it.base.value }
-                            GRADES_SUBJECT -> run(grades).sortedBy { it.base.subjectShort }
-                            SUBJECTS_NAME -> run(subjects)
-                            SUBJECTS_AVERAGE_BEST -> run(subjects).sortedBy { it.base.average }
-                            SUBJECTS_AVERAGE_WORSE ->
-                                run(subjects).sortedByDescending { it.base.average }
-                        })
                     }
                     notifyAllItemsChanged()
                 }
