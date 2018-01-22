@@ -149,7 +149,6 @@ class GradesChangesNotificationGroup :
                 //setTicker()
                 //setUsesChronometer()
                 //setNumber()
-                /*setWhen(grade.date.time)*/
                 //setShowWhen(true)
                 //setStyle()
 
@@ -220,8 +219,8 @@ class GradesChangesNotificationGroup :
                                            channel: NotificationChannel,
                                            data: Map<NotificationId, Bundle>): NotificationCompat.Builder {
         val allGrades = data.values.mapNotNull {
-            readDataGrade(it).also {
-                if (it == null) Log.w(LOG_TAG, "Data doesn't contains grade")
+            readDataGrade(it).runIfNull {
+                Log.w(LOG_TAG, "Data doesn't contains grade")
             }
         }
         val subjects = allGrades.map { it.subjectShort }.distinct().joinToString(", ")

@@ -34,6 +34,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.mikepenz.community_material_typeface_library.CommunityMaterial
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
 
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccount
@@ -57,6 +59,7 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.AndroidExtensions.edit
+import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.notifications.manager.NotificationsManager
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -324,6 +327,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
     }
 
+    @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
     private class LayoutLogin(private val accountHolder: ActiveAccountHolder,
                               private val holder: LoadingVH) : LayoutContainer {
 
@@ -437,6 +441,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
     }
 
+    @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
     private class LayoutGrades(private val accountHolder: ActiveAccountHolder,
                                private val layoutLogin: LayoutLogin,
                                private val holder: LoadingVH) : LayoutContainer {
@@ -569,7 +574,19 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         fun createOptionsMenu(menu: Menu, inflater: MenuInflater) {
             if (!userLoggedIn) return
 
-            inflater.inflate(R.menu.fragment_grades_menu, menu)
+            inflater.inflate(R.menu.fragment_grades, menu)
+
+            menu.findItem(R.id.menu_group_filter_grades).icon = activity
+                    ?.getIconics(GoogleMaterial.Icon.gmd_filter_list)
+                    ?.actionBar()
+
+            menu.findItem(R.id.action_refresh).icon = activity
+                    ?.getIconics(GoogleMaterial.Icon.gmd_refresh)
+                    ?.actionBar()
+
+            menu.findItem(R.id.action_log_out).icon = activity
+                    ?.getIconics(CommunityMaterial.Icon.cmd_logout)
+                    ?.actionBar()
 
             menu.findItem(
                     when(sort) {
@@ -684,6 +701,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                                 run(subjects).sortedByDescending { it.base.average }
                         })
                     }
+                    notifyAllItemsChanged()
                 }
 
                 View.VISIBLE
@@ -744,6 +762,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
     }
 
+    @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
     private class LayoutSyncStatus(private val accountHolder: ActiveAccountHolder,
                                    private val layoutLogin: LayoutLogin,
                                    private val layoutGrades: LayoutGrades) : LayoutContainer {

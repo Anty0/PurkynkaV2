@@ -18,9 +18,7 @@
 
 package cz.anty.purkynka
 
-import android.accounts.Account
 import android.accounts.AccountManager
-import android.accounts.OnAccountsUpdateListener
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -28,14 +26,24 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.design.widget.NavigationView
 import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
-import android.support.design.widget.TabLayout
 import android.content.Intent
-import android.os.Build
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import eu.codetopic.utils.Constants.ICON_DEBUG
+import eu.codetopic.utils.Constants.ICON_SETTINGS
+import cz.anty.purkynka.Constants.ICON_ATTENDANCE
+import cz.anty.purkynka.Constants.ICON_DONATE
+import cz.anty.purkynka.Constants.ICON_FACEBOOK
+import cz.anty.purkynka.Constants.ICON_GRADES
+import cz.anty.purkynka.Constants.ICON_HOME_DASHBOARD
+import cz.anty.purkynka.Constants.ICON_LUNCHES
+import cz.anty.purkynka.Constants.ICON_TIMETABLES
+import cz.anty.purkynka.Constants.ICON_WEB
+import cz.anty.purkynka.Constants.ICON_WIFI_LOGIN
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.ActiveAccount
 import cz.anty.purkynka.account.ui.AccountEditActivity
@@ -44,9 +52,9 @@ import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.settings.SettingsActivity
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
-import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.broadcast.LocalBroadcast
 
@@ -138,10 +146,16 @@ class MainActivity : NavigationActivity() {
         accounts.forEach {
             if (it == activeAccount) return@forEach
             menu.add(R.id.menu_group_main, R.id.menu_item_account, Menu.NONE, it.name)
-                    .setIcon(R.drawable.ic_account)
+                    .apply {
+                        icon = getIconics(GoogleMaterial.Icon.gmd_account_circle)
+                                .actionBar()
+                    }
         }
         menu.add(R.id.menu_group_main, R.id.menu_item_add_account, Menu.NONE, R.string.action_add_user)
-                .setIcon(R.drawable.ic_action_add)
+                .apply {
+                    icon = getIconics(GoogleMaterial.Icon.gmd_add)
+                            .actionBar()
+                }
         return true
     }
 
@@ -182,8 +196,36 @@ class MainActivity : NavigationActivity() {
 
     override fun onCreateNavigationMenu(menu: Menu): Boolean {
         super.onCreateNavigationMenu(menu)
+
         menuInflater.inflate(R.menu.activity_main_drawer, menu)
-        menu.findItem(R.id.nav_debug).isVisible = BuildConfig.DEBUG
+
+        menu.findItem(R.id.nav_dashboard).icon =
+                getIconics(ICON_HOME_DASHBOARD).actionBar()
+        menu.findItem(R.id.nav_grades).icon =
+                getIconics(ICON_GRADES).actionBar()
+        menu.findItem(R.id.nav_wifi_login).icon =
+                getIconics(ICON_WIFI_LOGIN).actionBar()
+        menu.findItem(R.id.nav_lunches).icon =
+                getIconics(ICON_LUNCHES).actionBar()
+        menu.findItem(R.id.nav_timetables).icon =
+                getIconics(ICON_TIMETABLES).actionBar()
+        menu.findItem(R.id.nav_attendance).icon =
+                getIconics(ICON_ATTENDANCE).actionBar()
+
+        menu.findItem(R.id.nav_settings).icon =
+                getIconics(ICON_SETTINGS).actionBar()
+        menu.findItem(R.id.nav_debug).apply {
+            icon = getIconics(ICON_DEBUG).actionBar()
+            isVisible = BuildConfig.DEBUG
+        }
+
+        menu.findItem(R.id.nav_contact_facebook).icon =
+                getIconics(ICON_FACEBOOK).actionBar()
+        menu.findItem(R.id.nav_contact_web_page).icon =
+                getIconics(ICON_WEB).actionBar()
+        menu.findItem(R.id.nav_contact_web_page_donate).icon =
+                getIconics(ICON_DONATE).actionBar()
+
         return true
     }
 

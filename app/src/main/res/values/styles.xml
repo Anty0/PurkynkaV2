@@ -220,6 +220,8 @@
             @style/Widget.AppCompat.ProgressBar.Horizontal
         </item>
 
+        <item name="colorDrawable">@color/white</item>
+
         <item name="about_libraries_card">@color/cardview_dark_background</item>
         <item name="about_libraries_title_description">@color/about_libraries_title_openSource_dark</item>
         <item name="about_libraries_text_description">@color/about_libraries_text_openSource_dark</item>
@@ -247,6 +249,8 @@
         <item name="android:progressBarStyleHorizontal">
             @style/Widget.AppCompat.ProgressBar.Horizontal
         </item>
+
+        <item name="colorDrawable">@color/white</item>
 
         <item name="about_libraries_card">@color/cardview_dark_background</item>
         <item name="about_libraries_title_description">@color/about_libraries_title_openSource_dark</item>
@@ -276,6 +280,8 @@
             @style/Widget.AppCompat.ProgressBar.Horizontal
         </item>
 
+        <item name="colorDrawable">@color/white</item>
+
         <item name="about_libraries_card">@color/cardview_dark_background</item>
         <item name="about_libraries_title_description">@color/about_libraries_title_openSource_dark</item>
         <item name="about_libraries_text_description">@color/about_libraries_text_openSource_dark</item>
@@ -291,18 +297,8 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat"/>
 
-    <style name="TextAppearance.AppCompat.Subhead.Grey" parent="TextAppearance.AppCompat.Subhead">
-        <item name="android:textColor">#C0C0C0</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
     <style name="TextAppearance.AppTheme.Title" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textSize">18sp</item>
-    </style>
-
-    <style name="Widget.AppCompat.ProgressBar.Bigger" parent="Widget.AppCompat.ProgressBar">
-        <item name="android:minHeight">64dp</item>
-        <item name="android:minWidth">64dp</item>
     </style>
 
 </resources>

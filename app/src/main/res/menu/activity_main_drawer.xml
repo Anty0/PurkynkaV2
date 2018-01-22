@@ -17,7 +17,9 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
@@ -27,31 +29,25 @@
 
         <item
             android:id="@+id/nav_dashboard"
-            android:icon="@drawable/ic_home_dashboard"
-            android:title="@string/action_show_dashboard" />
+            android:title="@string/action_show_dashboard" /> <!--Icon will be added after inflating-->
         <item
             android:id="@+id/nav_grades"
-            android:icon="@mipmap/ic_launcher_grades"
-            android:title="@string/action_show_grades" />
+            android:title="@string/action_show_grades" /> <!--Icon will be added after inflating-->
         <item
             android:id="@+id/nav_wifi_login"
-            android:icon="@mipmap/ic_launcher_wifi"
-            android:title="@string/action_show_wifi_login" />
+            android:title="@string/action_show_wifi_login" /> <!--Icon will be added after inflating-->
 
         <item
             android:id="@+id/nav_lunches"
-            android:icon="@mipmap/ic_launcher_lunches"
-            android:title="@string/action_show_lunches" />
+            android:title="@string/action_show_lunches" /> <!--Icon will be added after inflating-->
 
         <item
             android:id="@+id/nav_timetables"
-            android:icon="@mipmap/ic_launcher_timetables"
-            android:title="@string/action_show_timetables" />
+            android:title="@string/action_show_timetables" /> <!--Icon will be added after inflating-->
 
         <item
             android:id="@+id/nav_attendance"
-            android:icon="@mipmap/ic_launcher_attendance"
-            android:title="@string/action_show_attendance" />
+            android:title="@string/action_show_attendance" /> <!--Icon will be added after inflating-->
 
     </group>
 
@@ -61,14 +57,12 @@
 
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_action_settings"
-            android:title="@string/action_show_settings" />
+            android:title="@string/action_show_settings" /> <!--Icon will be added after inflating-->
 
         <item
             android:id="@+id/nav_debug"
-            android:icon="@drawable/ic_bug_report_white_24dp"
             android:title="@string/action_show_debug"
-            android:visible="false" />
+            android:visible="false" /> <!--Icon will be added after inflating-->
 
     </group>
 
@@ -78,16 +72,13 @@
 
         <item
             android:id="@+id/nav_contact_facebook"
-            android:icon="@drawable/ic_facebook_box_white_24dp"
-            android:title="@string/action_contact_facebook" />
+            android:title="@string/action_contact_facebook" /> <!--Icon will be added after inflating-->
         <item
             android:id="@+id/nav_contact_web_page"
-            android:icon="@drawable/ic_public_white_24dp"
-            android:title="@string/action_contact_web_page" />
+            android:title="@string/action_contact_web_page" /> <!--Icon will be added after inflating-->
         <item
             android:id="@+id/nav_contact_web_page_donate"
-            android:icon="@drawable/ic_monetization_on_white_24dp"
-            android:title="@string/action_contact_web_page_donate" />
+            android:title="@string/action_contact_web_page_donate" /> <!--Icon will be added after inflating-->
 
     </group>
 

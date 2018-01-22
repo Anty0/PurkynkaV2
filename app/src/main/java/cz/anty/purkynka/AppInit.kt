@@ -129,18 +129,10 @@ class AppInit : MultiDexApplication() {
                 GradesChangesNotificationGroup()
         )
 
-        // Initialize NotificationsManager
-        NotificationsManager.initialize(this)
+        initJobManager()
 
         // Initialize sync adapters
         GradesSyncAdapter.init(this)
-
-        // Initialize timed components (framework for repeating jobs)
-        /*TimedComponentsManager.initialize(app,
-                SettingsData.getter.get().requiredNetworkType,
-                        GradesSyncService::class.java)*/
-
-        initJobManager()
     }
 
     private fun initProcessProviders() {

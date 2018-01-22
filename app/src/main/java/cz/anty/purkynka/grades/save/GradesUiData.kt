@@ -52,7 +52,7 @@ class GradesUiData private constructor(context: Context) :
         } // No more versions yet
     }
 
-    var lastSort by EnumPreference(
+    var lastSort by EnumPreference( // TODO: save by accountId
             LAST_SORT_GRADES,
             Sort::class,
             accessProvider,

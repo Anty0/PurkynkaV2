@@ -27,18 +27,15 @@
 
         <item
             android:id="@+id/nav_lunches_order"
-            android:icon="@drawable/ic_list_white_24dp"
-            android:title="@string/action_show_lunches_order" />
+            android:title="@string/action_show_lunches_order" /> <!--Icon will be added after inflating-->
 
         <item
             android:id="@+id/nav_lunches_burza"
-            android:icon="@drawable/ic_attach_money_white_24dp"
-            android:title="@string/action_show_lunches_burza" />
+            android:title="@string/action_show_lunches_burza" /> <!--Icon will be added after inflating-->
 
         <item
             android:id="@+id/nav_lunches_burza_watcher"
-            android:icon="@drawable/ic_auto_fix_white_24dp"
-            android:title="@string/action_show_lunches_burza_watcher" />
+            android:title="@string/action_show_lunches_burza_watcher" /> <!--Icon will be added after inflating-->
 
     </group>
 </menu>

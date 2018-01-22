@@ -25,10 +25,13 @@ import cz.anty.purkynka.R
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
+import kotlinx.android.extensions.CacheImplementation
+import kotlinx.android.extensions.ContainerOptions
 
 /**
  * @author anty
  */
+@ContainerOptions(CacheImplementation.SPARSE_ARRAY)
 class UpdateActivity : ModularActivity(ToolbarModule(), BackButtonModule()) { // TODO: implement
 
     companion object {

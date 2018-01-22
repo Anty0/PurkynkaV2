@@ -18,10 +18,30 @@
 
 package cz.anty.purkynka
 
+import com.mikepenz.community_material_typeface_library.CommunityMaterial
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+
 /**
  * @author anty
  */
 object Constants {
+
+    val ICON_HOME_DASHBOARD = GoogleMaterial.Icon.gmd_home
+    val ICON_GRADES = GoogleMaterial.Icon.gmd_book
+    val ICON_WIFI_LOGIN = GoogleMaterial.Icon.gmd_wifi_lock
+    val ICON_LUNCHES = GoogleMaterial.Icon.gmd_restaurant
+    val ICON_TIMETABLES = GoogleMaterial.Icon.gmd_access_time
+    val ICON_ATTENDANCE = GoogleMaterial.Icon.gmd_people
+
+    val ICON_LUNCHES_ORDER = GoogleMaterial.Icon.gmd_shopping_basket
+    val ICON_LUNCHES_BURZA = GoogleMaterial.Icon.gmd_attach_money
+    val ICON_LUNCHES_BURZA_WATCHER = CommunityMaterial.Icon.cmd_auto_fix
+
+    val ICON_FACEBOOK = CommunityMaterial.Icon.cmd_facebook_box
+    val ICON_WEB = GoogleMaterial.Icon.gmd_public
+    val ICON_DONATE = GoogleMaterial.Icon.gmd_monetization_on
+
+    //---------------------------------------------------------------------
 
     const val URL_FACEBOOK_PAGE = "" // TODO: 6/16/17 add url; use firebase remote config
     const val URL_WEB_PAGE = "" // TODO: 6/16/17 add url; use firebase remote config
@@ -29,7 +49,7 @@ object Constants {
 
     //---------------------------------------------------------------------
 
-    const val CONNECTION_TIMEOUT_SAS: Int = 1000 * 20
+    const val CONNECTION_TIMEOUT_SAS: Int = 1000 * 60
 
     const val SYNC_FREQUENCY_GRADES: Long = 60 * 15 // 15 minutes in seconds
 }
