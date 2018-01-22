@@ -25,8 +25,12 @@ import java.io.File.separator
 import android.os.Environment.DIRECTORY_DOWNLOADS
 import eu.codetopic.utils.thread.progress.ProgressReporter
 import com.google.firebase.perf.FirebasePerformance.HttpMethod.POST
+import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.R
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.letIf
+import eu.codetopic.java.utils.debug.DebugMode
+import eu.codetopic.utils.AndroidUtils
 import org.jsoup.Jsoup
 import java.io.File
 import java.io.FileOutputStream
@@ -43,15 +47,14 @@ object UpdateFetcher { // TODO: create new/better api
 
     private const val LOG_TAG = "UpdateFetcher"
 
-    private const val API_VERSION = 0
+    private val API_VERSION = if (DebugMode.isEnabled) "dev" else "v0"
 
-    private const val URL_BASE = "http://anty.codetopic.eu/purkynka/api/$API_VERSION"
+    private val URL_BASE = "https://anty.codetopic.eu/purkynka/api/$API_VERSION"
 
-    private const val URL_VERSION_CODE = "$URL_BASE/latestVersionCode"
-    private const val URL_VERSION_NAME = "$URL_BASE/latestVersionName"
-    private const val URL_APK = "$URL_BASE/latest.apk"
-
-    private const val URL_CHANGELOG = "$URL_BASE/latestChangeLog"
+    private val URL_VERSION_CODE = "$URL_BASE/latestVersionCode"
+    private val URL_VERSION_NAME = "$URL_BASE/latestVersionName"
+    private val URL_CHANGELOG = "$URL_BASE/latestChangeLog"
+    private val URL_APK = "$URL_BASE/latest.apk"
 
     fun fetchVersionCode(): Int? = try {
         Jsoup.connect(URL_VERSION_CODE)
@@ -79,7 +82,7 @@ object UpdateFetcher { // TODO: create new/better api
         Log.d(LOG_TAG, "fetchVersionName() -> (versionName=$it)")
     }
 
-    fun fetchChangelog(): String? = try { // TODO: use html page as changelog in new api
+    /*fun fetchChangelog(): String? = try { // TODO: use html page as changelog in new api
         Jsoup.connect(URL_CHANGELOG)
                 .followRedirects(false)
                 .execute().body()
@@ -93,7 +96,10 @@ object UpdateFetcher { // TODO: create new/better api
         Log.w(LOG_TAG, "fetchChangelog()", e); null
     }.also {
         Log.d(LOG_TAG, "fetchChangelog() -> (changeLog=$it)")
-    }
+    }*/
+
+    fun showChangelog(context: Context) =
+            AndroidUtils.openUri(context, URL_CHANGELOG, R.string.toast_browser_failed)
 
     fun fetchApk(context: Context): String? {
         // TODO: implement

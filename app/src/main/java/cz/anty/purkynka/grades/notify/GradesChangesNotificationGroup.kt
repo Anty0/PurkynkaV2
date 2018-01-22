@@ -154,10 +154,11 @@ class GradesChangesNotificationGroup :
                 //setShowWhen(true)
                 //setStyle()
 
-                setSmallIcon(R.mipmap.ic_launcher_foreground)
+                setSmallIcon(R.mipmap.ic_launcher_foreground) // TODO: Better image
                 setLargeIcon(
                         context.getIconics(ICON_GRADES)
                                 .sizeDp(24)
+                                .colorRes(R.color.colorPrimaryGrades)
                                 .toBitmap()
                 )
                 color = ContextCompat.getColor(context, R.color.colorPrimaryGrades)

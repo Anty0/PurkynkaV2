@@ -38,10 +38,6 @@
             android:title="@string/action_show_wifi_login" /> <!--Icon will be added after inflating-->
 
         <item
-            android:id="@+id/nav_lunches"
-            android:title="@string/action_show_lunches" /> <!--Icon will be added after inflating-->
-
-        <item
             android:id="@+id/nav_timetables"
             android:title="@string/action_show_timetables" /> <!--Icon will be added after inflating-->
 
@@ -49,6 +45,30 @@
             android:id="@+id/nav_attendance"
             android:title="@string/action_show_attendance" /> <!--Icon will be added after inflating-->
 
+        <item
+            android:id="@+id/nav_lunches"
+            android:title="@string/action_show_lunches" > <!--Icon will be added after inflating-->
+
+            <menu>
+
+                <group
+                    android:id="@+id/menu_group_lunches"
+                    android:checkableBehavior="single">
+
+                    <item
+                        android:id="@+id/nav_lunches_order"
+                        android:title="@string/action_show_lunches_order" /> <!--Icon will be added after inflating-->
+
+                    <item
+                        android:id="@+id/nav_lunches_burza"
+                        android:title="@string/action_show_lunches_burza" /> <!--Icon will be added after inflating-->
+
+                    <item
+                        android:id="@+id/nav_lunches_burza_watcher"
+                        android:title="@string/action_show_lunches_burza_watcher" /> <!--Icon will be added after inflating-->
+                </group>
+            </menu>
+        </item>
     </group>
 
     <group
@@ -58,12 +78,10 @@
         <item
             android:id="@+id/nav_settings"
             android:title="@string/action_show_settings" /> <!--Icon will be added after inflating-->
-
         <item
             android:id="@+id/nav_debug"
             android:title="@string/action_show_debug"
             android:visible="false" /> <!--Icon will be added after inflating-->
-
     </group>
 
     <group
@@ -79,7 +97,6 @@
         <item
             android:id="@+id/nav_contact_web_page_donate"
             android:title="@string/action_contact_web_page_donate" /> <!--Icon will be added after inflating-->
-
     </group>
 
 </menu>

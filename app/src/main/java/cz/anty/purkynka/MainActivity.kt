@@ -41,6 +41,9 @@ import cz.anty.purkynka.Constants.ICON_FACEBOOK
 import cz.anty.purkynka.Constants.ICON_GRADES
 import cz.anty.purkynka.Constants.ICON_HOME_DASHBOARD
 import cz.anty.purkynka.Constants.ICON_LUNCHES
+import cz.anty.purkynka.Constants.ICON_LUNCHES_BURZA
+import cz.anty.purkynka.Constants.ICON_LUNCHES_BURZA_WATCHER
+import cz.anty.purkynka.Constants.ICON_LUNCHES_ORDER
 import cz.anty.purkynka.Constants.ICON_TIMETABLES
 import cz.anty.purkynka.Constants.ICON_WEB
 import cz.anty.purkynka.Constants.ICON_WIFI_LOGIN
@@ -205,12 +208,19 @@ class MainActivity : NavigationActivity() {
                 getIconics(ICON_GRADES).actionBar()
         menu.findItem(R.id.nav_wifi_login).icon =
                 getIconics(ICON_WIFI_LOGIN).actionBar()
-        menu.findItem(R.id.nav_lunches).icon =
-                getIconics(ICON_LUNCHES).actionBar()
         menu.findItem(R.id.nav_timetables).icon =
                 getIconics(ICON_TIMETABLES).actionBar()
         menu.findItem(R.id.nav_attendance).icon =
                 getIconics(ICON_ATTENDANCE).actionBar()
+
+        menu.findItem(R.id.nav_lunches).icon =
+                getIconics(ICON_LUNCHES).actionBar()
+        menu.findItem(R.id.nav_lunches_order).icon =
+                getIconics(ICON_LUNCHES_ORDER).actionBar()
+        menu.findItem(R.id.nav_lunches_burza).icon =
+                getIconics(ICON_LUNCHES_BURZA).actionBar()
+        menu.findItem(R.id.nav_lunches_burza_watcher).icon =
+                getIconics(ICON_LUNCHES_BURZA_WATCHER).actionBar()
 
         menu.findItem(R.id.nav_settings).icon =
                 getIconics(ICON_SETTINGS).actionBar()
@@ -241,23 +251,11 @@ class MainActivity : NavigationActivity() {
                 DashboardFragment::class.java -> findItem(R.id.nav_dashboard).isChecked = true
                 GradesFragment::class.java -> findItem(R.id.nav_grades).isChecked = true
                 WifiLoginFragment::class.java -> findItem(R.id.nav_wifi_login).isChecked = true
-                /*LunchesFragment::class.java, LunchesOrderFragment::class.java,
-                LunchesBurzaFragment::class.java, LunchesBurzaWatcherFragment::class.java -> {
-                    findItem(R.id.nav_lunches).isChecked = true
-                    setGroupVisible(R.id.menu_group_lunches, true)
-                    when (currentFragment.javaClass) {
-                        LunchesOrderFragment::class.java -> findItem(R.id.nav_lunches_order).isChecked = true
-                        LunchesBurzaFragment::class.java -> findItem(R.id.nav_lunches_burza).isChecked = true
-                        LunchesBurzaWatcherFragment::class.java -> findItem(R.id.nav_lunches_burza_watcher).isChecked = true
-                        else -> {
-                            findItem(R.id.nav_lunches_order).isChecked = false
-                            findItem(R.id.nav_lunches_burza).isChecked = false
-                            findItem(R.id.nav_lunches_burza_watcher).isChecked = false
-                        }
-                    }
-                }*/
                 // TimetablesFragment::class.java -> findItem(R.id.nav_timetables).isChecked = true
                 // AttendanceFragment::class.java -> findItem(R.id.nav_attendance).isChecked = true
+                // LunchesOrderFragment::class.java -> findItem(R.id.nav_lunches_order).isChecked = true
+                // LunchesBurzaFragment::class.java -> findItem(R.id.nav_lunches_burza).isChecked = true
+                // LunchesBurzaWatcherFragment::class.java -> findItem(R.id.nav_lunches_burza_watcher).isChecked = true
                 else -> return super.onUpdateSelectedNavigationMenuItem(currentFragment, menu)
             }
         }
@@ -269,12 +267,11 @@ class MainActivity : NavigationActivity() {
             R.id.nav_dashboard -> replaceFragment(DashboardFragment::class.java)
             R.id.nav_grades -> replaceFragment(GradesFragment::class.java)
             R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
-            // R.id.nav_lunches -> replaceFragment(LunchesFragment::class.java)
-            //// R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
-            //// R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
-            //// R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)
             // R.id.nav_timetables -> replaceFragment(TimetablesFragment::class.java)
             // R.id.nav_attendance -> replaceFragment(AttendanceFragment::class.java)
+            // R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
+            // R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
+            // R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)
             R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             R.id.nav_debug -> startActivity(Intent(this, DebugActivity::class.java))
             R.id.nav_contact_facebook -> AndroidUtils.openUri(this, Constants.URL_FACEBOOK_PAGE, R.string.toast_browser_failed)

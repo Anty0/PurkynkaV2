@@ -21,14 +21,17 @@ package cz.anty.purkynka.update
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
+import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
-import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
@@ -36,7 +39,9 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.activity_update.*
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 
 /**
@@ -69,6 +74,10 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
 
+        boxRefreshLayout.setOnRefreshListener {
+            requestUpdateCheckWithRefreshLayout()
+        }
+
         butDownloadUpdate.setOnClickListener { downloadUpdate() }
         butInstallUpdate.setOnClickListener { installUpdate() }
         butShowChangelog.setOnClickListener { showChangelog() }
@@ -81,6 +90,25 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
             holder.hideLoading()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+
+        menuInflater.inflate(R.menu.activity_update, menu)
+
+        menu.findItem(R.id.action_refresh).icon =
+                getIconics(GoogleMaterial.Icon.gmd_refresh).actionBar()
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_refresh -> requestUpdateCheckWithLoading()
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
     }
 
     override fun onStart() {
@@ -102,6 +130,38 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         super.onStop()
     }
 
+    private fun requestUpdateCheckWithLoading() {
+        if (isDownloading || isDownloaded) return // Update is being prepared,
+        //  refreshing available version here will have no effect.
+
+        val holder = holder
+        launch(UI) {
+            holder.showLoading()
+
+            UpdateCheckJob.fetchUpdates()
+
+            // wait for ui update
+            delay(500)
+
+            holder.hideLoading()
+        }
+    }
+
+    private fun requestUpdateCheckWithRefreshLayout() {
+        if (isDownloading || isDownloaded) return // Update is being prepared,
+        //  refreshing available version here will have no effect.
+
+        val boxRefreshLayoutRef = boxRefreshLayout.asReference()
+        launch(UI) {
+            UpdateCheckJob.fetchUpdates()
+
+            // wait for ui update
+            delay(500)
+
+            boxRefreshLayoutRef().isRefreshing = false
+        }
+    }
+
     private fun downloadUpdate() {
         // TODO: implement
     }
@@ -114,9 +174,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);*/
     }
 
-    private fun showChangelog() {
-        // TODO: implement
-    }
+    private fun showChangelog() = UpdateFetcher.showChangelog(this)
 
     private fun updateData() = launch(UI) {
         versionCodeCurrent = BuildConfig.VERSION_CODE
@@ -134,13 +192,25 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
         when {
             isDownloading -> {
-
+                boxUpdateDownloading.visibility = View.VISIBLE
+                txtUpdateDownloading.text = getFormattedText(
+                        R.string.updates_text_update_downloading,
+                        versionNameCurrent, versionNameAvailable
+                )
             }
             isDownloaded -> {
-
+                boxUpdateDownloaded.visibility = View.VISIBLE
+                txtUpdateDownloaded.text = getFormattedText(
+                        R.string.updates_text_update_downloaded,
+                        versionNameCurrent, versionNameAvailable
+                )
             }
             updateAvailable -> {
-
+                boxUpdateAvailable.visibility = View.VISIBLE
+                txtUpdateAvailable.text = getFormattedText(
+                        R.string.updates_text_update_available,
+                        versionNameCurrent, versionNameAvailable
+                )
             }
             else -> {
                 boxUpToDate.visibility = View.VISIBLE

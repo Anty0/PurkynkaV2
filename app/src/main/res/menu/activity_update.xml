@@ -17,25 +17,15 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".update.UpdateActivity">
 
-    <group
-        android:id="@+id/menu_group_lunches"
-        android:checkableBehavior="single">
+    <item
+        android:id="@+id/action_refresh"
+        android:title="@string/menu_item_text_refresh"
+        app:showAsAction="ifRoom" /> <!--Icon will be added after inflating-->
 
-        <item
-            android:id="@+id/nav_lunches_order"
-            android:title="@string/action_show_lunches_order" /> <!--Icon will be added after inflating-->
-
-        <item
-            android:id="@+id/nav_lunches_burza"
-            android:title="@string/action_show_lunches_burza" /> <!--Icon will be added after inflating-->
-
-        <item
-            android:id="@+id/nav_lunches_burza_watcher"
-            android:title="@string/action_show_lunches_burza_watcher" /> <!--Icon will be added after inflating-->
-
-    </group>
 </menu>
