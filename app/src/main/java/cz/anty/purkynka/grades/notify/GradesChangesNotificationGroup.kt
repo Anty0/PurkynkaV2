@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
+import cz.anty.purkynka.Constants.ICON_GRADES
 import cz.anty.purkynka.MainActivity
 
 import cz.anty.purkynka.R
@@ -35,6 +36,7 @@ import cz.anty.purkynka.grades.ui.GradeItem
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.runIfNull
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
+import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.notifications.manager.data.NotificationId
 import eu.codetopic.utils.notifications.manager.util.NotificationChannel
@@ -152,8 +154,12 @@ class GradesChangesNotificationGroup :
                 //setShowWhen(true)
                 //setStyle()
 
-                setSmallIcon(R.mipmap.ic_launcher_grades)
-                //setLargeIcon()
+                setSmallIcon(R.mipmap.ic_launcher_foreground)
+                setLargeIcon(
+                        context.getIconics(ICON_GRADES)
+                                .sizeDp(24)
+                                .toBitmap()
+                )
                 color = ContextCompat.getColor(context, R.color.colorPrimaryGrades)
                 //setColorized(false)
 

@@ -43,9 +43,9 @@ object Constants {
 
     //---------------------------------------------------------------------
 
-    const val URL_FACEBOOK_PAGE = "" // TODO: 6/16/17 add url; use firebase remote config
-    const val URL_WEB_PAGE = "" // TODO: 6/16/17 add url; use firebase remote config
-    const val URL_WEB_DONATE_PAGE = "" // TODO: 6/16/17 add url; use firebase remote config
+    const val URL_FACEBOOK_PAGE = "https://www.facebook.com/aplikacepurkynka/" // TODO: 6/16/17 add url; use firebase remote config
+    const val URL_WEB_PAGE = "https://anty.codetopic.eu/purkynka/" // TODO: 6/16/17 add url; use firebase remote config
+    const val URL_WEB_DONATE_PAGE = "https://anty.codetopic.eu/purkynka/" // TODO: 6/16/17 add url; use firebase remote config
 
     //---------------------------------------------------------------------
 

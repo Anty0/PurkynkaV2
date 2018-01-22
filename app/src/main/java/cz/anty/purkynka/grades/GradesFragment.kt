@@ -36,6 +36,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import cz.anty.purkynka.Constants.ICON_GRADES
 
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccount
@@ -535,7 +536,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
             recyclerManager = Recycler.inflate().withSwipeToRefresh()
                     .on(inflater, boxRecycler, true)
-                    .setEmptyImage(R.mipmap.ic_launcher_grades) // TODO: better image
+                    .setEmptyImage(context.getIconics(ICON_GRADES).sizeDp(72))
                     .setEmptyText(R.string.empty_view_text_no_grades)
                     .setSmallEmptyText(R.string.empty_view_text_small_no_grades)
                     .setAdapter(adapter)
