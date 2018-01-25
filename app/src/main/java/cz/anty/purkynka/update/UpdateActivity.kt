@@ -24,9 +24,11 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.evernote.android.job.Job
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
+import eu.codetopic.java.utils.JavaExtensions.alsoIf
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.getIconics
@@ -43,6 +45,7 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.design.longSnackbar
 
 /**
  * @author anty
@@ -56,8 +59,8 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     private var versionCodeAvailable: Int? = null
     private val updateAvailable: Boolean
         get() = versionCodeCurrent != versionCodeAvailable
-    private val isDownloading: Boolean = false // TODO: implement
-    private val isDownloaded: Boolean = false // TODO: implement
+    private var isDownloading: Boolean = false // TODO: implement
+    private var isDownloaded: Boolean = false // TODO: implement
 
     private val updateDataChangedReceiver = broadcast { _, _ -> updateData() }
 
@@ -138,7 +141,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         launch(UI) {
             holder.showLoading()
 
-            UpdateCheckJob.fetchUpdates()
+            fetchUpdate()
 
             // wait for ui update
             delay(500)
@@ -148,12 +151,15 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     }
 
     private fun requestUpdateCheckWithRefreshLayout() {
-        if (isDownloading || isDownloaded) return // Update is being prepared,
-        //  refreshing available version here will have no effect.
+        if (isDownloading || isDownloaded) {
+            // If update is being prepared, refreshing available version will have no effect.
+            boxRefreshLayout.isRefreshing = false
+            return
+        }
 
         val boxRefreshLayoutRef = boxRefreshLayout.asReference()
         launch(UI) {
-            UpdateCheckJob.fetchUpdates()
+            fetchUpdate()
 
             // wait for ui update
             delay(500)
@@ -161,6 +167,19 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
             boxRefreshLayoutRef().isRefreshing = false
         }
     }
+
+    private suspend fun fetchUpdate(): Job.Result =
+            bg { UpdateCheckJob.fetchUpdates() }.await()
+                    .alsoIf({ it == Job.Result.FAILURE }) {
+                        snackbarUpdateFetchFailed()
+                    }
+
+    private fun snackbarUpdateFetchFailed() = longSnackbar(
+            boxRefreshLayout,
+            R.string.snackbar_updates_fetch_fail,
+            R.string.snackbar_action_updates_retry,
+            { requestUpdateCheckWithLoading() }
+    )
 
     private fun downloadUpdate() {
         // TODO: implement

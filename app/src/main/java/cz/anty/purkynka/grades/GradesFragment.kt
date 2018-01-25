@@ -55,7 +55,7 @@ import cz.anty.purkynka.grades.save.GradesUiData.Sort.*
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
-import eu.codetopic.java.utils.JavaExtensions.runIfNull
+import eu.codetopic.java.utils.JavaExtensions.alsoIfNull
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.broadcast.LocalBroadcast
@@ -99,7 +99,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private const val LOG_TAG = "GradesFragment"
 
-        private const val TIMEOUT_SYNC_ACTIVE = 10000L
+        private const val TIMEOUT_SYNC_ACTIVE_MILIS = 10L * 1_000L
 
         private const val SAVE_EXTRA_SORT = "$LOG_TAG.SORT"
         private const val SAVE_EXTRA_SEMESTER = "$LOG_TAG.SEMESTER"
@@ -111,7 +111,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     .also { Log.d(LOG_TAG, "aWaitForSyncAdd(account=$account) -> $it") }
         }
 
-        suspend fun aWaitForSyncActiveOrEnd(account: Account) = withTimeoutOrNull(TIMEOUT_SYNC_ACTIVE) {
+        suspend fun aWaitForSyncActiveOrEnd(account: Account) = withTimeoutOrNull(TIMEOUT_SYNC_ACTIVE_MILIS) {
             aWaitForSyncState {
                 (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
                         !ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
@@ -120,7 +120,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                                     " -> Condition result: $it")
                         }
             }
-        }.runIfNull {
+        }.alsoIfNull {
             Log.d(LOG_TAG, "aWaitForSyncActiveOrEnd(account=$account) -> Timeout reached")
         } != null
 
@@ -130,7 +130,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     .also { Log.d(LOG_TAG, "aWaitForSyncEnd(account=$account) -> $it") }
         }
 
-        private inline suspend fun aWaitForSyncState(crossinline condition: () -> Boolean) =
+        private suspend inline fun aWaitForSyncState(crossinline condition: () -> Boolean) =
                 suspendCoroutine<Unit> { cont ->
                     if (run(condition)) {
                         cont.resume(Unit)
@@ -394,10 +394,14 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun login() {
-            val account = accountHolder.account ?:
-                    return longSnackbar(boxLogin, R.string.snackbar_no_account_login).show()
-            val accountId = accountHolder.accountId ?:
-                    return longSnackbar(boxLogin, R.string.snackbar_no_account_login).show()
+            val account = accountHolder.account ?: run {
+                longSnackbar(boxLogin, R.string.snackbar_no_account_login)
+                return
+            }
+            val accountId = accountHolder.accountId ?: run {
+                longSnackbar(boxLogin, R.string.snackbar_no_account_login)
+                return
+            }
             val username = inUsername.text.toString()
             val password = inPassword.text.toString()
 
@@ -412,11 +416,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     aWaitForSyncEnd(account)
                     val syncResult = bg { GradesData.instance.getLastSyncResult(accountId) }.await()
                     if (syncResult == FAIL_LOGIN) {
-                        longSnackbar(baseView, R.string.snackbar_grades_login_fail).show()
+                        longSnackbar(baseView, R.string.snackbar_grades_login_fail)
                         bg { GradesLoginData.loginData.logout(accountId) }.await()
                     }
                 } else {
-                    longSnackbar(baseView, R.string.snackbar_sync_start_fail).show()
+                    longSnackbar(baseView, R.string.snackbar_sync_start_fail)
                     bg { GradesLoginData.loginData.logout(accountId) }.await()
                 }
 
@@ -426,10 +430,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun logout() {
-            //val account = accountHolder.account ?:
-            //        return longSnackbar(boxLogin, R.string.snackbar_no_account_logout).show()
-            val accountId = accountHolder.accountId ?:
-                    return longSnackbar(boxLogin, R.string.snackbar_no_account_logout).show()
+            val accountId = accountHolder.accountId ?: run {
+                longSnackbar(boxLogin, R.string.snackbar_no_account_logout)
+                return
+            }
 
             launch(UI) {
                 holder.showLoading()
@@ -727,8 +731,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun requestSyncWithLoading() {
-            val account = accountHolder.account ?:
-                    return longSnackbar(boxGrades, R.string.snackbar_no_account_sync).show()
+            val account = accountHolder.account ?: run {
+                longSnackbar(boxGrades, R.string.snackbar_no_account_sync)
+                return
+            }
             val semester = semester
             val boxGradesRef = boxGrades.asReference()
             val holder = holder
@@ -743,7 +749,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
                 } else {
-                    longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail).show()
+                    longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail)
                 }
 
                 //delay(500) // Wait few loops to make sure, that content was updated.
@@ -752,8 +758,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun requestSyncWithRecyclerRefreshing() {
-            val account = accountHolder.account ?:
-                    return longSnackbar(boxGrades, R.string.snackbar_no_account_sync).show()
+            val account = accountHolder.account ?: run {
+                longSnackbar(boxGrades, R.string.snackbar_no_account_sync)
+                return
+            }
             val semester = semester
             val boxGradesRef = boxGrades.asReference()
             val recyclerManagerRef = recyclerManager?.asReference()
@@ -766,7 +774,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
                 } else {
-                    longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail).show()
+                    longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail)
                 }
 
                 recyclerManagerRef?.invoke()?.setRefreshing(false)
@@ -840,39 +848,38 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             update()
         }
 
-        fun update() {
+        fun update() { // FIXME: snackbar is automatically hidden by clicking on action
             if (containerView == null || (showingResult == syncLastResult &&
                     statusSnackbar?.isShownOrQueued != false)) return
 
             when (syncLastResult) {
                 FAIL_UNKNOWN -> statusSnackbar = indefiniteSnackbar(
-                        boxGrades, R.string.snackbar_grades_refresh_fail_unknown
-                ).apply {
-                    setAction(R.string.snackbar_action_grades_retry) {
-                        layoutGrades.requestSyncWithLoading()
-                    }
-                    show()
-                }
+                        boxGrades,
+                        R.string.snackbar_grades_refresh_fail_unknown,
+                        R.string.snackbar_action_grades_retry,
+                        { layoutGrades.requestSyncWithLoading() }
+                )
                 FAIL_CONNECT -> statusSnackbar = indefiniteSnackbar(
-                        boxGrades, R.string.snackbar_grades_refresh_fail_connect
-                ).apply {
-                    setAction(R.string.snackbar_action_grades_retry) {
-                        layoutGrades.requestSyncWithLoading()
-                    }
-                    show()
-                }
+                        boxGrades,
+                        R.string.snackbar_grades_refresh_fail_connect,
+                        R.string.snackbar_action_grades_retry,
+                        { layoutGrades.requestSyncWithLoading() }
+                )
                 FAIL_LOGIN -> statusSnackbar = indefiniteSnackbar(
-                        boxGrades, R.string.snackbar_grades_refresh_fail_login
-                ).apply {
-                    setAction(R.string.snackbar_action_grades_logout) { layoutLogin.logout() }
-                    show()
-                }
+                        boxGrades,
+                        R.string.snackbar_grades_refresh_fail_login,
+                        R.string.snackbar_action_grades_logout,
+                        { layoutLogin.logout() }
+                )
                 null -> statusSnackbar = indefiniteSnackbar(
-                        boxGrades, R.string.snackbar_grades_fail_no_account
-                ).apply { show() }
-                else -> statusSnackbar?.apply {
-                    dismiss()
-                    statusSnackbar = null
+                        boxGrades,
+                        R.string.snackbar_grades_fail_no_account
+                )
+                else -> {
+                    statusSnackbar?.apply {
+                        dismiss()
+                        statusSnackbar = null
+                    }
                 }
             }
 

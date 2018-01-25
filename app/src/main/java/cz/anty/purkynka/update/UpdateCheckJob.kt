@@ -23,7 +23,7 @@ import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import cz.anty.purkynka.BuildConfig
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.JavaExtensions.runIf
+import eu.codetopic.java.utils.JavaExtensions.alsoIf
 
 /**
  * @author anty
@@ -69,7 +69,7 @@ class UpdateCheckJob : Job() {
     }
 
     override fun onRunJob(params: Params): Result {
-        return fetchUpdates().runIf({
+        return fetchUpdates().alsoIf({
             it == Result.SUCCESS && UpdateData.instance.latestVersionCode != BuildConfig.VERSION_CODE
         }) {
             Log.w(LOG_TAG, "onRunJob(params=$params) -> Check for update -> Found update ->" +

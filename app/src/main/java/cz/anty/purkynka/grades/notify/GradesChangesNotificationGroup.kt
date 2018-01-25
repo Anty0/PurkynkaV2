@@ -34,7 +34,7 @@ import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.ui.GradeActivity
 import cz.anty.purkynka.grades.ui.GradeItem
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.JavaExtensions.runIfNull
+import eu.codetopic.java.utils.JavaExtensions.alsoIfNull
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.ids.Identifiers
@@ -116,11 +116,11 @@ class GradesChangesNotificationGroup :
 
     override fun handleContentIntent(context: Context, id: NotificationId,
                                      channel: NotificationChannel, data: Bundle) {
-        val grade = readDataGrade(data).runIfNull {
+        val grade = readDataGrade(data).alsoIfNull {
             Log.e(LOG_TAG, "handleContentIntent(id=$id, channel=$channel, data=$data)",
                     IllegalArgumentException("Data doesn't contains grade"))
         }
-        val changes = readDataChanges(data).runIfNull {
+        val changes = readDataChanges(data).alsoIfNull {
             Log.e(LOG_TAG, "handleContentIntent(id=$id, channel=$channel, data=$data)",
                     IllegalArgumentException("Failed to read grade changes"))
         }
@@ -229,7 +229,7 @@ class GradesChangesNotificationGroup :
                                            channel: NotificationChannel,
                                            data: Map<NotificationId, Bundle>): NotificationCompat.Builder {
         val allGrades = data.values.mapNotNull {
-            readDataGrade(it).runIfNull {
+            readDataGrade(it).alsoIfNull {
                 Log.w(LOG_TAG, "Data doesn't contains grade")
             }
         }

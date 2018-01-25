@@ -21,7 +21,7 @@
 buildscript {
     ext.anko_version='0.10.4'
     ext.support_libs_version = '27.0.2'
-    ext.kotlin_version = '1.2.20'
+    ext.kotlin_version = '1.2.21'
     ext.kotlin_serialization_version = '0.4'
     repositories {
         google()

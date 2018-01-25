@@ -134,9 +134,11 @@
     <string name="snackbar_wifi_logging_fail">Failed to sent login request to wifi.</string>
     <string name="snackbar_wifi_logging_success">Successfully sent login request to wifi.</string>
     <string name="snackbar_wifi_logging_fail_no_page">Failed to sent login request to wifi, you are probably still logged in.</string>
+    <string name="snackbar_updates_fetch_fail">Failed to check for updates.</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>
+    <string name="snackbar_action_updates_retry">Retry</string>
 
     <string name="snackbar_invalid_account_name">Invalid account name</string>
     <string name="snackbar_login_failed">Login failed, account with same name probably exists</string>
