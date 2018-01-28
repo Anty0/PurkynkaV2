@@ -16,18 +16,27 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.update
+package cz.anty.purkynka.update.notify
 
-import com.evernote.android.job.Job
-import com.evernote.android.job.JobCreator
+import android.app.NotificationChannelGroup
+import android.content.Context
+import android.os.Build
+import android.support.annotation.RequiresApi
+import cz.anty.purkynka.R
+import eu.codetopic.utils.notifications.manager2.util.NotifyGroup
 
 /**
  * @author anty
  */
-class UpdateCheckJobCreator : JobCreator {
+class UpdateNotifyGroup : NotifyGroup(ID, UpdateNotifyChannel.ID) {
 
-    override fun create(tag: String): Job? = when(tag) {
-        UpdateCheckJob.TAG -> UpdateCheckJob()
-        else -> null
+    companion object {
+
+        private const val LOG_TAG = "UpdateNotifyGroup"
+        const val ID = "cz.anty.purkynka.update.notify.$LOG_TAG"
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun createGroup(context: Context): NotificationChannelGroup =
+            NotificationChannelGroup(id, context.getText(R.string.notify_group_update))
 }

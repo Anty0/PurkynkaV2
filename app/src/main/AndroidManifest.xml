@@ -92,10 +92,17 @@
             android:label="@string/title_activity_grade"
             android:theme="@style/AppTheme.NoActionBar.Grades"/>
 
+        <receiver
+            android:name=".update.sync.UpdateCheckJobScheduleReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs"/>
+
         <service
             android:name=".account.service.AuthenticatorService"
             android:enabled="true"
-            android:exported="false">
+            android:exported="false"
+            android:process=":accounts">
 
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -118,6 +125,16 @@
                 android:resource="@xml/sync_grades" />
         </service>
 
+        <provider
+            android:name=".account.save.ActiveAccountProvider"
+            android:authorities="cz.anty.purkynka.account.active"
+            android:exported="false"
+            android:process=":providers" />
+        <provider
+            android:name=".update.save.UpdateDataProvider"
+            android:authorities="cz.anty.purkynka.update.data"
+            android:exported="false"
+            android:process=":providers" />
         <provider
             android:name=".grades.save.GradesProvider"
             android:authorities="cz.anty.purkynka.grades.data"

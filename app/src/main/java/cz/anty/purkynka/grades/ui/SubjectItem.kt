@@ -24,8 +24,6 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
-import android.widget.TextView
-import android.widget.Toast
 import cz.anty.purkynka.R
 import cz.anty.purkynka.Utils.colorForValue
 import cz.anty.purkynka.grades.data.Subject
@@ -34,7 +32,6 @@ import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.java.utils.JavaExtensions.format
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.notifications.manager.data.NotificationId
 import eu.codetopic.utils.AndroidExtensions.baseActivity
 import kotlinx.android.synthetic.main.item_subject.*
 import kotlinx.serialization.Serializable

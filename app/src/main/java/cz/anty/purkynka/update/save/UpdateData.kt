@@ -16,16 +16,18 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.update
+package cz.anty.purkynka.update.save
 
 import android.content.Context
 import android.content.SharedPreferences
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.PrefNames.*
+import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.preference.IntPreference
-import eu.codetopic.utils.data.preferences.preference.StringPreference
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
+import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
+import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 
@@ -33,11 +35,8 @@ import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
  * @author anty
  */
 class UpdateData private constructor(context: Context) :
-        VersionedPreferencesData<SharedPreferences>(
-                context,
-                BasicSharedPreferencesProvider(context, FILE_NAME_UPDATE_DATA),
-                SAVE_VERSION
-        ) {
+        PreferencesData<ContentProviderSharedPreferences>(context,
+                ContentProviderPreferencesProvider(context, UpdateDataProvider.AUTHORITY)) {
 
     companion object : PreferencesCompanionObject<UpdateData>(
             UpdateData.LOG_TAG,
@@ -46,14 +45,15 @@ class UpdateData private constructor(context: Context) :
     ) {
 
         private const val LOG_TAG = "UpdateData"
-        private const val SAVE_VERSION = 0
-    }
+        internal const val SAVE_VERSION = 0
 
-    @Synchronized
-    override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
-        when (from) {
-            -1 -> {
-                // First start, nothing to do
+        @Suppress("UNUSED_PARAMETER")
+        internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
+            // This function will be executed by provider in provider process
+            when (from) {
+                -1 -> {
+                    // First start, nothing to do
+                }
             } // No more versions yet
         }
     }
@@ -64,17 +64,20 @@ class UpdateData private constructor(context: Context) :
             -1
     )
 
-    var latestVersionCode by IntPreference(
-            LATEST_VERSION_CODE,
-            accessProvider,
-            BuildConfig.VERSION_CODE
-    )
+    val latestVersionCode: Int
+        get() = preferences.getInt(LATEST_VERSION_CODE, BuildConfig.VERSION_CODE)
 
-    var latestVersionName by StringPreference(
-            LATEST_VERSION_NAME,
-            accessProvider,
-            BuildConfig.VERSION_NAME
-    )
+    val latestVersionName: String
+        get() = preferences.getString(LATEST_VERSION_NAME, BuildConfig.VERSION_NAME)
+                ?: BuildConfig.VERSION_NAME
+
+    val latestVersion: Pair<Int, String>
+        get() = latestVersionCode to latestVersionName
+
+    fun setLatestVersion(code: Int, name: String) = edit {
+        putInt(LATEST_VERSION_CODE, code)
+        putString(LATEST_VERSION_NAME, name)
+    }
 
     private class Getter : PreferencesGetterAbs<UpdateData>() {
 

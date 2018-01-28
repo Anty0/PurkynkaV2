@@ -18,7 +18,8 @@
 
 package cz.anty.purkynka.grades.notify
 
-import android.app.NotificationChannelGroup
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -27,8 +28,9 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.Constants.ICON_GRADES
 import cz.anty.purkynka.MainActivity
-
 import cz.anty.purkynka.R
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
+import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.ui.GradeActivity
@@ -38,10 +40,10 @@ import eu.codetopic.java.utils.JavaExtensions.alsoIfNull
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.ids.Identifiers
-import eu.codetopic.utils.notifications.manager.data.NotificationId
-import eu.codetopic.utils.notifications.manager.util.NotificationChannel
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
-import eu.codetopic.utils.notifications.manager.util.SummarizedNotificationGroup
+import eu.codetopic.utils.notifications.manager2.data.NotifyId
+import eu.codetopic.utils.notifications.manager2.util.NotifyGroup
+import eu.codetopic.utils.notifications.manager2.util.SummarizedNotifyChannel
 import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
@@ -50,12 +52,11 @@ import kotlin.coroutines.experimental.buildSequence
 /**
  * @author anty
  */
-class GradesChangesNotificationGroup :
-        SummarizedNotificationGroup(ID, true) {
+class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
 
     companion object {
 
-        private const val LOG_TAG = "GradesChangesNotificationGroup"
+        private const val LOG_TAG = "GradesChangesNotifyChannel"
         const val ID = "GRADES_CHANGES"
 
         private val idType = Identifiers.Type(ID)
@@ -107,25 +108,40 @@ class GradesChangesNotificationGroup :
                 }
     }
 
-    override fun nextId(context: Context, channel: NotificationChannel,
+    override fun nextId(context: Context, group: NotifyGroup,
                         data: Bundle): Int = idType.nextId()
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun createGroup(context: Context): NotificationChannelGroup =
-            NotificationChannelGroup(id, context.getText(R.string.notify_group_name_grades_changes))
+    override fun createChannel(context: Context, combinedId: String): NotificationChannel =
+            NotificationChannel(
+                    combinedId,
+                    context.getText(R.string.notify_channel_name_grades_changes),
+                    NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                enableLights(true)
+                enableVibration(true)
+                setBypassDnd(false)
+                setShowBadge(true)
+                this.lightColor = ContextCompat.getColor(context, R.color.colorPrimaryGrades)
+            }
 
-    override fun handleContentIntent(context: Context, id: NotificationId,
-                                     channel: NotificationChannel, data: Bundle) {
+    override fun handleContentIntent(context: Context, group: NotifyGroup,
+                                     notifyId: NotifyId, data: Bundle) {
+        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group, data=$data)",
+                    IllegalArgumentException("Group is not AccountNotifyGroup, " +
+                            "can't change ActiveAccount to correct account."))
+        }
         val grade = readDataGrade(data).alsoIfNull {
-            Log.e(LOG_TAG, "handleContentIntent(id=$id, channel=$channel, data=$data)",
+            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group, data=$data)",
                     IllegalArgumentException("Data doesn't contains grade"))
         }
         val changes = readDataChanges(data).alsoIfNull {
-            Log.e(LOG_TAG, "handleContentIntent(id=$id, channel=$channel, data=$data)",
+            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group, data=$data)",
                     IllegalArgumentException("Failed to read grade changes"))
         }
 
-        // TODO: change active account to correct account
+        if (account != null) ActiveAccount.set(account)
 
         if (grade != null) {
             context.startActivities(arrayOf(
@@ -137,16 +153,22 @@ class GradesChangesNotificationGroup :
         }
     }
 
-    override fun handleSummaryContentIntent(context: Context, id: NotificationId,
-                                            channel: NotificationChannel,
-                                            data: Map<NotificationId, Bundle>) {
-        // TODO: change active account to correct account
+    override fun handleSummaryContentIntent(context: Context, group: NotifyGroup,
+                                            notifyId: NotifyId, data: Map<NotifyId, Bundle>) {
+        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+            Log.e(LOG_TAG, "handleSummaryContentIntent(id=$notifyId, group=$group, data=$data)",
+                    IllegalArgumentException("Group is not AccountNotifyGroup, " +
+                            "can't change ActiveAccount to correct account."))
+        }
+
+        if (account != null) ActiveAccount.set(account)
+
         MainActivity.start(context, GradesFragment::class.java)
     }
 
     private fun buildNotificationBase(context: Context,
-                                      channel: NotificationChannel): NotificationCompat.Builder =
-            NotificationCompat.Builder(context, channel.id).apply {
+                                      group: NotifyGroup): NotificationCompat.Builder =
+            NotificationCompat.Builder(context, combinedIdFor(group)).apply {
                 //setContentTitle(context.getFormattedText(R.string.notify_grade_new_title,
                 //            grade.valueToShow, grade.subjectShort))
                 //setContentText(context.getFormattedText(R.string.notify_grade_new_text, grade.teacher))
@@ -168,6 +190,7 @@ class GradesChangesNotificationGroup :
                 //setColorized(false)
 
                 setDefaults(NotificationCompat.DEFAULT_ALL)
+                priority = NotificationCompat.PRIORITY_HIGH
 
                 setAutoCancel(false) // will be canceled by GradesFragment
                 setCategory(NotificationCompat.CATEGORY_EVENT)
@@ -182,11 +205,9 @@ class GradesChangesNotificationGroup :
                         .setHintContentIntentLaunchesActivity(true))
             }
 
-    override fun createNotification(context: Context,
-                                    id: NotificationId,
-                                    channel: NotificationChannel,
+    override fun createNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,
                                     data: Bundle): NotificationCompat.Builder =
-            buildNotificationBase(context, channel).apply {
+            buildNotificationBase(context, group).apply {
                 val grade = readDataGrade(data)
                         ?: throw IllegalArgumentException("Data doesn't contains grade")
                 when (data.getString(PARAM_TYPE)) {
@@ -205,7 +226,7 @@ class GradesChangesNotificationGroup :
                         val changes = data.getString(PARAM_CHANGES_LIST)
                                 ?.let { JSON.parse(StringSerializer.list, it) }
                                 ?: throw IllegalArgumentException(
-                                "Data doesn't contains grade's changes list")
+                                        "Data doesn't contains grade's changes list")
 
 
                         // TODO: show changes
@@ -224,10 +245,8 @@ class GradesChangesNotificationGroup :
                 }
             }
 
-    override fun createSummaryNotification(context: Context,
-                                           id: NotificationId,
-                                           channel: NotificationChannel,
-                                           data: Map<NotificationId, Bundle>): NotificationCompat.Builder {
+    override fun createSummaryNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,
+                                           data: Map<NotifyId, Bundle>): NotificationCompat.Builder {
         val allGrades = data.values.mapNotNull {
             readDataGrade(it).alsoIfNull {
                 Log.w(LOG_TAG, "Data doesn't contains grade")
@@ -235,7 +254,7 @@ class GradesChangesNotificationGroup :
         }
         val subjects = allGrades.map { it.subjectShort }.distinct().joinToString(", ")
 
-        return buildNotificationBase(context, channel).apply {
+        return buildNotificationBase(context, group).apply {
             setContentTitle(context.getText(R.string.notify_grade_summary_title))
             setContentText(context.getFormattedText(R.string.notify_grade_summary_text, subjects))
             setStyle(NotificationCompat.InboxStyle()

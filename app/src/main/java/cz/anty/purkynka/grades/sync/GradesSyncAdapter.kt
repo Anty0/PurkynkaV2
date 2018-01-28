@@ -25,21 +25,22 @@ import android.os.Bundle
 import cz.anty.purkynka.Constants
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
-import cz.anty.purkynka.account.notify.AccountNotifyChannel
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesFetcher
 import cz.anty.purkynka.grades.load.GradesParser
-import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
+import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.save.*
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.accountManager
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.bundle.BundleBuilder
 import eu.codetopic.utils.broadcast.LocalBroadcast
-import eu.codetopic.utils.notifications.manager.NotificationsManager
+import eu.codetopic.utils.notifications.manager2.create.MultiNotificationBuilder
+import eu.codetopic.utils.notifications.manager2.create.MultiNotificationBuilder.Companion.requestShowAll
 import org.jetbrains.anko.bundleOf
 import java.io.IOException
 
@@ -62,7 +63,7 @@ class GradesSyncAdapter(context: Context) :
             Log.d(LOG_TAG, "loginDataChanged(intent=$intent)")
 
             val loginData = GradesLoginData.loginData
-            val accountManager = AccountManager.get(context)
+            val accountManager = context.accountManager
 
             Accounts.getAllWIthIds(accountManager).forEach {
                 val accountId = it.key
@@ -144,9 +145,6 @@ class GradesSyncAdapter(context: Context) :
             if (!GradesFetcher.isLoggedIn(cookies))
                 throw WrongLoginDataException("Failed to login user with provided credentials")
 
-            val gradesHtml = GradesFetcher.getGradesElements(cookies, semester)
-            val grades = GradesParser.parseGrades(gradesHtml)
-
             val gradesMap = data.getGrades(accountId).toMutableMap()
 
             semestersToFetch.forEach {
@@ -200,14 +198,21 @@ class GradesSyncAdapter(context: Context) :
         //removed.addAll(oldGrades.filter { !newGrades.contains(it) })
 
         val allChanges = added.map {
-            GradesChangesNotificationGroup.dataForNewGrade(it)
+            GradesChangesNotifyChannel.dataForNewGrade(it)
         } + modified.map {
-            GradesChangesNotificationGroup.dataForModifiedGrade(it.first, it.second)
+            GradesChangesNotifyChannel.dataForModifiedGrade(it.first, it.second)
         }
 
         if (allChanges.isEmpty()) return
 
-        NotificationsManager.requestNotifyAll(context, GradesChangesNotificationGroup.ID,
-                AccountNotifyChannel.idFor(accountId), allChanges)
+        MultiNotificationBuilder.create(
+                groupId = AccountNotifyGroup.idFor(accountId),
+                channelId = GradesChangesNotifyChannel.ID,
+                init = {
+                    persistent = true
+                    refreshable = true
+                    addData(allChanges)
+                }
+        ).requestShowAll(context)
     }
 }

@@ -28,6 +28,9 @@ import com.evernote.android.job.Job
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
+import cz.anty.purkynka.update.load.UpdateFetcher
+import cz.anty.purkynka.update.save.UpdateData
+import cz.anty.purkynka.update.sync.UpdateCheckJob
 import eu.codetopic.java.utils.JavaExtensions.alsoIf
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.getFormattedText

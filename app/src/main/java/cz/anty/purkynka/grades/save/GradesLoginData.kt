@@ -44,6 +44,7 @@ class GradesLoginData private constructor(context: Context) :
 
         val loginData get() = instance.loginData
 
+        @Suppress("UNUSED_PARAMETER")
         internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
             // This function will be executed by provider in provider process
             when (from) {

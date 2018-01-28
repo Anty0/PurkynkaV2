@@ -41,6 +41,8 @@ object Constants {
     val ICON_WEB = GoogleMaterial.Icon.gmd_public
     val ICON_DONATE = GoogleMaterial.Icon.gmd_monetization_on
 
+    val ICON_UPDATE = GoogleMaterial.Icon.gmd_system_update
+
     //---------------------------------------------------------------------
 
     const val URL_FACEBOOK_PAGE = "https://www.facebook.com/aplikacepurkynka/" // TODO: 6/16/17 add url; use firebase remote config

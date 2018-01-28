@@ -20,12 +20,14 @@ package cz.anty.purkynka.account.ui
 
 import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
+import eu.codetopic.utils.AndroidExtensions.accountManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
@@ -51,7 +53,7 @@ class AccountCreateActivity : ModularActivity(ToolbarModule(), BackButtonModule(
 
         butCreate.setOnClickListener(::login)
 
-        accountManager = AccountManager.get(this)
+        accountManager = (this as Context).accountManager
         accountAuthenticatorResponse =
                 intent.getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)
 
@@ -66,7 +68,7 @@ class AccountCreateActivity : ModularActivity(ToolbarModule(), BackButtonModule(
                     return
                 }
 
-        val account = Accounts.add(accountManager, userName)
+        val account = Accounts.add(this, accountManager, userName)
         if (account != null) {
             val intent = Intent()
                     .putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name)

@@ -25,7 +25,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cz.anty.purkynka.R
-import cz.anty.purkynka.account.ActiveAccount
+import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher.LoginResult.*
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
@@ -63,6 +63,18 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private var userLoggedIn = false
     private var username = ""
 
+    private val activeAccountChangeReceiver = broadcast { _, _ ->
+        holder.showLoading()
+        val holderRef = holder.asReference()
+
+        val job = updateData()
+        launch(UI) {
+            job.join()
+
+            holderRef().hideLoading()
+        }
+    }
+
     private val wifiLoginDataChangeReceiver = broadcast { _, _ -> updateData() }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -90,6 +102,10 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         super.onStart()
 
         LocalBroadcast.registerReceiver(
+                activeAccountChangeReceiver,
+                intentFilter(ActiveAccount.getter)
+        )
+        LocalBroadcast.registerReceiver(
                 wifiLoginDataChangeReceiver,
                 intentFilter(WifiLoginData.getter)
         )
@@ -99,6 +115,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     override fun onStop() {
         LocalBroadcast.unregisterReceiver(wifiLoginDataChangeReceiver)
+        LocalBroadcast.unregisterReceiver(activeAccountChangeReceiver)
 
         super.onStop()
     }
@@ -142,6 +159,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun onEnableClick(v: View) {
         val accountId = accountId ?:
                 return longSnackbar(boxScrollView, R.string.snackbar_no_account_enable).show()
@@ -159,6 +177,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun onDisableClick(v: View) {
         val accountId = accountId ?:
                 return longSnackbar(boxScrollView, R.string.snackbar_no_account_disable).show()

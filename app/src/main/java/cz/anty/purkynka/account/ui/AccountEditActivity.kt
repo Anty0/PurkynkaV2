@@ -20,12 +20,14 @@ package cz.anty.purkynka.account.ui
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
+import eu.codetopic.utils.AndroidExtensions.accountManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
@@ -51,7 +53,7 @@ class AccountEditActivity : ModularActivity(ToolbarModule(), BackButtonModule())
 
         butSave.setOnClickListener(::save)
 
-        accountManager = AccountManager.get(this)
+        accountManager = (this as Context).accountManager
         account = intent.getParcelableExtra(KEY_ACCOUNT)
 
         if (savedInstanceState == null) inAccountName.setText(account.name)
@@ -65,7 +67,7 @@ class AccountEditActivity : ModularActivity(ToolbarModule(), BackButtonModule())
                     return
                 }
 
-        val newAccount = Accounts.rename(accountManager, account, userName)
+        val newAccount = Accounts.rename(this, accountManager, account, userName)
         if (newAccount != null) {
             val intent = Intent()
                     .putExtra(AccountManager.KEY_ACCOUNT_NAME, newAccount.name)

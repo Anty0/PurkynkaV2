@@ -52,12 +52,19 @@ class GradesUiData private constructor(context: Context) :
         } // No more versions yet
     }
 
-    var lastSort by EnumPreference( // TODO: save by accountId
+    private var lastSort = EnumPreference(
             LAST_SORT_GRADES,
             Sort::class,
             accessProvider,
             Sort.GRADES_DATE
     )
+
+    fun getLastSort(accountId: String) =
+            lastSort.getValue(this, accountId)
+
+    fun setLastSort(accountId: String, value: Sort) {
+        lastSort.setValue(this, accountId, value)
+    }
 
     enum class Sort {
         GRADES_DATE, GRADES_VALUE, GRADES_SUBJECT,

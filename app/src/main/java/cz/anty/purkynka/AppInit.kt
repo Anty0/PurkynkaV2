@@ -18,21 +18,22 @@
 
 package cz.anty.purkynka
 
-import android.app.Application
+import android.content.Context
 import android.support.multidex.MultiDexApplication
 import android.support.v4.content.ContextCompat
-import com.evernote.android.job.JobConfig
 import com.evernote.android.job.JobManager
 import cz.anty.purkynka.account.Accounts
-import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
+import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.settings.SettingsData
-import cz.anty.purkynka.update.UpdateCheckJob
-import cz.anty.purkynka.update.UpdateCheckJobCreator
-import cz.anty.purkynka.update.UpdateData
+import cz.anty.purkynka.update.notify.UpdateNotifyChannel
+import cz.anty.purkynka.update.notify.UpdateNotifyGroup
+import cz.anty.purkynka.update.sync.UpdateCheckJob
+import cz.anty.purkynka.update.sync.UpdateCheckJobCreator
+import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
 import eu.codetopic.utils.ui.container.adapter.dashboard.DashboardData
@@ -41,10 +42,13 @@ import eu.codetopic.java.utils.log.LogsHandler
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.log.Logger
 import eu.codetopic.java.utils.log.base.Priority
-import eu.codetopic.utils.UtilsBase.ProcessProfile
 import eu.codetopic.utils.UtilsBase
-import eu.codetopic.utils.broadcast.BroadcastsConnector
-import eu.codetopic.utils.notifications.manager.NotificationsManager
+import eu.codetopic.utils.UtilsBase.PARAM_INITIALIZE_UTILS
+import eu.codetopic.utils.UtilsBase.processNamePrimary
+import eu.codetopic.utils.UtilsBase.processNameProviders
+import eu.codetopic.utils.UtilsBase.processNameNotifyManager
+import eu.codetopic.utils.notifications.manager2.NotifyManager
+import org.jetbrains.anko.bundleOf
 
 
 /**
@@ -53,25 +57,78 @@ import eu.codetopic.utils.notifications.manager.NotificationsManager
  */
 class AppInit : MultiDexApplication() {
 
+    companion object {
+
+        const val PROCESS_NAME_SYNCS = ":syncs"
+        const val PROCESS_NAME_ACCOUNTS = ":accounts"
+
+        val Context.processNameSyncs: String
+            get() = processNamePrimary + PROCESS_NAME_SYNCS
+
+        val Context.processNameAccounts: String
+            get() = processNamePrimary + PROCESS_NAME_ACCOUNTS
+     }
+
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize stuff, that should be initialized before anything else
-        initAllProcesses()
+        // Prepare utils and processes params
+        UtilsBase.prepare(this) {
+            addParams(
+                    // Primary process
+                    processNamePrimary to bundleOf(
+                            PARAM_INITIALIZE_UTILS to true
+                    ),
+                    // Data management process (multi-process data access support)
+                    processNameProviders to bundleOf(
+                            PARAM_INITIALIZE_UTILS to true
+                    ),
+                    // Data synchronization process
+                    processNameSyncs to bundleOf(
+                            PARAM_INITIALIZE_UTILS to true
+                    ),
+                    // NotifyManager's process
+                    processNameNotifyManager to bundleOf(
+                            PARAM_INITIALIZE_UTILS to true
+                    ),
+                    // AuthenticatorService's process
+                    processNameAccounts to bundleOf(
+                            PARAM_INITIALIZE_UTILS to true
+                    )
+            )
+        }
+
+        val isInSelfProcess = UtilsBase.Process.name in arrayOf(
+                processNamePrimary,
+                processNameProviders,
+                processNameSyncs,
+                processNameNotifyManager,
+                processNameAccounts
+        )
+
+        if (isInSelfProcess) {
+            // Initialize stuff, that should be initialized before anything else
+            initAllProcessesBeforeUtils()
+        }
 
         // Initialize utils base (my own android application framework; brain of this application)
-        UtilsBase.initialize(this,
-                ProcessProfile(packageName, true,
-                        Runnable(::initProcessPrimary)), // Primary process
-                ProcessProfile("$packageName:providers", true,
-                        Runnable(::initProcessProviders)), // Data management process (multi-process data access support)
-                ProcessProfile("$packageName:syncs", true,
-                        Runnable(::initProcessSyncs)) // Data synchronization process
-                // ProcessProfile(app.packageName + ":acra", DISABLE_UTILS), // ACRA reporting process
-        )
+        UtilsBase.initialize(this) { processName, _ ->
+            if (isInSelfProcess) initAllProcesses()
+
+            when (processName) {
+                processNamePrimary -> initProcessPrimary()
+                processNameProviders -> initProcessProviders()
+                processNameSyncs -> initProcessSyncs()
+                processNameNotifyManager -> initProcessNotifyManager()
+                processNameAccounts -> initProcessAccounts()
+            }
+        }
+
+
+        if (isInSelfProcess) postInitAllProcesses()
     }
 
-    private fun initAllProcesses() {
+    private fun initAllProcessesBeforeUtils() {
         // Setup uncaught exception handler
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, ex ->
@@ -92,7 +149,20 @@ class AppInit : MultiDexApplication() {
             override val filterPriorities: Array<Priority>?
                 get() = arrayOf(Priority.ERROR)
         })
+    }
 
+    private fun initAllProcesses() {
+        // Prepare broadcasts connections (very helpful tool)
+        initBroadcastConnections()
+
+        // Initialize accounts (create default account, initialize accounts channels, etc.)
+        initAccounts()
+
+        // Init notifications channels (prepare them for NotifyManager)
+        initNotifyManagerChannels()
+    }
+
+    private fun postInitAllProcesses() {
         // Set color scheme of loading in RecyclerView
         RecyclerInflater.setDefaultSwipeSchemeColors(
                 ContextCompat.getColor(this, R.color.colorPrimary),
@@ -105,12 +175,6 @@ class AppInit : MultiDexApplication() {
     }
 
     private fun initProcessPrimary() {
-        // Prepare broadcasts connections (very helpful tool)
-        initBroadcastConnections()
-
-        // Initialize accounts (create default account, initialize accounts channels, etc.)
-        Accounts.initialize(this)
-
         // Initialize data providers required in this process
         MainData.initialize(this)
         UpdateData.initialize(this)
@@ -123,31 +187,36 @@ class AppInit : MultiDexApplication() {
         // Initialize data provider of dashboard framework
         DashboardData.initialize(this)
 
-        // Init notifications groups (prepare them for NotificationsManager)
-        NotificationsManager.initGroups(
-                this,
-                GradesChangesNotificationGroup()
-        )
-
-        initJobManager()
+        // Request init of Evernote's JobManager used here for app updates checking
+        requestInitJobManager()
 
         // Initialize sync adapters
         GradesSyncAdapter.init(this)
     }
 
     private fun initProcessProviders() {
-        // Prepare broadcasts connections (very helpful tool)
-        initBroadcastConnections()
+        // Initialize data providers required in this process
+        //  Nothing to initialize in this process
     }
 
     private fun initProcessSyncs() {
-        // Prepare broadcasts connections (very helpful tool)
-        initBroadcastConnections()
-
         // Initialize data providers required in this process
+        UpdateData.initialize(this)
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
-        //GradesDataDifferences.initialize(this)
+
+        // Init Evernote's JobManager used here for app updates checking
+        initJobManager()
+    }
+
+    private fun initProcessNotifyManager() {
+        // Initialize data providers required in this process
+        //  Nothing to initialize in this process
+    }
+
+    private fun initProcessAccounts() {
+        // Initialize data providers required in this process
+        //  Nothing to initialize in this process
     }
 
     private fun initBroadcastConnections() {
@@ -155,12 +224,34 @@ class AppInit : MultiDexApplication() {
     }
 
     private fun initJobManager() {
-        // JobConfig.addLogger() // TODO: add own logger to JobConfig
-        // JobConfig.setLogcatEnabled(false)
+        EvernoteJobManagerExtension.install()
 
-        JobManager.create(this) // TODO: add here job creators
+        JobManager.create(this)
                 .addJobCreator(UpdateCheckJobCreator())
 
         UpdateCheckJob.schedule()
+    }
+
+    private fun requestInitJobManager() {
+        UpdateCheckJob.requestSchedule(this)
+    }
+
+    private fun initAccounts() {
+        Accounts.initialize(
+                this,
+                GradesChangesNotifyChannel.ID
+        )
+    }
+
+    private fun initNotifyManagerChannels() {
+        NotifyManager.installGroups(
+                this,
+                UpdateNotifyGroup()
+        )
+        NotifyManager.installChannels(
+                this,
+                UpdateNotifyChannel(),
+                GradesChangesNotifyChannel()
+        )
     }
 }

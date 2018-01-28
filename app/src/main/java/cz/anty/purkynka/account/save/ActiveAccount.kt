@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.account
+package cz.anty.purkynka.account.save
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -24,9 +24,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import cz.anty.purkynka.PrefNames
-import cz.anty.purkynka.PrefNames.FILE_NAME_ACTIVE_ACCOUNT_DATA
-import eu.codetopic.utils.data.preferences.VersionedPreferencesData
-import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
+import cz.anty.purkynka.account.Accounts
+import eu.codetopic.utils.AndroidExtensions.accountManager
+import eu.codetopic.utils.data.preferences.PreferencesData
+import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
+import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 
@@ -34,11 +36,8 @@ import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
  * @author anty
  */
 class ActiveAccount private constructor(context: Context) :
-        VersionedPreferencesData<SharedPreferences>(
-                context,
-                BasicSharedPreferencesProvider(context, FILE_NAME_ACTIVE_ACCOUNT_DATA),
-                SAVE_VERSION
-        ) {
+        PreferencesData<ContentProviderSharedPreferences>(context,
+                ContentProviderPreferencesProvider(context, ActiveAccountProvider.AUTHORITY)) {
 
     companion object :
             PreferencesCompanionObject<ActiveAccount>(
@@ -48,7 +47,17 @@ class ActiveAccount private constructor(context: Context) :
             ) {
 
         private const val LOG_TAG = "ActiveAccount"
-        private const val SAVE_VERSION = 0
+        internal const val SAVE_VERSION = 0
+
+        @Suppress("UNUSED_PARAMETER")
+        internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
+            // This function will be executed by provider in provider process
+            when (from) {
+                -1 -> {
+                    // First start, nothing to do
+                }
+            } // No more versions yet
+        }
 
         fun get(): Account? =
                 instance.activeAccount
@@ -68,9 +77,9 @@ class ActiveAccount private constructor(context: Context) :
         }
     }
 
-    private val accountManager: AccountManager = AccountManager.get(context)
+    private val accountManager: AccountManager = context.accountManager
 
-    var activeAccount: Account?
+    var activeAccount: Account? // TODO: Maybe use account id for saving which account is active
         get() {
             val avAccounts = Accounts.getAll(accountManager)
             val useFirstAccount: () -> Account? = {
@@ -107,15 +116,6 @@ class ActiveAccount private constructor(context: Context) :
 
     fun setActiveAccount(accountName: String?) {
         edit { putString(PrefNames.ACTIVE_ACCOUNT_NAME, accountName) }
-    }
-
-    @Synchronized
-    override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
-        when (from) {
-            -1 -> {
-                // First start, nothing to do
-            } // No more versions yet
-        }
     }
 
     private class Getter : PreferencesGetterAbs<ActiveAccount>() {

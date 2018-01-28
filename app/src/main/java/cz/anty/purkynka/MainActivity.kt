@@ -48,7 +48,7 @@ import cz.anty.purkynka.Constants.ICON_TIMETABLES
 import cz.anty.purkynka.Constants.ICON_WEB
 import cz.anty.purkynka.Constants.ICON_WIFI_LOGIN
 import cz.anty.purkynka.account.Accounts
-import cz.anty.purkynka.account.ActiveAccount
+import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.account.ui.AccountEditActivity
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.debug.DebugActivity
@@ -88,10 +88,11 @@ class MainActivity : NavigationActivity() {
     override val mainFragmentClass: Class<out Fragment>?
         get() = DashboardFragment::class.java
 
-    private val accountsChangedReceiver: BroadcastReceiver =
-            broadcast { _, _ ->
-                invalidateNavigationMenu()
-            }
+    private val activeAccountChangeReceiver: BroadcastReceiver =
+            broadcast { _, _ -> invalidateNavigationMenu() }
+
+    private val accountsChangeReceiver: BroadcastReceiver =
+            broadcast { _, _ -> invalidateNavigationMenu() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar) // TODO: Animated app splash screen
@@ -124,19 +125,24 @@ class MainActivity : NavigationActivity() {
     override fun onResume() {
         super.onResume()
 
-        LocalBroadcast.registerReceiver(
-                accountsChangedReceiver,
+        registerReceiver(
+                accountsChangeReceiver,
                 intentFilter(
                         Accounts.ACTION_ACCOUNTS_CHANGED,
                         ActiveAccount.getter
                 )
+        )
+        LocalBroadcast.registerReceiver(
+                activeAccountChangeReceiver,
+                intentFilter(ActiveAccount.getter)
         )
 
         invalidateNavigationMenu()
     }
 
     override fun onPause() {
-        LocalBroadcast.unregisterReceiver(accountsChangedReceiver)
+        LocalBroadcast.unregisterReceiver(activeAccountChangeReceiver)
+        unregisterReceiver(accountsChangeReceiver)
 
         super.onPause()
     }

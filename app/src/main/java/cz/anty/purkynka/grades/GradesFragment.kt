@@ -39,13 +39,13 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.Constants.ICON_GRADES
 
 import cz.anty.purkynka.R
-import cz.anty.purkynka.account.ActiveAccount
-import cz.anty.purkynka.account.notify.AccountNotifyChannel
+import cz.anty.purkynka.account.save.ActiveAccount
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
-import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup
-import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup.Companion.readDataChanges
-import cz.anty.purkynka.grades.notify.GradesChangesNotificationGroup.Companion.readDataGrade
+import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
+import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataChanges
+import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataGrade
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import cz.anty.purkynka.grades.save.GradesLoginData
@@ -62,7 +62,7 @@ import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.notifications.manager.NotificationsManager
+import eu.codetopic.utils.notifications.manager2.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -100,10 +100,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         private const val LOG_TAG = "GradesFragment"
 
         private const val TIMEOUT_SYNC_ACTIVE_MILIS = 10L * 1_000L
-
-        private const val SAVE_EXTRA_SORT = "$LOG_TAG.SORT"
-        private const val SAVE_EXTRA_SEMESTER = "$LOG_TAG.SEMESTER"
-        private const val SAVE_EXTRA_CHANGES_MAP = "$LOG_TAG.CHANGES_MAP"
 
         suspend fun aWaitForSyncAdd(account: Account) = aWaitForSyncState {
             (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
@@ -168,7 +164,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     override val themeId: Int
         get() = R.style.AppTheme_Grades
 
-    private val accountHolder = ActiveAccountHolder()
+    private val accountHolder = ActiveAccountHolder(holder)
     private val layLogin = LayoutLogin(accountHolder, holder)
     private val layGrades = LayoutGrades(accountHolder, layLogin, holder)
     private val laySyncStatus = LayoutSyncStatus(accountHolder, layLogin, layGrades)
@@ -276,16 +272,16 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         return layGrades.optionsItemSelected(item)
     }
 
-    private class ActiveAccountHolder {
+    private class ActiveAccountHolder(private val holder: LoadingVH) {
 
         companion object {
-            private const val LOG_TAG = "${GradesFragment.LOG_TAG}\$ActiveAccountHolder"
 
+            private const val LOG_TAG = "${GradesFragment.LOG_TAG}\$ActiveAccountHolder"
         }
 
         private val accountChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "accountChangedReceiver.onReceive()")
-            updateData()
+            updateDataWithLoading()
         }
 
         private val listeners = mutableListOf<suspend () -> Unit>()
@@ -295,13 +291,22 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         var accountId: String? = null
             private set
 
+        private fun updateDataWithLoading(): Job {
+            val holderRef = holder.asReference()
+            return launch(UI) {
+                holderRef().showLoading()
+
+                updateData().join()
+
+                holderRef().hideLoading()
+            }
+        }
+
         fun updateData(): Job {
             val self = this.asReference()
 
             return launch(UI) {
-                val accountWithId = bg { ActiveAccount.getWithId() }.await()
-                val nAccount = accountWithId.first
-                val nAccountId = accountWithId.second
+                val (nAccount, nAccountId) = bg { ActiveAccount.getWithId() }.await()
 
                 self().apply {
                     account = nAccount
@@ -341,7 +346,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private val loginDataChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
-            updateData()
+            updateDataWithLoading()
         }
 
         private var userLoggedIn = false
@@ -370,6 +375,17 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         fun unregister() {
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
+        }
+
+        private fun updateDataWithLoading(): Job {
+            val holderRef = holder.asReference()
+            return launch(UI) {
+                holderRef().showLoading()
+
+                updateData().join()
+
+                holderRef().hideLoading()
+            }
         }
 
         fun updateData(): Job = launch(UI) {
@@ -455,6 +471,9 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
             private const val LOG_TAG = "${GradesFragment.LOG_TAG}\$LayoutGrades"
 
+            private const val SAVE_EXTRA_SEMESTER = "$LOG_TAG.SEMESTER"
+            private const val SAVE_EXTRA_CHANGES_MAP = "$LOG_TAG.CHANGES_MAP"
+
             private val gradesChangesMapSerializer =
                     (StringSerializer to (IntSerializer to StringSerializer.list).map).map
         }
@@ -463,10 +482,14 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private val loginDataChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
-            updateData()
+            updateDataWithLoading()
         }
         private val dataChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
+            updateData()
+        }
+        private val sortChangedReceiver = broadcast { _, _ ->
+            Log.d(LOG_TAG, "sortChangedReceiver.onReceive()")
             updateData()
         }
 
@@ -478,12 +501,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         private var recyclerManager: Recycler.RecyclerManagerImpl? = null
         private var adapter: CustomItemAdapter<CustomItem>? = null
 
-        var sort: GradesUiData.Sort = GradesUiData.instance.lastSort
-            set(value) {
-                field = value
-                GradesUiData.instance.lastSort = value
-                update()
-            }
+        var sort: GradesUiData.Sort? = null
         var semester: Semester = Semester.AUTO.stableSemester
             set(value) {
                 field = value
@@ -495,14 +513,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun restore(savedInstanceState: Bundle?) {
-            savedInstanceState?.takeIf { it.containsKey(SAVE_EXTRA_SORT) }?.let {
-                sort = try {
-                    savedInstanceState.getSerializable(SAVE_EXTRA_SORT) as GradesUiData.Sort
-                } catch (e: Exception) {
-                    Log.w(LOG_TAG, "onCreate() -> restoreSortState()", e)
-                    GradesUiData.Sort.GRADES_DATE
-                }
-            }
             savedInstanceState?.takeIf { it.containsKey(SAVE_EXTRA_SEMESTER) }?.let {
                 semester = try {
                     savedInstanceState.getSerializable(SAVE_EXTRA_SEMESTER) as Semester
@@ -526,7 +536,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun save(outState: Bundle) {
-            outState.putSerializable(SAVE_EXTRA_SORT, sort)
             outState.putSerializable(SAVE_EXTRA_SEMESTER, semester)
             outState.putString(SAVE_EXTRA_CHANGES_MAP,
                     JSON.stringify(
@@ -572,11 +581,14 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     intentFilter(GradesLoginData.getter))
             LocalBroadcast.registerReceiver(dataChangedReceiver,
                     intentFilter(GradesData.getter))
+            LocalBroadcast.registerReceiver(sortChangedReceiver,
+                    intentFilter(GradesUiData.getter))
 
             return updateData()
         }
 
         fun unregister() {
+            LocalBroadcast.unregisterReceiver(sortChangedReceiver)
             LocalBroadcast.unregisterReceiver(dataChangedReceiver)
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
         }
@@ -606,6 +618,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                         SUBJECTS_NAME -> R.id.action_show_subjects_name
                         SUBJECTS_AVERAGE_BEST -> R.id.action_show_subjects_average_best
                         SUBJECTS_AVERAGE_WORSE -> R.id.action_show_subjects_average_worse
+                        else -> R.id.action_show_grades_date
                     }
             ).isChecked = true
 
@@ -616,30 +629,31 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun optionsItemSelected(item: MenuItem): Boolean {
+            val accountId = accountHolder.accountId ?: return false
             when (item.itemId) {
                 R.id.action_show_grades_date -> {
                     item.isChecked = true
-                    sort = GRADES_DATE
+                    GradesUiData.instance.setLastSort(accountId, GRADES_DATE)
                 }
                 R.id.action_show_grades_value -> {
                     item.isChecked = true
-                    sort = GRADES_VALUE
+                    GradesUiData.instance.setLastSort(accountId, GRADES_VALUE)
                 }
                 R.id.action_show_grades_subject -> {
                     item.isChecked = true
-                    sort = GRADES_SUBJECT
+                    GradesUiData.instance.setLastSort(accountId, GRADES_SUBJECT)
                 }
                 R.id.action_show_subjects_name -> {
                     item.isChecked = true
-                    sort = SUBJECTS_NAME
+                    GradesUiData.instance.setLastSort(accountId, SUBJECTS_NAME)
                 }
                 R.id.action_show_subjects_average_best -> {
                     item.isChecked = true
-                    sort = SUBJECTS_AVERAGE_BEST
+                    GradesUiData.instance.setLastSort(accountId, SUBJECTS_AVERAGE_BEST)
                 }
                 R.id.action_show_subjects_average_worse -> {
                     item.isChecked = true
-                    sort = SUBJECTS_AVERAGE_WORSE
+                    GradesUiData.instance.setLastSort(accountId, SUBJECTS_AVERAGE_WORSE)
                 }
                 R.id.action_semester_first -> {
                     item.isChecked = true
@@ -656,7 +670,21 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             return true
         }
 
+        private fun updateDataWithLoading(): Job {
+            val holderRef = holder.asReference()
+            return launch(UI) {
+                holderRef().showLoading()
+
+                updateData().join()
+
+                holderRef().hideLoading()
+            }
+        }
+
         fun updateData(): Job = launch(UI) {
+            sort = accountHolder.accountId?.let {
+                bg { GradesUiData.instance.getLastSort(it) }.await()
+            }
             userLoggedIn = accountHolder.accountId?.let {
                 bg { GradesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
@@ -667,11 +695,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 boxRecycler?.context?.let { context ->
                     // All grades changes will be displayed to user, so let's remove them all
                     gradesChangesMap.getOrPut(accountId, ::mutableMapOf).putAll(
-                            NotificationsManager
-                                    .cancelAll(
+                            NotifyManager
+                                    .requestSuspendCancelAll(
                                             context = context,
-                                            groupId = GradesChangesNotificationGroup.ID,
-                                            channelId = AccountNotifyChannel.idFor(accountId)
+                                            groupId = GradesChangesNotifyChannel.ID,
+                                            channelId = AccountNotifyGroup.idFor(accountId)
                                     )
                                     .mapNotNull {
                                         (readDataGrade(it.value)?.id ?: return@mapNotNull null) to
@@ -714,6 +742,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                                 SUBJECTS_AVERAGE_BEST -> run(subjects).sortedBy { it.base.average }
                                 SUBJECTS_AVERAGE_WORSE ->
                                     run(subjects).sortedByDescending { it.base.average }
+                                else -> run(grades)
                             })
                         }
                     }
@@ -744,7 +773,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 GradesSyncAdapter.requestSync(account, semester)
 
-                // Sync sometimes reports, that is not started, at the beginning. So we must wait for sync start before we can wait for sync end.
+                // Sync sometimes reports, that is not started, at the beginning.
+                // So we must wait for sync start before we can wait for sync end.
                 aWaitForSyncAdd(account)
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
@@ -769,7 +799,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             launch(UI) {
                 GradesSyncAdapter.requestSync(account, semester)
 
-                // Sync sometimes reports, that is not started, at the beginning. So we must wait for sync start before we can wait for sync end.
+                // Sync sometimes reports, that is not started, at the beginning.
+                // So we must wait for sync start before we can wait for sync end.
                 aWaitForSyncAdd(account)
                 if (aWaitForSyncActiveOrEnd(account)) {
                     aWaitForSyncEnd(account)
@@ -788,8 +819,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                                    private val layoutGrades: LayoutGrades) : LayoutContainer {
 
         companion object {
-            private const val LOG_TAG = "${GradesFragment.LOG_TAG}\$LayoutSyncStatus"
 
+            private const val LOG_TAG = "${GradesFragment.LOG_TAG}\$LayoutSyncStatus"
         }
 
         override var containerView: View? = null
@@ -848,28 +879,37 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             update()
         }
 
-        fun update() { // FIXME: snackbar is automatically hidden by clicking on action
-            if (containerView == null || (showingResult == syncLastResult &&
-                    statusSnackbar?.isShownOrQueued != false)) return
+        fun update(force: Boolean = false) {
+            if (!force && (containerView == null || (showingResult == syncLastResult &&
+                    statusSnackbar?.isShownOrQueued != false))) return
 
             when (syncLastResult) {
                 FAIL_UNKNOWN -> statusSnackbar = indefiniteSnackbar(
                         boxGrades,
                         R.string.snackbar_grades_refresh_fail_unknown,
                         R.string.snackbar_action_grades_retry,
-                        { layoutGrades.requestSyncWithLoading() }
+                        {
+                            layoutGrades.requestSyncWithLoading()
+                            update(true)
+                        }
                 )
                 FAIL_CONNECT -> statusSnackbar = indefiniteSnackbar(
                         boxGrades,
                         R.string.snackbar_grades_refresh_fail_connect,
                         R.string.snackbar_action_grades_retry,
-                        { layoutGrades.requestSyncWithLoading() }
+                        {
+                            layoutGrades.requestSyncWithLoading()
+                            update(true)
+                        }
                 )
                 FAIL_LOGIN -> statusSnackbar = indefiniteSnackbar(
                         boxGrades,
                         R.string.snackbar_grades_refresh_fail_login,
                         R.string.snackbar_action_grades_logout,
-                        { layoutLogin.logout() }
+                        {
+                            layoutLogin.logout()
+                            update(true)
+                        }
                 )
                 null -> statusSnackbar = indefiniteSnackbar(
                         boxGrades,

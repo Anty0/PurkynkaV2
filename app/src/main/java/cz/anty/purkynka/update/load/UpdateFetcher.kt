@@ -16,28 +16,16 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.update
+package cz.anty.purkynka.update.load
 
 import android.content.Context
-import android.os.Environment
-import java.nio.file.Files.exists
-import java.io.File.separator
-import android.os.Environment.DIRECTORY_DOWNLOADS
-import eu.codetopic.utils.thread.progress.ProgressReporter
-import com.google.firebase.perf.FirebasePerformance.HttpMethod.POST
-import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.letIf
 import eu.codetopic.java.utils.debug.DebugMode
 import eu.codetopic.utils.AndroidUtils
 import org.jsoup.Jsoup
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
 
 /**

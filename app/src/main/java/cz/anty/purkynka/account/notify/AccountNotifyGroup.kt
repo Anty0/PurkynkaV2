@@ -19,39 +19,41 @@
 package cz.anty.purkynka.account.notify
 
 import android.accounts.Account
-import android.accounts.AccountManager
-import android.app.NotificationManager
+import android.app.NotificationChannelGroup
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.os.Build
+import android.support.annotation.MainThread
 import android.support.annotation.RequiresApi
-import android.support.v4.content.ContextCompat
-import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
 import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.notifications.manager.util.NotificationChannel
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.broadcast.LocalBroadcast
-import eu.codetopic.utils.notifications.manager.NotificationsManager
+import eu.codetopic.utils.notifications.manager2.NotifyManager
+import eu.codetopic.utils.notifications.manager2.util.NotifyGroup
 
 /**
  * @author anty
  */
-class AccountNotifyChannel(val accountId: String, val account: Account) : NotificationChannel(idFor(accountId)) {
+class AccountNotifyGroup(val accountId: String, val account: Account, vararg channelIds: String) :
+        NotifyGroup(idFor(accountId), *channelIds) {
 
     companion object {
 
-        fun idFor(accountId: String) = "CHANNEL_ID{$accountId}"
+        private const val LOG_TAG = "AccountNotifyGroup"
+
+        private var channelIds: Array<out String>? = null
+
+        fun idFor(accountId: String) = "GROUP_ID{$accountId}"
 
         private val accountAddedReceiver: BroadcastReceiver =
                 broadcast { context, intent ->
                     intent ?: return@broadcast
                     val account = intent.getParcelableExtra<Account>(Accounts.EXTRA_ACCOUNT) ?: return@broadcast
                     val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@broadcast
+                    val channelIds = channelIds ?: return@broadcast
 
-                    if (NotificationsManager.existsChannel(idFor(accountId))) return@broadcast
-                    NotificationsManager.initChannel(context, AccountNotifyChannel(accountId, account))
+                    if (NotifyManager.hasGroup(idFor(accountId))) return@broadcast
+                    NotifyManager.installGroup(context, AccountNotifyGroup(accountId, account, *channelIds))
                 }
 
         private val accountRemovedReceiver: BroadcastReceiver =
@@ -59,39 +61,36 @@ class AccountNotifyChannel(val accountId: String, val account: Account) : Notifi
                     intent ?: return@broadcast
                     val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@broadcast
 
-                    if (!NotificationsManager.existsChannel(idFor(accountId))) return@broadcast
-                    NotificationsManager.removeChannel(context, idFor(accountId))
+                    if (!NotifyManager.hasGroup(idFor(accountId))) return@broadcast
+                    NotifyManager.uninstallGroup(context, idFor(accountId))
                 }
 
-        internal fun init(context: Context) {
-            LocalBroadcast.registerReceiver(accountAddedReceiver,
+        @MainThread
+        internal fun init(context: Context, vararg channelIds: String) {
+            if (this.channelIds != null) throw IllegalStateException("$LOG_TAG is still initialized")
+            this.channelIds = channelIds
+
+            val appContext = context.applicationContext
+            appContext.registerReceiver(accountAddedReceiver,
                     intentFilter(Accounts.ACTION_ACCOUNT_ADDED))
-            LocalBroadcast.registerReceiver(accountRemovedReceiver,
+            appContext.registerReceiver(accountRemovedReceiver,
                     intentFilter(Accounts.ACTION_ACCOUNT_REMOVED))
             refresh(context)
         }
 
+        @MainThread
         fun refresh(context: Context) {
+            val channelIds = channelIds ?: throw IllegalStateException("$LOG_TAG is not initialized")
             Accounts.getAllWIthIds(context)
-                    .filterNot { NotificationsManager.existsChannel(idFor(it.key)) }
+                    .filterNot { NotifyManager.hasGroup(idFor(it.key)) }
                     .forEach {
-                        NotificationsManager.initChannel(context,
-                                AccountNotifyChannel(it.key, it.value))
+                        NotifyManager.installGroup(context,
+                                AccountNotifyGroup(it.key, it.value, *channelIds))
                     }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun createChannel(context: Context): android.app.NotificationChannel =
-            android.app.NotificationChannel(
-                    id,
-                    account.name,
-                    NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                enableLights(true)
-                enableVibration(true)
-                setBypassDnd(false)
-                setShowBadge(true)
-                this.lightColor = ContextCompat.getColor(context, R.color.colorPrimary)
-            }
+    override fun createGroup(context: Context): NotificationChannelGroup =
+            NotificationChannelGroup(id, account.name)
 }

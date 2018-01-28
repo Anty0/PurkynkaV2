@@ -50,6 +50,7 @@ class GradesData private constructor(context: Context) :
         private const val LOG_TAG = "GradesData"
         internal const val SAVE_VERSION = 0
 
+        @Suppress("UNUSED_PARAMETER")
         internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
             // This function will be executed by provider in provider process
             when (from) {

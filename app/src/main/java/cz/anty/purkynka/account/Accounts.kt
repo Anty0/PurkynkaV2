@@ -20,7 +20,6 @@ package cz.anty.purkynka.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.accounts.AccountManagerCallback
 import android.accounts.AccountManagerFuture
 import android.app.Activity
 import android.content.Context
@@ -28,15 +27,15 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import cz.anty.purkynka.account.notify.AccountNotifyChannel
-import eu.codetopic.java.utils.log.Log
+import cz.anty.purkynka.R
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
+import cz.anty.purkynka.account.save.ActiveAccount
+import eu.codetopic.utils.AndroidExtensions.accountManager
+import eu.codetopic.utils.UtilsBase
 import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.broadcast.BroadcastsConnector.Connection
 import eu.codetopic.utils.broadcast.BroadcastsConnector.BroadcastTargetingType
-import eu.codetopic.utils.broadcast.LocalBroadcast
 import org.jetbrains.anko.bundleOf
-import org.jetbrains.anko.coroutines.experimental.bg
-import org.jetbrains.anko.getStackTraceString
 import java.util.*
 
 /**
@@ -62,17 +61,18 @@ object Accounts {
     var isInitialized = false
         private set
 
-    fun initialize(context: Context) {
+    fun initialize(context: Context, vararg notifyChannelIds: String) {
         initBroadcastConnections()
-        initDefaultAccount(context)
+        if (UtilsBase.Process.isPrimaryProcess(context))
+            initDefaultAccount(context)
         ActiveAccount.initialize(context)
-        AccountNotifyChannel.init(context)
+        AccountNotifyGroup.init(context, *notifyChannelIds)
         isInitialized = true
     }
 
     private fun initBroadcastConnections() {
         val connection = Connection(
-                BroadcastTargetingType.LOCAL,
+                BroadcastTargetingType.GLOBAL,
                 ACTION_ACCOUNTS_CHANGED
         )
         arrayOf(
@@ -88,10 +88,10 @@ object Accounts {
     }
 
     private fun initDefaultAccount(context: Context) {
-        AccountManager.get(context)
+        context.accountManager
                 .takeIf { getAll(it).isEmpty() }
                 ?.let {
-                    add(it, "User") // TODO: Name translations
+                    add(context, it, context.getString(R.string.account_default_name))
                 }
     }
 
@@ -121,13 +121,13 @@ object Accounts {
             }
 
     fun add(context: Context, name: String): Account? =
-            add(AccountManager.get(context), name)
+            add(context, context.accountManager, name)
 
-    fun add(accountManager: AccountManager, name: String): Account? {
+    fun add(context: Context, accountManager: AccountManager, name: String): Account? {
         val accountId = UUID.randomUUID().toString()
         val account = Account(name, ACCOUNT_TYPE)
         if (tryAdd(accountManager, account, accountId)) {
-            LocalBroadcast.sendBroadcast(Intent(ACTION_ACCOUNT_ADDED)
+            context.sendBroadcast(Intent(ACTION_ACCOUNT_ADDED)
                     .putExtra(EXTRA_ACCOUNT, account)
                     .putExtra(EXTRA_ACCOUNT_ID, accountId))
 
@@ -138,17 +138,17 @@ object Accounts {
 
     fun requestAdd(activity: Activity, handler: Handler? = null,
                    callback: ((future: AccountManagerFuture<Bundle>) -> Unit)? = null) {
-        AccountManager.get(activity).addAccount(Accounts.ACCOUNT_TYPE, null,
+        activity.accountManager.addAccount(Accounts.ACCOUNT_TYPE, null,
                 null, null, activity, callback, handler)
     }
 
     fun remove(context: Context, account: Account): Boolean =
-            remove(AccountManager.get(context), account)
+            remove(context, context.accountManager, account)
 
-    fun remove(accountManager: AccountManager, account: Account): Boolean {
+    fun remove(context: Context, accountManager: AccountManager, account: Account): Boolean {
         val accountId = getId(accountManager, account.checkType())
         if (tryRemove(accountManager, account)) {
-            LocalBroadcast.sendBroadcast(Intent(ACTION_ACCOUNT_REMOVED)
+            context.sendBroadcast(Intent(ACTION_ACCOUNT_REMOVED)
                     .putExtra(EXTRA_ACCOUNT, account)
                     .putExtra(EXTRA_ACCOUNT_ID, accountId))
 
@@ -158,34 +158,34 @@ object Accounts {
     }
 
     fun get(context: Context, accountId: String): Account =
-            get(AccountManager.get(context), accountId)
+            get(context.accountManager, accountId)
 
     fun get(accountManager: AccountManager, accountId: String): Account =
             getAll(accountManager).firstOrNull { getId(accountManager, it) == accountId }
                     ?: throw IllegalArgumentException("Account '$accountId' does not exist")
 
     fun getId(context: Context, account: Account): String =
-            getId(AccountManager.get(context), account)
+            getId(context.accountManager, account)
 
     fun getId(accountManager: AccountManager, account: Account): String =
             accountManager.getUserData(account.checkType(), KEY_ACCOUNT_ID)
 
     fun getAllWIthIds(context: Context): Map<String, Account> =
-            getAllWIthIds(AccountManager.get(context))
+            getAllWIthIds(context.accountManager)
 
     fun getAllWIthIds(accountManager: AccountManager): Map<String, Account> =
             getAll(accountManager).map { getId(accountManager, it) to it }.toMap()
 
     fun getAll(context: Context): Array<Account> =
-            getAll(AccountManager.get(context))
+            getAll(context.accountManager)
 
     fun getAll(accountManager: AccountManager): Array<Account> =
             accountManager.getAccountsByType(ACCOUNT_TYPE)
 
     fun rename(context: Context, account: Account, newName: String): Account? =
-            rename(AccountManager.get(context), account, newName)
+            rename(context, context.accountManager, account, newName)
 
-    fun rename(accountManager: AccountManager, account: Account, newName: String): Account? {
+    fun rename(context: Context, accountManager: AccountManager, account: Account, newName: String): Account? {
         account.checkType()
 
         if (account.name == newName) return account
@@ -195,7 +195,7 @@ object Accounts {
         if (tryAdd(accountManager, newAccount, accountId)) {
             tryRemove(accountManager, account)
 
-            LocalBroadcast.sendBroadcast(Intent(ACTION_ACCOUNT_RENAMED)
+            context.sendBroadcast(Intent(ACTION_ACCOUNT_RENAMED)
                     .putExtra(EXTRA_OLD_ACCOUNT, account)
                     .putExtra(EXTRA_ACCOUNT, newAccount)
                     .putExtra(EXTRA_ACCOUNT_ID, accountId))
