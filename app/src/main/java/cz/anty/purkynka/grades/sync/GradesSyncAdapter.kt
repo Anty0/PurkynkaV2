@@ -19,7 +19,6 @@
 package cz.anty.purkynka.grades.sync
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.*
 import android.os.Bundle
 import cz.anty.purkynka.Constants
@@ -39,8 +38,8 @@ import eu.codetopic.utils.AndroidExtensions.accountManager
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
-import eu.codetopic.utils.notifications.manager2.create.MultiNotificationBuilder
-import eu.codetopic.utils.notifications.manager2.create.MultiNotificationBuilder.Companion.requestShowAll
+import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
+import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder.Companion.requestShowAll
 import org.jetbrains.anko.bundleOf
 import java.io.IOException
 

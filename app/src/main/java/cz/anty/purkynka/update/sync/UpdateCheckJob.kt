@@ -29,8 +29,8 @@ import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.alsoIf
-import eu.codetopic.utils.notifications.manager2.create.NotificationBuilder
-import eu.codetopic.utils.notifications.manager2.create.NotificationBuilder.Companion.requestShow
+import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
+import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
 
 /**
  * @author anty

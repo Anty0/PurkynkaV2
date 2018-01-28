@@ -23,7 +23,7 @@ import android.content.Context
 import android.os.Build
 import android.support.annotation.RequiresApi
 import cz.anty.purkynka.R
-import eu.codetopic.utils.notifications.manager2.util.NotifyGroup
+import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 
 /**
  * @author anty

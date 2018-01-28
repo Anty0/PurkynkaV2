@@ -41,9 +41,9 @@ import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
-import eu.codetopic.utils.notifications.manager2.data.NotifyId
-import eu.codetopic.utils.notifications.manager2.util.NotifyGroup
-import eu.codetopic.utils.notifications.manager2.util.SummarizedNotifyChannel
+import eu.codetopic.utils.notifications.manager.data.NotifyId
+import eu.codetopic.utils.notifications.manager.util.NotifyGroup
+import eu.codetopic.utils.notifications.manager.util.SummarizedNotifyChannel
 import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list

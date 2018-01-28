@@ -28,8 +28,8 @@ import android.support.annotation.RequiresApi
 import cz.anty.purkynka.account.Accounts
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.notifications.manager2.NotifyManager
-import eu.codetopic.utils.notifications.manager2.util.NotifyGroup
+import eu.codetopic.utils.notifications.manager.NotifyManager
+import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 
 /**
  * @author anty

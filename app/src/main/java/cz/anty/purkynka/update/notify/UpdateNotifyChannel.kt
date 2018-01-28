@@ -31,9 +31,9 @@ import cz.anty.purkynka.R
 import eu.codetopic.java.utils.JavaExtensions.letIf
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
-import eu.codetopic.utils.notifications.manager2.data.NotifyId
-import eu.codetopic.utils.notifications.manager2.util.NotifyChannel
-import eu.codetopic.utils.notifications.manager2.util.NotifyGroup
+import eu.codetopic.utils.notifications.manager.data.NotifyId
+import eu.codetopic.utils.notifications.manager.util.NotifyChannel
+import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 
 /**
  * @author anty

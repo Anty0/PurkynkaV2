@@ -47,7 +47,7 @@ import eu.codetopic.utils.UtilsBase.PARAM_INITIALIZE_UTILS
 import eu.codetopic.utils.UtilsBase.processNamePrimary
 import eu.codetopic.utils.UtilsBase.processNameProviders
 import eu.codetopic.utils.UtilsBase.processNameNotifyManager
-import eu.codetopic.utils.notifications.manager2.NotifyManager
+import eu.codetopic.utils.notifications.manager.NotifyManager
 import org.jetbrains.anko.bundleOf
 
 

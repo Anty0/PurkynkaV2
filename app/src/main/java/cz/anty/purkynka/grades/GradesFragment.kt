@@ -62,7 +62,7 @@ import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.notifications.manager2.NotifyManager
+import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
