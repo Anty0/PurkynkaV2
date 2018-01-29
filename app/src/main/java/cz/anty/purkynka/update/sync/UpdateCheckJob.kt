@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.update.sync
 
+import android.app.Activity
 import android.content.Context
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobManager
@@ -26,9 +27,13 @@ import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
+import cz.anty.purkynka.update.receiver.UpdateCheckJobScheduleReceiver
+import cz.anty.purkynka.update.receiver.UpdateFetchReceiver
 import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.alsoIf
+import eu.codetopic.utils.AndroidExtensions.OrderedBroadcastResult
+import eu.codetopic.utils.AndroidExtensions.sendSuspendOrderedBroadcast
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
 
@@ -41,6 +46,13 @@ class UpdateCheckJob : Job() {
 
         private const val LOG_TAG = "UpdateCheckJob"
 
+        internal const val REQUEST_RESULT_OK = -1
+        internal const val REQUEST_RESULT_FAIL = 0
+        internal const val REQUEST_RESULT_UNKNOWN = 1
+
+        internal const val REQUEST_EXTRA_RESULT = "EXTRA_RESULT"
+        internal const val REQUEST_EXTRA_THROWABLE = "EXTRA_THROWABLE"
+
         private const val INTERVAL = 1_000L * 60L * 60L * 6L // 6 hours in milis
         private const val FLEX = 1_000L * 60L * 60L * 1L // 1 hour in milis
 
@@ -48,6 +60,22 @@ class UpdateCheckJob : Job() {
 
         fun requestSchedule(context: Context) =
                 context.sendBroadcast(UpdateCheckJobScheduleReceiver.getIntent(context))
+
+        suspend fun requestSuspendSchedule(context: Context) =
+                context.sendSuspendOrderedBroadcast(
+                        intent = UpdateCheckJobScheduleReceiver.getIntent(context),
+                        initialResult = OrderedBroadcastResult(REQUEST_RESULT_UNKNOWN)
+                ).let {
+                    when (it.code) {
+                        REQUEST_RESULT_OK -> Unit
+                        REQUEST_RESULT_FAIL ->
+                            throw it.extras?.getSerializable(REQUEST_EXTRA_THROWABLE) as? Throwable
+                                    ?: RuntimeException("Unknown fail result received from UpdateCheckJobScheduleReceiver")
+                        REQUEST_RESULT_UNKNOWN ->
+                            throw RuntimeException("Failed to process broadcast by UpdateCheckJobScheduleReceiver")
+                        else -> throw RuntimeException("Unknown resultCode received from UpdateCheckJobScheduleReceiver: ${it.code}")
+                    }
+                }
 
         fun schedule() {
             Log.d(LOG_TAG, "schedule")
@@ -75,6 +103,27 @@ class UpdateCheckJob : Job() {
 
             return Result.SUCCESS
         }
+
+        fun requestFetchUpdates(context: Context) =
+                context.sendBroadcast(UpdateFetchReceiver.getIntent(context))
+
+        suspend fun requestSuspendFetchUpdates(context: Context): Result =
+                context.sendSuspendOrderedBroadcast(
+                        intent = UpdateFetchReceiver.getIntent(context),
+                        initialResult = OrderedBroadcastResult(REQUEST_RESULT_UNKNOWN)
+                ).let {
+                    when (it.code) {
+                        REQUEST_RESULT_OK ->
+                            it.extras?.getSerializable(REQUEST_EXTRA_RESULT) as? Result
+                                    ?: throw RuntimeException("Failed to extract result of UpdateFetchReceiver")
+                        REQUEST_RESULT_FAIL ->
+                            throw it.extras?.getSerializable(REQUEST_EXTRA_THROWABLE) as? Throwable
+                                    ?: RuntimeException("Unknown fail result received from UpdateFetchReceiver")
+                        REQUEST_RESULT_UNKNOWN ->
+                            throw RuntimeException("Failed to process broadcast by UpdateFetchReceiver")
+                        else -> throw RuntimeException("Unknown resultCode received from UpdateFetchReceiver: ${it.code}")
+                    }
+                }
     }
 
     override fun onRunJob(params: Params): Result {

@@ -16,24 +16,45 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.update.sync
+package cz.anty.purkynka.update.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import cz.anty.purkynka.update.sync.UpdateCheckJob
+import eu.codetopic.java.utils.log.Log
+import org.jetbrains.anko.bundleOf
 
 /**
  * @author anty
  */
-class UpdateCheckJobScheduleReceiver : BroadcastReceiver() {
+class UpdateFetchReceiver : BroadcastReceiver() {
 
     companion object {
 
+        private const val LOG_TAG = "UpdateFetchReceiver"
+
         fun getIntent(context: Context): Intent =
-                Intent(context, UpdateCheckJobScheduleReceiver::class.java)
+                Intent(context, UpdateFetchReceiver::class.java)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        UpdateCheckJob.schedule()
+        try {
+            val result = UpdateCheckJob.fetchUpdates()
+
+            if (isOrderedBroadcast) {
+                setResult(UpdateCheckJob.REQUEST_RESULT_OK, null, bundleOf(
+                        UpdateCheckJob.REQUEST_EXTRA_RESULT to result
+                ))
+            }
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "onReceive()", e)
+
+            if (isOrderedBroadcast) {
+                setResult(UpdateCheckJob.REQUEST_RESULT_FAIL, null, bundleOf(
+                        UpdateCheckJob.REQUEST_EXTRA_THROWABLE to e
+                ))
+            }
+        }
     }
 }

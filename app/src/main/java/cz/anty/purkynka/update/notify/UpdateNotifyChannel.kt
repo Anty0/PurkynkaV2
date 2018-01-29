@@ -113,8 +113,6 @@ class UpdateNotifyChannel : NotifyChannel(ID, false) {
                 //setPublicVersion()
 
                 //addAction()
-                extend(NotificationCompat.WearableExtender()
-                        .setHintContentIntentLaunchesActivity(true))
             }
 
     override fun createNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,

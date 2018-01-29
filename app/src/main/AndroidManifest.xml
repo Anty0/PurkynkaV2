@@ -93,7 +93,12 @@
             android:theme="@style/AppTheme.NoActionBar.Grades"/>
 
         <receiver
-            android:name=".update.sync.UpdateCheckJobScheduleReceiver"
+            android:name=".update.receiver.UpdateCheckJobScheduleReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs"/>
+        <receiver
+            android:name=".update.receiver.UpdateFetchReceiver"
             android:enabled="true"
             android:exported="false"
             android:process=":syncs"/>
