@@ -109,6 +109,9 @@
         <item quantity="other">%1$d Grades</item>
     </plurals>
 
+    <string name="text_view_warn_non_primary_account">This account is not primary account.\nFor automatic wifi login will be used primary account.</string>
+    <string name="text_view_warn_unsupported_device">Your device has Android 7 or higher.\nAutomatic login may not work properly on your device…\nThis problem cannot be fixed…</string>
+
     <string name="updates_text_up_to_date">Application is up to date (%1$s)</string>
     <string name="updates_text_update_available">Update available (%1$s -> %2$s)</string>
     <string name="updates_text_update_downloading">Downloading update (%1$s -> %2$s)</string>

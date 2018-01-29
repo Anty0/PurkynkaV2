@@ -16,50 +16,59 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.update.receiver
+package cz.anty.purkynka.wifilogin.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import cz.anty.purkynka.update.sync.UpdateCheckJob
+import android.net.ConnectivityManager
+import android.net.wifi.WifiManager
+import cz.anty.purkynka.account.Accounts
+import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
+import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.java.utils.log.Log
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.coroutines.experimental.bg
 
 /**
  * @author anty
  */
-class UpdateFetchReceiver : BroadcastReceiver() {
+class WifiChangedReceiver : BroadcastReceiver() {
 
     companion object {
 
-        private const val LOG_TAG = "UpdateFetchReceiver"
+        private const val LOG_TAG = "WifiChangedReceiver"
 
-        fun getIntent(context: Context): Intent =
-                Intent(context, UpdateFetchReceiver::class.java)
+        private const val DELAY_AUTO_LOGIN = 1_000L // 1 second in milis
     }
 
     override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != WifiManager.WIFI_STATE_CHANGED_ACTION
+                && intent.action != ConnectivityManager.CONNECTIVITY_ACTION) return
+
         val pResult = goAsync()
         launch(UI) {
             try {
-                val result = bg { UpdateCheckJob.fetchUpdates() }.await()
+                val accountId = bg {
+                    Accounts.getAll(context).firstOrNull()
+                            ?.let { Accounts.getId(context, it) }
+                }.await() ?: return@launch
 
-                if (isOrderedBroadcast) {
-                    pResult.setResult(UpdateCheckJob.REQUEST_RESULT_OK, null, bundleOf(
-                            UpdateCheckJob.REQUEST_EXTRA_RESULT to result
-                    ))
-                }
+                val (username, password) = bg {
+                    WifiLoginData.loginData
+                            .takeIf { it.isLoggedIn(accountId) }
+                            ?.getCredentials(accountId)
+                }.await() ?: return@launch
+
+                if (username == null || password == null) return@launch
+
+                delay(DELAY_AUTO_LOGIN)
+
+                WifiLoginFetcher.tryLoginBackground(context, username, password).await()
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "onReceive()", e)
-
-                if (isOrderedBroadcast) {
-                    pResult.setResult(UpdateCheckJob.REQUEST_RESULT_FAIL, null, bundleOf(
-                            UpdateCheckJob.REQUEST_EXTRA_THROWABLE to e
-                    ))
-                }
             } finally {
                 pResult.finish()
             }

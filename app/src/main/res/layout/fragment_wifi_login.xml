@@ -44,6 +44,14 @@
             app:iiv_icon="gmd-wifi-lock"
             app:iiv_color="?attr/colorDrawable" />
 
+        <TextView
+            android:id="@+id/txtWarnUnsupportedDevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/materialRed"
+            android:text="@string/text_view_warn_unsupported_device"
+            android:visibility="gone" />
+
         <!-- Username Label -->
         <android.support.design.widget.TextInputLayout
             android:id="@+id/boxInUsername"
@@ -77,6 +85,14 @@
                 android:inputType="textPassword"
                 android:hint="@string/insert_password" />
         </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/txtWarnNonPrimaryAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/materialRed"
+            android:text="@string/text_view_warn_non_primary_account"
+            android:visibility="gone" />
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/butEnable"
