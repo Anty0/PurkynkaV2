@@ -171,7 +171,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         }
     }
 
-    private suspend fun fetchUpdate(): Job.Result =
+    private suspend fun fetchUpdate(): Job.Result = // TODO: Use queue broadcast to request fetch
             bg { UpdateCheckJob.fetchUpdates() }.await()
                     .alsoIf({ it == Job.Result.FAILURE }) {
                         snackbarUpdateFetchFailed()
