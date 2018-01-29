@@ -189,6 +189,8 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
                 color = ContextCompat.getColor(context, R.color.colorPrimaryGrades)
                 //setColorized(false)
 
+
+                setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
                 setDefaults(NotificationCompat.DEFAULT_ALL)
                 priority = NotificationCompat.PRIORITY_HIGH
 

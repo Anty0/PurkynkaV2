@@ -100,6 +100,7 @@ class UpdateNotifyChannel : NotifyChannel(ID, false) {
                 color = ContextCompat.getColor(context, R.color.colorPrimary)
                 setColorized(true)
 
+                setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_ALL)
                 setDefaults(NotificationCompat.DEFAULT_ALL)
                 priority = NotificationCompat.PRIORITY_HIGH
 
