@@ -53,7 +53,7 @@ class GradesSyncAdapter(context: Context) :
 
         private const val LOG_TAG = "GradesSyncAdapter"
 
-        const val CONTENT_AUTHORITY = GradesProvider.AUTHORITY
+        const val CONTENT_AUTHORITY = GradesDataProvider.AUTHORITY
         const val SYNC_FREQUENCY = Constants.SYNC_FREQUENCY_GRADES
 
         const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_SEMESTER"

@@ -44,6 +44,9 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
+    <!--TODO: shortcuts-->
+    <!--TODO: widgets-->
+
     <application
         android:name=".AppInit"
         android:allowBackup="true"
@@ -155,13 +158,23 @@
             android:exported="false"
             android:process=":providers" />
         <provider
-            android:name=".grades.save.GradesProvider"
+            android:name=".grades.save.GradesDataProvider"
             android:authorities="cz.anty.purkynka.grades.data"
             android:exported="false"
             android:process=":providers" />
         <provider
-            android:name=".grades.save.GradesLoginProvider"
+            android:name=".grades.save.GradesLoginDataProvider"
             android:authorities="cz.anty.purkynka.grades.login"
+            android:exported="false"
+            android:process=":providers" />
+        <provider
+            android:name=".wifilogin.save.WifiDataProvider"
+            android:authorities="cz.anty.purkynka.wifilogin.data"
+            android:exported="false"
+            android:process=":providers" />
+        <provider
+            android:name=".wifilogin.save.WifiLoginDataProvider"
+            android:authorities="cz.anty.purkynka.wifilogin.login"
             android:exported="false"
             android:process=":providers" />
 

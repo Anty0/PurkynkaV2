@@ -32,20 +32,22 @@ import eu.codetopic.utils.data.preferences.preference.EnumPreference
 import eu.codetopic.utils.data.preferences.preference.KotlinSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.*
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.internal.IntSerializer
 import kotlinx.serialization.list
 import kotlinx.serialization.map
-import kotlin.reflect.KClass
 
 /**
  * @author anty
  */
 class GradesData private constructor(context: Context) :
         PreferencesData<ContentProviderSharedPreferences>(context,
-                ContentProviderPreferencesProvider(context, GradesProvider.AUTHORITY)) {
+                ContentProviderPreferencesProvider(context, GradesDataProvider.AUTHORITY)) {
 
-    companion object : PreferencesCompanionObject<GradesData>(GradesData.LOG_TAG, ::GradesData, ::Getter) {
+    companion object : PreferencesCompanionObject<GradesData>(
+            GradesData.LOG_TAG,
+            ::GradesData,
+            ::Getter
+    ) {
 
         private const val LOG_TAG = "GradesData"
         internal const val SAVE_VERSION = 0

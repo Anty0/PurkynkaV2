@@ -48,7 +48,7 @@ object Accounts {
     const val ACCOUNT_TYPE = "cz.anty.purkynka.account"
 
     const val ACTION_ACCOUNT_ADDED = "cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED"
-    const val ACTION_ACCOUNT_REMOVED = "cz.anty.purkynka.account.ACTION_ACCOUNT_REMOVED"
+    const val ACTION_ACCOUNT_REMOVED = "cz.anty.purkynka.account.ACTION_ACCOUNT_REMOVED" // TODO: remove all account data when account is removed
     const val ACTION_ACCOUNT_RENAMED = "cz.anty.purkynka.account.ACTION_ACCOUNT_RENAMED"
     const val ACTION_ACCOUNTS_CHANGED = "cz.anty.purkynka.account.ACTION_ACCOUNTS_CHANGED"
 

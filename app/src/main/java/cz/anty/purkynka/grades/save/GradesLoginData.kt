@@ -23,18 +23,16 @@ import android.content.SharedPreferences
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
-import eu.codetopic.utils.data.preferences.provider.SecureSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
-import eu.codetopic.utils.data.preferences.support.SecurePreferences
 
 /**
  * @author anty
  */
 class GradesLoginData private constructor(context: Context) :
         PreferencesData<ContentProviderSharedPreferences>(context,
-                ContentProviderPreferencesProvider(context, GradesLoginProvider.AUTHORITY)) {
+                ContentProviderPreferencesProvider(context, GradesLoginDataProvider.AUTHORITY)) {
 
     companion object : PreferencesCompanionObject<GradesLoginData>(GradesLoginData.LOG_TAG,
             ::GradesLoginData, GradesLoginData::Getter) {

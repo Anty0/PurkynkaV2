@@ -94,6 +94,14 @@
             android:text="@string/text_view_warn_non_primary_account"
             android:visibility="gone" />
 
+        <TextView
+            android:id="@+id/txtLoginCounter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/text_view_login_counter"
+            android:visibility="gone" />
+
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/butEnable"
             android:layout_width="match_parent"

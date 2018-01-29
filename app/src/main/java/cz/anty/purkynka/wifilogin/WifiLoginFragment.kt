@@ -30,7 +30,9 @@ import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher.LoginResult.*
+import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
+import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
@@ -68,6 +70,8 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private var userLoggedIn = false
     private var username = ""
 
+    private var loginCount: Int? = null
+
     private val activeAccountChangeReceiver = broadcast { _, _ ->
         holder.showLoading()
         val holderRef = holder.asReference()
@@ -81,6 +85,8 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     }
 
     private val wifiLoginDataChangeReceiver = broadcast { _, _ -> updateData() }
+
+    private val wifiDataChangeReceiver = broadcast { _, _ -> updateData() }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {
@@ -115,11 +121,16 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 wifiLoginDataChangeReceiver,
                 intentFilter(WifiLoginData.getter)
         )
+        LocalBroadcast.registerReceiver(
+                wifiDataChangeReceiver,
+                intentFilter(WifiLoginData.getter)
+        )
 
         updateData()
     }
 
     override fun onStop() {
+        LocalBroadcast.unregisterReceiver(wifiDataChangeReceiver)
         LocalBroadcast.unregisterReceiver(wifiLoginDataChangeReceiver)
         LocalBroadcast.unregisterReceiver(activeAccountChangeReceiver)
 
@@ -141,6 +152,10 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 bg { WifiLoginData.loginData.getUsername(it) }.await()
             } ?: ""
 
+            loginCount = nAccountId?.let {
+                bg { WifiData.instance.getLoginCount(it) }.await()
+            }
+
             update()
         }
     }
@@ -157,7 +172,14 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
             butDisable.visibility = View.VISIBLE
             txtWarnNonPrimaryAccount.visibility =
-                    if (accountPrimary == true) View.GONE else View.VISIBLE
+                    if (accountPrimary == false) View.VISIBLE else View.GONE
+            if (accountPrimary == true) {
+                txtLoginCounter.text = txtLoginCounter.context.getFormattedText(
+                        R.string.text_view_login_counter,
+                        loginCount ?: Double.NaN.toString()
+                )
+                txtLoginCounter.visibility = View.VISIBLE
+            } else txtLoginCounter.visibility = View.GONE
 
             boxInUsername.isEnabled = false
             //inUsername.isEnabled = false
@@ -170,6 +192,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
             butDisable.visibility = View.GONE
             txtWarnNonPrimaryAccount.visibility = View.GONE
+            txtLoginCounter.visibility = View.GONE
 
             boxInUsername.isEnabled = true
             //inUsername.isEnabled = true

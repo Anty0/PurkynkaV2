@@ -28,7 +28,7 @@ import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPrefe
 /**
  * @author anty
  */
-class GradesProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, GradesData.SAVE_VERSION) {
+class GradesDataProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, GradesData.SAVE_VERSION) {
 
     companion object {
         const val AUTHORITY = "cz.anty.purkynka.grades.data"

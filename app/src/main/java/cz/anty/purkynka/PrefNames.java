@@ -39,17 +39,20 @@ public final class PrefNames {
     /// SettingsData
     public static final String FILE_NAME_SETTINGS_DATA = "SettingsData";
     // Grades
-    /// GradesUiData
-    public static final String FILE_NAME_GRADES_UI_DATA = "GradesUI";
-    public static final String LAST_SORT_GRADES = "SORT_GRADES";
-    /// GradesLoginData
-    public static final String FILE_NAME_GRADES_LOGIN_DATA = "GradesLoginData";
     /// GradesData
     public static final String FILE_NAME_GRADES_DATA = "GradesData";
     public static final String FIRST_SYNC = "FIRST_SYNC";
     public static final String SYNC_RESULT = "SYNC_RESULT";
     public static final String GRADES_MAP = "GRADES";
+    /// GradesLoginData
+    public static final String FILE_NAME_GRADES_LOGIN_DATA = "GradesLoginData";
+    /// GradesUiData
+    public static final String FILE_NAME_GRADES_UI_DATA = "GradesUI";
+    public static final String LAST_SORT_GRADES = "SORT_GRADES";
     // WifiLogin
+    /// WifiData
+    public static final String FILE_NAME_WIFI_DATA = "WifiData";
+    public static final String LOGIN_COUNTER = "LOGIN_COUNTER";
     /// WifiLoginData
     public static final String FILE_NAME_WIFI_LOGIN_DATA = "WifiLoginData";
 }

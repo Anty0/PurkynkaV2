@@ -34,6 +34,7 @@ import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.sync.UpdateCheckJob
 import cz.anty.purkynka.update.sync.UpdateCheckJobCreator
 import cz.anty.purkynka.update.save.UpdateData
+import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
 import eu.codetopic.utils.ui.container.adapter.dashboard.DashboardData
@@ -182,6 +183,7 @@ class AppInit : MultiDexApplication() {
         GradesUiData.initialize(this)
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
+        WifiData.initialize(this)
         WifiLoginData.initialize(this)
 
         // Initialize data provider of dashboard framework
@@ -204,6 +206,8 @@ class AppInit : MultiDexApplication() {
         UpdateData.initialize(this)
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
+        WifiData.initialize(this)
+        WifiLoginData.initialize(this)
 
         // Init Evernote's JobManager used here for app updates checking
         initJobManager()

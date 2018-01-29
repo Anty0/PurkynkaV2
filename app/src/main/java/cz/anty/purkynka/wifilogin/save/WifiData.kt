@@ -20,30 +20,36 @@ package cz.anty.purkynka.wifilogin.save
 
 import android.content.Context
 import android.content.SharedPreferences
+import cz.anty.purkynka.PrefNames.LOGIN_COUNTER
+import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.utils.data.preferences.PreferencesData
-import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
+import eu.codetopic.utils.data.preferences.preference.BooleanPreference
+import eu.codetopic.utils.data.preferences.preference.EnumPreference
+import eu.codetopic.utils.data.preferences.preference.IntPreference
+import eu.codetopic.utils.data.preferences.preference.KotlinSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
+import kotlinx.serialization.internal.IntSerializer
+import kotlinx.serialization.list
+import kotlinx.serialization.map
 
 /**
  * @author anty
  */
-class WifiLoginData private constructor(context: Context) :
+class WifiData private constructor(context: Context) :
         PreferencesData<ContentProviderSharedPreferences>(context,
-                ContentProviderPreferencesProvider(context, WifiLoginDataProvider.AUTHORITY)) {
+                ContentProviderPreferencesProvider(context, WifiDataProvider.AUTHORITY)) {
 
-    companion object : PreferencesCompanionObject<WifiLoginData>(
-            WifiLoginData.LOG_TAG,
-            ::WifiLoginData,
+    companion object : PreferencesCompanionObject<WifiData>(
+            WifiData.LOG_TAG,
+            ::WifiData,
             ::Getter
     ) {
 
-        private const val LOG_TAG = "WifiLoginData"
+        private const val LOG_TAG = "WifiData"
         internal const val SAVE_VERSION = 0
-
-        val loginData get() = instance.loginData
 
         @Suppress("UNUSED_PARAMETER")
         internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
@@ -56,14 +62,24 @@ class WifiLoginData private constructor(context: Context) :
         }
     }
 
-    val loginData: LoginDataExtension<ContentProviderSharedPreferences>
-            by lazy { LoginDataExtension(accessProvider) }
+    private val loginCounterPref = IntPreference(
+            key = LOGIN_COUNTER,
+            provider = accessProvider,
+            defaultValue = 0
+    )
 
-    private class Getter : PreferencesGetterAbs<WifiLoginData>() {
+    fun getLoginCount(accountId: String) = loginCounterPref.getValue(this, accountId)
 
-        override fun get() = instance
+    fun incrementLoginCounter(accountId: String) {
+        loginCounterPref.getValue(this, accountId)
+                .let { loginCounterPref.setValue(this, accountId, it) }
+    }
 
-        override val dataClass: Class<out WifiLoginData>
-            get() = WifiLoginData::class.java
+    private class Getter : PreferencesGetterAbs<WifiData>() {
+
+        override fun get(): WifiData = instance
+
+        override val dataClass: Class<out WifiData>
+            get() = WifiData::class.java
     }
 }

@@ -25,7 +25,9 @@ import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
+import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
+import eu.codetopic.java.utils.JavaExtensions.alsoIf
 import eu.codetopic.java.utils.log.Log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
@@ -67,6 +69,9 @@ class WifiChangedReceiver : BroadcastReceiver() {
                 delay(DELAY_AUTO_LOGIN)
 
                 WifiLoginFetcher.tryLoginBackground(context, username, password).await()
+                        .alsoIf({ it == WifiLoginFetcher.LoginResult.SUCCESS }) {
+                            WifiData.instance.incrementLoginCounter(accountId)
+                        }
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "onReceive()", e)
             } finally {
