@@ -50,6 +50,9 @@
 
     <string name="title_fragment_grades">Grades</string>
     <string name="title_fragment_wifi_login">Wifi auto login</string>
+    <string name="title_fragment_lunches_order">Lunches order</string>
+    <string name="title_fragment_lunches_burza">Lunches burza</string>
+    <string name="title_fragment_lunches_burza_watcher">Lunches burza watcher</string>
 
     <string name="action_show_dashboard">Dashboard</string>
     <string name="action_show_grades">Grades</string>

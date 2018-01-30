@@ -53,6 +53,7 @@ import cz.anty.purkynka.grades.save.GradesMap
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.save.GradesUiData.Sort.*
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
+import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
 import eu.codetopic.java.utils.JavaExtensions.alsoIfNull

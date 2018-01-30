@@ -23,10 +23,9 @@ import android.graphics.Typeface
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import android.view.View
-import android.widget.Toast
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Grade
-import cz.anty.purkynka.Utils.colorForValue
+import cz.anty.purkynka.grades.data.Grade.Companion.valueColor
 import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.java.utils.log.Log
@@ -67,12 +66,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
 
         holder.txtGrade.apply {
             setTypeface(null, textStyle)
-            setTextColor(colorForValue(
-                    base.value.toInt().let {
-                        if (it == 0) null else it - 1
-                    },
-                    5
-            ))
+            setTextColor(base.valueColor)
             text = base.valueToShow
         }
 

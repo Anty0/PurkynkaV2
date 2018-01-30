@@ -90,13 +90,13 @@ class UpdateNotifyChannel : NotifyChannel(ID, false) {
                 //setShowWhen(true)
                 //setStyle()
 
-                setSmallIcon(R.mipmap.ic_launcher_foreground)
-                setLargeIcon(
+                setSmallIcon(R.drawable.ic_notify_update)
+                /*setLargeIcon(
                         context.getIconics(ICON_UPDATE)
                                 .sizeDp(24)
                                 .colorRes(R.color.colorPrimary)
                                 .toBitmap()
-                )
+                )*/
                 color = ContextCompat.getColor(context, R.color.colorPrimary)
                 setColorized(true)
 

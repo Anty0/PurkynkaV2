@@ -26,6 +26,7 @@ import android.transition.Transition
 import android.view.View
 import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
+import cz.anty.purkynka.grades.data.Grade.Companion.dateStr
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.simple.SimpleTransitionListener
 import eu.codetopic.utils.ui.activity.modular.ModularActivity

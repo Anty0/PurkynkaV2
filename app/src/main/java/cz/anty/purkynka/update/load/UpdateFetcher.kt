@@ -19,7 +19,9 @@
 package cz.anty.purkynka.update.load
 
 import android.content.Context
+import android.support.annotation.WorkerThread
 import cz.anty.purkynka.R
+import cz.anty.purkynka.Utils
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.letIf
 import eu.codetopic.java.utils.debug.DebugMode
@@ -44,8 +46,10 @@ object UpdateFetcher { // TODO: create new/better api
     private val URL_CHANGELOG = "$URL_BASE/latestChangeLog"
     private val URL_APK = "$URL_BASE/latest.apk"
 
+    @WorkerThread
     fun fetchVersionCode(): Int? = try {
         Jsoup.connect(URL_VERSION_CODE)
+                .userAgent(Utils.userAgent)
                 .followRedirects(false)
                 .execute().body().trim().toInt()
     } catch (e: Exception) {
@@ -54,8 +58,10 @@ object UpdateFetcher { // TODO: create new/better api
         Log.d(LOG_TAG, "fetchVersionCode() -> (versionCode=$it)")
     }
 
+    @WorkerThread
     fun fetchVersionName(): String? = try {
         Jsoup.connect(URL_VERSION_NAME)
+                .userAgent(Utils.userAgent)
                 .followRedirects(false)
                 .execute().body()
                 .letIf({ it.toLowerCase().contains("<html>") }) {

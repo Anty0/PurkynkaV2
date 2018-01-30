@@ -148,6 +148,7 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.10.3'
     implementation 'com.evernote:android-job:1.2.1'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.infstory:proguard-annotations:1.0.2'
     implementation 'com.google.android.gms:play-services-gcm:11.8.0'
     implementation('com.mikepenz:aboutlibraries:5.9.7@aar') {

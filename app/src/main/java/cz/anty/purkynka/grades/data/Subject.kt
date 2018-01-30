@@ -19,9 +19,11 @@
 package cz.anty.purkynka.grades.data
 
 import android.content.Context
+import android.support.annotation.ColorInt
 import android.widget.TextView
 import android.widget.Toast
 import cz.anty.purkynka.R
+import cz.anty.purkynka.Utils
 import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
@@ -34,19 +36,37 @@ import kotlinx.serialization.Transient
 @Serializable
 data class Subject(val fullName: String, val shortName: String, val grades: List<Grade>) {
 
-    @Transient
-    val average: Double get() {
-        var tGrade = 0.0
-        var tWeight = 0
-        return grades.filterNot { it.value == 0F }
-                .takeIf { it.isNotEmpty() }
-                ?.onEach {
-                    tGrade += it.value * it.weight.toDouble()
-                    tWeight += it.weight
-                }
-                ?.let {
-                    tGrade / tWeight.toDouble()
-                } ?: Double.NaN
+    companion object {
+
+        val Collection<Grade>.average: Double
+            get() {
+                var tValue = 0.0
+                var tWeight = 0
+                return this.filterNot { it.value == 0F }
+                        .takeIf { it.isNotEmpty() }
+                        ?.onEach {
+                            val weight = it.weight
+                            tValue += it.value * weight.toDouble()
+                            tWeight += weight
+                        }
+                        ?.let {
+                            tValue / tWeight.toDouble()
+                        } ?: Double.NaN
+            }
+
+        val Subject.average: Double
+            get() = grades.average
+
+        @get:ColorInt
+        val Collection<Grade>.averageColor: Int
+            get() = Utils.colorForValue(
+                    value = (average * 100).toInt() - 100,
+                    size = 500
+            )
+
+        @get:ColorInt
+        val Subject.averageColor: Int
+            get() = grades.averageColor
     }
 
     override fun equals(other: Any?): Boolean {

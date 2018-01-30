@@ -27,6 +27,8 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
 import cz.anty.purkynka.Utils.colorForValue
 import cz.anty.purkynka.grades.data.Subject
+import cz.anty.purkynka.grades.data.Subject.Companion.average
+import cz.anty.purkynka.grades.data.Subject.Companion.averageColor
 import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
@@ -45,8 +47,8 @@ class SubjectItem(val base: Subject,
                   val changes: Map<Int, List<String>> = emptyMap()): CustomItem() { // TODO: use changes
 
     companion object {
-        private const val LOG_TAG = "SubjectItem"
 
+        private const val LOG_TAG = "SubjectItem"
     }
 
     @Transient
@@ -56,12 +58,9 @@ class SubjectItem(val base: Subject,
         holder.txtNameShort.text = base.shortName.fillToLen(4, JavaExtensions.Anchor.LEFT)
 
         holder.txtAverage.apply {
-            val average = base.average
-            setTextColor(colorForValue((average * 100).toInt()
-                    .let { if (it == 0) null else it - 100 }, 500))
-            text = average.format(2)
+            setTextColor(base.averageColor)
+            text = base.average.format(2)
         }
-
 
         holder.txtNameLong.text = base.fullName
 

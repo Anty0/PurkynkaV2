@@ -53,6 +53,9 @@ import cz.anty.purkynka.account.ui.AccountEditActivity
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
+import cz.anty.purkynka.lunches.LunchesBurzaFragment
+import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
+import cz.anty.purkynka.lunches.LunchesOrderFragment
 import cz.anty.purkynka.settings.SettingsActivity
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
 import eu.codetopic.utils.AndroidExtensions.broadcast
@@ -259,9 +262,9 @@ class MainActivity : NavigationActivity() {
                 WifiLoginFragment::class.java -> findItem(R.id.nav_wifi_login).isChecked = true
                 // TimetablesFragment::class.java -> findItem(R.id.nav_timetables).isChecked = true
                 // AttendanceFragment::class.java -> findItem(R.id.nav_attendance).isChecked = true
-                // LunchesOrderFragment::class.java -> findItem(R.id.nav_lunches_order).isChecked = true
-                // LunchesBurzaFragment::class.java -> findItem(R.id.nav_lunches_burza).isChecked = true
-                // LunchesBurzaWatcherFragment::class.java -> findItem(R.id.nav_lunches_burza_watcher).isChecked = true
+                LunchesOrderFragment::class.java -> findItem(R.id.nav_lunches_order).isChecked = true
+                LunchesBurzaFragment::class.java -> findItem(R.id.nav_lunches_burza).isChecked = true
+                LunchesBurzaWatcherFragment::class.java -> findItem(R.id.nav_lunches_burza_watcher).isChecked = true
                 else -> return super.onUpdateSelectedNavigationMenuItem(currentFragment, menu)
             }
         }
@@ -275,9 +278,9 @@ class MainActivity : NavigationActivity() {
             R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
             // R.id.nav_timetables -> replaceFragment(TimetablesFragment::class.java)
             // R.id.nav_attendance -> replaceFragment(AttendanceFragment::class.java)
-            // R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
-            // R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
-            // R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)
+            R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
+            R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
+            R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)
             R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             R.id.nav_debug -> startActivity(Intent(this, DebugActivity::class.java))
             R.id.nav_contact_facebook -> AndroidUtils.openUri(this, Constants.URL_FACEBOOK_PAGE, R.string.toast_browser_failed)

@@ -18,23 +18,11 @@
 
 package cz.anty.purkynka.grades.data
 
-import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.Typeface
-import android.widget.TextView
-import android.widget.Toast
-import cz.anty.purkynka.R
+import android.support.annotation.ColorInt
+import cz.anty.purkynka.Utils
 import cz.anty.purkynka.grades.load.GradesParser
-import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
-import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
+import eu.codetopic.java.utils.JavaExtensions.letIf
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import proguard.annotation.Keep
-import proguard.annotation.KeepClassMemberNames
-import proguard.annotation.KeepClassMembers
-import proguard.annotation.KeepName
 import java.util.*
 
 /**
@@ -44,8 +32,20 @@ import java.util.*
 data class Grade(val id: Int, val date: Long, val subjectShort: String, val subjectLong: String, val valueToShow: String,
                  val value: Float, val type: String, val weight: Int, val note: String, val teacher: String) {
 
-    @Transient
-    val dateStr: String get() = GradesParser.GRADE_DATE_FORMAT.format(Date(date))
+    companion object {
+
+        val Grade.dateStr: String
+            get() = GradesParser.GRADE_DATE_FORMAT.format(Date(date))
+
+        @get:ColorInt
+        val Grade.valueColor: Int
+            get() = Utils.colorForValue(
+                    value = value.toInt()
+                            .letIf({ it == 0 }) { null }
+                            ?.let { it - 1 },
+                    size = 5
+            )
+    }
 
     override fun hashCode() = id.hashCode()
 

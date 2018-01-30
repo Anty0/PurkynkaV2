@@ -29,10 +29,13 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.Constants.ICON_GRADES
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
+import cz.anty.purkynka.Utils
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.grades.data.Grade
+import cz.anty.purkynka.grades.data.Grade.Companion.valueColor
+import cz.anty.purkynka.grades.data.Subject.Companion.averageColor
 import cz.anty.purkynka.grades.ui.GradeActivity
 import cz.anty.purkynka.grades.ui.GradeItem
 import eu.codetopic.java.utils.log.Log
@@ -166,8 +169,8 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
         MainActivity.start(context, GradesFragment::class.java)
     }
 
-    private fun buildNotificationBase(context: Context,
-                                      group: NotifyGroup): NotificationCompat.Builder =
+    private fun buildNotificationBase(context: Context, group: NotifyGroup,
+                                      notifyColor: Int): NotificationCompat.Builder =
             NotificationCompat.Builder(context, combinedIdFor(group)).apply {
                 //setContentTitle(context.getFormattedText(R.string.notify_grade_new_title,
                 //            grade.valueToShow, grade.subjectShort))
@@ -179,14 +182,14 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
                 //setShowWhen(true)
                 //setStyle()
 
-                setSmallIcon(R.mipmap.ic_launcher_foreground) // TODO: Better image
-                setLargeIcon(
+                setSmallIcon(R.drawable.ic_notify_grades)
+                /*setLargeIcon(
                         context.getIconics(ICON_GRADES)
                                 .sizeDp(24)
                                 .colorRes(R.color.colorPrimaryGrades)
                                 .toBitmap()
-                )
-                color = ContextCompat.getColor(context, R.color.colorPrimaryGrades)
+                )*/
+                color = notifyColor
                 //setColorized(false)
 
 
@@ -206,44 +209,47 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
             }
 
     override fun createNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,
-                                    data: Bundle): NotificationCompat.Builder =
-            buildNotificationBase(context, group).apply {
-                val grade = readDataGrade(data)
-                        ?: throw IllegalArgumentException("Data doesn't contains grade")
-                when (data.getString(PARAM_TYPE)) {
-                    PARAM_TYPE_VAL_NEW -> {
-                        setContentTitle(context.getFormattedText(
-                                R.string.notify_grade_new_title,
-                                grade.valueToShow, grade.subjectShort
-                        ))
-                        setContentText(context.getFormattedText(
-                                if (grade.note.isEmpty()) R.string.notify_grade_new_text
-                                else R.string.notify_grade_new_text_note,
-                                grade.note, grade.teacher
-                        ))
-                    }
-                    PARAM_TYPE_VAL_MODIFIED -> {
-                        val changes = data.getString(PARAM_CHANGES_LIST)
-                                ?.let { JSON.parse(StringSerializer.list, it) }
-                                ?: throw IllegalArgumentException(
-                                        "Data doesn't contains grade's changes list")
+                                    data: Bundle): NotificationCompat.Builder {
+        val grade = readDataGrade(data)
+                ?: throw IllegalArgumentException("Data doesn't contains grade")
+        val color = grade.valueColor
 
-
-                        // TODO: show changes
-                        setContentTitle(context.getFormattedText(
-                                R.string.notify_grade_modified_title,
-                                grade.valueToShow, grade.subjectShort
-                        ))
-                        setContentText(context.getFormattedText(
-                                if (grade.note.isEmpty()) R.string.notify_grade_modified_text
-                                else R.string.notify_grade_modified_text_note,
-                                grade.note, grade.teacher
-                        ))
-                    }
-                    else -> throw IllegalArgumentException(
-                            "Data doesn't contains valid change type")
+        return buildNotificationBase(context, group, color).apply {
+            when (data.getString(PARAM_TYPE)) {
+                PARAM_TYPE_VAL_NEW -> {
+                    setContentTitle(context.getFormattedText(
+                            R.string.notify_grade_new_title,
+                            grade.valueToShow, grade.subjectShort
+                    ))
+                    setContentText(context.getFormattedText(
+                            if (grade.note.isEmpty()) R.string.notify_grade_new_text
+                            else R.string.notify_grade_new_text_note,
+                            grade.note, grade.teacher
+                    ))
                 }
+                PARAM_TYPE_VAL_MODIFIED -> {
+                    val changes = data.getString(PARAM_CHANGES_LIST)
+                            ?.let { JSON.parse(StringSerializer.list, it) }
+                            ?: throw IllegalArgumentException(
+                                    "Data doesn't contains grade's changes list")
+
+
+                    // TODO: show changes
+                    setContentTitle(context.getFormattedText(
+                            R.string.notify_grade_modified_title,
+                            grade.valueToShow, grade.subjectShort
+                    ))
+                    setContentText(context.getFormattedText(
+                            if (grade.note.isEmpty()) R.string.notify_grade_modified_text
+                            else R.string.notify_grade_modified_text_note,
+                            grade.note, grade.teacher
+                    ))
+                }
+                else -> throw IllegalArgumentException(
+                        "Data doesn't contains valid change type")
             }
+        }
+    }
 
     override fun createSummaryNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,
                                            data: Map<NotifyId, Bundle>): NotificationCompat.Builder {
@@ -253,8 +259,9 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
             }
         }
         val subjects = allGrades.map { it.subjectShort }.distinct().joinToString(", ")
+        val color = allGrades.averageColor
 
-        return buildNotificationBase(context, group).apply {
+        return buildNotificationBase(context, group, color).apply {
             setContentTitle(context.getText(R.string.notify_grade_summary_title))
             setContentText(context.getFormattedText(R.string.notify_grade_summary_text, subjects))
             setStyle(NotificationCompat.InboxStyle()

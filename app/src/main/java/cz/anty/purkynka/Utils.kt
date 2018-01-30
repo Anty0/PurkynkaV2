@@ -19,6 +19,7 @@
 package cz.anty.purkynka
 
 import android.graphics.Color
+import android.os.Build
 import android.support.annotation.ColorInt
 import eu.codetopic.java.utils.JavaExtensions.join
 import kotlin.math.max
@@ -62,4 +63,8 @@ object Utils {
         val rgbColor = segmentColor.join(nextSegmentColor) { sc, nsc -> round(sc + (nsc - sc) * segmentMove).toInt() }
         return Color.rgb(rgbColor[0], rgbColor[1], rgbColor[2])
     }
+
+    val userAgent: String
+        get() = "Purkynka/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; " +
+                "Linux; rv:${BuildConfig.VERSION_CODE}; cz-cs) Mozilla/5.0 Gecko/20100101 Firefox/58.0"
 }

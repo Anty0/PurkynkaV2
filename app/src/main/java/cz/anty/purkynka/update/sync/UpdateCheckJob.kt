@@ -81,7 +81,7 @@ class UpdateCheckJob : Job() {
             Log.d(LOG_TAG, "schedule")
 
             if (UpdateData.instance.jobScheduleVersion != BuildConfig.VERSION_CODE
-                    || JobManager.instance().getAllJobsForTag(TAG).isNotEmpty())
+                    || JobManager.instance().getAllJobRequestsForTag(TAG).isNotEmpty())
                 return
 
             JobRequest.Builder(TAG)

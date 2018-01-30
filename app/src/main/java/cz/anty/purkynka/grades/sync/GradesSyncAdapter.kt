@@ -136,10 +136,12 @@ class GradesSyncAdapter(context: Context) :
             if (!loginData.isLoggedIn(accountId))
                 throw IllegalStateException("User is not logged in")
 
-            val cookies = GradesFetcher.login(
-                    loginData.getUsername(accountId),
-                    loginData.getPassword(accountId)
-            )
+            val (username, password) = loginData.getCredentials(accountId)
+
+            if (username == null || password == null)
+                throw IllegalStateException("Username or password is null")
+
+            val cookies = GradesFetcher.login(username, password)
 
             if (!GradesFetcher.isLoggedIn(cookies))
                 throw WrongLoginDataException("Failed to login user with provided credentials")
