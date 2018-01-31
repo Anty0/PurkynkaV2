@@ -1,6 +1,6 @@
 /*
  * app
- * Copyright (C)   2017  anty
+ * Copyright (C)   2018  anty
  *
  * This program is free  software: you can redistribute it and/or modify
  * it under the terms  of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.save
+package cz.anty.purkynka.lunches.save
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -30,17 +30,17 @@ import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 /**
  * @author anty
  */
-class GradesLoginData private constructor(context: Context) :
+class LunchesLoginData private constructor(context: Context) :
         PreferencesData<ContentProviderSharedPreferences>(context,
-                ContentProviderPreferencesProvider(context, GradesLoginDataProvider.AUTHORITY)) {
+                ContentProviderPreferencesProvider(context, LunchesLoginDataProvider.AUTHORITY)) {
 
-    companion object : PreferencesCompanionObject<GradesLoginData>(
-            GradesLoginData.LOG_TAG,
-            ::GradesLoginData,
+    companion object : PreferencesCompanionObject<LunchesLoginData>(
+            LunchesLoginData.LOG_TAG,
+            ::LunchesLoginData,
             ::Getter
     ) {
 
-        private const val LOG_TAG = "GradesLoginData"
+        private const val LOG_TAG = "LunchesLoginData"
         internal const val SAVE_VERSION = 0
 
         val loginData get() = instance.loginData
@@ -59,11 +59,11 @@ class GradesLoginData private constructor(context: Context) :
     val loginData: LoginDataExtension<ContentProviderSharedPreferences>
             by lazy { LoginDataExtension(accessProvider) }
 
-    private class Getter : PreferencesGetterAbs<GradesLoginData>() {
+    private class Getter : PreferencesGetterAbs<LunchesLoginData>() {
 
         override fun get() = instance
 
-        override val dataClass: Class<out GradesLoginData>
-            get() = GradesLoginData::class.java
+        override val dataClass: Class<out LunchesLoginData>
+            get() = LunchesLoginData::class.java
     }
 }

@@ -55,4 +55,12 @@ public final class PrefNames {
     public static final String LOGIN_COUNTER = "LOGIN_COUNTER";
     /// WifiLoginData
     public static final String FILE_NAME_WIFI_LOGIN_DATA = "WifiLoginData";
+    // Lunches
+    /// LunchesData
+    public static final String FILE_NAME_LUNCHES_DATA = "LunchesData";
+    //// FIRST_SYNC SYNC_RESULT
+    public static final String LUNCHES_LIST = "LUNCHES";
+    /// LunchesLoginData
+    public static final String FILE_NAME_LUNCHES_LOGIN_DATA = "LunchesLoginData";
+
 }

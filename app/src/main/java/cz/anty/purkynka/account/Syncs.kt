@@ -19,8 +19,17 @@
 package cz.anty.purkynka.account
 
 import android.accounts.Account
+import android.content.BroadcastReceiver
 import android.content.ContentResolver
+import android.content.Context
 import android.os.Bundle
+import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.accountManager
+import eu.codetopic.utils.AndroidExtensions.broadcast
+import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.data.getter.DataGetter
+import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
 import org.jetbrains.anko.bundleOf
 
 /**
@@ -45,5 +54,37 @@ object Syncs {
         ContentResolver.setSyncAutomatically(account, contentAuthority, enable)
         if (enable) ContentResolver.addPeriodicSync(account, contentAuthority, extras, syncFrequency)
         else ContentResolver.removePeriodicSync(account, contentAuthority, extras)
+    }
+
+    fun initAccountBasedService(context: Context, logTag: String,
+                                getter: DataGetter<*>, loginData: LoginDataExtension<*>,
+                                contentAuthority: String, syncFrequency: Long) {
+        val receiver = broadcast { ctx, intent ->
+            Log.d(logTag, "loginDataChanged(intent=$intent)")
+
+            val accountManager = ctx.accountManager
+
+            Accounts.getAllWIthIds(accountManager).forEach {
+                val (accountId, account) = it
+
+                val loggedIn = loginData.isLoggedIn(accountId)
+                val syncable = ContentResolver.getIsSyncable(account, contentAuthority)
+                        .takeIf { it >= 0 }?.let { it > 0 }
+                if (syncable != null && loggedIn == syncable) return@forEach
+
+                Log.d(logTag, "loginDataChanged() -> differenceFound(account=$it," +
+                        " loggedIn=$loggedIn, syncable=${syncable ?: "unknown"})")
+
+                updateEnabled(
+                        enable = loggedIn,
+                        account = account,
+                        contentAuthority = contentAuthority,
+                        syncFrequency = syncFrequency
+                )
+            }
+        }
+
+        LocalBroadcast.registerReceiver(receiver, intentFilter(getter))
+        receiver.onReceive(context, null)
     }
 }

@@ -146,6 +146,19 @@
             <meta-data android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_grades" />
         </service>
+        <service
+            android:name=".lunches.sync.LunchesSyncService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":syncs">
+
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_lunches" />
+        </service>
 
         <provider
             android:name=".account.save.ActiveAccountProvider"
@@ -175,6 +188,16 @@
         <provider
             android:name=".wifilogin.save.WifiLoginDataProvider"
             android:authorities="cz.anty.purkynka.wifilogin.login"
+            android:exported="false"
+            android:process=":providers" />
+        <provider
+            android:name=".lunches.save.LunchesDataProvider"
+            android:authorities="cz.anty.purkynka.lunches.data"
+            android:exported="false"
+            android:process=":providers" />
+        <provider
+            android:name=".lunches.save.LunchesLoginDataProvider"
+            android:authorities="cz.anty.purkynka.lunches.login"
             android:exported="false"
             android:process=":providers" />
 

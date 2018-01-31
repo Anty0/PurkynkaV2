@@ -28,6 +28,9 @@ import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
+import cz.anty.purkynka.lunches.save.LunchesData
+import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
 import cz.anty.purkynka.settings.SettingsData
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
@@ -185,6 +188,8 @@ class AppInit : MultiDexApplication() {
         GradesLoginData.initialize(this)
         WifiData.initialize(this)
         WifiLoginData.initialize(this)
+        LunchesData.initialize(this)
+        LunchesLoginData.initialize(this)
 
         // Initialize data provider of dashboard framework
         DashboardData.initialize(this)
@@ -194,6 +199,7 @@ class AppInit : MultiDexApplication() {
 
         // Initialize sync adapters
         GradesSyncAdapter.init(this)
+        LunchesSyncAdapter.init(this)
     }
 
     private fun initProcessProviders() {
@@ -208,6 +214,8 @@ class AppInit : MultiDexApplication() {
         GradesLoginData.initialize(this)
         WifiData.initialize(this)
         WifiLoginData.initialize(this)
+        LunchesData.initialize(this)
+        LunchesLoginData.initialize(this)
 
         // Init Evernote's JobManager used here for app updates checking
         initJobManager()

@@ -1,6 +1,6 @@
 /*
  * app
- * Copyright (C)   2017  anty
+ * Copyright (C)   2018  anty
  *
  * This program is free  software: you can redistribute it and/or modify
  * it under the terms  of the GNU General Public License as published by
@@ -16,41 +16,29 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.save
+package cz.anty.purkynka.lunches.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.PrefNames.FILE_NAME_GRADES_LOGIN_DATA
+import cz.anty.purkynka.PrefNames.FILE_NAME_LUNCHES_DATA
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
-import eu.codetopic.utils.data.preferences.provider.SecureSharedPreferencesProvider
-import eu.codetopic.utils.data.preferences.support.SecurePreferences
 import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPreferences
 
 /**
  * @author anty
  */
-class GradesLoginDataProvider :
-        VersionedContentProviderPreferences<SecurePreferences<SharedPreferences>>(
-                authority = AUTHORITY,
-                saveVersion = GradesLoginData.SAVE_VERSION
-        ) {
+class LunchesDataProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, LunchesData.SAVE_VERSION) {
 
     companion object {
-        const val AUTHORITY = "cz.anty.purkynka.grades.login"
+        const val AUTHORITY = "cz.anty.purkynka.lunches.data"
     }
 
-    override fun onPreparePreferencesProvider():
-            ISharedPreferencesProvider<SecurePreferences<SharedPreferences>> {
-        return SecureSharedPreferencesProvider(
-                BasicSharedPreferencesProvider(
-                        context = context,
-                        fileName = FILE_NAME_GRADES_LOGIN_DATA
-                )
-        )
+    override fun onPreparePreferencesProvider(): ISharedPreferencesProvider<SharedPreferences> {
+        return BasicSharedPreferencesProvider(context, FILE_NAME_LUNCHES_DATA, Context.MODE_PRIVATE)
     }
 
     override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
-        GradesLoginData.onUpgrade(editor, from, to)
+        LunchesData.onUpgrade(editor, from, to)
     }
 }

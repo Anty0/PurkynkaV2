@@ -54,4 +54,5 @@ object Constants {
     const val CONNECTION_TIMEOUT_SAS: Int = 1000 * 60
 
     const val SYNC_FREQUENCY_GRADES: Long = 60 * 15 // 15 minutes in seconds
+    const val SYNC_FREQUENCY_LUNCHES: Long = 60 * 60 * 3 // 3 hours in seconds
 }

@@ -56,7 +56,9 @@ import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.lunches.LunchesBurzaFragment
 import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
+import cz.anty.purkynka.lunches.LunchesLoginFragment
 import cz.anty.purkynka.lunches.LunchesOrderFragment
+import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.settings.SettingsActivity
 import cz.anty.purkynka.timetables.TimetablesListFragment
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
@@ -97,6 +99,9 @@ class MainActivity : NavigationActivity() {
             broadcast { _, _ -> invalidateNavigationMenu() }
 
     private val accountsChangeReceiver: BroadcastReceiver =
+            broadcast { _, _ -> invalidateNavigationMenu() }
+
+    private val lunchesLoginDataChangeReceiver: BroadcastReceiver =
             broadcast { _, _ -> invalidateNavigationMenu() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,11 +146,16 @@ class MainActivity : NavigationActivity() {
                 activeAccountChangeReceiver,
                 intentFilter(ActiveAccount.getter)
         )
+        LocalBroadcast.registerReceiver(
+                lunchesLoginDataChangeReceiver,
+                intentFilter(LunchesLoginData.getter)
+        )
 
         invalidateNavigationMenu()
     }
 
     override fun onPause() {
+        LocalBroadcast.unregisterReceiver(lunchesLoginDataChangeReceiver)
         LocalBroadcast.unregisterReceiver(activeAccountChangeReceiver)
         unregisterReceiver(accountsChangeReceiver)
 
@@ -224,8 +234,16 @@ class MainActivity : NavigationActivity() {
         menu.findItem(R.id.nav_attendance).icon =
                 getIconics(ICON_ATTENDANCE).actionBar()
 
-        menu.findItem(R.id.nav_lunches).icon =
-                getIconics(ICON_LUNCHES).actionBar()
+        val loggedInLunches = ActiveAccount.getId()
+                ?.let { LunchesLoginData.loginData.isLoggedIn(it) } ?: false
+        menu.findItem(R.id.nav_lunches_login).apply {
+            icon = getIconics(ICON_LUNCHES).actionBar()
+            isVisible = !loggedInLunches
+        }
+        menu.findItem(R.id.nav_lunches).apply {
+            icon = getIconics(ICON_LUNCHES).actionBar()
+            isVisible = loggedInLunches
+        }
         menu.findItem(R.id.nav_lunches_order).icon =
                 getIconics(ICON_LUNCHES_ORDER).actionBar()
         menu.findItem(R.id.nav_lunches_burza).icon =
@@ -264,6 +282,7 @@ class MainActivity : NavigationActivity() {
                 WifiLoginFragment::class.java -> findItem(R.id.nav_wifi_login).isChecked = true
                 TimetablesListFragment::class.java -> findItem(R.id.nav_timetables).isChecked = true
                 AttendanceSearchFragment::class.java -> findItem(R.id.nav_attendance).isChecked = true
+                LunchesLoginFragment::class.java -> findItem(R.id.nav_lunches_login).isChecked = true
                 LunchesOrderFragment::class.java -> findItem(R.id.nav_lunches_order).isChecked = true
                 LunchesBurzaFragment::class.java -> findItem(R.id.nav_lunches_burza).isChecked = true
                 LunchesBurzaWatcherFragment::class.java -> findItem(R.id.nav_lunches_burza_watcher).isChecked = true
@@ -280,6 +299,7 @@ class MainActivity : NavigationActivity() {
             R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
             R.id.nav_timetables -> replaceFragment(TimetablesListFragment::class.java)
             R.id.nav_attendance -> replaceFragment(AttendanceSearchFragment::class.java)
+            R.id.nav_lunches_login -> replaceFragment(LunchesLoginFragment::class.java)
             R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
             R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
             R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)

@@ -58,46 +58,24 @@ class GradesSyncAdapter(context: Context) :
 
         const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_SEMESTER"
 
-        private val loginDataChangedReceiver = broadcast { context, intent ->
-            Log.d(LOG_TAG, "loginDataChanged(intent=$intent)")
-
-            val loginData = GradesLoginData.loginData
-            val accountManager = context.accountManager
-
-            Accounts.getAllWIthIds(accountManager).forEach {
-                val accountId = it.key
-                val account = it.value
-
-                val loggedIn = loginData.isLoggedIn(accountId)
-                val syncable = ContentResolver.getIsSyncable(account, CONTENT_AUTHORITY)
-                        .takeIf { it >= 0 }?.let { it > 0 }
-                if (syncable != null && loggedIn == syncable) return@forEach
-
-                Log.d(LOG_TAG, "loginDataChanged() -> differenceFound(loggedIn=$loggedIn," +
-                        " syncable=${syncable ?: "Unknown"}, account=$it)")
-
-                Syncs.updateEnabled(
-                        loggedIn,
-                        account,
-                        CONTENT_AUTHORITY,
-                        SYNC_FREQUENCY
-                )
-            }
-        }
-
         fun init(context: Context) {
-            LocalBroadcast.registerReceiver(loginDataChangedReceiver, intentFilter(GradesLoginData.getter))
-            loginDataChangedReceiver.onReceive(context, null)
+            Syncs.initAccountBasedService(
+                    context = context,
+                    logTag = LOG_TAG,
+                    getter = GradesLoginData.getter,
+                    loginData = GradesLoginData.loginData,
+                    contentAuthority = CONTENT_AUTHORITY,
+                    syncFrequency = SYNC_FREQUENCY
+            )
         }
 
         fun requestSync(account: Account, semester: Semester = Semester.AUTO) {
-            Log.d(LOG_TAG, "requestSync(account=$account, " +
-                    "semester=$semester)")
+            Log.d(LOG_TAG, "requestSync(account=$account, semester=$semester)")
 
             Syncs.trigger(
-                    account,
-                    CONTENT_AUTHORITY,
-                    bundleOf(
+                    account = account,
+                    contentAuthority = CONTENT_AUTHORITY,
+                    extras = bundleOf(
                             EXTRA_SEMESTER to semester.toString()
                     )
             )
@@ -106,9 +84,8 @@ class GradesSyncAdapter(context: Context) :
 
     override fun onPerformSync(account: Account, extras: Bundle, authority: String,
                                provider: ContentProviderClient, syncResult: SyncResult) {
-        Log.d(LOG_TAG, "onPerformSync(" +
-                "account=(type=${account.type}, name=${account.name}), " +
-                "authority=$authority)")
+        Log.d(LOG_TAG, "onPerformSync(account=(type=${account.type}," +
+                " name=${account.name}), authority=$authority)")
 
         if (authority != CONTENT_AUTHORITY) return
 
