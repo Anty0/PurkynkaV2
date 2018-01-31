@@ -58,6 +58,7 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".MainActivity"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.Launch">
             <intent-filter>
@@ -98,6 +99,7 @@
 
         <receiver
             android:name=".wifilogin.receiver.WifiChangedReceiver"
+            android:label="@string/label_receiver_wifi_changed"
             android:enabled="true"
             android:exported="false"
             android:process=":syncs">
@@ -122,6 +124,7 @@
 
         <service
             android:name=".account.service.AuthenticatorService"
+            android:label="@string/label_service_authenticator"
             android:enabled="true"
             android:exported="false"
             android:process=":accounts">
@@ -135,6 +138,7 @@
         </service>
         <service
             android:name=".grades.sync.GradesSyncService"
+            android:label="@string/label_service_sync_grades"
             android:enabled="true"
             android:exported="true"
             android:process=":syncs">
@@ -148,6 +152,7 @@
         </service>
         <service
             android:name=".lunches.sync.LunchesSyncService"
+            android:label="@string/label_service_sync_lunches"
             android:enabled="true"
             android:exported="true"
             android:process=":syncs">
@@ -207,6 +212,39 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimary" />
+
+
+
+        <service
+            android:name="com.evernote.android.job.v21.PlatformJobService"
+            android:process=":syncs"
+            tools:node="merge" />
+        <service
+            android:name="com.evernote.android.job.v14.PlatformAlarmService"
+            android:process=":syncs"
+            tools:node="merge" />
+        <service
+            android:name="com.evernote.android.job.v14.PlatformAlarmServiceExact"
+            android:process=":syncs"
+            tools:node="merge" />
+
+        <receiver
+            android:name="com.evernote.android.job.v14.PlatformAlarmReceiver"
+            android:process=":syncs"
+            tools:node="merge" />
+        <receiver
+            android:name="com.evernote.android.job.JobBootReceiver"
+            android:process=":syncs"
+            tools:node="merge" />
+
+        <service
+            android:name="com.evernote.android.job.gcm.PlatformGcmService"
+            android:process=":syncs"
+            tools:node="merge" />
+        <service
+            android:name="com.evernote.android.job.JobRescheduleService"
+            android:process=":syncs"
+            tools:node="merge" />
     </application>
 
 </manifest>

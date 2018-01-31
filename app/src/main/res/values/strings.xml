@@ -57,6 +57,11 @@
     <string name="title_fragment_timetables_list">Timetables</string>
     <string name="title_fragment_attendance_search">Attendance</string>
 
+    <string name="label_receiver_wifi_changed">Wifi change receiver for Wifi auto login</string>
+    <string name="label_service_authenticator">Account authenticator</string>
+    <string name="label_service_sync_grades">Grades</string>
+    <string name="label_service_sync_lunches">Lunches</string>
+
     <string name="action_show_dashboard">Dashboard</string>
     <string name="action_show_grades">Grades</string>
     <string name="action_show_wifi_login">Wifi auto login</string>
