@@ -25,7 +25,24 @@ import org.json.JSONObject
  */
 object ImagesParser {
 
-    fun extractImages(obj: JSONObject) {
-        TODO("implement")
+    private const val STATUS = "status"
+    private const val STATUS_VAL = "success"
+    private const val DATA = "data"
+    private const val RESULT = "result"
+    private const val ITEMS = "items"
+    private const val ITEM_TITLE = "title"
+    private const val ITEM_THUMBNAIL = "thumbnail"
+
+    fun extractImages(obj: JSONObject): List<Pair<String, String>> {
+        if (obj.getString(STATUS) != STATUS_VAL)
+            throw IllegalArgumentException("Invalid status: ${obj.getString(STATUS)}")
+
+        val imagesArray = obj.getJSONObject(DATA).getJSONObject(RESULT).getJSONArray(ITEMS)
+        return (0 until imagesArray.length()).map {
+            imagesArray.getJSONObject(it).let {
+                it.getString(ITEM_TITLE) to
+                        "https:${it.getString(ITEM_THUMBNAIL)}"
+            }
+        }
     }
 }

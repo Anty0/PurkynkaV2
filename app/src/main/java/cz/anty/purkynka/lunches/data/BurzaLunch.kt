@@ -19,43 +19,34 @@
 package cz.anty.purkynka.lunches.data
 
 import cz.anty.purkynka.lunches.load.LunchesParser
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import java.util.*
 
 /**
  * @author anty
  */
-@Serializable
-data class LunchOptionsGroup(val date: Long, val options: Array<LunchOption>?) {
+data class BurzaLunch(val lunchNumber: Int, val date: Long, val name: String,
+                      val canteen: String, val pieces: Int, val orderUrl: String) {
 
     companion object {
 
-        val LunchOptionsGroup.dateStr: String
+        val BurzaLunch.dateStr: String
             get() = LunchesParser.FORMAT_DATE_SHOW.format(date)
     }
-
-    @Transient
-    val orderedOption: Pair<Int, LunchOption>?
-        get() = options?.indexOfFirst { it.ordered }
-                ?.takeIf { it != -1 }
-                ?.let { it to options[it] }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as LunchOptionsGroup
+        other as BurzaLunch
 
         if (date != other.date) return false
-        if (!Arrays.equals(options, other.options)) return false
+        if (name != other.name) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = date.hashCode()
-        result = 31 * result + Arrays.hashCode(options)
+        result = 31 * result + name.hashCode()
         return result
     }
 }

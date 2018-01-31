@@ -53,6 +53,8 @@
     <string name="title_fragment_lunches_order">Lunches order</string>
     <string name="title_fragment_lunches_burza">Lunches burza</string>
     <string name="title_fragment_lunches_burza_watcher">Lunches burza watcher</string>
+    <string name="title_fragment_timetables_list">Timetables</string>
+    <string name="title_fragment_attendance_search">Attendance</string>
 
     <string name="action_show_dashboard">Dashboard</string>
     <string name="action_show_grades">Grades</string>

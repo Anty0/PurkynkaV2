@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.lunches.data
 
+import cz.anty.purkynka.lunches.load.LunchesParser
 import kotlinx.serialization.Serializable
 
 /**
@@ -25,7 +26,13 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class LunchOption(val name: String, val date: Long, val enabled: Boolean, val ordered: Boolean,
-                       val orderUrlAdd: String?, val inBurzaState: Boolean?, val toBurzaUrlAdd: String?) {
+                       val orderOrCancelUrl: String?, val isInBurza: Boolean?, val toOrFromBurzaUrl: String?) {
+
+    companion object {
+
+        val LunchOption.dateStr: String
+            get() = LunchesParser.FORMAT_DATE_SHOW.format(date)
+    }
 
     override fun hashCode(): Int {
         var result = name.hashCode()

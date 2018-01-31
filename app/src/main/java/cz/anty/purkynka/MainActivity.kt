@@ -50,6 +50,7 @@ import cz.anty.purkynka.Constants.ICON_WIFI_LOGIN
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.account.ui.AccountEditActivity
+import cz.anty.purkynka.attendance.AttendanceSearchFragment
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
@@ -57,6 +58,7 @@ import cz.anty.purkynka.lunches.LunchesBurzaFragment
 import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
 import cz.anty.purkynka.lunches.LunchesOrderFragment
 import cz.anty.purkynka.settings.SettingsActivity
+import cz.anty.purkynka.timetables.TimetablesListFragment
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
@@ -260,8 +262,8 @@ class MainActivity : NavigationActivity() {
                 DashboardFragment::class.java -> findItem(R.id.nav_dashboard).isChecked = true
                 GradesFragment::class.java -> findItem(R.id.nav_grades).isChecked = true
                 WifiLoginFragment::class.java -> findItem(R.id.nav_wifi_login).isChecked = true
-                // TimetablesFragment::class.java -> findItem(R.id.nav_timetables).isChecked = true
-                // AttendanceFragment::class.java -> findItem(R.id.nav_attendance).isChecked = true
+                TimetablesListFragment::class.java -> findItem(R.id.nav_timetables).isChecked = true
+                AttendanceSearchFragment::class.java -> findItem(R.id.nav_attendance).isChecked = true
                 LunchesOrderFragment::class.java -> findItem(R.id.nav_lunches_order).isChecked = true
                 LunchesBurzaFragment::class.java -> findItem(R.id.nav_lunches_burza).isChecked = true
                 LunchesBurzaWatcherFragment::class.java -> findItem(R.id.nav_lunches_burza_watcher).isChecked = true
@@ -276,8 +278,8 @@ class MainActivity : NavigationActivity() {
             R.id.nav_dashboard -> replaceFragment(DashboardFragment::class.java)
             R.id.nav_grades -> replaceFragment(GradesFragment::class.java)
             R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
-            // R.id.nav_timetables -> replaceFragment(TimetablesFragment::class.java)
-            // R.id.nav_attendance -> replaceFragment(AttendanceFragment::class.java)
+            R.id.nav_timetables -> replaceFragment(TimetablesListFragment::class.java)
+            R.id.nav_attendance -> replaceFragment(AttendanceSearchFragment::class.java)
             R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
             R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
             R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)

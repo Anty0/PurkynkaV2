@@ -32,6 +32,7 @@ import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.update.sync.UpdateCheckJob
 import eu.codetopic.java.utils.JavaExtensions.alsoIf
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.getIconics
@@ -56,18 +57,9 @@ import org.jetbrains.anko.design.longSnackbar
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
 class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule()) {
 
-    private var versionNameCurrent: String = "unknown"
-    private var versionNameAvailable: String = "unknown"
-    private var versionCodeCurrent: Int? = null
-    private var versionCodeAvailable: Int? = null
-    private val updateAvailable: Boolean
-        get() = versionCodeCurrent != versionCodeAvailable
-    private var isDownloading: Boolean = false // TODO: implement
-    private var isDownloaded: Boolean = false // TODO: implement
-
-    private val updateDataChangedReceiver = broadcast { _, _ -> updateData() }
-
     companion object {
+
+        private const val LOG_TAG = "UpdateActivity"
 
         fun generateIntent(context: Context): Intent =
                 Intent(context, UpdateActivity::class.java)
@@ -75,6 +67,18 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         fun start(context: Context) =
                 context.startActivity(generateIntent(context))
     }
+
+    private var versionNameCurrent: String = "unknown"
+    private var versionNameAvailable: String = "unknown"
+    private var versionCodeCurrent: Int? = null
+    private var versionCodeAvailable: Int? = null
+    private val updateAvailable: Boolean
+        get() = versionCodeCurrent != versionCodeAvailable
+
+    private var isDownloading: Boolean = false // TODO: implement
+    private var isDownloaded: Boolean = false // TODO: implement
+
+    private val updateDataChangedReceiver = broadcast { _, _ -> updateData() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,10 +176,14 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     }
 
     private suspend fun fetchUpdate(): Job.Result =
-            UpdateCheckJob.requestSuspendFetchUpdates(this)
-                    .alsoIf({ it == Job.Result.FAILURE }) {
-                        snackbarUpdateFetchFailed()
-                    }
+            try {
+                UpdateCheckJob.requestSuspendFetchUpdates(this)
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "fetchUpdate", e)
+                Job.Result.FAILURE
+            }.alsoIf({ it == Job.Result.FAILURE }) {
+                snackbarUpdateFetchFailed()
+            }
 
     private fun snackbarUpdateFetchFailed() = longSnackbar(
             boxRefreshLayout,

@@ -52,65 +52,34 @@ object GradesParser {
         return parseGrades(elementGrades).toSubjects()
     }
 
-    fun List<Grade>.toSubjects(): List<Subject> {
-        return mutableMapOf<String, MutableList<Grade>>().apply {
-            this@toSubjects.forEach {
-                getOrPut(it.subjectShort, ::mutableListOf).add(it)
+    fun List<Grade>.toSubjects(): List<Subject> = mutableMapOf<String, MutableList<Grade>>()
+            .apply {
+                this@toSubjects.forEach {
+                    getOrPut(it.subjectShort, ::mutableListOf).add(it)
+                }
             }
-        }.map {
-            Subject(it.value.first().subjectLong,
-                    it.value.first().subjectShort,
-                    it.value.toList())
-        }.sortedBy { it.shortName }
-
-
-        /*val subjectsMap = HashMap<String, MutableList<Grade>>()
-        for (grade in this) {
-            if (!subjectsMap.containsKey(grade.shortLesson)) {
-                subjectsMap.put(grade.shortLesson, mutableListOf())
+            .map {
+                Subject(it.value.first().subjectLong,
+                        it.value.first().subjectShort,
+                        it.value.toList())
             }
-            subjectsMap[grade.shortLesson]!!.add(grade)
-        }
+            .sortedBy { it.shortName }
 
-        val subjects = mutableListOf<Subject>()
-        subjectsMap.forEach {
-            subjects.add(Subject(it.value.first().longLesson,
-                    it.value.first().shortLesson, it.value.toList()))
-        }
-        Collections.sort(subjects) { lhs, rhs -> lhs.shortName.compareTo(rhs.shortName) }
-        return subjects*/
-    }
-
-    fun parseGrades(gradesHtml: Elements): List<Grade> {
-        return gradesHtml.takeIf { it.isNotEmpty() }?.takeIf {
-            it[0].select("td").let {
-                it.isNotEmpty() && !it[0].text().contains("žádné", true)
+    fun parseGrades(gradesHtml: Elements): List<Grade> = gradesHtml
+            .takeIf { it.isNotEmpty() }
+            ?.takeIf {
+                it[0].select("td").let {
+                    it.isNotEmpty() && !it[0].text().contains("žádné", true)
+                }
             }
-        }?.mapNotNull {
-            try {
-                parseGrade(it)
-            } catch (e: Exception) {
-                Log.w(LOG_TAG, "parseGrades", e); null
+            ?.mapNotNull {
+                try {
+                    parseGrade(it)
+                } catch (e: Exception) {
+                    Log.w(LOG_TAG, "parseGrades", e); null
+                }
             }
-        } ?: emptyList()
-
-        /*val grades = ArrayList<Grade>()
-
-        if (!elementGrades.isEmpty()) {
-            val firstGrade = elementGrades[0].select("td")
-            if (firstGrade.isEmpty() || firstGrade[0].text().toLowerCase().contains("žádné"))
-                return grades
-        }
-
-        for (grade in elementGrades) {
-            try {
-                grades.add(parseGrade(grade))
-            } catch (e: IllegalArgumentException) {
-                Log.d(LOG_TAG, "parseGrades", e)
-            }
-        }
-        return grades*/
-    }
+            ?: emptyList()
 
     fun parseGrade(grade: Element): Grade {
         val gradeData = grade.select("td")
@@ -121,7 +90,9 @@ object GradesParser {
         val date = try {
             GRADE_DATE_FORMAT.parse(dateElement.text()).time
         } catch (e: ParseException) {
-            throw IllegalArgumentException("Parameter error: invalid date ${gradeData[0].text()}", e)
+            throw IllegalArgumentException(
+                    "Parameter error: invalid date ${gradeData[0].text()}", e
+            )
         }
 
         val subjectElement = gradeData[COL_SUBJECT]

@@ -20,6 +20,7 @@ package cz.anty.purkynka.images.load
 
 import android.support.annotation.WorkerThread
 import cz.anty.purkynka.Utils
+import kotlinx.io.IOException
 import org.json.JSONObject
 import org.jsoup.Jsoup
 
@@ -38,7 +39,8 @@ object ImagesFetcher {
     private const val PARAM_QUERY = "q"
 
     @WorkerThread
-    fun fetch(query: String, offset: Int = 0, count: Int = 5) =
+    @Throws(IOException::class)
+    fun fetchImages(query: String, offset: Int = 0, count: Int = 5): JSONObject =
             Jsoup.connect(URL)
                     .userAgent(Utils.userAgent)
                     .data(
@@ -51,4 +53,5 @@ object ImagesFetcher {
                     .validateTLSCertificates(true)
                     .execute().body()
                     .let { JSONObject(it) }
+
 }

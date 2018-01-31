@@ -42,6 +42,7 @@ class UpdateFetchReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
+        val isOrderedBroadcast = isOrderedBroadcast
         val pResult = goAsync()
         launch(UI) {
             try {

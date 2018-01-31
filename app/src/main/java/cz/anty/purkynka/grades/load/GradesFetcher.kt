@@ -18,7 +18,6 @@
 
 package cz.anty.purkynka.grades.load
 
-import android.os.Build
 import android.support.annotation.WorkerThread
 
 import org.jsoup.Connection
@@ -27,13 +26,13 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 
 import java.io.IOException
-import java.util.Locale
 
-import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.Constants
 import cz.anty.purkynka.Utils
 import cz.anty.purkynka.exceptions.LoginExpiredException
 import cz.anty.purkynka.grades.data.Semester
+
+import eu.codetopic.java.utils.JavaExtensions.alsoIfNot
 
 /**
  * @author anty
@@ -42,27 +41,33 @@ object GradesFetcher {
 
     private const val LOG_TAG = "GradesFetcher"
 
-    //private const val SCHOOL_URL = "http://www.sspbrno.cz";
-    private const val MAIN_URL = "https://isas.sspbrno.cz" // TODO: use Firebase shared config
-    private const val LOGIN_URL_ADD = "/prihlasit.php"
-    private const val LOGIN_FIELD = "login-isas-username"
-    private const val PASS_FIELD = "login-isas-password"
-    private const val SUBMIT = "login-isas-send"
-    private const val SUBMIT_VALUE = "isas-send"
-    private const val GRADES_URL_ADD = "/prubezna-klasifikace.php"
-    private const val SEMESTER = "pololeti"
-    private const val SHORT_BY = "zobraz"
-    private const val SHORT_BY_DATE = "datum"
-    //private const val SHORT_BY_LESSONS = "predmety";
-    //private const val SHORT_BY_SCORE = "hodnoceni";
+    //private const val URL_SCHOOL = "http://www.sspbrno.cz";
+    private const val URL_MAIN = "https://isas.sspbrno.cz" // TODO: use Firebase shared config
+
+    private const val URL_ADD_LOGIN = "/prihlasit.php"
+    private const val PARAM_USERNAME = "login-isas-username"
+    private const val PARAM_PASSWORD = "login-isas-password"
+    private const val PARAM_SUBMIT = "login-isas-send"
+    private const val PARAM_SUBMIT_VAL = "isas-send"
+
+    private const val URL_ADD_GRADES = "/prubezna-klasifikace.php"
+    private const val PARAM_SEMESTER = "pololeti"
+    private const val PARAM_SHOW = "zobraz"
+    private const val PARAM_SHOW_VAL_BY_DATE = "datum"
+    //private const val PARAM_SHOW_VAL_BY_LESSONS = "predmety";
+    //private const val PARAM_SHOW_VAL_BY_SCORE = "hodnoceni";
 
     @WorkerThread
     @Throws(IOException::class)
     fun login(username: String, password: String): Map<String, String> {
         return Jsoup
-                .connect(MAIN_URL + LOGIN_URL_ADD)
+                .connect(URL_MAIN + URL_ADD_LOGIN)
                 .userAgent(Utils.userAgent)
-                .data(LOGIN_FIELD, username, PASS_FIELD, password, SUBMIT, SUBMIT_VALUE)
+                .data(
+                        PARAM_USERNAME, username,
+                        PARAM_PASSWORD, password,
+                        PARAM_SUBMIT, PARAM_SUBMIT_VAL
+                )
                 .followRedirects(false)
                 .timeout(Constants.CONNECTION_TIMEOUT_SAS)
                 .method(Connection.Method.POST)
@@ -72,39 +77,35 @@ object GradesFetcher {
 
     @WorkerThread
     @Throws(IOException::class)
-    fun getGradesElements(loginCookies: Map<String, String>, semester: Semester): Elements {
-        val gradesPage = getGradesPage(loginCookies, semester)
-        if (!isLoggedIn(gradesPage)) {
-            throw LoginExpiredException()
-        }
-
-        return gradesPage.select("table.isas-tabulka")
-                .select("tr")
-                .not("tr.zahlavi")
-    }
+    fun getGradesElements(loginCookies: Map<String, String>, semester: Semester): Elements =
+            getGradesPage(loginCookies, semester)
+                    .alsoIfNot({ isLoggedIn(it) }) { throw LoginExpiredException() }
+                    .select("table.isas-tabulka")
+                    .select("tr")
+                    .not("tr.zahlavi")
 
     @WorkerThread
     @Throws(IOException::class)
-    fun isLoggedIn(loginCookies: Map<String, String>): Boolean {
-        return isLoggedIn(getGradesPage(loginCookies, Semester.AUTO))
-    }
+    fun isLoggedIn(loginCookies: Map<String, String>): Boolean =
+            isLoggedIn(getGradesPage(loginCookies, Semester.AUTO))
 
-    private fun isLoggedIn(gradesPage: Document): Boolean {
-        return gradesPage.select("div.isas-varovani").isEmpty() && gradesPage.select("form.isas-form")
-                .isEmpty() && !gradesPage.select("#isas-menu").isEmpty()
-    }
+    private fun isLoggedIn(gradesPage: Document): Boolean =
+            gradesPage.select("div.isas-varovani").isEmpty() &&
+                    gradesPage.select("form.isas-form").isEmpty() &&
+                    !gradesPage.select("#isas-menu").isEmpty()
 
     @WorkerThread
     @Throws(IOException::class)
-    private fun getGradesPage(loginCookies: Map<String, String>, semester: Semester): Document {
-        return Jsoup
-                .connect(MAIN_URL + GRADES_URL_ADD)
-                .userAgent(Utils.userAgent)
-                .data(SEMESTER, Integer.toString(semester.value), SHORT_BY, SHORT_BY_DATE)
-                .followRedirects(false)
-                .timeout(Constants.CONNECTION_TIMEOUT_SAS)
-                .method(Connection.Method.GET)
-                .validateTLSCertificates(true)
-                .cookies(loginCookies).get()
-    }
+    private fun getGradesPage(loginCookies: Map<String, String>, semester: Semester): Document =
+            Jsoup.connect(URL_MAIN + URL_ADD_GRADES)
+                    .userAgent(Utils.userAgent)
+                    .data(
+                            PARAM_SEMESTER, Integer.toString(semester.value),
+                            PARAM_SHOW, PARAM_SHOW_VAL_BY_DATE
+                    )
+                    .followRedirects(false)
+                    .timeout(Constants.CONNECTION_TIMEOUT_SAS)
+                    .method(Connection.Method.GET)
+                    .validateTLSCertificates(true)
+                    .cookies(loginCookies).get()
 }

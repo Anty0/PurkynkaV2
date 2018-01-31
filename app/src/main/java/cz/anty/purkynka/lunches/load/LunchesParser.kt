@@ -18,104 +18,144 @@
 
 package cz.anty.purkynka.lunches.load
 
+import cz.anty.purkynka.lunches.data.BurzaLunch
+import cz.anty.purkynka.lunches.data.LunchOption
+import cz.anty.purkynka.lunches.data.LunchOptionsGroup
+import eu.codetopic.java.utils.JavaExtensions.substringOrNull
+import eu.codetopic.java.utils.log.Log
+import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+
 /**
  * @author anty
  */
-object LunchesParser { // TODO: implement
+object LunchesParser {
 
     private const val LOG_TAG = "LunchesParser"
 
-    /*fun parseBurzaLunches(lunches: Elements): List<BurzaLunch> {
-        Log.d("Lunches", "parseBurzaLunches lunches: " + lunches.toString())
 
-        val lunchList = ArrayList()
+    internal val FORMAT_DATE_SHOW =
+            SimpleDateFormat("dd. MM. yyyy", Locale.getDefault())
+    internal val FORMAT_DATE_PARSE_LUNCH_OPTIONS =
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    internal val FORMAT_DATE_BURZA_LUNCH =
+            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
-        for (element in lunches) {
-            val lunchElements = element.children()
+    private val REGEX_LUNCH_NUMBER = Regex("^Oběd (\\d+?)$")
 
-            val onClickText = lunchElements.get(5).child(0).attr("onClick")
-            val startIndex = onClickText.indexOf("document.location='") + "document.location='".length
-            val urlAdd = onClickText.substring(startIndex, onClickText.indexOf("';", startIndex))
-
-            try {
-                lunchList.add(BurzaLunch(BurzaLunch.LunchNumber.parseLunchNumber(lunchElements.get(0).text()),
-                        BurzaLunch.DATE_FORMAT.parse(lunchElements.get(1).text().split("\n")[0]), lunchElements.get(2).text(), lunchElements.get(3).text(),
-                        Integer.parseInt(lunchElements.get(4).text()), urlAdd))
-            } catch (e: ParseException) {
-                Log.d("Lunches", "parseBurzaLunches", e)
+    private fun parseBurzaLunch(lunchElement: Element): BurzaLunch =
+            lunchElement.children().let { lunchElements ->
+                BurzaLunch(
+                        lunchNumber = lunchElements[0].text()
+                                .let { REGEX_LUNCH_NUMBER.find(it) }
+                                ?.groups?.firstOrNull()?.value?.toIntOrNull()
+                                ?: throw IllegalArgumentException(
+                                        "Failed to parse lunchNumber from lunchElement: $lunchElement"
+                                ),
+                        date = try {
+                            lunchElements[1].text().split("\n").firstOrNull()?.trim()
+                                    ?.let { FORMAT_DATE_BURZA_LUNCH.parse(it).time }
+                        } catch (e: ParseException) {
+                            throw IllegalArgumentException(
+                                    "Failed to parse date from lunchElement: $lunchElement", e
+                            )
+                        } ?: throw IllegalArgumentException(
+                                "Failed to parse date from lunchElement: $lunchElement"
+                        ),
+                        name = lunchElements[2].text(),
+                        canteen = lunchElements[3].text(),
+                        pieces = lunchElements[4].text().toIntOrNull()
+                                ?: throw IllegalArgumentException(
+                                        "Failed to parse pieces from lunchElement: $lunchElement"
+                                ),
+                        orderUrl = lunchElements[5].child(0).attr("onClick")
+                                .substringOrNull("document.location='", "';")
+                                ?: throw IllegalArgumentException(
+                                        "Failed to parse orderUrl from lunchElement: $lunchElement"
+                                )
+                )
             }
 
+    fun parseBurzaLunches(lunchesElements: Elements): List<BurzaLunch> {
+        Log.d(LOG_TAG, "parseBurzaLunches(lunchesElements=$lunchesElements)")
+        return lunchesElements.mapNotNull {
+            try {
+                parseBurzaLunch(it)
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "parseBurzaLunches", e); null
+            }
         }
-
-        return lunchList
     }
 
-    fun parseMonthLunches(lunches: Elements): List<MonthLunchDay> {
-        val lunchList = ArrayList()
+    fun parseLunchOption(date: Long, lunchElement: Element): LunchOption {
+        val name = lunchElement.child(0).child(1).text()
+                .split("\n").firstOrNull()?.trim()
+                ?: throw IllegalArgumentException(
+                        "Failed to parse name from lunchElement: $lunchElement"
+                )
 
-        for (element in lunches) {
-            val lunchElements = element.children()
-
-            val monthLunches = ArrayList()
-            val date: Date
-            try {
-                date = MonthLunchDay.DATE_PARSE_FORMAT.parse(lunchElements
-                        .get(0).attr("id").replace("day-", ""))
-            } catch (e: ParseException) {
-                Log.d("Lunches", "parseMonthLunches", e)
-                continue
-            }
-
-            val lunchesElements = lunchElements.get(1).select("div.jidelnicekItem")//child(0).children();
-            for (lunchElement in lunchesElements) {
-                val name = lunchElement.child(0).child(1).text().split("\n")[0].trim()
-
-                var state: MonthLunch.State
-                if (!lunchElement.select("a." + MonthLunch.State.ENABLED).isEmpty()) {
-                    state = MonthLunch.State.ENABLED
-                } else if (!lunchElement.select("a." + MonthLunch.State.ORDERED).isEmpty()) {
-                    state = MonthLunch.State.ORDERED
-                } else if (!lunchElement.select("a." + MonthLunch.State.DISABLED).isEmpty()) {
-                    state = MonthLunch.State.DISABLED
-                } else
-                    state = MonthLunch.State.UNKNOWN
-
-                if (state.equals(MonthLunch.State.DISABLED) && lunchElement.select("a." + MonthLunch.State.DISABLED)
-                                .get(0).child(0).text().contains("nelze zrušit")) {
-                    state = MonthLunch.State.DISABLED_ORDERED
-                }
-
-                val buttons = lunchElement.select("a.btn")
-                var toBurzaUrlAdd: String? = null
-                var burzaState: MonthLunch.BurzaState? = null
-                var orderUrlAdd: String? = null
-                when (buttons.size()) {
-                    2 -> {
-                        val onClickText1 = buttons.get(1).attr("onClick")
-                        val startIndex1 = onClickText1.indexOf("'") + "'".length
-                        toBurzaUrlAdd = onClickText1.substring(startIndex1, onClickText1.indexOf("'", startIndex1))
-                        burzaState = if (buttons.get(1).text().contains(MonthLunch.BurzaState.TO_BURZA.toString()))
-                            MonthLunch.BurzaState.TO_BURZA
-                        else
-                            MonthLunch.BurzaState.FROM_BURZA
-                        val onClickText = buttons.get(0).attr("onClick")
-                        val startIndex = onClickText.indexOf("'") + "'".length
-                        orderUrlAdd = onClickText.substring(startIndex, onClickText.indexOf("'", startIndex))
-                    }
-                    1 -> {
-                        val onClickText = buttons.get(0).attr("onClick")
-                        val startIndex = onClickText.indexOf("'") + "'".length
-                        orderUrlAdd = onClickText.substring(startIndex, onClickText.indexOf("'", startIndex))
-                    }
-                }
-
-                monthLunches.add(MonthLunch(name, date, orderUrlAdd, state, toBurzaUrlAdd, burzaState))
-            }
-
-            lunchList.add(MonthLunchDay(date, monthLunches
-                    .toTypedArray()))
+        val (enabled, ordered) = when {
+            lunchElement.select("a.enabled").isNotEmpty() -> true to false
+            lunchElement.select("a.ordered").isNotEmpty() -> true to true
+            lunchElement.select("a.disabled").firstOrNull()?.child(0)?.text()
+                    ?.contains("nelze zrušit") == true -> false to true
+            else -> false to false
         }
 
-        return lunchList
-    }*/
+        val buttons = lunchElement.select("a.btn")
+
+        val orderOrCancelUrl = buttons
+                ?.getOrNull(0)
+                ?.attr("onClick")
+                ?.substringOrNull("'", "'")
+
+        val (isInBurza, toOrFromBurzaUrl) = buttons
+                ?.getOrNull(1)
+                ?.let {
+                    !it.text().contains("do burzy") to
+                            it.attr("onClick").substringOrNull("'", "'")
+                }
+                ?: null to null
+
+        return LunchOption(
+                name = name,
+                date = date,
+                enabled = enabled,
+                ordered = ordered,
+                orderOrCancelUrl = orderOrCancelUrl,
+                isInBurza = isInBurza,
+                toOrFromBurzaUrl = toOrFromBurzaUrl
+        )
+    }
+
+    fun parseLunchOptionsGroups(lunchesElements: Elements): List<LunchOptionsGroup> {
+        Log.d(LOG_TAG, "parseLunchOptionsGroups(lunchesElements=$lunchesElements)")
+
+        return lunchesElements.mapNotNull { lunchElement ->
+            try {
+                val lunchElements = lunchElement.children()
+
+                val date = lunchElements.getOrNull(0)
+                        ?.attr("id")
+                        ?.replace("day-", "")
+                        .let { FORMAT_DATE_PARSE_LUNCH_OPTIONS.parse(it).time }
+
+                val lunchOptions = try {
+                    lunchElements.getOrNull(1)
+                            ?.select("div.jidelnicekItem")
+                            ?.map { parseLunchOption(date, it) }
+                            ?.toTypedArray()
+                } catch (e: Exception) {
+                    Log.w(LOG_TAG, "parseLunchOptionsGroups", e); null
+                }
+
+                return@mapNotNull LunchOptionsGroup(date, lunchOptions)
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "parseLunchOptionsGroups", e); null
+            }
+        }
+    }
 }
