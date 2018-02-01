@@ -43,7 +43,7 @@ class AuthenticatorImpl(private val context: Context) : AbstractAccountAuthentic
 
     override fun editProperties(response: AccountAuthenticatorResponse,
                                 accountType: String): Bundle {
-        Log.d(LOG_TAG, "editProperties(accountType=$accountType")
+        Log.d(LOG_TAG, "editProperties(accountType=$accountType)")
         throw UnsupportedOperationException()
     }
 
@@ -53,7 +53,7 @@ class AuthenticatorImpl(private val context: Context) : AbstractAccountAuthentic
                             options: Bundle): Bundle {
         Log.d(LOG_TAG, "addAccount(accountType=$accountType, authTokenType=$authTokenType, " +
                 "requiredFeatures=${Arrays.toString(requiredFeatures)}, " +
-                "options=${Arrays.toString(options.keySet().toTypedArray())}")
+                "options=${Arrays.toString(options.keySet().toTypedArray())})")
 
         if (accountType != Accounts.ACCOUNT_TYPE)
             throw IllegalArgumentException("Unsupported accountType")
@@ -68,11 +68,19 @@ class AuthenticatorImpl(private val context: Context) : AbstractAccountAuthentic
         )
     }
 
+    override fun getAccountRemovalAllowed(response: AccountAuthenticatorResponse,
+                                          account: Account): Bundle {
+        Log.d(LOG_TAG, "getAccountRemovalAllowed(account=$account)")
+        return bundleOf(
+                AccountManager.KEY_BOOLEAN_RESULT to true
+        )
+    }
+
     @Throws(NetworkErrorException::class)
     override fun confirmCredentials(response: AccountAuthenticatorResponse, account: Account,
                                     options: Bundle): Bundle {
-        Log.d(LOG_TAG, "confirmCredentials(account=%$account, " +
-                "options=${Arrays.toString(options.keySet().toTypedArray())}")
+        Log.d(LOG_TAG, "confirmCredentials(account=$account, " +
+                "options=${Arrays.toString(options.keySet().toTypedArray())})")
         throw UnsupportedOperationException()
     }
 
@@ -80,7 +88,7 @@ class AuthenticatorImpl(private val context: Context) : AbstractAccountAuthentic
     override fun getAuthToken(response: AccountAuthenticatorResponse, account: Account,
                               authTokenType: String?, options: Bundle): Bundle {
         Log.d(LOG_TAG, "getAuthToken(account=$account, authTokenType=$authTokenType, " +
-                "options=${Arrays.toString(options.keySet().toTypedArray())}")
+                "options=${Arrays.toString(options.keySet().toTypedArray())})")
         throw UnsupportedOperationException()
     }
 

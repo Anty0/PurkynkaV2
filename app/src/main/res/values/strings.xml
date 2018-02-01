@@ -59,8 +59,16 @@
 
     <string name="label_receiver_wifi_changed">Wifi change receiver for Wifi auto login</string>
     <string name="label_service_authenticator">Account authenticator</string>
-    <string name="label_service_sync_grades">Grades</string>
-    <string name="label_service_sync_lunches">Lunches</string>
+    <string name="label_service_sync_grades">Grades sync service</string>
+    <string name="label_service_sync_lunches">Lunches sync service</string>
+    <string name="label_provider_account_active">Active account</string>
+    <string name="label_provider_update">Updates</string>
+    <string name="label_provider_grades">Grades</string>
+    <string name="label_provider_grades_login">Grades credentials</string>
+    <string name="label_provider_wifi">Wifi auto login</string>
+    <string name="label_provider_wifi_login">Wifi auto login credentials</string>
+    <string name="label_provider_lunches">Lunches</string>
+    <string name="label_provider_lunches_login">Lunches credentials</string>
 
     <string name="action_show_dashboard">Dashboard</string>
     <string name="action_show_grades">Grades</string>

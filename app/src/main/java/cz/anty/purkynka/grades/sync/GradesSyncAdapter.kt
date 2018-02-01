@@ -31,13 +31,11 @@ import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesFetcher
 import cz.anty.purkynka.grades.load.GradesParser
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
+import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.*
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.accountManager
-import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder.Companion.requestShowAll
 import org.jetbrains.anko.bundleOf
@@ -59,10 +57,29 @@ class GradesSyncAdapter(context: Context) :
         const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_SEMESTER"
 
         fun init(context: Context) {
-            Syncs.initAccountBasedService(
+            BroadcastsConnector.connect(
+                    GradesLoginData.instance.broadcastActionChanged,
+                    BroadcastsConnector.Connection(
+                            BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                            UpdateGradesSyncReceiver.getIntent(context)
+                    )
+            )
+            context.sendBroadcast(UpdateGradesSyncReceiver.getIntent(context))
+        }
+
+        fun updateSyncable(context: Context) {
+            Syncs.updateAllAccountsBasedEnabled(
                     context = context,
-                    logTag = LOG_TAG,
-                    getter = GradesLoginData.getter,
+                    loginData = GradesLoginData.loginData,
+                    contentAuthority = CONTENT_AUTHORITY,
+                    syncFrequency = SYNC_FREQUENCY
+            )
+        }
+
+        fun updateSyncableOf(accountId: String, account: Account) {
+            Syncs.updateAccountBasedEnabled(
+                    accountId = accountId,
+                    account = account,
                     loginData = GradesLoginData.loginData,
                     contentAuthority = CONTENT_AUTHORITY,
                     syncFrequency = SYNC_FREQUENCY

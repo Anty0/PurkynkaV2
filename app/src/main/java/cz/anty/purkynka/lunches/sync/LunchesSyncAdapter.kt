@@ -27,11 +27,13 @@ import cz.anty.purkynka.account.Syncs
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
+import cz.anty.purkynka.lunches.receiver.UpdateLunchesSyncReceiver
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesDataProvider
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.broadcast.BroadcastsConnector
 import java.io.IOException
 
 /**
@@ -48,10 +50,29 @@ class LunchesSyncAdapter(context: Context) :
         const val SYNC_FREQUENCY = Constants.SYNC_FREQUENCY_LUNCHES
 
         fun init(context: Context) {
-            Syncs.initAccountBasedService(
+            BroadcastsConnector.connect(
+                    LunchesLoginData.instance.broadcastActionChanged,
+                    BroadcastsConnector.Connection(
+                            BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                            UpdateLunchesSyncReceiver.getIntent(context)
+                    )
+            )
+            context.sendBroadcast(UpdateLunchesSyncReceiver.getIntent(context))
+        }
+
+        fun updateSyncable(context: Context) {
+            Syncs.updateAllAccountsBasedEnabled(
                     context = context,
-                    logTag = LOG_TAG,
-                    getter = LunchesLoginData.getter,
+                    loginData = LunchesLoginData.loginData,
+                    contentAuthority = CONTENT_AUTHORITY,
+                    syncFrequency = SYNC_FREQUENCY
+            )
+        }
+
+        fun updateSyncableOf(accountId: String, account: Account) {
+            Syncs.updateAccountBasedEnabled(
+                    accountId = accountId,
+                    account = account,
                     loginData = LunchesLoginData.loginData,
                     contentAuthority = CONTENT_AUTHORITY,
                     syncFrequency = SYNC_FREQUENCY

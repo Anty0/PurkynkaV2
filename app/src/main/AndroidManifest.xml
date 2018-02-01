@@ -121,6 +121,16 @@
             android:enabled="true"
             android:exported="false"
             android:process=":syncs" />
+        <receiver
+            android:name=".grades.receiver.UpdateGradesSyncReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs" />
+        <receiver
+            android:name=".lunches.receiver.UpdateLunchesSyncReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs" />
 
         <service
             android:name=".account.service.AuthenticatorService"
@@ -129,7 +139,7 @@
             android:exported="false"
             android:process=":accounts">
 
-            <intent-filter>
+            <intent-filter android:label="@string/label_service_authenticator">
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
 
@@ -168,41 +178,49 @@
         <provider
             android:name=".account.save.ActiveAccountProvider"
             android:authorities="cz.anty.purkynka.account.active"
+            android:label="@string/label_provider_account_active"
             android:exported="false"
             android:process=":providers" />
         <provider
             android:name=".update.save.UpdateDataProvider"
             android:authorities="cz.anty.purkynka.update.data"
+            android:label="@string/label_provider_update"
             android:exported="false"
             android:process=":providers" />
         <provider
             android:name=".grades.save.GradesDataProvider"
             android:authorities="cz.anty.purkynka.grades.data"
+            android:label="@string/label_provider_grades"
             android:exported="false"
             android:process=":providers" />
         <provider
             android:name=".grades.save.GradesLoginDataProvider"
             android:authorities="cz.anty.purkynka.grades.login"
+            android:label="@string/label_provider_grades_login"
             android:exported="false"
             android:process=":providers" />
         <provider
             android:name=".wifilogin.save.WifiDataProvider"
             android:authorities="cz.anty.purkynka.wifilogin.data"
+            android:label="@string/label_provider_wifi"
             android:exported="false"
             android:process=":providers" />
         <provider
             android:name=".wifilogin.save.WifiLoginDataProvider"
             android:authorities="cz.anty.purkynka.wifilogin.login"
+            android:label="@string/label_provider_wifi_login"
             android:exported="false"
             android:process=":providers" />
         <provider
             android:name=".lunches.save.LunchesDataProvider"
             android:authorities="cz.anty.purkynka.lunches.data"
+            android:label="@string/label_provider_lunches"
             android:exported="false"
             android:process=":providers" />
         <provider
             android:name=".lunches.save.LunchesLoginDataProvider"
             android:authorities="cz.anty.purkynka.lunches.login"
+            android:label="@string/label_provider_lunches_login"
             android:exported="false"
             android:process=":providers" />
 

@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textNoSuggestions"
+                android:inputType="textPersonName|textNoSuggestions"
                 android:hint="@string/insert_new_account_name" />
         </android.support.design.widget.TextInputLayout>
 

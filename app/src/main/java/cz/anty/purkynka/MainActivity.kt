@@ -27,6 +27,8 @@ import android.support.v4.content.ContextCompat
 import android.support.design.widget.NavigationView
 import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.view.Menu
@@ -112,7 +114,16 @@ class MainActivity : NavigationActivity() {
         enableSwitchingAccounts = true
         enableActiveAccountEditButton = true
 
-        setNavigationViewAppIconResource(R.mipmap.ic_launcher)
+        val iconBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_foreground)
+        val iconWidth = iconBitmap.width
+        val iconHeight = iconBitmap.height
+        val cropWidth = iconWidth / 2
+        val cropHeight = iconHeight / 2
+        val cropStartX = (iconWidth - cropWidth) / 2
+        val cropStartY = (iconHeight - cropHeight) / 2
+        val croppedIconBitmap = Bitmap.createBitmap(iconBitmap,
+                cropStartX, cropStartY, cropWidth, cropHeight)
+        setNavigationViewAppIconBitmap(croppedIconBitmap)
 
         findViewById<NavigationView>(R.id.navigationView).apply {
             val white = ContextCompat.getColorStateList(this@MainActivity, android.R.color.white)

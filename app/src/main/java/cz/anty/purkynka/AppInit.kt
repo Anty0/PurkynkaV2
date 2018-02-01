@@ -24,10 +24,12 @@ import android.support.v4.content.ContextCompat
 import com.evernote.android.job.JobManager
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
+import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
+import cz.anty.purkynka.lunches.receiver.UpdateLunchesSyncReceiver
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
@@ -51,6 +53,7 @@ import eu.codetopic.utils.UtilsBase.PARAM_INITIALIZE_UTILS
 import eu.codetopic.utils.UtilsBase.processNamePrimary
 import eu.codetopic.utils.UtilsBase.processNameProviders
 import eu.codetopic.utils.UtilsBase.processNameNotifyManager
+import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import org.jetbrains.anko.bundleOf
 
@@ -163,7 +166,7 @@ class AppInit : MultiDexApplication() {
         initAccounts()
 
         // Init notifications channels (prepare them for NotifyManager)
-        initNotifyManagerChannels()
+        initNotifyManager()
     }
 
     private fun postInitAllProcesses() {
@@ -232,7 +235,20 @@ class AppInit : MultiDexApplication() {
     }
 
     private fun initBroadcastConnections() {
-        // TODO: 6/16/17 initialize broadcast connections
+        BroadcastsConnector.connect(
+                Accounts.ACTION_ACCOUNT_ADDED,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        UpdateGradesSyncReceiver.getIntent(this)
+                )
+        )
+        BroadcastsConnector.connect(
+                Accounts.ACTION_ACCOUNT_ADDED,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        UpdateLunchesSyncReceiver.getIntent(this)
+                )
+        )
     }
 
     private fun initJobManager() {
@@ -255,7 +271,7 @@ class AppInit : MultiDexApplication() {
         )
     }
 
-    private fun initNotifyManagerChannels() {
+    private fun initNotifyManager() {
         NotifyManager.installGroups(
                 this,
                 UpdateNotifyGroup()

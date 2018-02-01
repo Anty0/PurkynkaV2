@@ -65,6 +65,17 @@ class AccountNotifyGroup(val accountId: String, val account: Account, vararg cha
                     NotifyManager.uninstallGroup(context, idFor(accountId))
                 }
 
+        private val accountRenamedReceiver: BroadcastReceiver =
+                broadcast { context, intent ->
+                    intent ?: return@broadcast
+                    val account = intent.getParcelableExtra<Account>(Accounts.EXTRA_ACCOUNT) ?: return@broadcast
+                    val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@broadcast
+                    val channelIds = channelIds ?: return@broadcast
+
+                    if (!NotifyManager.hasGroup(idFor(accountId))) return@broadcast
+                    NotifyManager.replaceGroup(context, AccountNotifyGroup(accountId, account, *channelIds))
+                }
+
         @MainThread
         internal fun init(context: Context, vararg channelIds: String) {
             if (this.channelIds != null) throw IllegalStateException("$LOG_TAG is still initialized")
@@ -75,6 +86,8 @@ class AccountNotifyGroup(val accountId: String, val account: Account, vararg cha
                     intentFilter(Accounts.ACTION_ACCOUNT_ADDED))
             appContext.registerReceiver(accountRemovedReceiver,
                     intentFilter(Accounts.ACTION_ACCOUNT_REMOVED))
+            appContext.registerReceiver(accountRenamedReceiver,
+                    intentFilter(Accounts.ACTION_ACCOUNT_RENAMED))
             refresh(context)
         }
 

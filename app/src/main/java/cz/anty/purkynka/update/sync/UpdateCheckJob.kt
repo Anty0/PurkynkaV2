@@ -34,6 +34,7 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.alsoIf
 import eu.codetopic.utils.AndroidExtensions.OrderedBroadcastResult
 import eu.codetopic.utils.AndroidExtensions.sendSuspendOrderedBroadcast
+import eu.codetopic.utils.UtilsBase
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
 
@@ -96,6 +97,8 @@ class UpdateCheckJob : Job() {
         }
 
         fun fetchUpdates(): Result {
+            Log.w(LOG_TAG, "fetchUpdates(process=${UtilsBase.Process.name})")
+
             val code = UpdateFetcher.fetchVersionCode() ?: return Result.FAILURE
             val name = UpdateFetcher.fetchVersionName() ?: return Result.FAILURE
 

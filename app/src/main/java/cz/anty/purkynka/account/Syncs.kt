@@ -56,35 +56,33 @@ object Syncs {
         else ContentResolver.removePeriodicSync(account, contentAuthority, extras)
     }
 
-    fun initAccountBasedService(context: Context, logTag: String,
-                                getter: DataGetter<*>, loginData: LoginDataExtension<*>,
-                                contentAuthority: String, syncFrequency: Long) {
-        val receiver = broadcast { ctx, intent ->
-            Log.d(logTag, "loginDataChanged(intent=$intent)")
+    fun updateAllAccountsBasedEnabled(context: Context,
+                                      loginData: LoginDataExtension<*>,
+                                      contentAuthority: String, syncFrequency: Long) {
+        Accounts.getAllWIthIds(context).forEach {
+            val (accountId, account) = it
 
-            val accountManager = ctx.accountManager
-
-            Accounts.getAllWIthIds(accountManager).forEach {
-                val (accountId, account) = it
-
-                val loggedIn = loginData.isLoggedIn(accountId)
-                val syncable = ContentResolver.getIsSyncable(account, contentAuthority)
-                        .takeIf { it >= 0 }?.let { it > 0 }
-                if (syncable != null && loggedIn == syncable) return@forEach
-
-                Log.d(logTag, "loginDataChanged() -> differenceFound(account=$it," +
-                        " loggedIn=$loggedIn, syncable=${syncable ?: "unknown"})")
-
-                updateEnabled(
-                        enable = loggedIn,
-                        account = account,
-                        contentAuthority = contentAuthority,
-                        syncFrequency = syncFrequency
-                )
-            }
+            updateAccountBasedEnabled(accountId, account,
+                    loginData, contentAuthority, syncFrequency)
         }
+    }
 
-        LocalBroadcast.registerReceiver(receiver, intentFilter(getter))
-        receiver.onReceive(context, null)
+    fun updateAccountBasedEnabled(accountId: String, account: Account,
+                                  loginData: LoginDataExtension<*>,
+                                  contentAuthority: String, syncFrequency: Long) {
+        val loggedIn = loginData.isLoggedIn(accountId)
+        /*val syncable = ContentResolver.getIsSyncable(account, contentAuthority)
+                .takeIf { it >= 0 }?.let { it > 0 }
+        if (syncable != null && loggedIn == syncable) return@forEach
+
+        Log.d(logTag, "loginDataChanged() -> differenceFound(account=$account," +
+                " loggedIn=$loggedIn, syncable=${syncable ?: "unknown"})")*/
+
+        updateEnabled(
+                enable = loggedIn,
+                account = account,
+                contentAuthority = contentAuthority,
+                syncFrequency = syncFrequency
+        )
     }
 }
