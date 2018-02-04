@@ -78,6 +78,11 @@ class UpdateNotifyChannel : NotifyChannel(ID, false) {
     override fun nextId(context: Context, group: NotifyGroup,
                         data: Bundle): Int = 0 // = Replace existing notification
 
+    override fun handleContentIntent(context: Context, group: NotifyGroup,
+                                     notifyId: NotifyId, data: Bundle) {
+        TODO("implement")
+    }
+
     private fun buildNotificationBase(context: Context,
                                       group: NotifyGroup): NotificationCompat.Builder =
             NotificationCompat.Builder(context, combinedIdFor(group)).apply {

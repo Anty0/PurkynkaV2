@@ -57,6 +57,9 @@
     <string name="title_fragment_timetables_list">Timetables</string>
     <string name="title_fragment_attendance_search">Attendance</string>
 
+    <string name="shortcut_grades_label_short">Grades</string>
+    <string name="shortcut_grades_label_long">Show grades</string>
+
     <string name="label_receiver_wifi_changed">Wifi change receiver for Wifi auto login</string>
     <string name="label_service_authenticator">Account authenticator</string>
     <string name="label_service_sync_grades">Grades sync service</string>

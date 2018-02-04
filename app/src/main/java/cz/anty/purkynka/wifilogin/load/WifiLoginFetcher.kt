@@ -164,11 +164,11 @@ object WifiLoginFetcher {
             Jsoup.connect(loginUrl)
                     .data(
                             "buttonClicked", "4", // -\
-                            "err_flag", "0", // ---------------\
-                            "err_msg", "", // ------------------> Just some stuff required by login page.
-                            "info_flag", "0", // --------------/
-                            "info_msg", "", // ---------------/
-                            "redirect_url", "", // ----------/
+                            "err_flag", "0", // -------\
+                            "err_msg", "", // ----------> Just some stuff required by login page.
+                            "info_flag", "0", // ------/
+                            "info_msg", "", // -------/
+                            "redirect_url", "", // --/
                             LOGIN_FIELD, username,
                             PASS_FIELD, password
                     )

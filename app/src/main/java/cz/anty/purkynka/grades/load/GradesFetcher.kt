@@ -106,6 +106,5 @@ object GradesFetcher {
                     .followRedirects(false)
                     .timeout(Constants.CONNECTION_TIMEOUT_SAS)
                     .method(Connection.Method.GET)
-                    .validateTLSCertificates(true)
                     .cookies(loginCookies).get()
 }

@@ -50,7 +50,6 @@ object ImagesFetcher {
                             PARAM_QUERY, query
                     )
                     .followRedirects(false)
-                    .validateTLSCertificates(true)
                     .execute().body()
                     .let { JSONObject(it) }
 

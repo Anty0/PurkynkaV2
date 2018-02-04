@@ -144,7 +144,7 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
                     IllegalArgumentException("Failed to read grade changes"))
         }
 
-        if (account != null) ActiveAccount.set(account)
+        account?.let { ActiveAccount.set(it) }
 
         if (grade != null) {
             context.startActivities(arrayOf(

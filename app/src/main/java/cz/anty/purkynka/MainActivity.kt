@@ -64,11 +64,13 @@ import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.settings.SettingsActivity
 import cz.anty.purkynka.timetables.TimetablesListFragment
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
+import eu.codetopic.java.utils.JavaExtensions.to
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import org.jetbrains.anko.bundleOf
 
 
 class MainActivity : NavigationActivity() {
@@ -77,6 +79,8 @@ class MainActivity : NavigationActivity() {
         private const val LOG_TAG = "MainActivity"
 
         private const val REQUEST_CODE_EDIT_ACCOUNT: Int = 1
+
+        private const val DATA_SCHEME_FRAGMENT_SHORTCUT = "shortcut"
 
         private const val EXTRA_FRAGMENT_CLASS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_CLASS"
         private const val EXTRA_FRAGMENT_EXTRAS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_EXTRAS"
@@ -137,10 +141,34 @@ class MainActivity : NavigationActivity() {
         processIntent(intent)
     }
 
+    private fun extractIntentSerializableTarget(intent: Intent): Pair<Class<out Fragment>, Bundle?>? =
+            intent.getSerializableExtra(EXTRA_FRAGMENT_CLASS)
+                    .to<Class<out Fragment>>()
+                    ?.let {
+                        it to intent.getBundleExtra(EXTRA_FRAGMENT_EXTRAS)
+                    }
+
+    private fun extractIntentDataTarget(intent: Intent): Pair<Class<out Fragment>, Bundle?>? = // FIXME: not working
+            intent.data?.takeIf { it.scheme == DATA_SCHEME_FRAGMENT_SHORTCUT }
+                    ?.let { data ->
+                        data.pathSegments?.firstOrNull()
+                                ?.let { Class.forName(it).to<Class<out Fragment>>() }
+                                ?.let {
+                                    it to data.queryParameterNames
+                                            .map { it to data.getQueryParameter(it) }
+                                            .let { bundleOf(*it.toTypedArray()) }
+                                }
+                    }
+
     private fun processIntent(intent: Intent?) {
-        @Suppress("UNCHECKED_CAST")
-        (intent?.getSerializableExtra(EXTRA_FRAGMENT_CLASS) as Class<out Fragment>?)
-                ?.let { replaceFragment(it, intent?.getBundleExtra(EXTRA_FRAGMENT_EXTRAS)) }
+        if (intent == null) return
+
+        val (clazz: Class<out Fragment>?, extras: Bundle?) =
+                extractIntentSerializableTarget(intent)
+                        ?: extractIntentDataTarget(intent)
+                        ?: null to null
+
+        clazz?.let { replaceFragment(clazz, extras) }
     }
 
     override fun onResume() {
