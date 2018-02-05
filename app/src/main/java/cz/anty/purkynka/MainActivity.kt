@@ -65,6 +65,7 @@ import cz.anty.purkynka.settings.SettingsActivity
 import cz.anty.purkynka.timetables.TimetablesListFragment
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
 import eu.codetopic.java.utils.JavaExtensions.to
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidExtensions.getIconics
@@ -148,11 +149,10 @@ class MainActivity : NavigationActivity() {
                         it to intent.getBundleExtra(EXTRA_FRAGMENT_EXTRAS)
                     }
 
-    private fun extractIntentDataTarget(intent: Intent): Pair<Class<out Fragment>, Bundle?>? = // FIXME: not working
+    private fun extractIntentDataTarget(intent: Intent): Pair<Class<out Fragment>, Bundle?>? =
             intent.data?.takeIf { it.scheme == DATA_SCHEME_FRAGMENT_SHORTCUT }
                     ?.let { data ->
-                        data.pathSegments?.firstOrNull()
-                                ?.let { Class.forName(it).to<Class<out Fragment>>() }
+                        data.host?.let { Class.forName(it).to<Class<out Fragment>>() }
                                 ?.let {
                                     it to data.queryParameterNames
                                             .map { it to data.getQueryParameter(it) }
