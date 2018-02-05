@@ -19,6 +19,7 @@
 package cz.anty.purkynka.lunches
 
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,7 +43,11 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {
+        val themedContext = ContextThemeWrapper(inflater.context, themeId)
+        val themedInflater = inflater.cloneInContext(themedContext)
+        //val view = themedInflater.inflate(R.layout.fragment_, container, false)
         // TODO: implement
+        //return view
         return super.onCreateContentView(inflater, container, savedInstanceState)
     }
 }

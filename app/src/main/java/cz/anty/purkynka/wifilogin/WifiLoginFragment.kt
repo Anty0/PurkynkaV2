@@ -182,7 +182,6 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             } else txtLoginCounter.visibility = View.GONE
 
             boxInUsername.isEnabled = false
-            //inUsername.isEnabled = false
             inUsername.setText(username)
 
             inPassword.setText("") // reset password input
@@ -195,7 +194,6 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             txtLoginCounter.visibility = View.GONE
 
             boxInUsername.isEnabled = true
-            //inUsername.isEnabled = true
             inUsername.takeIf { it.text.isEmpty() }?.setText(username)
         }
     }

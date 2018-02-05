@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.dashboard;
 
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuInflater;
 
@@ -43,6 +44,7 @@ public class DashboardFragment extends DashboardFragmentBase implements TitlePro
         super.onCreateOptionsMenu(menu, inflater);// TODO: 2.6.16 add options to menu
     }
 
+    @NonNull
     @Override
     public CharSequence getTitle() {
         return getText(R.string.action_show_dashboard);

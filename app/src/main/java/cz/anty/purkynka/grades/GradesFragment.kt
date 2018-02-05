@@ -39,7 +39,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.Constants.ICON_GRADES
 
 import cz.anty.purkynka.R
-import cz.anty.purkynka.account.save.ActiveAccount
+import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
@@ -100,34 +100,34 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private const val LOG_TAG = "GradesFragment"
 
-        private const val TIMEOUT_SYNC_ACTIVE_MILIS = 10L * 1_000L
+        private const val TIMEOUT_SYNC_ACTIVE_MILIS = 30L * 1_000L
 
-        suspend fun aWaitForSyncAdd(account: Account) = aWaitForSyncState {
+        suspend fun awaitForSyncAdd(account: Account) = awaitForSyncState {
             (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
                     ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
-                    .also { Log.d(LOG_TAG, "aWaitForSyncAdd(account=$account) -> $it") }
+                    .also { Log.d(LOG_TAG, "awaitForSyncAdd(account=$account) -> $it") }
         }
 
-        suspend fun aWaitForSyncActiveOrEnd(account: Account) = withTimeoutOrNull(TIMEOUT_SYNC_ACTIVE_MILIS) {
-            aWaitForSyncState {
+        suspend fun awaitForSyncActiveOrEnd(account: Account) = withTimeoutOrNull(TIMEOUT_SYNC_ACTIVE_MILIS) {
+            awaitForSyncState {
                 (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
                         !ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
                         .also {
-                            Log.d(LOG_TAG, "aWaitForSyncActiveOrEnd(account=$account)" +
+                            Log.d(LOG_TAG, "awaitForSyncActiveOrEnd(account=$account)" +
                                     " -> Condition result: $it")
                         }
             }
         }.alsoIfNull {
-            Log.d(LOG_TAG, "aWaitForSyncActiveOrEnd(account=$account) -> Timeout reached")
+            Log.d(LOG_TAG, "awaitForSyncActiveOrEnd(account=$account) -> Timeout reached")
         } != null
 
-        suspend fun aWaitForSyncEnd(account: Account) = aWaitForSyncState {
+        suspend fun awaitForSyncEnd(account: Account) = awaitForSyncState {
             (!ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) &&
                     !ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
-                    .also { Log.d(LOG_TAG, "aWaitForSyncEnd(account=$account) -> $it") }
+                    .also { Log.d(LOG_TAG, "awaitForSyncEnd(account=$account) -> $it") }
         }
 
-        private suspend inline fun aWaitForSyncState(crossinline condition: () -> Boolean) =
+        private suspend inline fun awaitForSyncState(crossinline condition: () -> Boolean) =
                 suspendCoroutine<Unit> { cont ->
                     if (run(condition)) {
                         cont.resume(Unit)
@@ -170,21 +170,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     private val layGrades = LayoutGrades(accountHolder, layLogin, holder)
     private val laySyncStatus = LayoutSyncStatus(accountHolder, layLogin, layGrades)
 
-    private var syncObserverHandle: Any? = null
-    private val syncObserverMask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING or
-            ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
-    private val syncObserver = SyncStatusObserver blk@{
-        val account = accountHolder.account
-                ?: return@blk Log.d(LOG_TAG, "syncObserver() -> No account available")
-
-        val syncable = ContentResolver.getIsSyncable(account, GradesSyncAdapter.CONTENT_AUTHORITY)
-        val pending = ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY)
-        val active = ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY)
-
-        Log.d(LOG_TAG, "syncObserver() -> " +
-                "(syncable=$syncable, pending=$pending, active=$active)")
-    }
-
     init { setHasOptionsMenu(true) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -210,18 +195,18 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         launch(UI) {
             holder.showLoading()
 
             // TODO: Create superclass for these layouts and call onEach register
             arrayOf(
-                    layLogin.updateData(),
-                    layGrades.updateData(),
-                    laySyncStatus.updateData(),
-                    accountHolder.updateData()
+                    layLogin.update(),
+                    layGrades.update(),
+                    laySyncStatus.update(),
+                    accountHolder.update()
             ).forEach { it.join() }
 
             holder.hideLoading()
@@ -230,8 +215,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     override fun onStart() {
         super.onStart()
-
-        syncObserverHandle = ContentResolver.addStatusChangeListener(syncObserverMask, syncObserver)
 
         layLogin.register()
         layGrades.register()
@@ -244,11 +227,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         laySyncStatus.unregister()
         layGrades.unregister()
         layLogin.unregister()
-
-        syncObserverHandle?.let {
-            ContentResolver.removeStatusChangeListener(it)
-            syncObserverHandle = null
-        }
 
         super.onStop()
     }
@@ -273,67 +251,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         return layGrades.optionsItemSelected(item)
     }
 
-    private class ActiveAccountHolder(private val holder: LoadingVH) {
-
-        companion object {
-
-            private const val LOG_TAG = "${GradesFragment.LOG_TAG}\$ActiveAccountHolder"
-        }
-
-        private val accountChangedReceiver = broadcast { _, _ ->
-            Log.d(LOG_TAG, "accountChangedReceiver.onReceive()")
-            updateDataWithLoading()
-        }
-
-        private val listeners = mutableListOf<suspend () -> Unit>()
-
-        var account: Account? = null
-            private set
-        var accountId: String? = null
-            private set
-
-        private fun updateDataWithLoading(): Job {
-            val holderRef = holder.asReference()
-            return launch(UI) {
-                holderRef().showLoading()
-
-                updateData().join()
-
-                holderRef().hideLoading()
-            }
-        }
-
-        fun updateData(): Job {
-            val self = this.asReference()
-
-            return launch(UI) {
-                val (nAccount, nAccountId) = bg { ActiveAccount.getWithId() }.await()
-
-                self().apply {
-                    account = nAccount
-                    accountId = nAccountId
-
-                    listeners.forEach { it() }
-                }
-            }
-        }
-
-        fun addChangeListener(listener: suspend () -> Unit) {
-            listeners.add(listener)
-        }
-
-        fun register(): Job {
-            LocalBroadcast.registerReceiver(accountChangedReceiver,
-                    intentFilter(ActiveAccount.getter))
-
-            return updateData()
-        }
-
-        fun unregister() {
-            LocalBroadcast.unregisterReceiver(accountChangedReceiver)
-        }
-    }
-
     @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
     private class LayoutLogin(private val accountHolder: ActiveAccountHolder,
                               private val holder: LoadingVH) : LayoutContainer {
@@ -347,14 +264,14 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private val loginDataChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
-            updateDataWithLoading()
+            updateWithLoading()
         }
 
         private var userLoggedIn = false
         private var username = ""
 
         init {
-            accountHolder.addChangeListener { updateData().join() }
+            accountHolder.addChangeListener { update().join() }
         }
 
         fun bindView(view: View) {
@@ -371,25 +288,25 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             LocalBroadcast.registerReceiver(loginDataChangedReceiver,
                     intentFilter(GradesLoginData.getter))
 
-            return updateData()
+            return update()
         }
 
         fun unregister() {
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
         }
 
-        private fun updateDataWithLoading(): Job {
+        private fun updateWithLoading(): Job {
             val holderRef = holder.asReference()
             return launch(UI) {
                 holderRef().showLoading()
 
-                updateData().join()
+                update().join()
 
                 holderRef().hideLoading()
             }
         }
 
-        fun updateData(): Job = launch(UI) {
+        fun update(): Job = launch(UI) {
             userLoggedIn = accountHolder.accountId?.let {
                 bg { GradesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
@@ -397,10 +314,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 bg { GradesLoginData.loginData.getUsername(it) }.await()
             } ?: ""
 
-            update()
+            updateUi()
         }
 
-        fun update() {
+        fun updateUi() {
             if (containerView == null) return
 
             boxLogin.visibility = if (!userLoggedIn) {
@@ -428,9 +345,9 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 bg { GradesLoginData.loginData.login(accountId, username, password) }.await()
 
                 // Sync will be triggered later by change broadcast, so we must wait for sync start before we can wait for sync end
-                aWaitForSyncAdd(account)
-                if (aWaitForSyncActiveOrEnd(account)) {
-                    aWaitForSyncEnd(account)
+                awaitForSyncAdd(account)
+                if (awaitForSyncActiveOrEnd(account)) {
+                    awaitForSyncEnd(account)
                     val syncResult = bg { GradesData.instance.getLastSyncResult(accountId) }.await()
                     if (syncResult == FAIL_LOGIN) {
                         longSnackbar(baseView, R.string.snackbar_grades_login_fail)
@@ -483,15 +400,15 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private val loginDataChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
-            updateDataWithLoading()
+            updateWithLoading()
         }
         private val dataChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
-            updateData()
+            update()
         }
         private val sortChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "sortChangedReceiver.onReceive()")
-            updateData()
+            update()
         }
 
         private var userLoggedIn = false
@@ -506,11 +423,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         var semester: Semester = Semester.AUTO.stableSemester
             set(value) {
                 field = value
-                update()
+                updateUi()
             }
 
         init {
-            accountHolder.addChangeListener { updateData().join() }
+            accountHolder.addChangeListener { update().join() }
         }
 
         fun restore(savedInstanceState: Bundle?) {
@@ -585,7 +502,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             LocalBroadcast.registerReceiver(sortChangedReceiver,
                     intentFilter(GradesUiData.getter))
 
-            return updateData()
+            return update()
         }
 
         fun unregister() {
@@ -671,18 +588,18 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             return true
         }
 
-        private fun updateDataWithLoading(): Job {
+        private fun updateWithLoading(): Job {
             val holderRef = holder.asReference()
             return launch(UI) {
                 holderRef().showLoading()
 
-                updateData().join()
+                update().join()
 
                 holderRef().hideLoading()
             }
         }
 
-        fun updateData(): Job = launch(UI) {
+        fun update(): Job = launch(UI) {
             sort = accountHolder.accountId?.let {
                 bg { GradesUiData.instance.getLastSort(it) }.await()
             }
@@ -711,10 +628,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 }
             }
 
-            update()
+            updateUi()
         }
 
-        fun update() {
+        fun updateUi() {
             if (containerView == null) return
 
             boxGrades.visibility = if (userLoggedIn) {
@@ -776,9 +693,9 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 // Sync sometimes reports, that is not started, at the beginning.
                 // So we must wait for sync start before we can wait for sync end.
-                aWaitForSyncAdd(account)
-                if (aWaitForSyncActiveOrEnd(account)) {
-                    aWaitForSyncEnd(account)
+                awaitForSyncAdd(account)
+                if (awaitForSyncActiveOrEnd(account)) {
+                    awaitForSyncEnd(account)
                 } else {
                     longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail)
                 }
@@ -802,9 +719,9 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 // Sync sometimes reports, that is not started, at the beginning.
                 // So we must wait for sync start before we can wait for sync end.
-                aWaitForSyncAdd(account)
-                if (aWaitForSyncActiveOrEnd(account)) {
-                    aWaitForSyncEnd(account)
+                awaitForSyncAdd(account)
+                if (awaitForSyncActiveOrEnd(account)) {
+                    awaitForSyncEnd(account)
                 } else {
                     longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail)
                 }
@@ -828,11 +745,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
         private val loginDataChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
-            updateData()
+            update()
         }
         private val dataChangedReceiver = broadcast { _, _ ->
             Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
-            updateData()
+            update()
         }
 
         private var syncLastResult: GradesData.SyncResult? = SUCCESS
@@ -841,7 +758,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         private var statusSnackbar: Snackbar? = null
 
         init {
-            accountHolder.addChangeListener { updateData().join() }
+            accountHolder.addChangeListener { update().join() }
         }
 
         fun bindView(view: View) {
@@ -859,7 +776,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             LocalBroadcast.registerReceiver(dataChangedReceiver,
                     intentFilter(GradesData.getter))
 
-            return updateData()
+            return update()
         }
 
         fun unregister() {
@@ -867,7 +784,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
         }
 
-        fun updateData(): Job = launch(UI) {
+        fun update(): Job = launch(UI) {
             val userLoggedIn = accountHolder.accountId?.let {
                 bg { GradesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
@@ -877,10 +794,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                         bg { GradesData.instance.getLastSyncResult(it) }.await()
                     }
 
-            update()
+            updateUi()
         }
 
-        fun update(force: Boolean = false) {
+        fun updateUi(force: Boolean = false) {
             if (!force && (containerView == null || (showingResult == syncLastResult &&
                     statusSnackbar?.isShownOrQueued != false))) return
 
@@ -891,7 +808,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                         R.string.snackbar_action_grades_retry,
                         {
                             layoutGrades.requestSyncWithLoading()
-                            update(true)
+                            updateUi(true)
                         }
                 )
                 FAIL_CONNECT -> statusSnackbar = indefiniteSnackbar(
@@ -900,7 +817,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                         R.string.snackbar_action_grades_retry,
                         {
                             layoutGrades.requestSyncWithLoading()
-                            update(true)
+                            updateUi(true)
                         }
                 )
                 FAIL_LOGIN -> statusSnackbar = indefiniteSnackbar(
@@ -909,7 +826,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                         R.string.snackbar_action_grades_logout,
                         {
                             layoutLogin.logout()
-                            update(true)
+                            updateUi(true)
                         }
                 )
                 null -> statusSnackbar = indefiniteSnackbar(
