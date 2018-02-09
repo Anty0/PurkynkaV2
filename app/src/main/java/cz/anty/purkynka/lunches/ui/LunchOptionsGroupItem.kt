@@ -19,6 +19,8 @@
 package cz.anty.purkynka.lunches.ui
 
 import android.content.Context
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
@@ -26,6 +28,7 @@ import eu.codetopic.java.utils.JavaExtensions.Anchor
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.java.utils.JavaExtensions.letIfNull
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.baseActivity
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
@@ -35,7 +38,7 @@ import java.util.*
 /**
  * @author anty
  */
-class LunchOptionsGroupItem(val base: LunchOptionsGroup) : CustomItem() {
+class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) : CustomItem() {
 
     companion object {
 
@@ -88,8 +91,23 @@ class LunchOptionsGroupItem(val base: LunchOptionsGroup) : CustomItem() {
 
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
-                // TODO: show LunchOrderActivity
-                Log.w(LOG_TAG, "Not implemented yet")
+                val context = holder.context
+                val options = context.baseActivity?.let {
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            it,
+                            holder.boxClickTarget,
+                            context.getString(R.string.id_transition_lunch_options_group_item)
+                    )
+                }
+
+                if (options == null) Log.w(LOG_TAG, "Can't start GradeActivity " +
+                        "with transition: Cannot find Activity in context hierarchy")
+
+                ContextCompat.startActivity(
+                        context,
+                        LunchOptionsGroupActivity.getStartIntent(context, accountId, base),
+                        options?.toBundle()
+                )
             }
         }
     }

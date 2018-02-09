@@ -82,8 +82,10 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         update()
     }
 
-    private var userLoggedIn = false
+    private var userLoggedIn: Boolean = false
     private var lunchesList: List<LunchOptionsGroup>? = null
+    private var isDataValid: Boolean = true
+    private var validityRefreshRequested: Boolean = false
 
     private var recyclerManager: Recycler.RecyclerManagerImpl? = null
     private var adapter: CustomItemAdapter<CustomItem>? = null
@@ -215,6 +217,9 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
             self().userLoggedIn = self().accountHolder.accountId?.let {
                 bg { LunchesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
+            self().isDataValid = self().accountHolder.accountId?.let {
+                bg { LunchesData.instance.isDataValid(it) }.await()
+            } ?: true
             self().lunchesList = self().accountHolder.accountId?.let {
                 bg { LunchesData.instance.getLunches(it) }.await()
             }
@@ -228,16 +233,31 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
 
         adapter?.edit {
             clear()
-            if (userLoggedIn) {
-                lunchesList
-                        ?.sortedBy { it.date }
-                        ?.map { LunchOptionsGroupItem(it) } // TODO: maybe add week dividers
-                        ?.let { addAll(it) }
+            if (userLoggedIn && isDataValid) {
+                accountHolder.accountId?.let { accountId ->
+                    lunchesList
+                            ?.sortedBy { it.date }
+                            ?.map { LunchOptionsGroupItem(accountId, it) } // TODO: maybe add week dividers
+                            ?.let { addAll(it) }
+                }
             }
         }
 
+        // TODO: Show somewhere user's credit
+
+        // TODO: Show last sync status
+
         // Allow menu visibility changes based on userLoggedIn state
         activity?.invalidateOptionsMenu()
+
+        if (!isDataValid) {
+            if (!validityRefreshRequested) {
+                validityRefreshRequested = true
+                requestSyncWithLoading()
+            }
+        } else {
+            validityRefreshRequested = false
+        }
     }
 
     private fun requestSyncWithLoading() {

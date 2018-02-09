@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.lunches.load
 
+import android.content.SyncResult
 import cz.anty.purkynka.lunches.data.BurzaLunch
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
@@ -81,12 +82,14 @@ object LunchesParser {
                 )
             }
 
-    fun parseBurzaLunches(lunchesElements: Elements): List<BurzaLunch> {
+    fun parseBurzaLunches(lunchesElements: Elements, syncResult: SyncResult? = null): List<BurzaLunch> {
         Log.d(LOG_TAG, "parseBurzaLunches(lunchesElements=$lunchesElements)")
         return lunchesElements.mapNotNull {
             try {
+                syncResult?.apply { stats.numEntries++ }
                 parseBurzaLunch(it)
             } catch (e: Exception) {
+                syncResult?.apply { stats.numParseExceptions++ }
                 Log.w(LOG_TAG, "parseBurzaLunches", e); null
             }
         }
@@ -133,11 +136,12 @@ object LunchesParser {
         )
     }
 
-    fun parseLunchOptionsGroups(lunchesElements: Elements): List<LunchOptionsGroup> {
+    fun parseLunchOptionsGroups(lunchesElements: Elements, syncResult: SyncResult? = null): List<LunchOptionsGroup> {
         Log.d(LOG_TAG, "parseLunchOptionsGroups(lunchesElements=$lunchesElements)")
 
         return lunchesElements.mapNotNull { lunchElement ->
             try {
+                syncResult?.apply { stats.numEntries++ }
                 val lunchElements = lunchElement.children()
 
                 val date = lunchElements.getOrNull(0)
@@ -156,6 +160,7 @@ object LunchesParser {
 
                 return@mapNotNull LunchOptionsGroup(date, lunchOptions)
             } catch (e: Exception) {
+                syncResult?.apply { stats.numParseExceptions++ }
                 Log.w(LOG_TAG, "parseLunchOptionsGroups", e); null
             }
         }

@@ -26,6 +26,7 @@ import eu.codetopic.java.utils.JavaExtensions.kSerializer
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.BooleanPreference
 import eu.codetopic.utils.data.preferences.preference.EnumPreference
+import eu.codetopic.utils.data.preferences.preference.FloatPreference
 import eu.codetopic.utils.data.preferences.preference.KSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
@@ -67,11 +68,38 @@ class LunchesData private constructor(context: Context) :
             SyncResult.SUCCESS
     )
 
+    private val creditPref = FloatPreference(
+            CREDIT,
+            accessProvider,
+            Float.NaN
+    )
+
     private val firstSyncPref = BooleanPreference(
             FIRST_SYNC,
             accessProvider,
             true
     )
+
+    private val invalidityPref = BooleanPreference(
+            INVALID,
+            accessProvider,
+            false
+    )
+
+    fun setCredit(id: String, credit: Float) =
+            creditPref.setValue(this, id, credit)
+
+    fun getCredit(id: String): Float =
+            creditPref.getValue(this, id)
+
+    fun makeDataValid(id: String) =
+            invalidityPref.setValue(this, id, false)
+
+    fun invalidateData(id: String) =
+            invalidityPref.setValue(this, id, true)
+
+    fun isDataValid(id: String): Boolean =
+            !invalidityPref.getValue(this, id)
 
     fun isFirstSync(id: String): Boolean =
             firstSyncPref.getValue(this, id)

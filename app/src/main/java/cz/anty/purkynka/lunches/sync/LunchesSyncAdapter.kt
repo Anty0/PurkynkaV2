@@ -115,31 +115,53 @@ class LunchesSyncAdapter(context: Context) :
 
             val cookies = LunchesFetcher.login(username, password)
 
-            if (!LunchesFetcher.isLoggedIn(cookies))
+            val mainPage = LunchesFetcher.getMainPage(cookies)
+
+            if (!LunchesFetcher.isLoggedIn(mainPage))
                 throw WrongLoginDataException("Failed to login user with provided credentials")
+
+            val nLunchesHtml = LunchesFetcher.getLunchOptionsGroupsElements(cookies)
 
             //val lunchesList = data.getLunches(accountId)
 
-            val nLunchesHtml = LunchesFetcher.getLunchOptionsGroupsElements(cookies)
-            val nLunchesList = LunchesParser.parseLunchOptionsGroups(nLunchesHtml)
+            val nCredit = try {
+                LunchesFetcher.getCredit(mainPage)
+            } catch (e: Exception) {
+                // Problems with parsing credit shouldn't cause whole sync to fail
+                syncResult.stats.numParseExceptions++
+                Log.w(LOG_TAG, "Failed to parse lunches credit", e)
+                Float.NaN
+            }
+            val nLunchesList = LunchesParser.parseLunchOptionsGroups(nLunchesHtml, syncResult)
+
+            // TODO: check if user have enough credit and warn him (in gui and maybe optionally in notification)
 
             // TODO: check for new lunches and show notification (but do nothing if firstSync)
 
-            // TODO: check if user have ordered lunch for at last three days and warn about it (in gui and optionally in notification
+            // TODO: check if user have ordered lunch for at last three days and warn about it (in gui and optionally in notification)
 
+            data.setCredit(accountId, nCredit)
             data.setLunches(accountId, nLunchesList)
-
             data.notifyFirstSyncDone(accountId)
+            data.makeDataValid(accountId)
             data.setLastSyncResult(accountId, SUCCESS)
         } catch (e: Exception) {
             Log.w(LOG_TAG, "Failed to refresh lunches", e)
 
             data.setLastSyncResult(accountId, when (e) {
-                is WrongLoginDataException -> FAIL_LOGIN
-                is IOException -> FAIL_CONNECT
-                else -> FAIL_UNKNOWN
+                is WrongLoginDataException -> {
+                    syncResult.stats.numAuthExceptions++
+                    FAIL_LOGIN
+                }
+                is IOException -> {
+                    syncResult.stats.numIoExceptions++
+                    FAIL_CONNECT
+                }
+                else -> {
+                    syncResult.stats.numIoExceptions++
+                    FAIL_UNKNOWN
+                }
             })
-
         }
     }
 }

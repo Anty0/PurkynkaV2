@@ -32,6 +32,8 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
+import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
 import eu.codetopic.utils.simple.SimpleAnimatorListener
 import eu.codetopic.utils.simple.SimpleTransitionListener
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
@@ -57,7 +59,7 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
 
         fun getStartIntent(context: Context, subjectItem: SubjectItem) =
                 Intent(context, SubjectActivity::class.java)
-                        .putExtra(EXTRA_SUBJECT_ITEM, JSON.stringify(subjectItem))
+                        .putKSerializableExtra(EXTRA_SUBJECT_ITEM, subjectItem)
 
         fun start(context: Context, subjectItem: SubjectItem) =
                 context.startActivity(getStartIntent(context, subjectItem))
@@ -67,18 +69,19 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_subject)
 
-        val subjectItem = intent?.getStringExtra(EXTRA_SUBJECT_ITEM)
-                ?.let { JSON.parse<SubjectItem>(it) } ?: run {
-            Log.e(LOG_TAG, "Can't create $LOG_TAG: No SubjectItem received")
-            finish()
-            return
-        }
+        val subjectItem = intent
+                ?.getKSerializableExtra<SubjectItem>(EXTRA_SUBJECT_ITEM)
+                ?:
+                run {
+                    Log.e(LOG_TAG, "Can't create $LOG_TAG: No SubjectItem received")
+                    finish()
+                    return
+                }
 
         title = subjectItem.base.fullName
 
-        val itemVH = subjectItem.createViewHolder(this, boxSubject).also {
-            boxSubject.addView(it.itemView)
-        }
+        val itemVH = subjectItem.createViewHolder(this, boxSubject)
+                .also { boxSubject.addView(it.itemView) }
         subjectItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)
 
         Recycler.inflate().on(layoutInflater, boxRecycler, true)

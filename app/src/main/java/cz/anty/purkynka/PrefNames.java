@@ -60,6 +60,8 @@ public final class PrefNames {
     public static final String FILE_NAME_LUNCHES_DATA = "LunchesData";
     //// FIRST_SYNC SYNC_RESULT
     public static final String LUNCHES_LIST = "LUNCHES";
+    public static final String CREDIT = "CREDIT";
+    public static final String INVALID = "INVALID";
     /// LunchesLoginData
     public static final String FILE_NAME_LUNCHES_LOGIN_DATA = "LunchesLoginData";
 

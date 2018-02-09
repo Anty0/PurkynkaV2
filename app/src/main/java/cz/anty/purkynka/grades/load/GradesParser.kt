@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.grades.load
 
+import android.content.SyncResult
 import android.net.Uri
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Subject
@@ -65,7 +66,7 @@ object GradesParser {
             }
             .sortedBy { it.shortName }
 
-    fun parseGrades(gradesHtml: Elements): List<Grade> = gradesHtml
+    fun parseGrades(gradesHtml: Elements, syncResult: SyncResult? = null): List<Grade> = gradesHtml
             .takeIf { it.isNotEmpty() }
             ?.takeIf {
                 it[0].select("td").let {
@@ -74,8 +75,10 @@ object GradesParser {
             }
             ?.mapNotNull {
                 try {
+                    syncResult?.apply { stats.numEntries++ }
                     parseGrade(it)
                 } catch (e: Exception) {
+                    syncResult?.apply { stats.numParseExceptions++ }
                     Log.w(LOG_TAG, "parseGrades", e); null
                 }
             }

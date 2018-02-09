@@ -99,6 +99,10 @@
             android:name=".grades.ui.GradeActivity"
             android:label="@string/title_activity_grade"
             android:theme="@style/AppTheme.NoActionBar.Grades"/>
+        <activity
+            android:name=".lunches.ui.LunchOptionsGroupActivity"
+            android:label="@string/title_activity_lunch_options_group"
+            android:theme="@style/AppTheme.NoActionBar.Lunches"/>
 
         <receiver
             android:name=".update.receiver.UpdateCheckJobScheduleReceiver"

@@ -27,7 +27,8 @@
     android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingRight="16dp"
+    android:transitionName="@string/id_transition_lunch_options_group_item">
 
     <TextView
         android:id="@+id/txtDay"

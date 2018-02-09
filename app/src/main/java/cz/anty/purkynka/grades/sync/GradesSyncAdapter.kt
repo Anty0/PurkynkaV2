@@ -153,7 +153,7 @@ class GradesSyncAdapter(context: Context) :
             val gradesMap = data.getGrades(accountId).toMutableMap()
 
             semestersToFetch.forEach {
-                fetchGradesToMap(accountId, cookies, it, !firstSync, gradesMap)
+                fetchGradesToMap(accountId, cookies, it, !firstSync, gradesMap, syncResult)
             }
 
             data.setGrades(accountId, gradesMap)
@@ -164,47 +164,62 @@ class GradesSyncAdapter(context: Context) :
             Log.w(LOG_TAG, "Failed to refresh grades", e)
 
             data.setLastSyncResult(accountId, when (e) {
-                is WrongLoginDataException -> FAIL_LOGIN
-                is IOException -> FAIL_CONNECT
-                else -> FAIL_UNKNOWN
+                is WrongLoginDataException -> {
+                    syncResult.stats.numAuthExceptions++
+                    FAIL_LOGIN
+                }
+                is IOException -> {
+                    syncResult.stats.numIoExceptions++
+                    FAIL_CONNECT
+                }
+                else -> {
+                    syncResult.stats.numIoExceptions++
+                    FAIL_UNKNOWN
+                }
             })
         }
     }
 
-    private fun fetchGradesToMap(accountId: String, cookies: Map<String, String>, semester: Semester,
-                                 checkForChanges: Boolean, gradesMap: MutableGradesMap) {
+    private fun fetchGradesToMap(accountId: String, cookies: Map<String, String>,
+                                 semester: Semester, checkForChanges: Boolean,
+                                 gradesMap: MutableGradesMap, syncResult: SyncResult) {
         val gradesHtml = GradesFetcher.getGradesElements(cookies, semester)
-        val grades = GradesParser.parseGrades(gradesHtml)
+        val grades = GradesParser.parseGrades(gradesHtml, syncResult)
 
         gradesMap.takeIf { checkForChanges }
                 ?.getOrElse(semester.value) { emptyList() }
                 ?.let {
-                    checkForDiffs(accountId, it, grades)
+                    checkForDiffs(accountId, it, grades, syncResult)
                 }
         gradesMap[semester.value] = grades
     }
 
-    private fun checkForDiffs(accountId: String, oldGrades: List<Grade>, newGrades: List<Grade>) {
-        val added = mutableListOf<Grade>()
-        val modified = mutableListOf<Pair<Grade, Grade>>()
-        //val removed = mutableListOf<Grade>()
+    private fun checkForDiffs(accountId: String, oldGrades: List<Grade>, newGrades: List<Grade>,
+                              syncResult: SyncResult) {
+        val inserted = mutableListOf<Grade>()
+        val updated = mutableListOf<Pair<Grade, Grade>>()
+        val deleted = mutableListOf<Grade>()
 
         newGrades.forEach {
             val index = oldGrades.indexOf(it)
             if (index == -1) {
-                added.add(it)
+                inserted.add(it)
                 return@forEach
             }
 
             val oldGrade = oldGrades[index]
-            if (it differentTo oldGrade) modified.add(oldGrade to it)
+            if (it differentTo oldGrade) updated.add(oldGrade to it)
         }
 
-        //removed.addAll(oldGrades.filter { !newGrades.contains(it) })
+        deleted.addAll(oldGrades.filter { !newGrades.contains(it) })
 
-        val allChanges = added.map {
+        syncResult.stats.numInserts += inserted.size
+        syncResult.stats.numUpdates += updated.size
+        syncResult.stats.numDeletes += deleted.size
+
+        val allChanges = inserted.map {
             GradesChangesNotifyChannel.dataForNewGrade(it)
-        } + modified.map {
+        } + updated.map {
             GradesChangesNotifyChannel.dataForModifiedGrade(it.first, it.second)
         }
 

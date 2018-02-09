@@ -28,13 +28,14 @@ import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Grade.Companion.dateStr
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
+import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.simple.SimpleTransitionListener
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.activity_grade.*
-import kotlinx.serialization.json.JSON
 
 /**
  * @author anty
@@ -50,7 +51,7 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
 
         fun getStartIntent(context: Context, gradeItem: GradeItem) =
                 Intent(context, GradeActivity::class.java)
-                        .putExtra(EXTRA_GRADE_ITEM, JSON.stringify(gradeItem))
+                        .putKSerializableExtra(EXTRA_GRADE_ITEM, gradeItem)
 
         fun start(context: Context, gradeItem: GradeItem) =
                 context.startActivity(getStartIntent(context, gradeItem))
@@ -60,8 +61,7 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_grade)
 
-        val gradeItem = intent?.getStringExtra(EXTRA_GRADE_ITEM)
-                ?.let { JSON.parse<GradeItem>(it) }
+        val gradeItem = intent?.getKSerializableExtra<GradeItem>(EXTRA_GRADE_ITEM)
                 ?:
                 run {
                     Log.e(LOG_TAG, "Can't create $LOG_TAG: No GradeItem received")
@@ -71,9 +71,8 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
 
         //title = gradeItem.base.? //TODO: maybe set title to something
 
-        val itemVH = gradeItem.createViewHolder(this, boxGrade).also {
-            boxGrade.addView(it.itemView, 0)
-        }
+        val itemVH = gradeItem.createViewHolder(this, boxGrade)
+                .also { boxGrade.addView(it.itemView, 0) }
         gradeItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)
 
         txtDate.text = gradeItem.base.dateStr

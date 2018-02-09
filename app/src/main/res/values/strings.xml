@@ -47,6 +47,7 @@
     <string name="title_activity_account_properties">Account properties</string>
     <string name="title_activity_subject">Subject</string>
     <string name="title_activity_grade">Grade</string>
+    <string name="title_activity_lunch_options_group">Lunch order</string>
 
     <string name="title_fragment_grades">Grades</string>
     <string name="title_fragment_wifi_login">Wifi auto login</string>
@@ -114,11 +115,18 @@
     <string name="but_disable">Disable</string>
     <string name="but_continue">Continue</string>
     <string name="but_cancel">Cancel</string>
+    <string name="but_lunch_to_burza">Put to burza</string>
+    <string name="but_lunch_from_burza">Take back from burza</string>
+    <string name="but_lunch_order">Order</string>
+    <string name="but_no_lunch">No lunch</string>
 
     <string name="item_title_date">Date</string>
     <string name="item_title_type">Type</string>
     <string name="item_title_subject">Subject</string>
     <string name="item_title_subject_symbol">Subject symbol</string>
+    <string name="item_title_lunch_options">Lunch options</string>
+    <string name="item_title_lunch_burza">Burza</string>
+    <string name="item_text_lunch_no_burza">"Can't put this lunch to burza."</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 
@@ -185,6 +193,18 @@
     <string name="snackbar_wifi_logging_fail_no_page">Failed to sent login request to wifi, you are probably still logged in.</string>
     <string name="snackbar_updates_fetch_fail">Failed to check for updates.</string>
     <string name="snackbar_lunches_login_fail">Failed to login. Are login credentials in order?</string>
+    <string name="snackbar_lunches_order_fail_internal">Failed to order lunch. Stay easy, just internal error. :)</string>
+    <string name="snackbar_lunches_order_fail_connect">Connection error. Failed to order lunch.</string>
+    <string name="snackbar_lunches_order_fail_login">Failed to login. Are login credentials in order?</string>
+    <string name="snackbar_lunches_order_fail_unknown">Failed to order lunch.</string>
+    <string name="snackbar_lunches_to_burza_fail_internal">Failed to move lunch to burza. Stay easy, just internal error. :)</string>
+    <string name="snackbar_lunches_to_burza_fail_connect">Connection error. Failed to move lunch to burza.</string>
+    <string name="snackbar_lunches_to_burza_fail_login">Failed to login. Are login credentials in order?</string>
+    <string name="snackbar_lunches_to_burza_fail_unknown">Failed to move lunch to burza.</string>
+    <string name="snackbar_lunches_from_burza_fail_internal">Failed to move lunch from burza. Stay easy, just internal error. :)</string>
+    <string name="snackbar_lunches_from_burza_fail_connect">Connection error. Failed to move lunch from burza.</string>
+    <string name="snackbar_lunches_from_burza_fail_login">Failed to login. Are login credentials in order?</string>
+    <string name="snackbar_lunches_from_burza_fail_unknown">Failed to move lunch from burza.</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>
@@ -209,4 +229,5 @@
 
     <string name="id_transition_subject_item" translatable="false">subject_item</string>
     <string name="id_transition_grade_item" translatable="false">grade_item</string>
+    <string name="id_transition_lunch_options_group_item" translatable="false">lunch_options_group_item</string>
 </resources>

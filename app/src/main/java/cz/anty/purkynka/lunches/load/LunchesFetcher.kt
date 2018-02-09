@@ -83,13 +83,13 @@ object LunchesFetcher {
                     "stravovani.sspbrno.cz" in page.location()
 
     @Throws(IOException::class)
-    fun orderOrCancelLunch(loginCookies: Map<String, String>, orderOrCancelUrl: String) {
+    fun orderLunch(loginCookies: Map<String, String>, orderUrl: String) {
         val response = Jsoup
-                .connect(URL_START_ORDER + orderOrCancelUrl.replace("&amp;", "&"))
+                .connect(URL_START_ORDER + orderUrl.replace("&amp;", "&"))
                 .cookies(loginCookies)
                 .execute()
 
-        Log.v(LOG_TAG, "orderOrCancelLunch() -> (response=${response.body()})")
+        Log.v(LOG_TAG, "orderLunch() -> (response=${response.body()})")
 
         try {
             response.body()
@@ -97,7 +97,7 @@ object LunchesFetcher {
                     .takeIf { it.has("error") }
                     ?.getBoolean("error")
         } catch (e: Exception) {
-            Log.w(LOG_TAG, "orderOrCancelLunch() -> " +
+            Log.w(LOG_TAG, "orderLunch() -> " +
                     "Invalid response received, testing response using fallback strategy")
 
             "\"error\":true" in response.body()
@@ -126,8 +126,8 @@ object LunchesFetcher {
                     .also { it.removeAt(0) } // remove first line of table, which is not lunch
                     .also { Log.v(LOG_TAG, "getBurzaLunchesElements() -> (result=$it)") }
 
-    fun getCredit(elements: Element): Double =
-            elements.select("span#Kredit span").text().toDouble()
+    fun getCredit(elements: Element): Float =
+            elements.select("span#Kredit span").text().toFloat()
 
     @Throws(IOException::class)
     fun getMainPage(loginCookies: Map<String, String>): Document =
