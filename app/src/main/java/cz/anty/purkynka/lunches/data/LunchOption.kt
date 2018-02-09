@@ -32,6 +32,9 @@ data class LunchOption(val name: String, val date: Long, val enabled: Boolean, v
 
         val LunchOption.dateStr: String
             get() = LunchesParser.FORMAT_DATE_SHOW.format(date)
+
+        val LunchOption.dateStrShort: String
+            get() = LunchesParser.FORMAT_DATE_SHOW_SHORT.format(date)
     }
 
     override fun hashCode(): Int {

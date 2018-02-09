@@ -35,9 +35,12 @@ import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.*
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
 import eu.codetopic.utils.broadcast.BroadcastsConnector
+import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder.Companion.requestShowAll
+import kotlinx.serialization.list
 import org.jetbrains.anko.bundleOf
 import java.io.IOException
 
@@ -51,10 +54,17 @@ class GradesSyncAdapter(context: Context) :
 
         private const val LOG_TAG = "GradesSyncAdapter"
 
+        const val ACTION_NEW_GRADES_CHANGES =
+                "cz.anty.purkynka.grades.sync.$LOG_TAG.NEW_GRADES_CHANGES"
+        const val EXTRA_ACCOUNT_ID =
+                "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_ACCOUNT_ID"
+        const val EXTRA_GRADES_CHANGES =
+                "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_GRADES_CHANGES"
+
         const val CONTENT_AUTHORITY = GradesDataProvider.AUTHORITY
         const val SYNC_FREQUENCY = Constants.SYNC_FREQUENCY_GRADES
 
-        const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.save.$LOG_TAG.EXTRA_SEMESTER"
+        const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_SEMESTER"
 
         fun init(context: Context) {
             BroadcastsConnector.connect(
@@ -200,14 +210,15 @@ class GradesSyncAdapter(context: Context) :
 
         if (allChanges.isEmpty()) return
 
-        MultiNotificationBuilder.create(
-                groupId = AccountNotifyGroup.idFor(accountId),
-                channelId = GradesChangesNotifyChannel.ID,
-                init = {
-                    persistent = true
-                    refreshable = true
-                    addData(allChanges)
-                }
-        ).requestShowAll(context)
+        context.sendOrderedBroadcast(
+                Intent(ACTION_NEW_GRADES_CHANGES)
+                        .putExtra(EXTRA_ACCOUNT_ID, accountId)
+                        .putKSerializableExtra(
+                                name = EXTRA_GRADES_CHANGES,
+                                value = allChanges,
+                                saver = BundleSerializer.list
+                        ),
+                null
+        )
     }
 }

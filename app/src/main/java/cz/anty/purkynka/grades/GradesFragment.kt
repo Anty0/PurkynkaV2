@@ -18,15 +18,10 @@
 
 package cz.anty.purkynka.grades
 
-import android.accounts.Account
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.Context
-import android.content.SyncStatusObserver
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.Menu
@@ -39,6 +34,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.Constants.ICON_GRADES
 
 import cz.anty.purkynka.R
+import cz.anty.purkynka.Utils
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.grades.data.Semester
@@ -56,13 +52,15 @@ import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
-import eu.codetopic.java.utils.JavaExtensions.alsoIfNull
+import eu.codetopic.java.utils.JavaExtensions.ifFalse
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
@@ -88,7 +86,6 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
-import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
  * @author anty
@@ -99,65 +96,6 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     companion object {
 
         private const val LOG_TAG = "GradesFragment"
-
-        private const val TIMEOUT_SYNC_ACTIVE_MILIS = 30L * 1_000L
-
-        suspend fun awaitForSyncAdd(account: Account) = awaitForSyncState {
-            (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
-                    ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
-                    .also { Log.d(LOG_TAG, "awaitForSyncAdd(account=$account) -> $it") }
-        }
-
-        suspend fun awaitForSyncActiveOrEnd(account: Account) = withTimeoutOrNull(TIMEOUT_SYNC_ACTIVE_MILIS) {
-            awaitForSyncState {
-                (ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) ||
-                        !ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
-                        .also {
-                            Log.d(LOG_TAG, "awaitForSyncActiveOrEnd(account=$account)" +
-                                    " -> Condition result: $it")
-                        }
-            }
-        }.alsoIfNull {
-            Log.d(LOG_TAG, "awaitForSyncActiveOrEnd(account=$account) -> Timeout reached")
-        } != null
-
-        suspend fun awaitForSyncEnd(account: Account) = awaitForSyncState {
-            (!ContentResolver.isSyncActive(account, GradesSyncAdapter.CONTENT_AUTHORITY) &&
-                    !ContentResolver.isSyncPending(account, GradesSyncAdapter.CONTENT_AUTHORITY))
-                    .also { Log.d(LOG_TAG, "awaitForSyncEnd(account=$account) -> $it") }
-        }
-
-        private suspend inline fun awaitForSyncState(crossinline condition: () -> Boolean) =
-                suspendCoroutine<Unit> { cont ->
-                    if (run(condition)) {
-                        cont.resume(Unit)
-                        return@suspendCoroutine
-                    }
-
-                    var observerHandle: Any? = null
-                    val observer = SyncStatusObserver {
-                        if (run(condition)) {
-                            observerHandle?.let {
-                                observerHandle = null
-                                ContentResolver.removeStatusChangeListener(it)
-                                cont.resume(Unit)
-                            }
-                        }
-                    }
-                    val mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING or
-                            ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
-                    observerHandle = ContentResolver.addStatusChangeListener(mask, observer)
-
-                    if (run(condition)) {
-                        observerHandle?.let {
-                            observerHandle = null
-                            ContentResolver.removeStatusChangeListener(it)
-
-                            cont.resume(Unit)
-                            return@suspendCoroutine
-                        }
-                    }
-                }
     }
 
     override val title: CharSequence
@@ -201,7 +139,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         launch(UI) {
             holder.showLoading()
 
-            // TODO: Create superclass for these layouts and call onEach register
+            // TODO: Create superclass for these layouts and call onEach update
             arrayOf(
                     layLogin.update(),
                     layGrades.update(),
@@ -246,9 +184,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (super.onOptionsItemSelected(item)) return true
-
-        return layGrades.optionsItemSelected(item)
+        return when {
+            layGrades.optionsItemSelected(item) -> true
+            super.onOptionsItemSelected(item) -> true
+            else -> false
+        }
     }
 
     @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
@@ -318,7 +258,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun updateUi() {
-            if (containerView == null) return
+            containerView ?: return
 
             boxLogin.visibility = if (!userLoggedIn) {
                 inUsername.takeIf { it.text.isEmpty() }?.setText(username)
@@ -339,22 +279,21 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             val username = inUsername.text.toString()
             val password = inPassword.text.toString()
 
+            val baseViewRef = baseView.asReference()
             launch(UI) {
                 holder.showLoading()
 
                 bg { GradesLoginData.loginData.login(accountId, username, password) }.await()
 
-                // Sync will be triggered later by change broadcast, so we must wait for sync start before we can wait for sync end
-                awaitForSyncAdd(account)
-                if (awaitForSyncActiveOrEnd(account)) {
-                    awaitForSyncEnd(account)
+                // Sync will be triggered later by login change broadcast
+                if (Utils.awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY)) {
                     val syncResult = bg { GradesData.instance.getLastSyncResult(accountId) }.await()
                     if (syncResult == FAIL_LOGIN) {
-                        longSnackbar(baseView, R.string.snackbar_grades_login_fail)
+                        longSnackbar(baseViewRef(), R.string.snackbar_grades_login_fail)
                         bg { GradesLoginData.loginData.logout(accountId) }.await()
                     }
                 } else {
-                    longSnackbar(baseView, R.string.snackbar_sync_start_fail)
+                    longSnackbar(baseViewRef(), R.string.snackbar_sync_start_fail)
                     bg { GradesLoginData.loginData.logout(accountId) }.await()
                 }
 
@@ -406,9 +345,27 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
             update()
         }
-        private val sortChangedReceiver = broadcast { _, _ ->
-            Log.d(LOG_TAG, "sortChangedReceiver.onReceive()")
+        private val uiDataChangedReceiver = broadcast { _, _ ->
+            Log.d(LOG_TAG, "uiDataChangedReceiver.onReceive()")
             update()
+        }
+        private val newGradesChangesReceiver = broadcast { _, intent ->
+            Log.d(LOG_TAG, "newGradesChangesReceiver.onReceive()")
+
+            val accountId = intent
+                    ?.getStringExtra(GradesSyncAdapter.EXTRA_ACCOUNT_ID)
+                    ?: return@broadcast
+            val gradesChanges = intent
+                    .getKSerializableExtra(
+                            GradesSyncAdapter.EXTRA_GRADES_CHANGES,
+                            BundleSerializer.list
+                    ) ?: return@broadcast
+
+            addGradesChanges(accountId, gradesChanges)
+
+            updateUi()
+
+            abortBroadcast()
         }
 
         private var userLoggedIn = false
@@ -470,20 +427,13 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
             adapter = CustomItemAdapter(context)
 
-            recyclerManager = Recycler.inflate().withSwipeToRefresh()
+            recyclerManager = Recycler.inflate().withSwipeToRefresh().withItemDivider()
                     .on(inflater, boxRecycler, true)
                     .setEmptyImage(context.getIconics(ICON_GRADES).sizeDp(72))
                     .setEmptyText(R.string.empty_view_text_no_grades)
                     .setSmallEmptyText(R.string.empty_view_text_small_no_grades)
                     .setAdapter(adapter)
                     .setOnRefreshListener(::requestSyncWithRecyclerRefreshing)
-                    .apply {
-                        val layoutManager = LinearLayoutManager(context)
-                        setLayoutManager(layoutManager)
-                        recyclerView.addItemDecoration(
-                                DividerItemDecoration(context, layoutManager.orientation)
-                        )
-                    }
         }
 
         fun unbindView() {
@@ -499,14 +449,17 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     intentFilter(GradesLoginData.getter))
             LocalBroadcast.registerReceiver(dataChangedReceiver,
                     intentFilter(GradesData.getter))
-            LocalBroadcast.registerReceiver(sortChangedReceiver,
+            LocalBroadcast.registerReceiver(uiDataChangedReceiver,
                     intentFilter(GradesUiData.getter))
+            boxRecycler.context.registerReceiver(newGradesChangesReceiver,
+                    intentFilter(GradesSyncAdapter.ACTION_NEW_GRADES_CHANGES))
 
             return update()
         }
 
         fun unregister() {
-            LocalBroadcast.unregisterReceiver(sortChangedReceiver)
+            boxRecycler.context.unregisterReceiver(newGradesChangesReceiver)
+            LocalBroadcast.unregisterReceiver(uiDataChangedReceiver)
             LocalBroadcast.unregisterReceiver(dataChangedReceiver)
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
         }
@@ -599,6 +552,18 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             }
         }
 
+        fun addGradesChanges(accountId: String, changes: Iterable<Bundle>) = gradesChangesMap
+                .getOrPut(accountId, ::mutableMapOf)
+                .putAll(
+                        changes.mapNotNull {
+                            readDataGrade(it)?.id?.let { id ->
+                                readDataChanges(it)?.let { changes ->
+                                    id to changes
+                                }
+                            }
+                        }
+                )
+
         fun update(): Job = launch(UI) {
             sort = accountHolder.accountId?.let {
                 bg { GradesUiData.instance.getLastSort(it) }.await()
@@ -612,19 +577,14 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             accountHolder.accountId?.let { accountId ->
                 boxRecycler?.context?.let { context ->
                     // All grades changes will be displayed to user, so let's remove them all
-                    gradesChangesMap.getOrPut(accountId, ::mutableMapOf).putAll(
-                            NotifyManager
-                                    .requestSuspendCancelAll(
-                                            context = context,
-                                            groupId = GradesChangesNotifyChannel.ID,
-                                            channelId = AccountNotifyGroup.idFor(accountId)
-                                    )
-                                    .mapNotNull {
-                                        (readDataGrade(it.value)?.id ?: return@mapNotNull null) to
-                                                (readDataChanges(it.value)
-                                                        ?: return@mapNotNull null)
-                                    }
-                    )
+                    NotifyManager
+                            .requestSuspendCancelAll(
+                                    context = context,
+                                    groupId = GradesChangesNotifyChannel.ID,
+                                    channelId = AccountNotifyGroup.idFor(accountId)
+                            )
+                            .takeIf { it.isNotEmpty() }
+                            ?.also { addGradesChanges(accountId, it.values) }
                 }
             }
 
@@ -632,7 +592,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun updateUi() {
-            if (containerView == null) return
+            containerView ?: return
 
             boxGrades.visibility = if (userLoggedIn) {
                 adapter?.edit {
@@ -674,6 +634,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 View.GONE
             }
 
+            // Allow menu visibility changes based on userLoggedIn state
             activity?.invalidateOptionsMenu()
         }
 
@@ -691,12 +652,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
                 GradesSyncAdapter.requestSync(account, semester)
 
-                // Sync sometimes reports, that is not started, at the beginning.
-                // So we must wait for sync start before we can wait for sync end.
-                awaitForSyncAdd(account)
-                if (awaitForSyncActiveOrEnd(account)) {
-                    awaitForSyncEnd(account)
-                } else {
+                Utils.awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
                     longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail)
                 }
 
@@ -712,21 +668,16 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             }
             val semester = semester
             val boxGradesRef = boxGrades.asReference()
-            val recyclerManagerRef = recyclerManager?.asReference()
+            val recyclerManagerRef = recyclerManager?.asReference() ?: return
 
             launch(UI) {
                 GradesSyncAdapter.requestSync(account, semester)
 
-                // Sync sometimes reports, that is not started, at the beginning.
-                // So we must wait for sync start before we can wait for sync end.
-                awaitForSyncAdd(account)
-                if (awaitForSyncActiveOrEnd(account)) {
-                    awaitForSyncEnd(account)
-                } else {
+                Utils.awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
                     longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail)
                 }
 
-                recyclerManagerRef?.invoke()?.setRefreshing(false)
+                recyclerManagerRef().setRefreshing(false)
             }
         }
     }
@@ -798,8 +749,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         }
 
         fun updateUi(force: Boolean = false) {
-            if (!force && (containerView == null || (showingResult == syncLastResult &&
-                    statusSnackbar?.isShownOrQueued != false))) return
+            containerView ?: return
+
+            if (!force && showingResult == syncLastResult &&
+                    statusSnackbar?.isShownOrQueued != false) return
 
             when (syncLastResult) {
                 FAIL_UNKNOWN -> statusSnackbar = indefiniteSnackbar(

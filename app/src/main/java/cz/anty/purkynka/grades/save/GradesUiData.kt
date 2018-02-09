@@ -22,10 +22,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import cz.anty.purkynka.PrefNames.FILE_NAME_GRADES_UI_DATA
 import cz.anty.purkynka.PrefNames.LAST_SORT_GRADES
-import eu.codetopic.java.utils.JavaExtensions.kSerializer
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.preference.EnumPreference
-import eu.codetopic.utils.data.preferences.preference.KotlinSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs

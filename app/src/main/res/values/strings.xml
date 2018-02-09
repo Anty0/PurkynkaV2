@@ -126,10 +126,24 @@
     <string name="text_view_weight">Weight</string>
     <string name="text_view_average">Average</string>
     <plurals name="text_view_grades_count">
-        <item quantity="zero">No grades</item>
         <item quantity="one">%1$d Grade</item>
         <item quantity="other">%1$d Grades</item>
     </plurals>
+    <string name="text_view_lunches_no_lunch_ordered">No lunch ordered</string>
+    <string name="text_view_lunches_ordered_index">%1$d. Lunch</string>
+    <plurals name="text_view_lunches_available_count">
+        <item quantity="one">%1$d lunch can be ordered</item>
+        <item quantity="other">%1$d lunches can be ordered</item>
+    </plurals>
+
+    <string name="txt_day_short_sunday">SUN</string>
+    <string name="txt_day_short_monday">MON</string>
+    <string name="txt_day_short_tuesday">TUE</string>
+    <string name="txt_day_short_wednesday">WED</string>
+    <string name="txt_day_short_thursday">THU</string>
+    <string name="txt_day_short_friday">FRI</string>
+    <string name="txt_day_short_saturday">SAT</string>
+    <string name="txt_day_short_unknown">"???"</string>
 
     <string name="text_view_warn_non_primary_account">This account is not primary account.\nFor automatic wifi login will be used primary account.</string>
     <string name="text_view_warn_unsupported_device">Your device has Android 7 or higher.\nAutomatic login may not work properly on your device…\nThis problem cannot be fixed…</string>
@@ -145,6 +159,8 @@
 
     <string name="empty_view_text_no_grades">No grades</string>
     <string name="empty_view_text_small_no_grades">All your grades from selected semester will appear here.</string>
+    <string name="empty_view_text_no_lunches_to_order">No lunches to order</string>
+    <string name="empty_view_text_small_no_lunches_to_order">All lunches to order will appear here.</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
     <string name="toast_wifi_logging_start">Sending login request to wifi <i>%1$s</i></string>
@@ -168,6 +184,7 @@
     <string name="snackbar_wifi_logging_success">Successfully sent login request to wifi.</string>
     <string name="snackbar_wifi_logging_fail_no_page">Failed to sent login request to wifi, you are probably still logged in.</string>
     <string name="snackbar_updates_fetch_fail">Failed to check for updates.</string>
+    <string name="snackbar_lunches_login_fail">Failed to login. Are login credentials in order?</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>

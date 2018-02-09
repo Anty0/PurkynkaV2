@@ -26,7 +26,7 @@ import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Grade.Companion.valueColor
-import eu.codetopic.java.utils.JavaExtensions
+import eu.codetopic.java.utils.JavaExtensions.Anchor
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.baseActivity
@@ -61,7 +61,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
 
         holder.txtSubject.apply {
             visibility = if (showSubject) View.VISIBLE else View.GONE
-            text = base.subjectShort.fillToLen(4, JavaExtensions.Anchor.LEFT)
+            text = base.subjectShort.fillToLen(4, Anchor.LEFT)
         }
 
         holder.txtGrade.apply {

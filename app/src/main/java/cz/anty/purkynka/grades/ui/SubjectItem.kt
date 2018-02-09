@@ -35,6 +35,7 @@ import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.java.utils.JavaExtensions.format
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.baseActivity
+import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
 import kotlinx.android.synthetic.main.item_subject.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -65,9 +66,11 @@ class SubjectItem(val base: Subject,
         holder.txtNameLong.text = base.fullName
 
         val gradesCount = base.grades.size
-        holder.txtGradesCount.text = holder.context.resources
-                .getQuantityString(R.plurals.text_view_grades_count, gradesCount)
-                .format(gradesCount)
+        holder.txtGradesCount.text = holder.context
+                .getFormattedQuantityText(
+                        R.plurals.text_view_grades_count,
+                        gradesCount, gradesCount
+                )
 
         holder.boxColoredBackground.setBackgroundResource(
                 if (!isChnaged) android.R.color.transparent

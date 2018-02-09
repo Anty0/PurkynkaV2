@@ -21,19 +21,12 @@ package cz.anty.purkynka.wifilogin.save
 import android.content.Context
 import android.content.SharedPreferences
 import cz.anty.purkynka.PrefNames.LOGIN_COUNTER
-import eu.codetopic.java.utils.JavaExtensions
 import eu.codetopic.utils.data.preferences.PreferencesData
-import eu.codetopic.utils.data.preferences.preference.BooleanPreference
-import eu.codetopic.utils.data.preferences.preference.EnumPreference
 import eu.codetopic.utils.data.preferences.preference.IntPreference
-import eu.codetopic.utils.data.preferences.preference.KotlinSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
-import kotlinx.serialization.internal.IntSerializer
-import kotlinx.serialization.list
-import kotlinx.serialization.map
 
 /**
  * @author anty

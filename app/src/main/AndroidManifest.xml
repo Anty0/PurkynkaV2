@@ -44,7 +44,6 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
-    <!--TODO: shortcuts-->
     <!--TODO: widgets-->
 
     <application
@@ -130,6 +129,16 @@
             android:enabled="true"
             android:exported="false"
             android:process=":syncs" />
+        <receiver
+            android:name=".grades.receiver.NewGradesChangesReceiver"
+            android:enabled="false"
+            android:exported="false"
+            android:process=":syncs">
+
+            <intent-filter android:priority="-1">
+                <action android:name="cz.anty.purkynka.grades.sync.GradesSyncAdapter.NEW_GRADES_CHANGES" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".lunches.receiver.UpdateLunchesSyncReceiver"
             android:enabled="true"

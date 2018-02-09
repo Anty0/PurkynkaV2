@@ -71,6 +71,7 @@ import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import io.michaelrocks.bimap.HashBiMap
 import org.jetbrains.anko.bundleOf
 
 
@@ -85,6 +86,18 @@ class MainActivity : NavigationActivity() {
 
         private const val EXTRA_FRAGMENT_CLASS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_CLASS"
         private const val EXTRA_FRAGMENT_EXTRAS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_EXTRAS"
+
+        private val optionsMenuMap = Utils.biMapOf<Int, Class<out Fragment>>(
+                R.id.nav_dashboard to DashboardFragment::class.java,
+                R.id.nav_grades to GradesFragment::class.java,
+                R.id.nav_wifi_login to WifiLoginFragment::class.java,
+                R.id.nav_timetables to TimetablesListFragment::class.java,
+                R.id.nav_attendance to AttendanceSearchFragment::class.java,
+                R.id.nav_lunches_login to LunchesLoginFragment::class.java,
+                R.id.nav_lunches_order to LunchesOrderFragment::class.java,
+                R.id.nav_lunches_burza to LunchesBurzaFragment::class.java,
+                R.id.nav_lunches_burza_watcher to LunchesBurzaWatcherFragment::class.java
+        )
 
         @JvmOverloads
         fun getStartIntent(context: Context, fragmentClass: Class<out Fragment>? = null,
@@ -308,47 +321,31 @@ class MainActivity : NavigationActivity() {
     }
 
     override fun onUpdateSelectedNavigationMenuItem(currentFragment: Fragment?, menu: Menu): Boolean {
-        menu.setGroupVisible(R.id.menu_group_lunches, false)
+        // Deselect all items
+        optionsMenuMap.keys.forEach { menu.findItem(it).isChecked = false }
 
-        if (currentFragment == null) {
-            return super.onUpdateSelectedNavigationMenuItem(null, menu)
-        }
+        val itemId = currentFragment?.javaClass?.let { optionsMenuMap.inverse[it] }
+                ?: return super.onUpdateSelectedNavigationMenuItem(currentFragment, menu)
 
-        with (menu) {
-            when (currentFragment.javaClass) {
-                DashboardFragment::class.java -> findItem(R.id.nav_dashboard).isChecked = true
-                GradesFragment::class.java -> findItem(R.id.nav_grades).isChecked = true
-                WifiLoginFragment::class.java -> findItem(R.id.nav_wifi_login).isChecked = true
-                TimetablesListFragment::class.java -> findItem(R.id.nav_timetables).isChecked = true
-                AttendanceSearchFragment::class.java -> findItem(R.id.nav_attendance).isChecked = true
-                LunchesLoginFragment::class.java -> findItem(R.id.nav_lunches_login).isChecked = true
-                LunchesOrderFragment::class.java -> findItem(R.id.nav_lunches_order).isChecked = true
-                LunchesBurzaFragment::class.java -> findItem(R.id.nav_lunches_burza).isChecked = true
-                LunchesBurzaWatcherFragment::class.java -> findItem(R.id.nav_lunches_burza_watcher).isChecked = true
-                else -> return super.onUpdateSelectedNavigationMenuItem(currentFragment, menu)
-            }
-        }
+        menu.findItem(itemId).isChecked = true
         return true
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_dashboard -> replaceFragment(DashboardFragment::class.java)
-            R.id.nav_grades -> replaceFragment(GradesFragment::class.java)
-            R.id.nav_wifi_login -> replaceFragment(WifiLoginFragment::class.java)
-            R.id.nav_timetables -> replaceFragment(TimetablesListFragment::class.java)
-            R.id.nav_attendance -> replaceFragment(AttendanceSearchFragment::class.java)
-            R.id.nav_lunches_login -> replaceFragment(LunchesLoginFragment::class.java)
-            R.id.nav_lunches_order -> replaceFragment(LunchesOrderFragment::class.java)
-            R.id.nav_lunches_burza -> replaceFragment(LunchesBurzaFragment::class.java)
-            R.id.nav_lunches_burza_watcher -> replaceFragment(LunchesBurzaWatcherFragment::class.java)
-            R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
-            R.id.nav_debug -> startActivity(Intent(this, DebugActivity::class.java))
-            R.id.nav_contact_facebook -> AndroidUtils.openUri(this, Constants.URL_FACEBOOK_PAGE, R.string.toast_browser_failed)
-            R.id.nav_contact_web_page -> AndroidUtils.openUri(this, Constants.URL_WEB_PAGE, R.string.toast_browser_failed)
-            R.id.nav_contact_web_page_donate -> AndroidUtils.openUri(this, Constants.URL_WEB_DONATE_PAGE, R.string.toast_browser_failed)
-            else -> return super.onNavigationItemSelected(item)
-        }
+        val fragmentClass = optionsMenuMap[item.itemId]
+                ?: run {
+                    when (item.itemId) {
+                        R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+                        R.id.nav_debug -> startActivity(Intent(this, DebugActivity::class.java))
+                        R.id.nav_contact_facebook -> AndroidUtils.openUri(this, Constants.URL_FACEBOOK_PAGE, R.string.toast_browser_failed)
+                        R.id.nav_contact_web_page -> AndroidUtils.openUri(this, Constants.URL_WEB_PAGE, R.string.toast_browser_failed)
+                        R.id.nav_contact_web_page_donate -> AndroidUtils.openUri(this, Constants.URL_WEB_DONATE_PAGE, R.string.toast_browser_failed)
+                        else -> return super.onNavigationItemSelected(item)
+                    }
+                    return true
+                }
+
+        replaceFragment(fragmentClass)
         return true
     }
 

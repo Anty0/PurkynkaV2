@@ -149,6 +149,7 @@ dependencies {
     implementation 'com.mikepenz:community-material-typeface:2.0.46.1@aar'
 
     implementation 'org.jsoup:jsoup:1.11.2'
+    implementation 'io.michaelrocks:bimap:1.0.2'
     implementation 'com.evernote:android-job:1.2.2'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.infstory:proguard-annotations:1.0.2'

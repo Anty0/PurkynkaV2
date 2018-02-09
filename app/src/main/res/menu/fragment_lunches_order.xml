@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ app
-  ~ Copyright (C)   2017  anty
+  ~ Copyright (C)   2018  anty
   ~
   ~ This program is free  software: you can redistribute it and/or modify
   ~ it under the terms  of the GNU General Public License as published by
@@ -17,13 +17,20 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".lunches.LunchesOrderFragment">
 
-    <group
-        android:id="@+id/menu_group_main"
-        android:checkableBehavior="none">
+    <item
+        android:id="@+id/action_refresh"
+        android:title="@string/menu_item_text_refresh"
+        app:showAsAction="never" /> <!--Icon will be added after inflating-->
 
-    </group>
+    <item
+        android:id="@+id/action_log_out"
+        android:title="@string/menu_item_text_log_out"
+        app:showAsAction="never" /> <!--Icon will be added after inflating-->
+
 </menu>

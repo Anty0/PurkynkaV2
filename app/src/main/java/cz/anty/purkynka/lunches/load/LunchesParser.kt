@@ -39,6 +39,8 @@ object LunchesParser {
 
     internal val FORMAT_DATE_SHOW =
             SimpleDateFormat("dd. MM. yyyy", Locale.getDefault())
+    internal val FORMAT_DATE_SHOW_SHORT =
+            SimpleDateFormat("d. M.", Locale.getDefault())
     internal val FORMAT_DATE_PARSE_LUNCH_OPTIONS =
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     internal val FORMAT_DATE_BURZA_LUNCH =

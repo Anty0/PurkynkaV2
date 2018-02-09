@@ -24,10 +24,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cz.anty.purkynka.R
+import cz.anty.purkynka.Utils
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.lunches.save.LunchesData
+import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions
+import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -39,6 +44,7 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
 
@@ -63,9 +69,13 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider 
     private var userLoggedIn = false
     private var username = ""
 
-    private val loginDataChangedReceiver = AndroidExtensions.broadcast { _, _ ->
+    private val loginDataChangedReceiver = broadcast { _, _ ->
         Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
         updateWithLoading()
+    }
+
+    init {
+        accountHolder.addChangeListener { update().join() }
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -84,12 +94,14 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
+        val self = this.asReference()
+        val holder = holder
         launch(UI) {
             holder.showLoading()
 
             arrayOf(
-                    update(),
-                    accountHolder.update()
+                    self().update(),
+                    self().accountHolder.update()
             ).forEach { it.join() }
 
             holder.hideLoading()
@@ -124,41 +136,47 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider 
     }
 
     private fun updateWithLoading(): Job {
+        val self = this.asReference()
+        val holder = holder
         return launch(UI) {
             holder.showLoading()
 
-            update().join()
+            self().update().join()
 
             holder.hideLoading()
         }
     }
 
-    private fun update(): Job = launch(UI) {
-        userLoggedIn = accountHolder.accountId?.let {
-            bg { LunchesLoginData.loginData.isLoggedIn(it) }.await()
-        } ?: false
-        username = accountHolder.accountId?.let {
-            bg { LunchesLoginData.loginData.getUsername(it) }.await()
-        } ?: ""
+    private fun update(): Job {
+        val self = this.asReference()
+        return launch(UI) {
+            self().userLoggedIn = self().accountHolder.accountId?.let {
+                bg { LunchesLoginData.loginData.isLoggedIn(it) }.await()
+            } ?: false
+            self().username = self().accountHolder.accountId?.let {
+                bg { LunchesLoginData.loginData.getUsername(it) }.await()
+            } ?: ""
 
-        updateUi()
+            self().updateUi()
+        }
     }
 
     private fun updateUi() {
-        if (view == null) return
+        view ?: return
 
         if (userLoggedIn) {
-            switchFragment(LunchesOrderFragment::class.java)
         } else {
             inUsername.takeIf { it.text.isEmpty() }?.setText(username)
         }
     }
 
     private fun login() {
-        /*val account = accountHolder.account ?: run {
+        val view = view ?: return
+
+        val account = accountHolder.account ?: run {
             longSnackbar(boxLogin, R.string.snackbar_no_account_login)
             return
-        }*/
+        }
         val accountId = accountHolder.accountId ?: run {
             longSnackbar(boxLogin, R.string.snackbar_no_account_login)
             return
@@ -166,10 +184,29 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         val username = inUsername.text.toString()
         val password = inPassword.text.toString()
 
+        val self = this.asReference()
+        val viewRef = view.asReference()
+        val holder = holder
         launch(UI) {
             holder.showLoading()
 
             bg { LunchesLoginData.loginData.login(accountId, username, password) }.await()
+
+            // Sync will be triggered later by login change broadcast
+            if (Utils.awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY)) {
+                val syncResult = bg { LunchesData.instance.getLastSyncResult(accountId) }.await()
+                if (syncResult == FAIL_LOGIN) {
+                    longSnackbar(viewRef(), R.string.snackbar_lunches_login_fail)
+                    bg { LunchesLoginData.loginData.logout(accountId) }.await()
+                } else {
+                    // Success :D
+                    // Let's switch fragment
+                    self().switchFragment(LunchesOrderFragment::class.java)
+                }
+            } else {
+                longSnackbar(viewRef(), R.string.snackbar_sync_start_fail)
+                bg { LunchesLoginData.loginData.logout(accountId) }.await()
+            }
 
             delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()

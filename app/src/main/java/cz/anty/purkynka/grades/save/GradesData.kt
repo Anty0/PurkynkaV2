@@ -29,7 +29,7 @@ import eu.codetopic.java.utils.JavaExtensions.kSerializer
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.BooleanPreference
 import eu.codetopic.utils.data.preferences.preference.EnumPreference
-import eu.codetopic.utils.data.preferences.preference.KotlinSerializedPreference
+import eu.codetopic.utils.data.preferences.preference.KSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.*
 import kotlinx.serialization.internal.IntSerializer
@@ -84,7 +84,7 @@ class GradesData private constructor(context: Context) :
 
     fun setLastSyncResult(id: String, value: SyncResult) = lastSyncResultPref.setValue(this, id, value)
 
-    private val gradesPreference = KotlinSerializedPreference<GradesMap>(
+    private val gradesPreference = KSerializedPreference<GradesMap>(
             GRADES_MAP,
             (IntSerializer to kSerializer<Grade>().list).map,
             accessProvider

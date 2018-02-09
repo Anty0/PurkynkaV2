@@ -157,7 +157,7 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
     }
 
     override fun handleSummaryContentIntent(context: Context, group: NotifyGroup,
-                                            notifyId: NotifyId, data: Map<NotifyId, Bundle>) {
+                                            notifyId: NotifyId, data: Map<out NotifyId, Bundle>) {
         val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
             Log.e(LOG_TAG, "handleSummaryContentIntent(id=$notifyId, group=$group, data=$data)",
                     IllegalArgumentException("Group is not AccountNotifyGroup, " +
@@ -233,8 +233,8 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
                             ?: throw IllegalArgumentException(
                                     "Data doesn't contains grade's changes list")
 
-
                     // TODO: show changes
+
                     setContentTitle(context.getFormattedText(
                             R.string.notify_grade_modified_title,
                             grade.valueToShow, grade.subjectShort
@@ -252,7 +252,7 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
     }
 
     override fun createSummaryNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,
-                                           data: Map<NotifyId, Bundle>): NotificationCompat.Builder {
+                                           data: Map<out NotifyId, Bundle>): NotificationCompat.Builder {
         val allGrades = data.values.mapNotNull {
             readDataGrade(it).alsoIfNull {
                 Log.w(LOG_TAG, "Data doesn't contains grade")

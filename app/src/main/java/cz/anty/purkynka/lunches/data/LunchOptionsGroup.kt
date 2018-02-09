@@ -33,6 +33,9 @@ data class LunchOptionsGroup(val date: Long, val options: Array<LunchOption>?) {
 
         val LunchOptionsGroup.dateStr: String
             get() = LunchesParser.FORMAT_DATE_SHOW.format(date)
+
+        val LunchOptionsGroup.dateStrShort: String
+            get() = LunchesParser.FORMAT_DATE_SHOW_SHORT.format(date)
     }
 
     @Transient
