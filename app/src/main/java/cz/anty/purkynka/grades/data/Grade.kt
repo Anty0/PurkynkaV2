@@ -23,6 +23,7 @@ import cz.anty.purkynka.Utils
 import cz.anty.purkynka.grades.load.GradesParser
 import eu.codetopic.java.utils.JavaExtensions.letIf
 import kotlinx.serialization.Serializable
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -34,8 +35,10 @@ data class Grade(val id: Int, val date: Long, val subjectShort: String, val subj
 
     companion object {
 
+        private val DATE_FORMAT = SimpleDateFormat("dd. MM. yyyy", Locale.ENGLISH)
+
         val Grade.dateStr: String
-            get() = GradesParser.GRADE_DATE_FORMAT.format(Date(date))
+            get() = DATE_FORMAT.format(Date(date))
 
         @get:ColorInt
         val Grade.valueColor: Int

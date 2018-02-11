@@ -26,35 +26,35 @@
     <color name="colorPrimaryDark">#388E3C</color>
     <color name="colorPrimaryExtraDark">#2E7D32</color>
     <color name="navigationBarColor">#1B5E20</color>
-    <color name="colorAccent">#536DFE</color>
+    <color name="colorAccent">#9FA8DA</color>
 
     <color name="colorPrimaryGrades">#3F51B5</color>
     <color name="colorPrimaryDarkGrades">#303F9F</color>
     <color name="colorPrimaryExtraDarkGrades">#283593</color>
     <color name="navigationBarColorGrades">#1A237E</color>
-    <color name="colorAccentGrades">#00BCD4</color>
+    <color name="colorAccentGrades">#80DEEA</color>
 
     <color name="colorPrimaryAttendance">#009688</color>
     <color name="colorPrimaryDarkAttendance">#00796B</color>
     <color name="colorPrimaryExtraDarkAttendance">#00695C</color>
     <color name="navigationBarColorAttendance">#004D40</color>
-    <color name="colorAccentAttendance">#00BCD4</color>
+    <color name="colorAccentAttendance">#80DEEA</color>
 
     <color name="colorPrimaryLunches">#FF5722</color>
     <color name="colorPrimaryDarkLunches">#E64A19</color>
     <color name="colorPrimaryExtraDarkLunches">#D84315</color>
     <color name="navigationBarColorLunches">#BF360C</color>
-    <color name="colorAccentLunches">#795548</color>
+    <color name="colorAccentLunches">#BCAAA4</color>
 
     <color name="colorPrimaryTimetables">#FF9800</color>
     <color name="colorPrimaryDarkTimetables">#F57C00</color>
     <color name="colorPrimaryExtraDarkTimetables">#EF6C00</color>
     <color name="navigationBarColorTimetables">#E65100</color>
-    <color name="colorAccentTimetables">#795548</color>
+    <color name="colorAccentTimetables">#BCAAA4</color>
 
     <color name="colorPrimaryWifiLogin">#607D8B</color>
     <color name="colorPrimaryDarkWifiLogin">#455A64</color>
     <color name="colorPrimaryExtraDarkWifiLogin">#37474F</color>
     <color name="navigationBarColorWifiLogin">#263238</color>
-    <color name="colorAccentWifiLogin">#009688</color>
+    <color name="colorAccentWifiLogin">#80CBC4</color>
 </resources>

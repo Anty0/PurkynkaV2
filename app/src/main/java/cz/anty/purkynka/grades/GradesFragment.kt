@@ -283,7 +283,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             launch(UI) {
                 holder.showLoading()
 
-                bg { GradesLoginData.loginData.login(accountId, username, password) }.await()
+                bg {
+                    GradesData.instance.resetFirstSyncState(accountId)
+                    GradesLoginData.loginData.login(accountId, username, password)
+                }.await()
 
                 // Sync will be triggered later by login change broadcast
                 if (Utils.awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY)) {
@@ -308,10 +311,20 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 return
             }
 
+            val appContext = boxLogin.context.applicationContext
             launch(UI) {
                 holder.showLoading()
 
-                bg { GradesLoginData.loginData.logout(accountId) }.await()
+                bg {
+                    GradesLoginData.loginData.logout(accountId)
+                    GradesData.instance.resetFirstSyncState(accountId)
+                }.await()
+
+                NotifyManager.requestCancelAll(
+                        context = appContext,
+                        groupId = AccountNotifyGroup.idFor(accountId),
+                        channelId = GradesChangesNotifyChannel.ID
+                )
 
                 delay(500) // Wait few loops to make sure, that content was updated.
                 holder.hideLoading()
@@ -580,8 +593,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                     NotifyManager
                             .requestSuspendCancelAll(
                                     context = context,
-                                    groupId = GradesChangesNotifyChannel.ID,
-                                    channelId = AccountNotifyGroup.idFor(accountId)
+                                    groupId = AccountNotifyGroup.idFor(accountId),
+                                    channelId = GradesChangesNotifyChannel.ID
                             )
                             .takeIf { it.isNotEmpty() }
                             ?.also { addGradesChanges(accountId, it.values) }

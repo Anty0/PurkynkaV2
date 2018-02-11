@@ -190,7 +190,10 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         launch(UI) {
             holder.showLoading()
 
-            bg { LunchesLoginData.loginData.login(accountId, username, password) }.await()
+            bg {
+                LunchesData.instance.resetFirstSyncState(accountId)
+                LunchesLoginData.loginData.login(accountId, username, password)
+            }.await()
 
             // Sync will be triggered later by login change broadcast
             if (Utils.awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY)) {

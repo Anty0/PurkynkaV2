@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.lunches.load
 
+import android.support.annotation.WorkerThread
 import cz.anty.purkynka.Utils
 import cz.anty.purkynka.exceptions.LoginExpiredException
 import eu.codetopic.java.utils.log.Log
@@ -30,6 +31,8 @@ import org.jsoup.Connection
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -39,24 +42,45 @@ object LunchesFetcher {
 
     private const val LOG_TAG = "LunchesFetcher"
 
-    private const val URL_LOGIN = "http://stravovani.sspbrno.cz:8080/faces/j_spring_security_check"
     private const val PARAM_USERNAME = "j_username"
     private const val PARAM_PASSWORD = "j_password"
     private const val PARAM_REMEMBER_ME = "_spring_security_remember_me"
-    private const val PARAM_REMEMBER_ME_VAL = "true"
+    private const val PARAM_REMEMBER_ME_VAL = "false"
     private const val PARAM_TERMINAL = "terminal"
     private const val PARAM_TERMINAL_VAL = "false"
     private const val PARAM_TYPE = "type"
     private const val PARAM_TYPE_VAL = "web"
     private const val PARAM_TARGET_URL = "targetUrl"
     private const val PARAM_TARGET_URL_VAL = "/faces/secured/main.jsp?terminal=false&amp;status=true&amp;printer=false&amp;keyboard=false"
+    private const val PARAM_PRINTER = "printer"
+    private const val PARAM_PRINTER_VAL = "false"
+    private const val PARAM_KEYBOARD = "terminal"
+    private const val PARAM_KEYBOARD_VAL = "false"
+    private const val PARAM_DAY = "day"
+    private val PARAM_DAY_FORMAT = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
-    private const val URL_BURZA = "http://stravovani.sspbrno.cz:8080/faces/secured/burza.jsp?terminal=false&keyboard=false&printer=false"
-    private const val URL_MAIN = "http://stravovani.sspbrno.cz:8080/faces/secured/main.jsp?terminal=false&keyboard=false&printer=false"
-    private const val URL_MONTH = "http://stravovani.sspbrno.cz:8080/faces/secured/month.jsp?terminal=false&keyboard=false&printer=false"
+    private const val URL_LOGIN = "http://stravovani.sspbrno.cz:8080/faces/j_spring_security_check"
+    // username password remember_me terminal type target_url
+
+    private const val URL_LOGOUT = "http://stravovani.sspbrno.cz:8080/j_spring_security_logout"
+    // terminal keyboard printer // ?terminal=false&keyboard=false&printer=false
+
+    private const val URL_BURZA = "http://stravovani.sspbrno.cz:8080/faces/secured/burza.jsp"
+    // terminal keyboard printer // ?terminal=false&keyboard=false&printer=false
+
+    private const val URL_MAIN = "http://stravovani.sspbrno.cz:8080/faces/secured/main.jsp"
+    // terminal keyboard printer // ?terminal=false&keyboard=false&printer=false
+
+    private const val URL_MONTH = "http://stravovani.sspbrno.cz:8080/faces/secured/month.jsp"
+    // terminal keyboard printer // ?terminal=false&keyboard=false&printer=false
+
+    private const val URL_DAY = "http://stravovani.sspbrno.cz:8080/faces/secured/main.jsp"
+    // day terminal printer keyboard // ?day=2018-02-23&terminal=false&printer=false&keyboard=false
 
     private const val URL_START_ORDER = "http://stravovani.sspbrno.cz:8080/faces/secured/"
+    // + url_add
 
+    @WorkerThread
     @Throws(IOException::class)
     fun login(username: String, password: String): Map<String, String> =
             Jsoup.connect(URL_LOGIN)
@@ -73,6 +97,22 @@ object LunchesFetcher {
                     .method(Connection.Method.POST)
                     .execute().cookies()
 
+    @WorkerThread
+    @Throws(IOException::class)
+    fun logout(loginCookies: Map<String, String>): Document =
+            Jsoup.connect(URL_LOGOUT)
+                    .userAgent(Utils.userAgent)
+                    .data(
+                            PARAM_TERMINAL, PARAM_TERMINAL_VAL,
+                            PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,
+                            PARAM_PRINTER, PARAM_PRINTER_VAL
+                    )
+                    .followRedirects(false)
+                    .method(Connection.Method.GET)
+                    .cookies(loginCookies)
+                    .get()
+
+    @WorkerThread
     @Throws(IOException::class)
     fun isLoggedIn(loginCookies: Map<String, String>): Boolean =
             isLoggedIn(getPage(URL_MAIN, loginCookies))
@@ -82,6 +122,7 @@ object LunchesFetcher {
                     !page.select("div.topMenu").isEmpty() &&
                     "stravovani.sspbrno.cz" in page.location()
 
+    @WorkerThread
     @Throws(IOException::class)
     fun orderLunch(loginCookies: Map<String, String>, orderUrl: String) {
         val response = Jsoup
@@ -97,8 +138,8 @@ object LunchesFetcher {
                     .takeIf { it.has("error") }
                     ?.getBoolean("error")
         } catch (e: Exception) {
-            Log.w(LOG_TAG, "orderLunch() -> " +
-                    "Invalid response received, testing response using fallback strategy")
+            Log.d(LOG_TAG, "orderLunch() -> " +
+                    "Non json response received, testing response using fallback strategy")
 
             "\"error\":true" in response.body()
         } ifTrue {
@@ -106,35 +147,82 @@ object LunchesFetcher {
         }
     }
 
+    @WorkerThread
+    @Throws(IOException::class)
+    fun getLunchOptionsGroupElement(loginCookies: Map<String, String>, date: Long): Element =
+            Jsoup.connect(URL_DAY)
+                    .userAgent(Utils.userAgent)
+                    .data(
+                            PARAM_DAY, PARAM_DAY_FORMAT.format(date),
+                            PARAM_TERMINAL, PARAM_TERMINAL_VAL,
+                            PARAM_PRINTER, PARAM_PRINTER_VAL,
+                            PARAM_KEYBOARD, PARAM_KEYBOARD_VAL
+                    )
+                    .followRedirects(false)
+                    .method(Connection.Method.GET)
+                    .cookies(loginCookies)
+                    .get()
+                    .select("div#mainContext")
+                    .select("table")
+                    .select("td")
+                    .get(0)
+
+    @WorkerThread
     @Throws(IOException::class)
     fun getLunchOptionsGroupsElements(loginCookies: Map<String, String>): Elements =
-            getPage(URL_MONTH, loginCookies)
-                    .alsoIfNot({ isLoggedIn(it) }) { throw LoginExpiredException() }
+            Jsoup.connect(URL_MONTH)
+                    .userAgent(Utils.userAgent)
+                    .data(
+                            PARAM_TERMINAL, PARAM_TERMINAL_VAL,
+                            PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,
+                            PARAM_PRINTER, PARAM_PRINTER_VAL
+                    )
+                    .followRedirects(false)
+                    .method(Connection.Method.GET)
+                    .cookies(loginCookies)
+                    .get()
                     .select("div#mainContext")
                     .select("table")
                     .select("form[name=objednatJidlo-]")
-                    .also { Log.v(LOG_TAG, "getLunchOptionsGroupsElements() -> (result=$it)") }
 
 
+    @WorkerThread
     @Throws(IOException::class)
     fun getBurzaLunchesElements(loginCookies: Map<String, String>): Elements =
-            getPage(URL_BURZA, loginCookies)
-                    .alsoIfNot({ isLoggedIn(it) }) { throw LoginExpiredException() }
+            Jsoup.connect(URL_BURZA)
+                    .userAgent(Utils.userAgent)
+                    .data(
+                            PARAM_TERMINAL, PARAM_TERMINAL_VAL,
+                            PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,
+                            PARAM_PRINTER, PARAM_PRINTER_VAL
+                    )
+                    .followRedirects(false)
+                    .method(Connection.Method.GET)
+                    .cookies(loginCookies)
+                    .get()
                     .select("div#mainContext")
                     .select("table")
                     .select("tr")
                     .also { it.removeAt(0) } // remove first line of table, which is not lunch
-                    .also { Log.v(LOG_TAG, "getBurzaLunchesElements() -> (result=$it)") }
 
-    fun getCredit(elements: Element): Float =
-            elements.select("span#Kredit span").text().toFloat()
-
+    @WorkerThread
     @Throws(IOException::class)
     fun getMainPage(loginCookies: Map<String, String>): Document =
-            getPage(URL_MAIN, loginCookies)
-                    .alsoIfNot({ isLoggedIn(it) }) { throw LoginExpiredException() }
+            Jsoup.connect(URL_MAIN)
+                    .userAgent(Utils.userAgent)
+                    .data(
+                            PARAM_TERMINAL, PARAM_TERMINAL_VAL,
+                            PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,
+                            PARAM_PRINTER, PARAM_PRINTER_VAL
+                    )
+                    .followRedirects(false)
+                    .method(Connection.Method.GET)
+                    .cookies(loginCookies)
+                    .get()
 
+    @WorkerThread
     @Throws(IOException::class)
+    @Deprecated("")
     private fun getPage(url: String, loginCookies: Map<String, String>): Document =
             Jsoup.connect(url)
                     .userAgent(Utils.userAgent)

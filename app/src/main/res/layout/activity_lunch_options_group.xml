@@ -86,19 +86,28 @@
                         <!--Here will be inflated lunch options radio items-->
                     </RadioGroup>
 
-                    <Button
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:id="@+id/butLunchOrder"
+                    <LinearLayout
+                        style="?android:attr/buttonBarStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/but_lunch_order"
-                        android:enabled="false" />
+                        android:orientation="horizontal"
+                        android:gravity="end">
+
+                        <Button
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:id="@+id/butLunchOrder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/but_lunch_order"
+                            android:enabled="false" />
+                    </LinearLayout>
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
                 style="?attr/cardViewTheme"
+                android:id="@+id/boxToOrFromBurza"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
@@ -107,7 +116,8 @@
                 app:contentPaddingTop="16dp"
                 app:contentPaddingBottom="16dp"
                 app:contentPaddingLeft="16dp"
-                app:contentPaddingRight="16dp">
+                app:contentPaddingRight="16dp"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -122,7 +132,7 @@
                         android:text="@string/item_title_lunch_burza" />
 
                     <Button
-                        style="?android:attr/buttonBarButtonStyle"
+                        style="@style/Widget.AppCompat.Button.Colored"
                         android:id="@+id/butLunchToBurza"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -130,20 +140,11 @@
                         android:visibility="gone" />
 
                     <Button
-                        style="?android:attr/buttonBarButtonStyle"
+                        style="@style/Widget.AppCompat.Button.Colored"
                         android:id="@+id/butLunchFromBurza"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/but_lunch_from_burza"
-                        android:visibility="gone" />
-
-                    <TextView
-                        style="?attr/textAppearanceListItemSecondary"
-                        android:id="@+id/txtLunchNoBurza"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="24sp"
-                        android:text="@string/item_text_lunch_no_burza"
                         android:visibility="gone" />
                 </LinearLayout>
 

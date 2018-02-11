@@ -42,6 +42,7 @@ import android.widget.RadioButton
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.load.LunchesFetcher
+import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
@@ -143,12 +144,19 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
             val lunchOptionToOrder = boxOptionsGroup
                     .findViewById<RadioButton>(
                             boxOptionsGroup.checkedRadioButtonId
-                    ).tag as? LunchOption
-
-            val url = lunchOptionToOrder?.orderOrCancelUrl ?: run {
+                    ).tag as? LunchOption ?: run {
                 longSnackbar(boxLunchOptionsGroup, R.string.snackbar_lunches_order_fail_internal)
                 return@onClick
             }
+            val lunchOptionIndex = lunchOptionsGroup.options?.indexOf(lunchOptionToOrder) ?: run {
+                longSnackbar(boxLunchOptionsGroup, R.string.snackbar_lunches_order_fail_internal)
+                return@onClick
+            }
+
+            /*val url = lunchOptionToOrder.orderOrCancelUrl ?: run {
+                longSnackbar(boxLunchOptionsGroup, R.string.snackbar_lunches_order_fail_internal)
+                return@onClick
+            }*/
 
             holder.showLoading()
 
@@ -169,7 +177,24 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                     if (!LunchesFetcher.isLoggedIn(cookies))
                         throw WrongLoginDataException("Failed to login user with provided credentials")
 
+                    val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, lunchOptionsGroup.date)
+                    val nLunchOptionsGroup = LunchesParser.parseLunchOptionsGroup(lunchHtml)
+                            .takeIf { it == lunchOptionsGroup }
+                            ?: throw IllegalStateException("Lunch options group to order not found")
+                    val nLunchOptionToOrder = nLunchOptionsGroup.options?.get(lunchOptionIndex)
+                            .takeIf {
+                                it == lunchOptionToOrder
+                                        && it.enabled == lunchOptionToOrder.enabled
+                                        && it.ordered == lunchOptionToOrder.ordered
+                            }
+                            ?: throw IllegalStateException("Lunch option to order not found")
+
+                    val url = nLunchOptionToOrder.orderOrCancelUrl
+                            ?: throw IllegalStateException("Lunch option url to order not found")
+
                     LunchesFetcher.orderLunch(cookies, url)
+
+                    LunchesFetcher.logout(cookies)
 
                     LunchesData.instance.invalidateData(accountId)
                     return@bg true
@@ -191,10 +216,13 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
             holder.hideLoading()
         }
 
-        lunchOptionsGroup.options
-                ?.firstOrNull { it.isInBurza != null }
-                ?.also { lunchOption ->
+        lunchOptionsGroup.orderedOption
+                .takeIf { it?.second?.isInBurza != null }
+                ?.also {
+                    val (index, lunchOption) = it
                     val isInBurza = lunchOption.isInBurza == true
+
+                    boxToOrFromBurza.visibility = View.VISIBLE
 
                     val button =
                             if (isInBurza) butLunchFromBurza
@@ -203,14 +231,14 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                     button.apply {
                         visibility = View.VISIBLE
                         onClick {
-                            val url = lunchOption.toOrFromBurzaUrl ?: run {
+                            /*val url = lunchOption.toOrFromBurzaUrl ?: run {
                                 longSnackbar(
                                         boxLunchOptionsGroup,
                                         if (isInBurza) R.string.snackbar_lunches_from_burza_fail_internal
                                         else R.string.snackbar_lunches_to_burza_fail_internal
                                 )
                                 return@onClick
-                            }
+                            }*/
 
                             holder.showLoading()
 
@@ -231,7 +259,20 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                                     if (!LunchesFetcher.isLoggedIn(cookies))
                                         throw WrongLoginDataException("Failed to login user with provided credentials")
 
+                                    val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, lunchOptionsGroup.date)
+                                    val nLunchOptionsGroup = LunchesParser.parseLunchOptionsGroup(lunchHtml)
+                                            .takeIf { it == lunchOptionsGroup }
+                                            ?: throw IllegalStateException("Lunch options group to order not found")
+                                    val nLunchOption = nLunchOptionsGroup.options?.get(index)
+                                            .takeIf { it == lunchOption && it.isInBurza == lunchOption.isInBurza }
+                                            ?: throw IllegalStateException("Lunch option to order not found")
+
+                                    val url = nLunchOption.toOrFromBurzaUrl
+                                            ?: throw IllegalStateException("Lunch option url to order not found")
+
                                     LunchesFetcher.orderLunch(cookies, url)
+
+                                    LunchesFetcher.logout(cookies)
 
                                     LunchesData.instance.invalidateData(accountId)
                                     return@bg true
@@ -260,8 +301,6 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                         }
                     }
                 }
-                ?:
-                run { txtLunchNoBurza.visibility = View.VISIBLE }
 
         if (savedInstanceState == null) {
             val lunchOptionsGroupInfoAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)

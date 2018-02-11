@@ -33,6 +33,7 @@ import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.item_lunch_options_group.*
+import org.jetbrains.anko.textColorResource
 import java.util.*
 
 /**
@@ -46,22 +47,33 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        holder.txtDay.text = Calendar.getInstance()
-                .apply { timeInMillis = base.date }
-                .get(Calendar.DAY_OF_WEEK)
-                .let {
-                    when (it) {
-                        Calendar.SUNDAY -> R.string.txt_day_short_sunday
-                        Calendar.MONDAY -> R.string.txt_day_short_monday
-                        Calendar.TUESDAY -> R.string.txt_day_short_tuesday
-                        Calendar.WEDNESDAY -> R.string.txt_day_short_wednesday
-                        Calendar.THURSDAY -> R.string.txt_day_short_thursday
-                        Calendar.FRIDAY -> R.string.txt_day_short_friday
-                        Calendar.SATURDAY -> R.string.txt_day_short_saturday
-                        else -> R.string.txt_day_short_unknown
+        holder.txtDay.apply {
+            text = Calendar.getInstance()
+                    .apply { timeInMillis = base.date }
+                    .get(Calendar.DAY_OF_WEEK)
+                    .let {
+                        when (it) {
+                            Calendar.SUNDAY -> R.string.txt_day_short_sunday
+                            Calendar.MONDAY -> R.string.txt_day_short_monday
+                            Calendar.TUESDAY -> R.string.txt_day_short_tuesday
+                            Calendar.WEDNESDAY -> R.string.txt_day_short_wednesday
+                            Calendar.THURSDAY -> R.string.txt_day_short_thursday
+                            Calendar.FRIDAY -> R.string.txt_day_short_friday
+                            Calendar.SATURDAY -> R.string.txt_day_short_saturday
+                            else -> R.string.txt_day_short_unknown
+                        }
                     }
-                }
-                .let { holder.context.getText(it) }
+                    .let { holder.context.getText(it) }
+            textColorResource = when {
+                // Lunch is ordered
+                base.orderedOption != null -> R.color.materialGreen
+                // TODO: If lunch is not ordered (and can't be ordered) and is available in burza use materialRed
+                // Lunch is not ordered and can't be ordered
+                base.options?.all { !it.enabled } != false -> R.color.materialBlue
+                // Lunch is not ordered, but still can be ordered
+                else -> R.color.materialOrange
+            }
+        }
 
         holder.txtDate.text = base.dateStrShort.fillToLen(7, Anchor.RIGHT)
 

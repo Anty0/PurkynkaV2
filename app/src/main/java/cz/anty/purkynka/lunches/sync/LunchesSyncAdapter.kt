@@ -35,6 +35,7 @@ import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.broadcast.BroadcastsConnector
 import java.io.IOException
+import java.text.ParseException
 
 /**
  * @author anty
@@ -122,12 +123,15 @@ class LunchesSyncAdapter(context: Context) :
 
             val nLunchesHtml = LunchesFetcher.getLunchOptionsGroupsElements(cookies)
 
-            //val lunchesList = data.getLunches(accountId)
+            LunchesFetcher.logout(cookies)
+
+            val lunchesList = data.getLunches(accountId)
 
             val nCredit = try {
-                LunchesFetcher.getCredit(mainPage)
+                LunchesParser.parseCredit(mainPage)
             } catch (e: Exception) {
-                // Problems with parsing credit shouldn't cause whole sync to fail
+                // Problems with parsing credit shouldn't cause whole sync to fail,
+                //  but system will be notified about result
                 syncResult.stats.numParseExceptions++
                 Log.w(LOG_TAG, "Failed to parse lunches credit", e)
                 Float.NaN
@@ -138,7 +142,7 @@ class LunchesSyncAdapter(context: Context) :
 
             // TODO: check for new lunches and show notification (but do nothing if firstSync)
 
-            // TODO: check if user have ordered lunch for at last three days and warn about it (in gui and optionally in notification)
+            // TODO: check if user have ordered lunch for at last three days and when no, but can, warn about it (in gui and optionally in notification)
 
             data.setCredit(accountId, nCredit)
             data.setLunches(accountId, nLunchesList)

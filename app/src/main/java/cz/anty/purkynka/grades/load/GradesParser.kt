@@ -47,7 +47,7 @@ object GradesParser {
     private const val COL_NOTE = 6
     private const val COL_TEACHER = 7
 
-    val GRADE_DATE_FORMAT = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    private val GRADE_DATE_FORMAT = SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH)
 
     fun parseSubjects(elementGrades: Elements): List<Subject> {
         return parseGrades(elementGrades).toSubjects()

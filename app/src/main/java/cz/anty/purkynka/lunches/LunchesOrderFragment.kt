@@ -20,6 +20,7 @@ package cz.anty.purkynka.lunches
 
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.view.*
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
@@ -27,10 +28,13 @@ import cz.anty.purkynka.Constants.ICON_LUNCHES
 import cz.anty.purkynka.R
 import cz.anty.purkynka.Utils
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.save.LunchesData
+import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
+import cz.anty.purkynka.lunches.ui.CreditItem
 import cz.anty.purkynka.lunches.ui.LunchOptionsGroupItem
 import eu.codetopic.java.utils.JavaExtensions.ifFalse
 import eu.codetopic.java.utils.log.Log
@@ -39,6 +43,7 @@ import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -51,9 +56,13 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.UI
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.design.coordinatorLayout
+import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.UI
 
 /**
  * @author anty
@@ -83,8 +92,14 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
     }
 
     private var userLoggedIn: Boolean = false
+    private var credit: Float? = null
     private var lunchesList: List<LunchOptionsGroup>? = null
     private var isDataValid: Boolean = true
+    private var lastSyncResult: LunchesData.SyncResult? = SUCCESS
+
+    private var showingSyncResult: LunchesData.SyncResult? = SUCCESS
+    private var syncStatusSnackbar: Snackbar? = null
+
     private var validityRefreshRequested: Boolean = false
 
     private var recyclerManager: Recycler.RecyclerManagerImpl? = null
@@ -118,7 +133,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
                 .setEmptyText(R.string.empty_view_text_no_lunches_to_order)
                 .setSmallEmptyText(R.string.empty_view_text_small_no_lunches_to_order)
                 .setAdapter(adapter)
-                .setOnRefreshListener(::requestSyncWithRecyclerRefreshing)
+                .setOnRefreshListener { -> requestSyncWithRecyclerRefreshing() }
         recyclerManager = manager
         return manager.baseView
     }
@@ -220,9 +235,17 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
             self().isDataValid = self().accountHolder.accountId?.let {
                 bg { LunchesData.instance.isDataValid(it) }.await()
             } ?: true
+            self().credit = self().accountHolder.accountId?.let {
+                bg { LunchesData.instance.getCredit(it) }.await()
+            }
             self().lunchesList = self().accountHolder.accountId?.let {
                 bg { LunchesData.instance.getLunches(it) }.await()
             }
+            self().lastSyncResult =
+                    if (!self().userLoggedIn) SUCCESS // don't show sync result, if user is not logged in
+                    else self().accountHolder.accountId?.let {
+                        bg { LunchesData.instance.getLastSyncResult(it) }.await()
+                    }
 
             self().updateUi()
         }
@@ -233,22 +256,28 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
 
         adapter?.edit {
             clear()
+
             if (userLoggedIn && isDataValid) {
-                accountHolder.accountId?.let { accountId ->
+                credit?.also {
+                    add(CreditItem(it))
+                }
+
+                accountHolder.accountId?.also { accountId ->
                     lunchesList
                             ?.sortedBy { it.date }
-                            ?.map { LunchOptionsGroupItem(accountId, it) } // TODO: maybe add week dividers
+                            ?.map { LunchOptionsGroupItem(accountId, it) }
+                            // TODO: maybe add week dividers
                             ?.let { addAll(it) }
                 }
             }
+
+            notifyAllItemsChanged()
         }
-
-        // TODO: Show somewhere user's credit
-
-        // TODO: Show last sync status
 
         // Allow menu visibility changes based on userLoggedIn state
         activity?.invalidateOptionsMenu()
+
+        updateUiSyncResult()
 
         if (!isDataValid) {
             if (!validityRefreshRequested) {
@@ -260,19 +289,74 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         }
     }
 
-    private fun requestSyncWithLoading() {
-        if (!userLoggedIn) return
+    private fun updateUiSyncResult(force: Boolean = false) {
         val view = view ?: return
+
+        if (!force && showingSyncResult == lastSyncResult &&
+                syncStatusSnackbar?.isShownOrQueued != false) return
+
+        when (lastSyncResult) {
+            FAIL_UNKNOWN -> syncStatusSnackbar = indefiniteSnackbar(
+                    view,
+                    R.string.snackbar_lunches_refresh_fail_unknown,
+                    R.string.snackbar_action_lunches_retry,
+                    {
+                        launch(UI) {
+                            requestSyncWithLoading()?.join()
+                            updateUiSyncResult(true)
+                        }
+                    }
+            )
+            FAIL_CONNECT -> syncStatusSnackbar = indefiniteSnackbar(
+                    view,
+                    R.string.snackbar_lunches_refresh_fail_connect,
+                    R.string.snackbar_action_lunches_retry,
+                    {
+                        launch(UI) {
+                            requestSyncWithLoading()?.join()
+                            updateUiSyncResult(true)
+                        }
+                    }
+            )
+            FAIL_LOGIN -> syncStatusSnackbar = indefiniteSnackbar(
+                    view,
+                    R.string.snackbar_lunches_refresh_fail_login,
+                    R.string.snackbar_action_lunches_logout,
+                    {
+                        launch(UI) {
+                            logout()?.join()
+                            updateUiSyncResult(true)
+                        }
+                    }
+            )
+            null -> syncStatusSnackbar = indefiniteSnackbar(
+                    view,
+                    R.string.snackbar_lunches_fail_no_account
+            )
+            else -> {
+                syncStatusSnackbar?.apply {
+                    dismiss()
+                    syncStatusSnackbar = null
+                }
+            }
+        }
+
+        showingSyncResult = lastSyncResult
+    }
+
+    private fun requestSyncWithLoading(): Job? {
+        if (!userLoggedIn) return null
+        val view = view ?: return null
 
         val account = accountHolder.account ?: run {
             longSnackbar(view, R.string.snackbar_no_account_sync)
-            return
+            return null
         }
 
         val viewRef = view.asReference()
         val holder = holder
 
-        launch(UI) {
+        return launch(UI) {
             holder.showLoading()
 
             LunchesSyncAdapter.requestSync(account)
@@ -286,19 +370,19 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         }
     }
 
-    private fun requestSyncWithRecyclerRefreshing() {
-        if (!userLoggedIn) return
-        val view = view ?: return
+    private fun requestSyncWithRecyclerRefreshing(): Job? {
+        if (!userLoggedIn) return null
+        val view = view ?: return null
 
         val account = accountHolder.account ?: run {
             longSnackbar(view, R.string.snackbar_no_account_sync)
-            return
+            return null
         }
 
         val viewRef = view.asReference()
-        val recyclerManagerRef = recyclerManager?.asReference() ?: return
+        val recyclerManagerRef = recyclerManager?.asReference() ?: return null
 
-        launch(UI) {
+        return launch(UI) {
             LunchesSyncAdapter.requestSync(account)
 
             Utils.awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
@@ -309,24 +393,34 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         }
     }
 
-    private fun logout() {
+    private fun logout(): Job? {
         if (!userLoggedIn) {
             switchFragment(LunchesLoginFragment::class.java)
-            return
+            return null
         }
-        val view = view ?: return
+        val view = view ?: return null
 
         val accountId = accountHolder.accountId ?: run {
             longSnackbar(view, R.string.snackbar_no_account_logout)
-            return
+            return null
         }
 
         val self = this.asReference()
         val holder = holder
-        launch(UI) {
+        //val appContext = view.context.applicationContext
+        return launch(UI) {
             holder.showLoading()
 
-            bg { LunchesLoginData.loginData.logout(accountId) }.await()
+            bg {
+                LunchesLoginData.loginData.logout(accountId)
+                LunchesData.instance.resetFirstSyncState(accountId)
+            }.await()
+
+            /*NotifyManager.requestCancelAll( // TODO: after adding notifications to lunches, add their canceling here
+                    context = appContext,
+                    groupId = AccountNotifyGroup.idFor(accountId),
+                    channelId = ?
+            )*/
 
             self().switchFragment(LunchesLoginFragment::class.java)
             //delay(500) // Wait few loops to make sure, that content was updated.

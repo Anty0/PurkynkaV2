@@ -23,6 +23,7 @@ import cz.anty.purkynka.lunches.data.BurzaLunch
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import eu.codetopic.java.utils.JavaExtensions.substringOrNull
+import eu.codetopic.java.utils.JavaExtensions.letIfNull
 import eu.codetopic.java.utils.log.Log
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -43,18 +44,20 @@ object LunchesParser {
     internal val FORMAT_DATE_SHOW_SHORT =
             SimpleDateFormat("d. M.", Locale.getDefault())
     internal val FORMAT_DATE_PARSE_LUNCH_OPTIONS =
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
     internal val FORMAT_DATE_BURZA_LUNCH =
-            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+            SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH)
 
     private val REGEX_LUNCH_NUMBER = Regex("^Oběd (\\d+?)$")
+
+    private val REGEX_CREDIT = Regex("^([\\d,.]+?) Kč$")
 
     private fun parseBurzaLunch(lunchElement: Element): BurzaLunch =
             lunchElement.children().let { lunchElements ->
                 BurzaLunch(
                         lunchNumber = lunchElements[0].text()
                                 .let { REGEX_LUNCH_NUMBER.find(it) }
-                                ?.groups?.firstOrNull()?.value?.toIntOrNull()
+                                ?.groupValues?.getOrNull(1)?.toIntOrNull()
                                 ?: throw IllegalArgumentException(
                                         "Failed to parse lunchNumber from lunchElement: $lunchElement"
                                 ),
@@ -95,7 +98,7 @@ object LunchesParser {
         }
     }
 
-    fun parseLunchOption(date: Long, lunchElement: Element): LunchOption {
+    fun parseLunchOption(lunchElement: Element): LunchOption {
         val name = lunchElement.child(0).child(1).text()
                 .split("\n").firstOrNull()?.trim()
                 ?: throw IllegalArgumentException(
@@ -127,7 +130,6 @@ object LunchesParser {
 
         return LunchOption(
                 name = name,
-                date = date,
                 enabled = enabled,
                 ordered = ordered,
                 orderOrCancelUrl = orderOrCancelUrl,
@@ -136,33 +138,41 @@ object LunchesParser {
         )
     }
 
-    fun parseLunchOptionsGroups(lunchesElements: Elements, syncResult: SyncResult? = null): List<LunchOptionsGroup> {
-        Log.d(LOG_TAG, "parseLunchOptionsGroups(lunchesElements=$lunchesElements)")
+    fun parseLunchOptionsGroup(lunchElement: Element): LunchOptionsGroup {
+        val lunchElements = lunchElement.children()
 
+        val date = lunchElements.getOrNull(0)
+                ?.attr("id")
+                ?.replace("day-", "")
+                .let { FORMAT_DATE_PARSE_LUNCH_OPTIONS.parse(it).time }
+
+        val lunchOptions = try {
+            lunchElements.getOrNull(1)
+                    ?.select("div.jidelnicekItem")
+                    ?.map { parseLunchOption(it) }
+                    ?.toTypedArray()
+        } catch (e: Exception) {
+            Log.w(LOG_TAG, "parseLunchOptionsGroups", e); null
+        }
+
+        return LunchOptionsGroup(date, lunchOptions)
+    }
+
+    fun parseLunchOptionsGroups(lunchesElements: Elements, syncResult: SyncResult? = null): List<LunchOptionsGroup> {
         return lunchesElements.mapNotNull { lunchElement ->
             try {
                 syncResult?.apply { stats.numEntries++ }
-                val lunchElements = lunchElement.children()
-
-                val date = lunchElements.getOrNull(0)
-                        ?.attr("id")
-                        ?.replace("day-", "")
-                        .let { FORMAT_DATE_PARSE_LUNCH_OPTIONS.parse(it).time }
-
-                val lunchOptions = try {
-                    lunchElements.getOrNull(1)
-                            ?.select("div.jidelnicekItem")
-                            ?.map { parseLunchOption(date, it) }
-                            ?.toTypedArray()
-                } catch (e: Exception) {
-                    Log.w(LOG_TAG, "parseLunchOptionsGroups", e); null
-                }
-
-                return@mapNotNull LunchOptionsGroup(date, lunchOptions)
+                return@mapNotNull parseLunchOptionsGroup(lunchElement)
             } catch (e: Exception) {
                 syncResult?.apply { stats.numParseExceptions++ }
                 Log.w(LOG_TAG, "parseLunchOptionsGroups", e); null
             }
         }
     }
+
+    fun parseCredit(elements: Element): Float =
+            elements.select("span#Kredit").text()
+                    .let { REGEX_CREDIT.find(it) }
+                    .letIfNull { throw RuntimeException("Credit not found in page") }
+                    .groupValues[1].replace(',', '.').toFloat()
 }

@@ -156,6 +156,8 @@ class GradesSyncAdapter(context: Context) :
                 fetchGradesToMap(accountId, cookies, it, !firstSync, gradesMap, syncResult)
             }
 
+            GradesFetcher.logout(cookies)
+
             data.setGrades(accountId, gradesMap)
 
             data.notifyFirstSyncDone(accountId)

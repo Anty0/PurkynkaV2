@@ -25,22 +25,11 @@ import kotlinx.serialization.Serializable
  * @author anty
  */
 @Serializable
-data class LunchOption(val name: String, val date: Long, val enabled: Boolean, val ordered: Boolean,
+data class LunchOption(val name: String, val enabled: Boolean, val ordered: Boolean,
                        val orderOrCancelUrl: String?, val isInBurza: Boolean?, val toOrFromBurzaUrl: String?) {
 
-    companion object {
-
-        val LunchOption.dateStr: String
-            get() = LunchesParser.FORMAT_DATE_SHOW.format(date)
-
-        val LunchOption.dateStrShort: String
-            get() = LunchesParser.FORMAT_DATE_SHOW_SHORT.format(date)
-    }
-
     override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + date.hashCode()
-        return result
+        return name.hashCode()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -50,7 +39,6 @@ data class LunchOption(val name: String, val date: Long, val enabled: Boolean, v
         other as LunchOption
 
         if (name != other.name) return false
-        if (date != other.date) return false
 
         return true
     }

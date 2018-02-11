@@ -78,6 +78,8 @@ class GradesData private constructor(context: Context) :
 
     fun isFirstSync(id: String): Boolean = firstSyncPref.getValue(this, id)
 
+    fun resetFirstSyncState(id: String) = firstSyncPref.setValue(this, id, false)
+
     fun notifyFirstSyncDone(id: String) = firstSyncPref.setValue(this, id, false)
 
     fun getLastSyncResult(id: String): SyncResult = lastSyncResultPref.getValue(this, id)

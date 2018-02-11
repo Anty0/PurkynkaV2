@@ -126,7 +126,6 @@
     <string name="item_title_subject_symbol">Subject symbol</string>
     <string name="item_title_lunch_options">Lunch options</string>
     <string name="item_title_lunch_burza">Burza</string>
-    <string name="item_text_lunch_no_burza">"Can't put this lunch to burza."</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 
@@ -143,6 +142,8 @@
         <item quantity="one">%1$d lunch can be ordered</item>
         <item quantity="other">%1$d lunches can be ordered</item>
     </plurals>
+    <string name="text_view_credit">Credit:</string>
+    <string name="text_view_credit_val_unknown">Unknown</string>
 
     <string name="txt_day_short_sunday">SUN</string>
     <string name="txt_day_short_monday">MON</string>
@@ -205,10 +206,16 @@
     <string name="snackbar_lunches_from_burza_fail_connect">Connection error. Failed to move lunch from burza.</string>
     <string name="snackbar_lunches_from_burza_fail_login">Failed to login. Are login credentials in order?</string>
     <string name="snackbar_lunches_from_burza_fail_unknown">Failed to move lunch from burza.</string>
+    <string name="snackbar_lunches_refresh_fail_unknown">Last attempt to refresh lunches failed.</string>
+    <string name="snackbar_lunches_refresh_fail_connect">Connection error. Failed to refresh lunches.</string>
+    <string name="snackbar_lunches_refresh_fail_login">Failed to login. Are login credentials in order?</string>
+    <string name="snackbar_lunches_fail_no_account">"No account available, can't load lunches."</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>
     <string name="snackbar_action_updates_retry">Retry</string>
+    <string name="snackbar_action_lunches_retry">Retry</string>
+    <string name="snackbar_action_lunches_logout">Logout</string>
 
     <string name="snackbar_invalid_account_name">Invalid account name</string>
     <string name="snackbar_login_failed">Login failed, account with same name probably exists</string>

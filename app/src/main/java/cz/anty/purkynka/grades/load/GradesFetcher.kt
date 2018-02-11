@@ -50,6 +50,8 @@ object GradesFetcher {
     private const val PARAM_SUBMIT = "login-isas-send"
     private const val PARAM_SUBMIT_VAL = "isas-send"
 
+    private const val URL_ADD_LOGOUT = "/odhlasit.php"
+
     private const val URL_ADD_GRADES = "/prubezna-klasifikace.php"
     private const val PARAM_SEMESTER = "pololeti"
     private const val PARAM_SHOW = "zobraz"
@@ -73,6 +75,16 @@ object GradesFetcher {
                 .method(Connection.Method.POST)
                 .execute().cookies()
     }
+
+    @WorkerThread
+    @Throws(IOException::class)
+    fun logout(loginCookies: Map<String, String>): Document =
+            Jsoup.connect(URL_MAIN + URL_ADD_LOGOUT)
+                    .userAgent(Utils.userAgent)
+                    .followRedirects(false)
+                    .timeout(Constants.CONNECTION_TIMEOUT_SAS)
+                    .method(Connection.Method.GET)
+                    .cookies(loginCookies).get()
 
     @WorkerThread
     @Throws(IOException::class)
