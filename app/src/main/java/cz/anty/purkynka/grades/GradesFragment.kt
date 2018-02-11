@@ -279,7 +279,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
             val username = inUsername.text.toString()
             val password = inPassword.text.toString()
 
-            val baseViewRef = baseView.asReference()
+            val boxLoginRef = boxLogin.asReference()
             launch(UI) {
                 holder.showLoading()
 
@@ -292,11 +292,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
                 if (Utils.awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY)) {
                     val syncResult = bg { GradesData.instance.getLastSyncResult(accountId) }.await()
                     if (syncResult == FAIL_LOGIN) {
-                        longSnackbar(baseViewRef(), R.string.snackbar_grades_login_fail)
+                        longSnackbar(boxLoginRef(), R.string.snackbar_grades_login_fail)
                         bg { GradesLoginData.loginData.logout(accountId) }.await()
                     }
                 } else {
-                    longSnackbar(baseViewRef(), R.string.snackbar_sync_start_fail)
+                    longSnackbar(boxLoginRef(), R.string.snackbar_sync_start_fail)
                     bg { GradesLoginData.loginData.logout(accountId) }.await()
                 }
 
