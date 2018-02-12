@@ -20,12 +20,17 @@
 <resources>
     <string name="app_name">Purkynka</string>
 
-    <string name="notify_channel_name_grades_changes">Grades changes</string>
     <string name="notify_group_update">App updates</string>
     <string name="notify_channel_update_available">Available updates</string>
+    <string name="notify_channel_name_grades_changes">Grades changes</string>
+    <string name="notify_group_name_lunches_burza_watcher_status">Lunches burza watcher</string>
+    <string name="notify_channel_name_lunches_burza_watcher_status">Lunches burza watcher status</string>
 
     <string name="account_default_name">User</string>
 
+    <string name="notify_update_available_title">Update available</string>
+    <string name="notify_update_available_text">New version: %1$s</string>
+    <string name="notify_update_available_version_unknown">Unknown</string>
     <string name="notify_grade_new_title">New grade %1$s from %2$s</string>
     <string name="notify_grade_new_text_note">%1$s by %2$s</string>
     <string name="notify_grade_new_text">By %2$s</string>
@@ -35,9 +40,8 @@
     <string name="notify_grade_summary_title">New grades</string>
     <string name="notify_grade_summary_text">From: %1$s</string>
     <string name="notify_grade_summary_line">Grade %1$s from %2$s</string>
-    <string name="notify_update_available_title">Update available</string>
-    <string name="notify_update_available_text">New version: %1$s</string>
-    <string name="notify_update_available_version_unknown">Unknown</string>
+    <string name="notify_lunches_watcher_status_title">Lunches burza watcher</string>
+    <string name="notify_lunches_watcher_status_text">Lunches burza watcher is running</string>
 
     <string name="title_activity_update">Update check</string>
     <string name="title_activity_settings">Settings</string>

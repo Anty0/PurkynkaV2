@@ -47,9 +47,10 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
                                      savedInstanceState: Bundle?): View? {
         val themedContext = ContextThemeWrapper(inflater.context, themeId)
         val themedInflater = inflater.cloneInContext(themedContext)
-        //val view = themedInflater.inflate(R.layout.fragment_, container, false)
+        val view = themedInflater.inflate(R.layout.fragment_lunches_burza_watcher, container, false)
+
         // TODO: implement
-        //return view
-        return super.onCreateContentView(inflater, container, savedInstanceState)
+
+        return view
     }
 }
