@@ -35,7 +35,6 @@ import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.activity_lunch_options_group.*
-import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import android.widget.RadioButton
@@ -46,8 +45,13 @@ import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.radioButton
+import org.jetbrains.anko.textResource
 import java.io.IOException
 
 
@@ -140,6 +144,9 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
             check(toCheck)
         }
 
+        val self = this.asReference()
+        val holder = holder
+
         butLunchOrder.onClick {
             val lunchOptionToOrder = boxOptionsGroup
                     .findViewById<RadioButton>(
@@ -203,16 +210,18 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                             "lunchOptionToOrder=$lunchOptionToOrder)" +
                             " -> Failed to order lunch", e)
 
-                    longSnackbar(boxLunchOptionsGroup, when (e) {
-                        is WrongLoginDataException -> R.string.snackbar_lunches_order_fail_login
-                        is IOException -> R.string.snackbar_lunches_order_fail_connect
-                        else -> R.string.snackbar_lunches_order_fail_unknown
-                    })
+                    launch(UI) {
+                        longSnackbar(self().boxLunchOptionsGroup, when (e) {
+                            is WrongLoginDataException -> R.string.snackbar_lunches_order_fail_login
+                            is IOException -> R.string.snackbar_lunches_order_fail_connect
+                            else -> R.string.snackbar_lunches_order_fail_unknown
+                        })
+                    }
                     return@bg false
                 }
             }.await()
 
-            if (success) finish()
+            if (success) self().finish()
             holder.hideLoading()
         }
 
@@ -281,22 +290,24 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                                             "lunchOption=$lunchOption)" +
                                             " -> Failed to move lunch from or to burza", e)
 
-                                    longSnackbar(boxLunchOptionsGroup, when (e) {
-                                        is WrongLoginDataException ->
-                                            if (isInBurza) R.string.snackbar_lunches_from_burza_fail_login
-                                            else R.string.snackbar_lunches_to_burza_fail_login
-                                        is IOException ->
-                                            if (isInBurza) R.string.snackbar_lunches_from_burza_fail_connect
-                                            else R.string.snackbar_lunches_to_burza_fail_connect
-                                        else ->
-                                            if (isInBurza) R.string.snackbar_lunches_from_burza_fail_unknown
-                                            else R.string.snackbar_lunches_to_burza_fail_unknown
-                                    })
+                                    launch(UI) {
+                                        longSnackbar(self().boxLunchOptionsGroup, when (e) {
+                                            is WrongLoginDataException ->
+                                                if (isInBurza) R.string.snackbar_lunches_from_burza_fail_login
+                                                else R.string.snackbar_lunches_to_burza_fail_login
+                                            is IOException ->
+                                                if (isInBurza) R.string.snackbar_lunches_from_burza_fail_connect
+                                                else R.string.snackbar_lunches_to_burza_fail_connect
+                                            else ->
+                                                if (isInBurza) R.string.snackbar_lunches_from_burza_fail_unknown
+                                                else R.string.snackbar_lunches_to_burza_fail_unknown
+                                        })
+                                    }
                                     return@bg false
                                 }
                             }.await()
 
-                            if (success) finish()
+                            if (success) self().finish()
                             holder.hideLoading()
                         }
                     }

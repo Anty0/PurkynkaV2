@@ -18,36 +18,351 @@
 
 package cz.anty.purkynka.lunches
 
+import android.content.Context
 import android.os.Bundle
-import android.view.ContextThemeWrapper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import com.mikepenz.community_material_typeface_library.CommunityMaterial
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import cz.anty.purkynka.Constants
+import cz.anty.purkynka.Constants.ICON_LUNCHES_BURZA
 import cz.anty.purkynka.R
+import cz.anty.purkynka.Utils
+import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.exceptions.WrongLoginDataException
+import cz.anty.purkynka.lunches.data.BurzaLunch
+import cz.anty.purkynka.lunches.load.LunchesFetcher
+import cz.anty.purkynka.lunches.load.LunchesParser
+import cz.anty.purkynka.lunches.save.LunchesData
+import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.lunches.ui.BurzaLunchItem
+import cz.anty.purkynka.lunches.ui.CreditItem
+import eu.codetopic.java.utils.JavaExtensions.ifFalse
+import eu.codetopic.java.utils.JavaExtensions.ifTrue
+import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions
+import eu.codetopic.utils.AndroidExtensions.edit
+import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
+import eu.codetopic.utils.ui.container.adapter.CustomItemAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.recycler.Recycler
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
+import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.design.longSnackbar
+import proguard.annotation.KeepName
+import java.io.IOException
 
 /**
  * @author anty
  */
+@KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
 class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider {
+
+    companion object {
+
+        private const val LOG_TAG = "LunchesBurzaFragment"
+    }
 
     override val title: CharSequence
         get() = getText(R.string.title_fragment_lunches_burza)
     override val themeId: Int
         get() = R.style.AppTheme_Lunches
 
+    private val accountHolder = ActiveAccountHolder(holder)
+
+    private val loginDataChangedReceiver = AndroidExtensions.broadcast { _, _ ->
+        Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
+        updateWithLoading(updateBurza = true)
+    }
+    private val dataChangedReceiver = AndroidExtensions.broadcast { _, _ ->
+        Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
+        update()
+    }
+
+    private var userLoggedIn: Boolean = false
+    private var credit: Float? = null
+    private var burzaList: List<BurzaLunch>? = null
+
+    private var recyclerManager: Recycler.RecyclerManagerImpl? = null
+    private var adapter: CustomItemAdapter<CustomItem>? = null
+
+    init {
+        setHasOptionsMenu(true)
+
+        val self = this.asReference()
+        accountHolder.addChangeListener {
+            self().update()?.join()
+            if (!self().userLoggedIn) {
+                // App was switched to not logged in user
+                // Let's switch fragment
+                self().switchFragment(LunchesLoginFragment::class.java)
+            }
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        adapter = CustomItemAdapter(context)
+    }
+
+    override fun onDetach() {
+        adapter = null
+
+        super.onDetach()
+    }
+
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {
         val themedContext = ContextThemeWrapper(inflater.context, themeId)
         val themedInflater = inflater.cloneInContext(themedContext)
-        //val view = themedInflater.inflate(R.layout.fragment_, container, false)
-        // TODO: implement
-        //return view
-        return super.onCreateContentView(inflater, container, savedInstanceState)
+
+        val manager = Recycler.inflate().withSwipeToRefresh().withItemDivider()
+                .on(themedInflater, container, false)
+                .setEmptyImage(themedContext.getIconics(ICON_LUNCHES_BURZA).sizeDp(72))
+                .setEmptyText(R.string.empty_view_text_no_burza_lunches)
+                .setSmallEmptyText(R.string.empty_view_text_small_no_burza_lunches)
+                .setAdapter(adapter)
+                .setOnRefreshListener { -> requestSyncWithRecyclerRefreshing() }
+        recyclerManager = manager
+        return manager.baseView
+    }
+
+    override fun onDestroyView() {
+        recyclerManager = null
+
+        super.onDestroyView()
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        val self = this.asReference()
+        val holder = holder
+        launch(UI) {
+            holder.showLoading()
+
+            arrayOf(
+                    self().update(updateBurza = true),
+                    self().accountHolder.update()
+            ).forEach { it?.join() }
+
+            holder.hideLoading()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        register()
+        accountHolder.register()
+    }
+
+    override fun onStop() {
+        accountHolder.unregister()
+        unregister()
+
+        super.onStop()
+    }
+
+    private fun register(): Job? {
+        LocalBroadcast.registerReceiver(loginDataChangedReceiver,
+                AndroidExtensions.intentFilter(LunchesLoginData.getter))
+        LocalBroadcast.registerReceiver(dataChangedReceiver,
+                AndroidExtensions.intentFilter(LunchesData.getter))
+
+        return update()
+    }
+
+    private fun unregister() {
+        LocalBroadcast.unregisterReceiver(dataChangedReceiver)
+        LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+
+        if (!userLoggedIn) return
+
+        inflater.inflate(R.menu.fragment_lunches_burza, menu)
+
+        menu.findItem(R.id.action_refresh).icon = activity
+                ?.getIconics(GoogleMaterial.Icon.gmd_refresh)
+                ?.actionBar()
+
+        menu.findItem(R.id.action_log_out).icon = activity
+                ?.getIconics(CommunityMaterial.Icon.cmd_logout)
+                ?.actionBar()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_refresh -> requestSyncWithLoading()
+            R.id.action_log_out -> logout()
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
+    }
+
+    private fun updateWithLoading(updateBurza: Boolean = false): Job {
+        val self = this.asReference()
+        val holder = holder
+        return launch(UI) {
+            holder.showLoading()
+
+            self().update(updateBurza)?.join()
+
+            holder.hideLoading()
+        }
+    }
+
+    private fun update(updateBurza: Boolean = false): Job? {
+        val view = view ?: return null
+
+        val self = this.asReference()
+        val viewRef = view.asReference()
+        return launch(UI) {
+            self().userLoggedIn = self().accountHolder.accountId?.let {
+                bg { LunchesLoginData.loginData.isLoggedIn(it) }.await()
+            } ?: false
+            self().credit = self().accountHolder.accountId?.let {
+                bg { LunchesData.instance.getCredit(it) }.await()
+            }
+            if (updateBurza) {
+                self().burzaList = self().accountHolder.accountId?.let { accountId ->
+                    bg {
+                        try {
+                            val loginData = LunchesLoginData.loginData
+
+                            if (!loginData.isLoggedIn(accountId))
+                                throw IllegalStateException("User is not logged in")
+
+                            val (username, password) = loginData.getCredentials(accountId)
+
+                            if (username == null || password == null)
+                                throw IllegalStateException("Username or password is null")
+
+                            val cookies = LunchesFetcher.login(username, password)
+
+                            if (!LunchesFetcher.isLoggedIn(cookies))
+                                throw WrongLoginDataException("Failed to login user with provided credentials")
+
+                            val burzaLunchesHtml = LunchesFetcher.getBurzaLunchesElements(cookies)
+                            val nBurzaLunches = LunchesParser.parseBurzaLunches(burzaLunchesHtml)
+
+                            LunchesFetcher.logout(cookies)
+
+                            return@bg nBurzaLunches
+                        } catch (e: Exception) {
+                            Log.w(LOG_TAG, "update() -> Failed to fetch burza lunches", e)
+
+                            launch(UI) {
+                                longSnackbar(viewRef(), when (e) {
+                                    is WrongLoginDataException -> R.string.snackbar_lunches_fetch_burza_fail_login
+                                    is IOException -> R.string.snackbar_lunches_fetch_burza_fail_connect
+                                    else -> R.string.snackbar_lunches_fetch_burza_fail_unknown
+                                })
+                            }
+                            return@bg null
+                        }
+                    }.await()
+                }
+            }
+
+            self().updateUi()
+        }
+    }
+
+    private fun updateUi() {
+        view ?: return
+
+        adapter?.edit {
+            clear()
+
+            if (userLoggedIn) {
+                accountHolder.accountId?.also { accountId ->
+                    burzaList
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.map { BurzaLunchItem(accountId, it) }
+                            ?.also {
+                                // add credit only if burzaList is not null
+                                credit?.also {
+                                    add(CreditItem(it))
+                                }
+                            }
+                            ?.let { addAll(it) }
+                }
+            }
+
+            notifyAllItemsChanged()
+        }
+
+        // Allow menu visibility changes based on userLoggedIn state
+        activity?.invalidateOptionsMenu()
+    }
+
+    private fun requestSyncWithLoading(): Job? {
+        if (!userLoggedIn) return null
+        view ?: return null
+
+        val holder = holder
+        return launch(UI) {
+            holder.showLoading()
+
+            update(updateBurza = true)?.join()
+
+            //delay(500) // Wait few loops to make sure, that content was updated.
+            holder.hideLoading()
+        }
+    }
+
+    private fun requestSyncWithRecyclerRefreshing(): Job? {
+        if (!userLoggedIn) return null
+        view ?: return null
+
+        val recyclerManagerRef = recyclerManager?.asReference() ?: return null
+        return launch(UI) {
+            update(updateBurza = true)?.join()
+
+            recyclerManagerRef().setRefreshing(false)
+        }
+    }
+
+    private fun logout(): Job? {
+        if (!userLoggedIn) {
+            switchFragment(LunchesLoginFragment::class.java)
+            return null
+        }
+        val view = view ?: return null
+
+        val accountId = accountHolder.accountId ?: run {
+            longSnackbar(view, R.string.snackbar_no_account_logout)
+            return null
+        }
+
+        val self = this.asReference()
+        val holder = holder
+        //val appContext = view.context.applicationContext
+        return launch(UI) {
+            holder.showLoading()
+
+            LunchesLoginFragment.doLogout(accountId) ifTrue {
+                // Success :D
+                // Let's switch fragment
+                self().switchFragment(LunchesLoginFragment::class.java)
+            }
+
+            //delay(500) // Wait few loops to make sure, that content was updated.
+            holder.hideLoading()
+        }
     }
 }

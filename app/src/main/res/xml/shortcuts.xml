@@ -31,4 +31,17 @@
             android:targetClass="cz.anty.purkynka.MainActivity"
             android:data="shortcut://cz.anty.purkynka.grades.GradesFragment" />
     </shortcut>
+    <shortcut
+        android:shortcutId="lunchesOrder"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_lunches_order"
+        android:shortcutShortLabel="@string/shortcut_lunches_order_label_short"
+        android:shortcutLongLabel="@string/shortcut_lunches_order_label_long">
+        <!--android:shortcutDisabledMessage="@string/compose_disabled_message1"-->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="cz.anty.purkynka"
+            android:targetClass="cz.anty.purkynka.MainActivity"
+            android:data="shortcut://cz.anty.purkynka.lunches.LunchesDecideFragment?TARGET_CLASS_NAME=cz.anty.purkynka.lunches.LunchesOrderFragment" />
+    </shortcut>
 </shortcuts>

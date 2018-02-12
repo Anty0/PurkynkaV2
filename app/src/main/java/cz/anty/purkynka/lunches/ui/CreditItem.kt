@@ -57,7 +57,6 @@ class CreditItem(val credit: Float) : CustomItem() {
 
         holder.txtCredit.text = SpannableStringBuilder().apply {
             append(holder.context.getText(R.string.text_view_credit))
-            append(" ")
             append(
                     SpannableStringBuilder().apply {
                         val colorSpan = ForegroundColorSpan(
@@ -73,12 +72,11 @@ class CreditItem(val credit: Float) : CustomItem() {
                         )
 
                         setSpan(colorSpan, 0, 0, Spanned.SPAN_MARK_MARK)
-                        if (!credit.isNaN()) {
-                            append(FORMAT_CREDIT.format(credit))
-                            append(",- Kč")
-                        } else {
-                            append(holder.context.getText(R.string.text_view_credit_val_unknown))
-                        }
+                        append(
+                                if (credit.isNaN()) "?"
+                                else FORMAT_CREDIT.format(credit)
+                        )
+                        append(",- Kč")
                         setSpan(colorSpan, 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     }
             )

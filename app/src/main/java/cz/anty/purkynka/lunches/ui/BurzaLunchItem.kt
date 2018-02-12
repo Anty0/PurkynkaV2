@@ -21,7 +21,10 @@ package cz.anty.purkynka.lunches.ui
 import android.content.Context
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
+import android.text.SpannableStringBuilder
 import cz.anty.purkynka.R
+import cz.anty.purkynka.lunches.data.BurzaLunch
+import cz.anty.purkynka.lunches.data.BurzaLunch.Companion.dateStrShort
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
 import eu.codetopic.java.utils.JavaExtensions.Anchor
@@ -32,18 +35,18 @@ import eu.codetopic.utils.AndroidExtensions.baseActivity
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import kotlinx.android.synthetic.main.item_lunch_options_group.*
+import kotlinx.android.synthetic.main.item_burza_lunch.*
 import org.jetbrains.anko.textColorResource
 import java.util.*
 
 /**
  * @author anty
  */
-class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) : CustomItem() {
+class BurzaLunchItem(val accountId: String, val base: BurzaLunch) : CustomItem() {
 
     companion object {
 
-        private const val LOG_TAG = "LunchOptionsGroupItem"
+        private const val LOG_TAG = "BurzaLunchItem"
     }
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
@@ -64,42 +67,33 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
                         }
                     }
                     .let { holder.context.getText(it) }
-            textColorResource = when {
-                // Lunch is ordered
-                base.orderedOption != null -> R.color.materialGreen
-                // TODO: If lunch is not ordered (and can't be ordered) and is available in burza use materialRed
-                // Lunch is not ordered and can't be ordered
-                base.options?.all { !it.enabled } != false -> R.color.materialBlue
-                // Lunch is not ordered, but still can be ordered
-                else -> R.color.materialOrange
+            textColorResource = base.pieces.let { pieces ->
+                when {
+                    pieces >= 5 -> R.color.materialGreen
+                    pieces == 4 -> R.color.materialYellow
+                    pieces == 3 -> R.color.materialOrange
+                    pieces == 2 -> R.color.materialLightRed
+                    pieces == 1 -> R.color.materialRed
+                    else -> R.color.materialBlue
+                }
             }
         }
 
         holder.txtDate.text = base.dateStrShort.fillToLen(7, Anchor.RIGHT)
 
-        val (orderedIndex, orderedLunch) = base.orderedOption ?: null to null
+        holder.txtName.text = base.name
 
-        holder.txtName.text = orderedLunch?.name
-                ?: holder.context.getText(R.string.text_view_lunches_no_lunch_ordered)
-
-        holder.txtOrderedIndex.text = orderedIndex
-                ?.let { it + 1 }
-                ?.let {
-                    holder.context.getFormattedText(R.string.text_view_lunches_ordered_index, it)
-                }
-                ?:
-                run {
-                    base.options
-                            ?.filter { it.enabled }
-                            ?.count()
-                            .letIfNull { 0 }
-                            .let {
-                                holder.context.getFormattedQuantityText(
-                                        R.plurals.text_view_lunches_available_count,
-                                        it, it
-                                )
-                            }
-                }
+        holder.txtLunchNumber.text = SpannableStringBuilder().apply {
+            append(holder.context.getFormattedText(
+                    R.string.text_view_lunches_burza_lunch_pieces,
+                    base.pieces
+            ))
+            append(" - ")
+            append(holder.context.getFormattedText(
+                    R.string.text_view_lunches_burza_lunch_number,
+                    base.lunchNumber
+            ))
+        }
 
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
@@ -108,29 +102,30 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             it,
                             holder.boxClickTarget,
-                            context.getString(R.string.id_transition_lunch_options_group_item)
+                            context.getString(R.string.id_transition_burza_lunch_item)
                     )
                 }
 
-                if (options == null) Log.w(LOG_TAG, "Can't start LunchOptionsGroupActivity " +
+                if (options == null) Log.w(LOG_TAG, "Can't start BurzaLunchActivity " +
                         "with transition: Cannot find Activity in context hierarchy")
 
-                ContextCompat.startActivity(
+                // TODO: start activity
+                /*ContextCompat.startActivity(
                         context,
-                        LunchOptionsGroupActivity.getStartIntent(context, accountId, base),
+                        BurzaLunchActivity.getStartIntent(context, accountId, base),
                         options?.toBundle()
-                )
+                )*/
             }
         }
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_lunch_options_group
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_burza_lunch
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as LunchOptionsGroupItem
+        other as BurzaLunchItem
 
         if (base != other.base) return false
 
@@ -142,6 +137,6 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
     }
 
     override fun toString(): String {
-        return "LunchOptionsGroupItem(accountId=$accountId, base=$base)"
+        return "BurzaLunchItem(accountId=$accountId, base=$base)"
     }
 }

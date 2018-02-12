@@ -60,11 +60,14 @@
 
     <string name="shortcut_grades_label_short">Grades</string>
     <string name="shortcut_grades_label_long">Show grades</string>
+    <string name="shortcut_lunches_order_label_short">Lunches order</string>
+    <string name="shortcut_lunches_order_label_long">Show lunches order</string>
 
     <string name="label_receiver_wifi_changed">Wifi change receiver for Wifi auto login</string>
     <string name="label_service_authenticator">Account authenticator</string>
     <string name="label_service_sync_grades">Grades sync service</string>
     <string name="label_service_sync_lunches">Lunches sync service</string>
+    <string name="label_service_lunches_burza_watcher">Lunches burza watcher service</string>
     <string name="label_provider_account_active">Active account</string>
     <string name="label_provider_update">Updates</string>
     <string name="label_provider_grades">Grades</string>
@@ -142,8 +145,9 @@
         <item quantity="one">%1$d lunch can be ordered</item>
         <item quantity="other">%1$d lunches can be ordered</item>
     </plurals>
-    <string name="text_view_credit">Credit:</string>
-    <string name="text_view_credit_val_unknown">Unknown</string>
+    <string name="text_view_credit">"Credit: "</string>
+    <string name="text_view_lunches_burza_lunch_number">%1$d. Lunch</string>
+    <string name="text_view_lunches_burza_lunch_pieces">%1$d pcs</string>
 
     <string name="txt_day_short_sunday">SUN</string>
     <string name="txt_day_short_monday">MON</string>
@@ -170,6 +174,10 @@
     <string name="empty_view_text_small_no_grades">All your grades from selected semester will appear here.</string>
     <string name="empty_view_text_no_lunches_to_order">No lunches to order</string>
     <string name="empty_view_text_small_no_lunches_to_order">All lunches to order will appear here.</string>
+    <string name="empty_view_text_no_burza_lunches">No lunches in burza</string>
+    <string name="empty_view_text_small_no_burza_lunches">All lunches in burza will appear here.</string>
+    <string name="empty_view_text_dashboard">No items on dashboard</string>
+    <string name="empty_view_text_small_dashboard">All important information will appear here.</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
     <string name="toast_wifi_logging_start">Sending login request to wifi <i>%1$s</i></string>
@@ -210,6 +218,9 @@
     <string name="snackbar_lunches_refresh_fail_connect">Connection error. Failed to refresh lunches.</string>
     <string name="snackbar_lunches_refresh_fail_login">Failed to login. Are login credentials in order?</string>
     <string name="snackbar_lunches_fail_no_account">"No account available, can't load lunches."</string>
+    <string name="snackbar_lunches_fetch_burza_fail_connect">Connection error. Failed to fetch burza lunches.</string>
+    <string name="snackbar_lunches_fetch_burza_fail_login">Failed to login. Are login credentials in order?</string>
+    <string name="snackbar_lunches_fetch_burza_fail_unknown">Failed to fetch burza lunches.</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>
@@ -237,4 +248,5 @@
     <string name="id_transition_subject_item" translatable="false">subject_item</string>
     <string name="id_transition_grade_item" translatable="false">grade_item</string>
     <string name="id_transition_lunch_options_group_item" translatable="false">lunch_options_group_item</string>
+    <string name="id_transition_burza_lunch_item" translatable="false">burza_lunch_item</string>
 </resources>

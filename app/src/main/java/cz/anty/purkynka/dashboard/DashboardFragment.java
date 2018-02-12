@@ -18,11 +18,16 @@
 
 package cz.anty.purkynka.dashboard;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 
+import cz.anty.purkynka.Constants;
 import cz.anty.purkynka.R;
+import eu.codetopic.utils.AndroidExtensions;
 import eu.codetopic.utils.AndroidUtils;
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider;
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider;
@@ -40,8 +45,21 @@ public class DashboardFragment extends DashboardFragmentBase implements TitlePro
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getRecyclerManager()
+                .setEmptyImage(AndroidExtensions.INSTANCE.getIconics(
+                        view.getContext(),
+                        Constants.INSTANCE.getICON_HOME_DASHBOARD()
+                ).sizeDp(72))
+                .setEmptyText(R.string.empty_view_text_dashboard)
+                .setSmallEmptyText(R.string.empty_view_text_small_dashboard);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);// TODO: 2.6.16 add options to menu
+        super.onCreateOptionsMenu(menu, inflater); // TODO: 2.6.16 add options to menu
     }
 
     @NonNull

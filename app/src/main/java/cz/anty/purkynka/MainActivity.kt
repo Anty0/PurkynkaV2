@@ -56,10 +56,7 @@ import cz.anty.purkynka.attendance.AttendanceSearchFragment
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.debug.DebugActivity
 import cz.anty.purkynka.grades.GradesFragment
-import cz.anty.purkynka.lunches.LunchesBurzaFragment
-import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
-import cz.anty.purkynka.lunches.LunchesLoginFragment
-import cz.anty.purkynka.lunches.LunchesOrderFragment
+import cz.anty.purkynka.lunches.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.settings.SettingsActivity
 import cz.anty.purkynka.timetables.TimetablesListFragment
@@ -93,6 +90,7 @@ class MainActivity : NavigationActivity() {
                 R.id.nav_wifi_login to WifiLoginFragment::class.java,
                 R.id.nav_timetables to TimetablesListFragment::class.java,
                 R.id.nav_attendance to AttendanceSearchFragment::class.java,
+                R.id.nav_lunches to LunchesDecideFragment::class.java,
                 R.id.nav_lunches_login to LunchesLoginFragment::class.java,
                 R.id.nav_lunches_order to LunchesOrderFragment::class.java,
                 R.id.nav_lunches_burza to LunchesBurzaFragment::class.java,

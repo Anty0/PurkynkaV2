@@ -20,7 +20,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".lunches.ui.LunchOptionsGroupItem"
+    tools:context=".lunches.ui.BurzaLunchItem"
     android:id="@+id/boxClickTarget"
     android:layout_width="match_parent"
     android:layout_height="60dp"
@@ -28,7 +28,7 @@
     android:orientation="horizontal"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:transitionName="@string/id_transition_lunch_options_group_item">
+    android:transitionName="@string/id_transition_burza_lunch_item">
 
     <TextView
         android:id="@+id/txtDay"
@@ -74,7 +74,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/txtOrderedIndex"
+            android:id="@+id/txtLunchNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="1"

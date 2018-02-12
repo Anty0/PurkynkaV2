@@ -86,10 +86,12 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
+import proguard.annotation.KeepName
 
 /**
  * @author anty
  */
+@KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
 class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 

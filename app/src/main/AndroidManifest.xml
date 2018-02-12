@@ -191,6 +191,12 @@
             <meta-data android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_lunches" />
         </service>
+        <service
+            android:name=".lunches.sync.LunchesBurzaWatcherService"
+            android:label="@string/label_service_lunches_burza_watcher"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs" />
 
         <provider
             android:name=".account.save.ActiveAccountProvider"

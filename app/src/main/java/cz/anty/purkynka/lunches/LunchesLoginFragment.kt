@@ -18,7 +18,9 @@
 
 package cz.anty.purkynka.lunches
 
+import android.accounts.Account
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +32,7 @@ import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
+import eu.codetopic.java.utils.JavaExtensions.ifTrue
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions
 import eu.codetopic.utils.AndroidExtensions.broadcast
@@ -44,19 +47,63 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.Ref
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import proguard.annotation.KeepName
 
 /**
  * @author anty
  */
+@KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
 class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
     companion object {
 
         private const val LOG_TAG = "LunchesLoginFragment"
+
+        suspend fun doLogin(viewRef: Ref<View>,
+                          account: Account, accountId: String,
+                          username: String, password: String): Boolean {
+            bg {
+                LunchesData.instance.resetFirstSyncState(accountId)
+                LunchesLoginData.loginData.login(accountId, username, password)
+            }.await()
+
+            // Sync will be triggered later by login change broadcast
+            return if (Utils.awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY)) {
+                val syncResult = bg { LunchesData.instance.getLastSyncResult(accountId) }.await()
+                if (syncResult == FAIL_LOGIN) {
+                    longSnackbar(viewRef(), R.string.snackbar_lunches_login_fail)
+                    bg { LunchesLoginData.loginData.logout(accountId) }.await()
+
+                    false
+                } else true
+            } else {
+                longSnackbar(viewRef(), R.string.snackbar_sync_start_fail)
+                bg { LunchesLoginData.loginData.logout(accountId) }.await()
+
+                false
+            }
+        }
+
+        suspend fun doLogout(accountId: String): Boolean {
+            bg {
+                LunchesLoginData.loginData.logout(accountId)
+                LunchesData.instance.resetFirstSyncState(accountId)
+            }.await()
+
+            // TODO: after adding notifications to lunches, add their canceling here
+            /*NotifyManager.requestCancelAll(
+                    context = appContext,
+                    groupId = AccountNotifyGroup.idFor(accountId),
+                    channelId = ?
+            )*/
+
+            return true
+        }
     }
 
     override val title: CharSequence
@@ -75,7 +122,15 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider 
     }
 
     init {
-        accountHolder.addChangeListener { update().join() }
+        val self = this.asReference()
+        accountHolder.addChangeListener {
+            self().update().join()
+            if (self().userLoggedIn) {
+                // App was switched to logged in user
+                // Let's switch fragment
+                self().switchFragment(LunchesOrderFragment::class.java)
+            }
+        }
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -190,25 +245,10 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         launch(UI) {
             holder.showLoading()
 
-            bg {
-                LunchesData.instance.resetFirstSyncState(accountId)
-                LunchesLoginData.loginData.login(accountId, username, password)
-            }.await()
-
-            // Sync will be triggered later by login change broadcast
-            if (Utils.awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY)) {
-                val syncResult = bg { LunchesData.instance.getLastSyncResult(accountId) }.await()
-                if (syncResult == FAIL_LOGIN) {
-                    longSnackbar(viewRef(), R.string.snackbar_lunches_login_fail)
-                    bg { LunchesLoginData.loginData.logout(accountId) }.await()
-                } else {
-                    // Success :D
-                    // Let's switch fragment
-                    self().switchFragment(LunchesOrderFragment::class.java)
-                }
-            } else {
-                longSnackbar(viewRef(), R.string.snackbar_sync_start_fail)
-                bg { LunchesLoginData.loginData.logout(accountId) }.await()
+            doLogin(viewRef, account, accountId, username, password) ifTrue {
+                // Success :D
+                // Let's switch fragment
+                self().switchFragment(LunchesOrderFragment::class.java)
             }
 
             delay(500) // Wait few loops to make sure, that content was updated.

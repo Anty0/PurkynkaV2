@@ -70,6 +70,9 @@ class ActiveAccountHolder(private val holder: LoadingVH? = null) {
             val (nAccount, nAccountId) = bg { ActiveAccount.getWithId() }.await()
 
             self().apply {
+                if (account == nAccount && accountId == nAccountId)
+                    return@apply
+
                 account = nAccount
                 accountId = nAccountId
 

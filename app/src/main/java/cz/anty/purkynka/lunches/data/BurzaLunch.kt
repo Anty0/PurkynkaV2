@@ -19,10 +19,12 @@
 package cz.anty.purkynka.lunches.data
 
 import cz.anty.purkynka.lunches.load.LunchesParser
+import kotlinx.serialization.Serializable
 
 /**
  * @author anty
  */
+@Serializable
 data class BurzaLunch(val lunchNumber: Int, val date: Long, val name: String,
                       val canteen: String, val pieces: Int, val orderUrl: String) {
 
@@ -30,6 +32,9 @@ data class BurzaLunch(val lunchNumber: Int, val date: Long, val name: String,
 
         val BurzaLunch.dateStr: String
             get() = LunchesParser.FORMAT_DATE_SHOW.format(date)
+
+        val BurzaLunch.dateStrShort: String
+            get() = LunchesParser.FORMAT_DATE_SHOW_SHORT.format(date)
     }
 
     override fun equals(other: Any?): Boolean {

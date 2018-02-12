@@ -29,10 +29,12 @@ import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import proguard.annotation.KeepName
 
 /**
  * @author anty
  */
+@KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
 class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 

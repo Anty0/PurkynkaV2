@@ -25,6 +25,7 @@ import android.view.*
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.Constants.ICON_LUNCHES
+import cz.anty.purkynka.Constants.ICON_LUNCHES_ORDER
 import cz.anty.purkynka.R
 import cz.anty.purkynka.Utils
 import cz.anty.purkynka.account.ActiveAccountHolder
@@ -37,6 +38,7 @@ import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
 import cz.anty.purkynka.lunches.ui.CreditItem
 import cz.anty.purkynka.lunches.ui.LunchOptionsGroupItem
 import eu.codetopic.java.utils.JavaExtensions.ifFalse
+import eu.codetopic.java.utils.JavaExtensions.ifTrue
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions
 import eu.codetopic.utils.AndroidExtensions.edit
@@ -63,10 +65,12 @@ import org.jetbrains.anko.design.coordinatorLayout
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.support.v4.UI
+import proguard.annotation.KeepName
 
 /**
  * @author anty
  */
+@KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
 class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider {
 
@@ -107,7 +111,16 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
 
     init {
         setHasOptionsMenu(true)
-        accountHolder.addChangeListener { update().join() }
+
+        val self = this.asReference()
+        accountHolder.addChangeListener {
+            self().update().join()
+            if (!self().userLoggedIn) {
+                // App was switched to not logged in user
+                // Let's switch fragment
+                self().switchFragment(LunchesLoginFragment::class.java)
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -129,7 +142,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
 
         val manager = Recycler.inflate().withSwipeToRefresh().withItemDivider()
                 .on(themedInflater, container, false)
-                .setEmptyImage(themedContext.getIconics(ICON_LUNCHES).sizeDp(72))
+                .setEmptyImage(themedContext.getIconics(ICON_LUNCHES_ORDER).sizeDp(72))
                 .setEmptyText(R.string.empty_view_text_no_lunches_to_order)
                 .setSmallEmptyText(R.string.empty_view_text_small_no_lunches_to_order)
                 .setAdapter(adapter)
@@ -258,13 +271,16 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
             clear()
 
             if (userLoggedIn && isDataValid) {
-                credit?.also {
-                    add(CreditItem(it))
-                }
-
                 accountHolder.accountId?.also { accountId ->
                     lunchesList
+                            ?.takeIf { it.isNotEmpty() }
                             ?.sortedBy { it.date }
+                            ?.also {
+                                // add credit only if lunchesList is not null
+                                credit?.also {
+                                    add(CreditItem(it))
+                                }
+                            }
                             ?.map { LunchOptionsGroupItem(accountId, it) }
                             // TODO: maybe add week dividers
                             ?.let { addAll(it) }
@@ -411,18 +427,12 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         return launch(UI) {
             holder.showLoading()
 
-            bg {
-                LunchesLoginData.loginData.logout(accountId)
-                LunchesData.instance.resetFirstSyncState(accountId)
-            }.await()
+            LunchesLoginFragment.doLogout(accountId) ifTrue {
+                // Success :D
+                // Let's switch fragment
+                self().switchFragment(LunchesLoginFragment::class.java)
+            }
 
-            /*NotifyManager.requestCancelAll( // TODO: after adding notifications to lunches, add their canceling here
-                    context = appContext,
-                    groupId = AccountNotifyGroup.idFor(accountId),
-                    channelId = ?
-            )*/
-
-            self().switchFragment(LunchesLoginFragment::class.java)
             //delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
