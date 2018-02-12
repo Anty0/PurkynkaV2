@@ -22,12 +22,13 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import cz.anty.purkynka.account.notify.AccountNotifyGroup
+import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusGroup
+import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.JavaExtensions.kSerializer
 import eu.codetopic.java.utils.log.Log
@@ -35,13 +36,12 @@ import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.build
-import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.map
-import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.ctx
 
 /**
  * @author anty
@@ -85,8 +85,7 @@ class LunchesBurzaWatcherService : Service() {
     }
 
     @Serializable
-    class BurzaWatcherArguments(val repeatedFailureCancel: Boolean,
-                                val targetDate: Long, val targetLunchNumber: Int)
+    class BurzaWatcherArguments(val targetDate: Long, val targetLunchNumbers: Array<Int>)
 
     @Serializable
     class BurzaWatcherStatus {
@@ -95,6 +94,7 @@ class LunchesBurzaWatcherService : Service() {
         var stopping: Boolean = false
         var success: Boolean = false
         var fail: Boolean = false
+        var refreshCount: Long = 0
 
         var arguments: BurzaWatcherArguments? = null
     }
@@ -147,11 +147,10 @@ class LunchesBurzaWatcherService : Service() {
             return
         }
 
-        val countFails = arguments.repeatedFailureCancel
         val targetDate = arguments.targetDate
-        val targetLunchNumber = arguments.targetLunchNumber
+        val targetLunchNumbers = arguments.targetLunchNumbers
 
-        bg {
+        launch watcherLoop@ {
             try {
                 val loginData = LunchesLoginData.loginData
 
@@ -171,35 +170,50 @@ class LunchesBurzaWatcherService : Service() {
                 var failCount = 0
                 while (status.running && !status.stopping) {
                     try {
-                        val burzaLunchesHtml = LunchesFetcher.getBurzaLunchesElements(cookies)
-                        val burzaLunchesList = LunchesParser.parseBurzaLunches(burzaLunchesHtml)
+                        run checkBurza@ {
+                            val burzaLunchesHtml = LunchesFetcher.getBurzaLunchesElements(cookies)
+                            val burzaLunchesList = LunchesParser.parseBurzaLunches(burzaLunchesHtml)
 
-                        val selectedLunch = burzaLunchesList
-                                .firstOrNull {
-                                    it.date == targetDate &&
-                                            it.lunchNumber == targetLunchNumber
-                                }
-                                ?: continue
+                            val selectedLunch = burzaLunchesList
+                                    .firstOrNull {
+                                        it.date == targetDate &&
+                                                it.lunchNumber in targetLunchNumbers
+                                    }
+                                    ?: return@checkBurza
 
-                        LunchesFetcher.orderLunch(cookies, selectedLunch.orderUrl)
+                            LunchesFetcher.orderLunch(cookies, selectedLunch.orderUrl)
 
-                        val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, selectedLunch.date)
-                        val lunch = LunchesParser.parseLunchOptionsGroup(lunchHtml)
+                            val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, selectedLunch.date)
+                            val lunch = LunchesParser.parseLunchOptionsGroup(lunchHtml)
 
-                        if (lunch.orderedOption != null) {
+                            lunch.orderedOption ?: return@checkBurza
+
                             status.success = true
+                            status.stopping = true
+
                             // TODO: launch(UI) { successNotification() }
-                            break
+
+                            LunchesData.instance.invalidateData(accountId)
+
+                            launch(UI) { LunchesSyncAdapter.requestSync(Accounts.get(ctx, accountId)) }
                         }
 
-                        if (countFails) failCount = 0
+                        status.refreshCount++
+
+                        launch(UI) { broadcastStatusUpdate() }.join()
+                        // wait for broadcastStatusUpdate() complete, to give cpu some free time
+                        // (and protect app against stacking launch() requests).
+
+                        if (failCount > 10)
+                            failCount -= 10
+                        else failCount = 0
                     } catch (e: Exception) {
                         Log.w(LOG_TAG, "startWatcher(accountId=$accountId)", e)
 
-                        if (countFails && ++failCount > 10) {
-                            status.fail = true
-                            break
-                        }
+                        // TODO: do something to prevent exception (re-login, etc.)
+
+                        status.fail = ++failCount > 10
+                        if (failCount > 100) failCount = 100
                     }
                 }
 
@@ -213,18 +227,16 @@ class LunchesBurzaWatcherService : Service() {
             status.running = false
             status.stopping = false
 
-            launch(UI) {
+            launch(UI) finalizer@ {
                 broadcastStatusUpdate()
 
                 checkStopForeground()
 
-                if (isForeground) return@launch
-                val (lastAccountId, startCode) = lastStopRequest ?: return@launch
-                if (lastAccountId != accountId) return@launch
+                if (isForeground) return@finalizer
+                val (lastAccountId, startCode) = lastStopRequest ?: return@finalizer
+                if (lastAccountId != accountId) return@finalizer
                 stopSelf(startCode)
             }
-
-            return@bg
         }
     }
 
@@ -242,10 +254,11 @@ class LunchesBurzaWatcherService : Service() {
                     status.getOrPut(accountId) { BurzaWatcherStatus() }
                             .takeUnless { it.running }
                             ?.also {
-                                it.arguments = arguments
-                                it.fail = false
-                                it.stopping = false
                                 it.running = true
+                                it.stopping = false
+                                it.fail = false
+                                it.arguments = arguments
+                                it.refreshCount = 0
                             }
                             ?: return@processIntent
 

@@ -126,6 +126,8 @@
     <string name="but_lunch_from_burza">Take back from burza</string>
     <string name="but_lunch_order">Order</string>
     <string name="but_no_lunch">No lunch</string>
+    <string name="but_start">Start</string>
+    <string name="but_stop">Stop</string>
 
     <string name="item_title_date">Date</string>
     <string name="item_title_type">Type</string>
@@ -152,6 +154,8 @@
     <string name="text_view_credit">"Credit: "</string>
     <string name="text_view_lunches_burza_lunch_number">%1$d. Lunch</string>
     <string name="text_view_lunches_burza_lunch_pieces">%1$d pcs</string>
+    <string name="text_view_lunches_burza_lunch_number_unknown">"?. Lunch"</string>
+    <string name="text_view_lunches_burza_lunch_date_unknown">"??. ??. ????"</string>
 
     <string name="txt_day_short_sunday">SUN</string>
     <string name="txt_day_short_monday">MON</string>
@@ -240,6 +244,7 @@
     <string name="dialog_text_wifi_unknown">"You're connected to unknown wifi. Do you want to continue?"</string>
 
     <string name="content_description_logo">Logo</string>
+    <string name="content_description_ready_image">Ready image</string>
 
     <string name="pref_header_global">Global</string>
     <string name="pref_header_system">System</string>
