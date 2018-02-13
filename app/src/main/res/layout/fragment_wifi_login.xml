@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:textColor="@color/materialRed"
+            android:textColor="@color/materialLightRed"
             android:text="@string/text_view_warn_unsupported_device"
             android:visibility="gone" />
 
@@ -92,7 +92,7 @@
             android:id="@+id/txtWarnNonPrimaryAccount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/materialRed"
+            android:textColor="@color/materialLightRed"
             android:text="@string/text_view_warn_non_primary_account"
             android:visibility="gone" />
 

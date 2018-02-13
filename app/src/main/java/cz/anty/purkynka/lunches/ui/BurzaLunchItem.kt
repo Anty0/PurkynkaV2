@@ -20,20 +20,15 @@ package cz.anty.purkynka.lunches.ui
 
 import android.content.Context
 import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.content.ContextCompat
 import android.text.SpannableStringBuilder
 import cz.anty.purkynka.R
 import cz.anty.purkynka.lunches.data.BurzaLunch
 import cz.anty.purkynka.lunches.data.BurzaLunch.Companion.dateStrShort
-import cz.anty.purkynka.lunches.data.LunchOptionsGroup
-import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
 import eu.codetopic.java.utils.JavaExtensions.Anchor
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
-import eu.codetopic.java.utils.JavaExtensions.letIfNull
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.baseActivity
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
-import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.item_burza_lunch.*
 import org.jetbrains.anko.textColorResource
@@ -90,7 +85,7 @@ class BurzaLunchItem(val accountId: String, val base: BurzaLunch) : CustomItem()
             ))
             append(" - ")
             append(holder.context.getFormattedText(
-                    R.string.text_view_lunches_burza_lunch_number,
+                    R.string.text_view_lunches_lunch_number,
                     base.lunchNumber
             ))
         }

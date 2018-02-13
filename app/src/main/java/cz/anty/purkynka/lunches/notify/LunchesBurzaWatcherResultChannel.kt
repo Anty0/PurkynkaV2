@@ -28,43 +28,60 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
+import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
+import cz.anty.purkynka.lunches.LunchesOrderFragment
+import eu.codetopic.utils.ids.Identifiers
+import eu.codetopic.utils.ids.Identifiers.Companion.nextId
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import eu.codetopic.utils.notifications.manager.util.NotifyChannel
 import eu.codetopic.utils.notifications.manager.util.NotifyGroup
+import org.jetbrains.anko.bundleOf
 
 /**
  * @author anty
  */
-class LunchesBurzaWatcherStatusChannel : NotifyChannel(ID, false) {
+class LunchesBurzaWatcherResultChannel : NotifyChannel(ID, true) {
 
     companion object {
 
-        private const val LOG_TAG = "LunchesBurzaWatcherStatusChannel"
-        const val ID = "LUNCHES_BURZA_WATCHER_STATUS"
+        private const val LOG_TAG = "LunchesBurzaWatcherResultChannel"
+        const val ID = "LUNCHES_BURZA_WATCHER_RESULT"
 
-        const val NOTIFY_ID = 73528
+        private val idType = Identifiers.Type(GradesChangesNotifyChannel.ID)
+
+        private const val PARAM_SUCCESS = "SUCCESS"
+
+        fun dataFor(success: Boolean): Bundle = bundleOf(
+                PARAM_SUCCESS to success
+        )
+
+        fun readDataSuccess(data: Bundle): Boolean? = data
+                .takeIf { it.containsKey(PARAM_SUCCESS) }
+                ?.getBoolean(PARAM_SUCCESS)
     }
 
-    override fun nextId(context: Context, group: NotifyGroup, data: Bundle): Int = NOTIFY_ID
+    override fun nextId(context: Context, group: NotifyGroup,
+                        data: Bundle): Int = idType.nextId()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun createChannel(context: Context, combinedId: String): NotificationChannel =
             NotificationChannel(
                     combinedId,
-                    context.getText(R.string.notify_channel_name_lunches_burza_watcher_status),
-                    NotificationManager.IMPORTANCE_LOW
+                    context.getText(R.string.notify_channel_name_lunches_burza_watcher_result),
+                    NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                enableLights(false)
-                enableVibration(false)
+                enableLights(true)
+                enableVibration(true)
                 setBypassDnd(false)
-                setShowBadge(false)
+                setShowBadge(true)
                 this.lightColor = ContextCompat.getColor(context, R.color.colorPrimaryLunches)
             }
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
-        MainActivity.start(context, LunchesBurzaWatcherFragment::class.java)
+        // TODO: accountId
+        MainActivity.start(context, LunchesOrderFragment::class.java)
     }
 
     private fun buildNotificationBase(context: Context, group: NotifyGroup): NotificationCompat.Builder =
@@ -81,21 +98,19 @@ class LunchesBurzaWatcherStatusChannel : NotifyChannel(ID, false) {
 
                 setSmallIcon(R.drawable.ic_notify_lunches_watcher)
                 //setLargeIcon()
-                color = ContextCompat.getColor(context, R.color.colorPrimaryDarkLunches)
-                setColorized(true)
-
-                setProgress(0, 0, true)
+                color = ContextCompat.getColor(context, R.color.colorPrimaryLunches)
+                //setColorized(true)
 
                 setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_ALL)
-                //setDefaults(NotificationCompat.DEFAULT_ALL)
-                priority = NotificationCompat.PRIORITY_LOW
+                setDefaults(NotificationCompat.DEFAULT_ALL)
+                priority = NotificationCompat.PRIORITY_HIGH
 
                 setAutoCancel(false) // will be canceled automatically
-                setCategory(NotificationCompat.CATEGORY_STATUS)
+                setCategory(NotificationCompat.CATEGORY_EVENT)
 
                 setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 //setTimeoutAfter()
-                setOngoing(true)
+                //setOngoing(true)
                 //setPublicVersion()
 
                 //addAction()
@@ -104,8 +119,14 @@ class LunchesBurzaWatcherStatusChannel : NotifyChannel(ID, false) {
     override fun createNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,
                                     data: Bundle): NotificationCompat.Builder {
         return buildNotificationBase(context, group).apply {
-            setContentTitle(context.getText(R.string.notify_lunches_watcher_status_title))
-            setContentText(context.getText(R.string.notify_lunches_watcher_status_text))
+            val success = readDataSuccess(data)
+                    ?: throw IllegalArgumentException("Data doesn't contains success")
+
+
+            // TODO: implement
+
+            // setContentTitle(context.getText(R.string.notify_lunches_watcher_status_title))
+            // setContentText(context.getText(R.string.notify_lunches_watcher_status_text))
         }
     }
 }

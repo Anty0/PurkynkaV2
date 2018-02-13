@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.lunches.sync
 
+import android.app.Notification
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -36,6 +37,7 @@ import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.build
+import eu.codetopic.utils.notifications.manager.data.NotifyId
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.serialization.Serializable
@@ -95,6 +97,7 @@ class LunchesBurzaWatcherService : Service() {
         var success: Boolean = false
         var fail: Boolean = false
         var refreshCount: Long = 0
+        var orderCount: Long = 0
 
         var arguments: BurzaWatcherArguments? = null
     }
@@ -111,23 +114,35 @@ class LunchesBurzaWatcherService : Service() {
         )
     }
 
-    private fun checkStartForeground() {
-        if (!isForeground) {
-            val (notifyId, notification) = NotificationBuilder
+    private fun showResultNotification(accountId: String, success: Boolean) {
+        // TODO: implement
+    }
+
+    private fun buildForegroundNotification(): Pair<NotifyId, Notification> =
+            NotificationBuilder
                     .create(
                             groupId = LunchesBurzaWatcherStatusGroup.ID,
                             channelId = LunchesBurzaWatcherStatusChannel.ID
                     )
                     .build(this, false)
-            startForeground(notifyId.idNotify, notification)
-        }
+
+    private fun checkStartForeground() {
+        if (isForeground) return
+
+        isForeground = true
+        val (notifyId, notification) = buildForegroundNotification()
+        startForeground(notifyId.idNotify, notification)
     }
 
     private fun checkStopForeground() {
-        if (isForeground && !status.any { it.value.running }) {
-            isForeground = false
-            stopForeground(true)
-        }
+        if (!isForeground) return
+
+        // Is running?
+        if (status.any { it.value.running }) return
+
+        isForeground = false
+        stopForeground(true)
+
     }
 
     private fun startWatcher(accountId: String) {
@@ -181,6 +196,8 @@ class LunchesBurzaWatcherService : Service() {
                                     }
                                     ?: return@checkBurza
 
+                            status.orderCount++
+
                             LunchesFetcher.orderLunch(cookies, selectedLunch.orderUrl)
 
                             val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, selectedLunch.date)
@@ -190,8 +207,6 @@ class LunchesBurzaWatcherService : Service() {
 
                             status.success = true
                             status.stopping = true
-
-                            // TODO: launch(UI) { successNotification() }
 
                             LunchesData.instance.invalidateData(accountId)
 
@@ -224,10 +239,14 @@ class LunchesBurzaWatcherService : Service() {
                 status.fail = true
             }
 
+            val stopped = status.stopping
+
             status.running = false
             status.stopping = false
 
             launch(UI) finalizer@ {
+                if (!stopped) showResultNotification(accountId, status.success)
+
                 broadcastStatusUpdate()
 
                 checkStopForeground()
@@ -259,6 +278,7 @@ class LunchesBurzaWatcherService : Service() {
                                 it.fail = false
                                 it.arguments = arguments
                                 it.refreshCount = 0
+                                it.orderCount = 0
                             }
                             ?: return@processIntent
 

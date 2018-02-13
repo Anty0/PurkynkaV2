@@ -19,18 +19,24 @@
 package cz.anty.purkynka.lunches
 
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.text.SpannableStringBuilder
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.DatePicker
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesBurzaWatcherService
+import eu.codetopic.java.utils.JavaExtensions.to
+import eu.codetopic.java.utils.JavaExtensions.letIf
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.broadcast
@@ -46,12 +52,15 @@ import kotlinx.android.synthetic.main.fragment_lunches_burza_watcher.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.checkBox
+import org.jetbrains.anko.childrenSequence
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
 import java.util.*
+import kotlin.math.max
 
 /**
  * @author anty
@@ -139,25 +148,28 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
 
         butStartWatcher.onClick {
             val accountId = accountHolder.accountId ?: return@onClick
-            ctx.startService(
+            ContextCompat.startForegroundService(
+                    ctx,
                     LunchesBurzaWatcherService.getStartWatcherIntent(
                             context = ctx,
                             accountId = accountId,
                             burzaWatcherArguments = LunchesBurzaWatcherService.BurzaWatcherArguments(
-                                    targetDate = run {
-                                        Calendar.getInstance().apply {
-                                            val datePicker = inPickDate
-                                            //set(datePicker.year, datePicker.month, datePicker.dayOfMonth, 0, 0, 0)
-                                            set(Calendar.YEAR, datePicker.year)
-                                            set(Calendar.MONTH, datePicker.month)
-                                            set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
-                                            set(Calendar.HOUR_OF_DAY, 0)
-                                            set(Calendar.MINUTE, 0)
-                                            set(Calendar.SECOND, 0)
-                                            set(Calendar.MILLISECOND, 0)
-                                        }.timeInMillis
-                                    },
-                                    targetLunchNumbers = arrayOf(1, 2, 3) // TODO: implement
+                                    targetDate = inPickDate.getCalendar().timeInMillis,
+                                    targetLunchNumbers = run {
+                                        boxLunchNumbers.childrenSequence()
+                                                .mapNotNull {
+                                                    it.to<CheckBox>()
+                                                            ?.takeIf { it.isEnabled }
+                                                            ?.isChecked
+                                                }
+                                                .let {
+                                                    mutableListOf<Int>().apply {
+                                                        it.forEachIndexed { index, checked ->
+                                                            if (checked) add(index + 1)
+                                                        }
+                                                    }.toTypedArray()
+                                                }
+                                    }
                             )
                     )
             )
@@ -204,6 +216,18 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
 
         super.onStop()
     }
+
+    private fun DatePicker.getCalendar(): Calendar =
+            Calendar.getInstance().also {
+                //it.set(datePicker.year, datePicker.month, datePicker.dayOfMonth, 0, 0, 0)
+                it.set(Calendar.YEAR, year)
+                it.set(Calendar.MONTH, month)
+                it.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                it.set(Calendar.HOUR_OF_DAY, 0)
+                it.set(Calendar.MINUTE, 0)
+                it.set(Calendar.SECOND, 0)
+                it.set(Calendar.MILLISECOND, 0)
+            }
 
     private fun register(): Job {
         LocalBroadcast.registerReceiver(loginDataChangedReceiver,
@@ -286,6 +310,9 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
         // boxStartWatcher
         /// inPickDate
         /// boxLunchNumbers
+        // boxWarning
+        // txtWarningOrdered
+        // txtWarningNoOptions
         /// butStartWatcher
 
         // boxStopWatcher
@@ -298,14 +325,16 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
 
         // boxStatusInfo
         //
+        /// txtRefreshCount
+        //
+        /// txtOrderAttemptsCount
+        //
         /// txtTargetDate
         //
         /// txtTargetLunch
         //
-        /// txtRefreshCount
-        //
         // txtSuccess
-        // txtNoSuccess
+        // txtNotSuccess
         // txtUnknownSuccess
         //
         // txtNoFail
@@ -321,16 +350,61 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
         val success = lastStatus?.success == true
         val fail = lastStatus?.fail == true
         val refreshCount = lastStatus?.refreshCount ?: 0
+        val orderCount = lastStatus?.orderCount ?: 0
 
         val arguments = lastStatus?.arguments
         val targetDate = arguments?.targetDate
         val targetLunchNumbers = arguments?.targetLunchNumbers
 
+        val timeMilis = inPickDate.getCalendar().timeInMillis
+        val lunchOptionsGroup = lunchesList
+                ?.takeIf { isDataValid }
+                ?.firstOrNull { it.date == timeMilis }
+        val options = lunchOptionsGroup?.options
+        val hasOptions = options?.isEmpty() == false
+        val hasOrderedLunch = lunchOptionsGroup?.orderedOption != null
+
         boxStartWatcher.visibility = if (!preparing && !running) View.VISIBLE else View.GONE
-        // TODO: inPickDate
-        // TODO: boxLunchNumbers
+
+        boxLunchNumbers.apply {
+            val oldChecked = childrenSequence()
+                    .mapNotNull { it.to<CheckBox>()?.isChecked }
+                    .toList()
+            removeAllViews()
+
+            val minSize = max(3, oldChecked.count())
+            val checkOptions = options
+                    ?.letIf({ it.size < minSize }) {
+                        arrayOf<LunchOption?>(*it, *arrayOfNulls(minSize - it.size))
+                    }
+                    ?: arrayOfNulls<LunchOption>(minSize)
+
+            checkOptions.forEachIndexed { index, lunchOption ->
+                checkBox {
+                    text = SpannableStringBuilder().apply {
+                        append(
+                                ctx.getFormattedText(
+                                        R.string.text_view_lunches_lunch_number,
+                                        index + 1
+                                )
+                        )
+                        if (lunchOption != null) {
+                            append(" - ")
+                            append(lunchOption.name)
+                        }
+                    }
+                    isChecked = oldChecked.getOrElse(index) { true }
+                    visibility = if (options == null || lunchOption != null) View.VISIBLE else View.GONE
+                }
+            }
+        }
+
+        boxWarning.visibility = if (!hasOptions || hasOrderedLunch) View.VISIBLE else View.GONE
+        txtWarningOrdered.visibility = if (hasOrderedLunch) View.VISIBLE else View.GONE
+        txtWarningNoOptions.visibility = if (!hasOptions) View.VISIBLE else View.GONE
 
         boxStopWatcher.visibility = if (!preparing && running) View.VISIBLE else View.GONE
+        butStopWatcher.isEnabled = !stopping
 
         boxStatusLineRunning.visibility = if (!preparing && running && !stopping) View.VISIBLE else View.GONE
         boxStatusLineStopping.visibility = if (!preparing && running && stopping) View.VISIBLE else View.GONE
@@ -339,16 +413,20 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
 
         boxStatusInfo.visibility = if (arguments != null) View.VISIBLE else View.GONE
 
+        txtRefreshCount.text = refreshCount.toString()
+
+        txtOrderAttemptsCount.text = orderCount.toString()
+
         txtTargetDate.text = targetDate
                 ?.let { LunchesParser.FORMAT_DATE_SHOW.format(it) }
-                ?: ctx.getText(R.string.text_view_lunches_burza_lunch_date_unknown)
+                ?: ctx.getText(R.string.text_view_lunches_lunch_date_unknown)
 
         txtTargetLunch.text = SpannableStringBuilder().apply {
             if (targetLunchNumbers != null) {
                 targetLunchNumbers
                         .map {
                             ctx.getFormattedText(
-                                    R.string.text_view_lunches_burza_lunch_number,
+                                    R.string.text_view_lunches_lunch_number,
                                     it
                             )
                         }
@@ -360,10 +438,8 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
 
         }
 
-        txtRefreshCount.text = refreshCount.toString()
-
         txtSuccess.visibility = if (success) View.VISIBLE else View.GONE
-        txtNoSuccess.visibility = if (!success && !running) View.VISIBLE else View.GONE
+        txtNotSuccess.visibility = if (!success && !running) View.VISIBLE else View.GONE
         txtUnknownSuccess.visibility = if (!success && running) View.VISIBLE else View.GONE
 
         txtNoFail.visibility = if (!fail) View.VISIBLE else View.GONE

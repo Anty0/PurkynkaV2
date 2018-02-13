@@ -29,6 +29,7 @@ import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
+import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherResultChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusGroup
 import cz.anty.purkynka.lunches.receiver.UpdateLunchesSyncReceiver
@@ -269,7 +270,8 @@ class AppInit : MultiDexApplication() {
     private fun initAccounts() {
         Accounts.initialize(
                 this,
-                GradesChangesNotifyChannel.ID
+                GradesChangesNotifyChannel.ID,
+                LunchesBurzaWatcherResultChannel.ID
         )
     }
 
@@ -283,7 +285,8 @@ class AppInit : MultiDexApplication() {
                 this,
                 UpdateNotifyChannel(),
                 GradesChangesNotifyChannel(),
-                LunchesBurzaWatcherStatusChannel()
+                LunchesBurzaWatcherStatusChannel(),
+                LunchesBurzaWatcherResultChannel()
         )
     }
 }

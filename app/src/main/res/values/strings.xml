@@ -25,6 +25,7 @@
     <string name="notify_channel_name_grades_changes">Grades changes</string>
     <string name="notify_group_name_lunches_burza_watcher_status">Lunches burza watcher</string>
     <string name="notify_channel_name_lunches_burza_watcher_status">Lunches burza watcher status</string>
+    <string name="notify_channel_name_lunches_burza_watcher_result">Lunches burza watcher result</string>
 
     <string name="account_default_name">User</string>
 
@@ -41,7 +42,7 @@
     <string name="notify_grade_summary_text">From: %1$s</string>
     <string name="notify_grade_summary_line">Grade %1$s from %2$s</string>
     <string name="notify_lunches_watcher_status_title">Lunches burza watcher</string>
-    <string name="notify_lunches_watcher_status_text">Lunches burza watcher is running</string>
+    <string name="notify_lunches_watcher_status_text">Is running</string>
 
     <string name="title_activity_update">Update check</string>
     <string name="title_activity_settings">Settings</string>
@@ -152,10 +153,32 @@
         <item quantity="other">%1$d lunches can be ordered</item>
     </plurals>
     <string name="text_view_credit">"Credit: "</string>
-    <string name="text_view_lunches_burza_lunch_number">%1$d. Lunch</string>
+    <string name="text_view_lunches_lunch_number">%1$d. Lunch</string>
     <string name="text_view_lunches_burza_lunch_pieces">%1$d pcs</string>
     <string name="text_view_lunches_burza_lunch_number_unknown">"?. Lunch"</string>
-    <string name="text_view_lunches_burza_lunch_date_unknown">"??. ??. ????"</string>
+    <string name="text_view_lunches_lunch_date_unknown">"??. ??. ????"</string>
+
+    <string name="txt_in_date">Date</string>
+    <string name="txt_in_lunches_numbers">Lunches</string>
+    <string name="txt_info_warning">Warning</string>
+    <string name="txt_info_warning_lunch_ordered">You have got lunch for this day</string>
+    <string name="txt_info_warning_lunch_no_options">No lunches for this day</string>
+    <string name="txt_info_status">Status</string>
+    <string name="txt_info_status_running">Running</string>
+    <string name="txt_info_status_stopping">Stopping</string>
+    <string name="txt_info_status_ready">Ready</string>
+    <string name="txt_info_status_not_ready">Preparing</string>
+    <string name="txt_info_refresh_count">Count of refreshes</string>
+    <string name="txt_info_order_count">Count of order attempts</string>
+    <string name="txt_info_date">Date</string>
+    <string name="txt_info_lunches_numbers">Lunches</string>
+    <string name="txt_info_result">Result</string>
+    <string name="txt_info_result_success">Success</string>
+    <string name="txt_info_result_not_success">Not success</string>
+    <string name="txt_info_result_unknown">Unknown</string>
+    <string name="txt_info_fails">Fails</string>
+    <string name="txt_info_fails_no">No fails yet</string>
+    <string name="txt_info_fails_some">Problem occurred</string>
 
     <string name="txt_day_short_sunday">SUN</string>
     <string name="txt_day_short_monday">MON</string>
