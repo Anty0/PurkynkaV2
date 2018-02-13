@@ -24,9 +24,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import cz.anty.purkynka.account.Accounts
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
+import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherResultChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusGroup
 import cz.anty.purkynka.lunches.save.LunchesData
@@ -36,6 +38,7 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
+import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.build
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import kotlinx.coroutines.experimental.android.UI
@@ -115,7 +118,14 @@ class LunchesBurzaWatcherService : Service() {
     }
 
     private fun showResultNotification(accountId: String, success: Boolean) {
-        // TODO: implement
+        NotificationBuilder.create(
+                groupId = AccountNotifyGroup.idFor(accountId),
+                channelId = LunchesBurzaWatcherResultChannel.ID
+        ) {
+            persistent = true
+            refreshable = true
+            data = LunchesBurzaWatcherResultChannel.dataFor(success)
+        }.requestShow(this)
     }
 
     private fun buildForegroundNotification(): Pair<NotifyId, Notification> =
@@ -223,7 +233,7 @@ class LunchesBurzaWatcherService : Service() {
                             failCount -= 10
                         else failCount = 0
                     } catch (e: Exception) {
-                        Log.w(LOG_TAG, "startWatcher(accountId=$accountId)", e)
+                        Log.d(LOG_TAG, "startWatcher(accountId=$accountId)", e)
 
                         // TODO: do something to prevent exception (re-login, etc.)
 

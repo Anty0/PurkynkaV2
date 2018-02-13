@@ -43,6 +43,10 @@
     <string name="notify_grade_summary_line">Grade %1$s from %2$s</string>
     <string name="notify_lunches_watcher_status_title">Lunches burza watcher</string>
     <string name="notify_lunches_watcher_status_text">Is running</string>
+    <string name="notify_lunches_watcher_result_title_success">Successfully ordered lunch from burza</string>
+    <string name="notify_lunches_watcher_result_title_fail">Failed to ordered lunch from burza</string>
+    <string name="notify_lunches_watcher_result_text">By lunches burza watcher</string>
+    <string name="notify_lunches_watcher_result_text_multi_user">For %1$s by lunches burza watcher</string>
 
     <string name="title_activity_update">Update check</string>
     <string name="title_activity_settings">Settings</string>

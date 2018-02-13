@@ -28,9 +28,14 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
+import cz.anty.purkynka.account.Accounts
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
+import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
-import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
 import cz.anty.purkynka.lunches.LunchesOrderFragment
+import eu.codetopic.java.utils.JavaExtensions.alsoIfNull
+import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
 import eu.codetopic.utils.notifications.manager.data.NotifyId
@@ -80,7 +85,15 @@ class LunchesBurzaWatcherResultChannel : NotifyChannel(ID, true) {
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
-        // TODO: accountId
+        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
+                    " notifyId=$notifyId, data=$data)",
+                    IllegalArgumentException("Group is not AccountNotifyGroup, " +
+                            "can't change ActiveAccount to correct account."))
+        }
+
+        if (account != null) ActiveAccount.set(account)
+
         MainActivity.start(context, LunchesOrderFragment::class.java)
     }
 
@@ -121,12 +134,27 @@ class LunchesBurzaWatcherResultChannel : NotifyChannel(ID, true) {
         return buildNotificationBase(context, group).apply {
             val success = readDataSuccess(data)
                     ?: throw IllegalArgumentException("Data doesn't contains success")
+            val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+                Log.e(LOG_TAG, "createNotification(id=$notifyId, group=$group," +
+                        " notifyId=$notifyId, data=$data)",
+                        IllegalArgumentException("Group is not AccountNotifyGroup, " +
+                                "can't show account name in notification."))
+            }
 
+            val isMultiAccount = Accounts.getAll(context).size > 1
 
-            // TODO: implement
-
-            // setContentTitle(context.getText(R.string.notify_lunches_watcher_status_title))
-            // setContentText(context.getText(R.string.notify_lunches_watcher_status_text))
+            setContentTitle(context.getText(
+                    if (success) R.string.notify_lunches_watcher_result_title_success
+                    else R.string.notify_lunches_watcher_result_title_fail
+            ))
+            setContentText(
+                    if (isMultiAccount && account != null)
+                        context.getFormattedText(
+                                R.string.notify_lunches_watcher_result_text_multi_user,
+                                account.name
+                        )
+                    else context.getText(R.string.notify_lunches_watcher_result_text)
+            )
         }
     }
 }

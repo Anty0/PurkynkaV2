@@ -131,16 +131,19 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
         val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
-            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group, data=$data)",
+            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
+                    " notifyId=$notifyId, data=$data)",
                     IllegalArgumentException("Group is not AccountNotifyGroup, " +
                             "can't change ActiveAccount to correct account."))
         }
         val grade = readDataGrade(data).alsoIfNull {
-            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group, data=$data)",
+            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
+                    " notifyId=$notifyId, data=$data)",
                     IllegalArgumentException("Data doesn't contains grade"))
         }
         val changes = readDataChanges(data).alsoIfNull {
-            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group, data=$data)",
+            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
+                    " notifyId=$notifyId, data=$data)",
                     IllegalArgumentException("Failed to read grade changes"))
         }
 
@@ -159,7 +162,8 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
     override fun handleSummaryContentIntent(context: Context, group: NotifyGroup,
                                             notifyId: NotifyId, data: Map<out NotifyId, Bundle>) {
         val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
-            Log.e(LOG_TAG, "handleSummaryContentIntent(id=$notifyId, group=$group, data=$data)",
+            Log.e(LOG_TAG, "handleSummaryContentIntent(id=$notifyId, group=$group," +
+                    " notifyId=$notifyId, data=$data)",
                     IllegalArgumentException("Group is not AccountNotifyGroup, " +
                             "can't change ActiveAccount to correct account."))
         }
@@ -183,12 +187,7 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
                 //setStyle()
 
                 setSmallIcon(R.drawable.ic_notify_grades)
-                /*setLargeIcon(
-                        context.getIconics(ICON_GRADES)
-                                .sizeDp(24)
-                                .colorRes(R.color.colorPrimaryGrades)
-                                .toBitmap()
-                )*/
+                //setLargeIcon()
                 color = notifyColor
                 //setColorized(false)
 
