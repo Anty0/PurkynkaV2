@@ -90,6 +90,7 @@ class LunchBurzaActivity : LoadingModularActivity(ToolbarModule(), TransitionBac
 
         butOrder.onClick {
             // TODO: implement
+            Log.w(LOG_TAG, "Not implemented yet")
         }
 
         if (savedInstanceState == null) {
