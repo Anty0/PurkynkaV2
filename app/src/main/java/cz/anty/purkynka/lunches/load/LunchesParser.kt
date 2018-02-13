@@ -19,7 +19,7 @@
 package cz.anty.purkynka.lunches.load
 
 import android.content.SyncResult
-import cz.anty.purkynka.lunches.data.BurzaLunch
+import cz.anty.purkynka.lunches.data.LunchBurza
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import eu.codetopic.java.utils.JavaExtensions.substringOrNull
@@ -52,9 +52,9 @@ object LunchesParser {
 
     private val REGEX_CREDIT = Regex("^([\\d,.]+?) Kč$")
 
-    private fun parseBurzaLunch(lunchElement: Element): BurzaLunch =
+    private fun parseBurzaLunch(lunchElement: Element): LunchBurza =
             lunchElement.children().let { lunchElements ->
-                BurzaLunch(
+                LunchBurza(
                         lunchNumber = lunchElements[0].text()
                                 .let { REGEX_LUNCH_NUMBER.find(it) }
                                 ?.groupValues?.getOrNull(1)?.toIntOrNull()
@@ -85,7 +85,7 @@ object LunchesParser {
                 )
             }
 
-    fun parseBurzaLunches(lunchesElements: Elements, syncResult: SyncResult? = null): List<BurzaLunch> {
+    fun parseBurzaLunches(lunchesElements: Elements, syncResult: SyncResult? = null): List<LunchBurza> {
         Log.d(LOG_TAG, "parseBurzaLunches(lunchesElements=$lunchesElements)")
         return lunchesElements.mapNotNull {
             try {

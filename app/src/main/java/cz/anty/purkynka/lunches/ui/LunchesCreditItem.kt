@@ -33,11 +33,11 @@ import java.text.DecimalFormat
 /**
  * @author anty
  */
-class CreditItem(val credit: Float) : CustomItem() {
+class LunchesCreditItem(val credit: Float) : CustomItem() {
 
     companion object {
 
-        private const val LOG_TAG = "CreditItem"
+        private const val LOG_TAG = "LunchesCreditItem"
 
         private val FORMAT_CREDIT = DecimalFormat("#.##")
     }

@@ -20,28 +20,29 @@ package cz.anty.purkynka.lunches.ui
 
 import android.content.Context
 import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.content.ContextCompat
 import android.text.SpannableStringBuilder
 import cz.anty.purkynka.R
-import cz.anty.purkynka.lunches.data.BurzaLunch
-import cz.anty.purkynka.lunches.data.BurzaLunch.Companion.dateStrShort
+import cz.anty.purkynka.lunches.data.LunchBurza
+import cz.anty.purkynka.lunches.data.LunchBurza.Companion.dateStrShort
 import eu.codetopic.java.utils.JavaExtensions.Anchor
 import eu.codetopic.java.utils.JavaExtensions.fillToLen
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.baseActivity
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import kotlinx.android.synthetic.main.item_burza_lunch.*
+import kotlinx.android.synthetic.main.item_lunch_burza.*
 import org.jetbrains.anko.textColorResource
 import java.util.*
 
 /**
  * @author anty
  */
-class BurzaLunchItem(val accountId: String, val base: BurzaLunch) : CustomItem() {
+class LunchBurzaItem(val accountId: String, val base: LunchBurza) : CustomItem() {
 
     companion object {
 
-        private const val LOG_TAG = "BurzaLunchItem"
+        private const val LOG_TAG = "LunchBurzaItem"
     }
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
@@ -97,30 +98,29 @@ class BurzaLunchItem(val accountId: String, val base: BurzaLunch) : CustomItem()
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             it,
                             holder.boxClickTarget,
-                            context.getString(R.string.id_transition_burza_lunch_item)
+                            context.getString(R.string.id_transition_lunch_burza_item)
                     )
                 }
 
-                if (options == null) Log.w(LOG_TAG, "Can't start BurzaLunchActivity " +
+                if (options == null) Log.w(LOG_TAG, "Can't start LunchBurzaActivity " +
                         "with transition: Cannot find Activity in context hierarchy")
 
-                // TODO: start activity
-                /*ContextCompat.startActivity(
+                ContextCompat.startActivity(
                         context,
-                        BurzaLunchActivity.getStartIntent(context, accountId, base),
+                        LunchBurzaActivity.getStartIntent(context, accountId, base),
                         options?.toBundle()
-                )*/
+                )
             }
         }
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_burza_lunch
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_lunch_burza
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as BurzaLunchItem
+        other as LunchBurzaItem
 
         if (base != other.base) return false
 
@@ -132,6 +132,6 @@ class BurzaLunchItem(val accountId: String, val base: BurzaLunch) : CustomItem()
     }
 
     override fun toString(): String {
-        return "BurzaLunchItem(accountId=$accountId, base=$base)"
+        return "LunchBurzaItem(accountId=$accountId, base=$base)"
     }
 }

@@ -103,6 +103,10 @@
             android:name=".lunches.ui.LunchOptionsGroupActivity"
             android:label="@string/title_activity_lunch_options_group"
             android:theme="@style/AppTheme.NoActionBar.Lunches"/>
+        <activity
+            android:name=".lunches.ui.LunchBurzaActivity"
+            android:label="@string/title_activity_lunches_burza_lunch"
+            android:theme="@style/AppTheme.NoActionBar.Lunches"/>
 
         <receiver
             android:name=".update.receiver.UpdateCheckJobScheduleReceiver"

@@ -21,13 +21,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".grades.ui.SubjectActivity"
+    tools:context=".lunches.ui.LunchOptionsGroupActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <FrameLayout
-        android:id="@+id/boxSubject"
+        android:id="@+id/boxLunchBurza"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/cardview_dark_background"
@@ -36,13 +36,31 @@
         android:paddingBottom="4dp"
         android:paddingTop="4dp">
 
-        <!--Here will be inflated layout item_subject-->
+        <!--Here will be inflated item_lunch_burza-->
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/boxRecycler"
+    <ScrollView
+        android:id="@+id/boxLunchBurzaInfo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:fillViewport="true"
+        android:visibility="gone">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
+
+            <Button
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:id="@+id/butOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:text="@string/but_lunch_order" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

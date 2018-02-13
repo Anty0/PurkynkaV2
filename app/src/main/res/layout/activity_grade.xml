@@ -36,7 +36,7 @@
         android:paddingBottom="4dp"
         android:paddingTop="4dp">
 
-        <!--Here will be inflated layout grade_item-->
+        <!--Here will be inflated layout item_grade-->
     </FrameLayout>
 
     <ScrollView

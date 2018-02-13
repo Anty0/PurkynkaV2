@@ -24,18 +24,16 @@ import android.support.design.widget.Snackbar
 import android.view.*
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.Constants.ICON_LUNCHES
 import cz.anty.purkynka.Constants.ICON_LUNCHES_ORDER
 import cz.anty.purkynka.R
 import cz.anty.purkynka.Utils
 import cz.anty.purkynka.account.ActiveAccountHolder
-import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
-import cz.anty.purkynka.lunches.ui.CreditItem
+import cz.anty.purkynka.lunches.ui.LunchesCreditItem
 import cz.anty.purkynka.lunches.ui.LunchOptionsGroupItem
 import eu.codetopic.java.utils.JavaExtensions.ifFalse
 import eu.codetopic.java.utils.JavaExtensions.ifTrue
@@ -45,7 +43,6 @@ import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
-import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -56,15 +53,11 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.UI
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
-import org.jetbrains.anko.design.coordinatorLayout
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.support.v4.UI
 import proguard.annotation.KeepName
 
 /**
@@ -278,7 +271,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
                             ?.also {
                                 // add credit only if lunchesList is not null
                                 credit?.also {
-                                    add(CreditItem(it))
+                                    add(LunchesCreditItem(it))
                                 }
                             }
                             ?.map { LunchOptionsGroupItem(accountId, it) }

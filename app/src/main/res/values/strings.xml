@@ -57,6 +57,7 @@
     <string name="title_activity_subject">Subject</string>
     <string name="title_activity_grade">Grade</string>
     <string name="title_activity_lunch_options_group">Lunch order</string>
+    <string name="title_activity_lunches_burza_lunch">Lunch order</string>
 
     <string name="title_fragment_grades">Grades</string>
     <string name="title_fragment_wifi_login">Wifi auto login</string>
@@ -284,5 +285,5 @@
     <string name="id_transition_subject_item" translatable="false">subject_item</string>
     <string name="id_transition_grade_item" translatable="false">grade_item</string>
     <string name="id_transition_lunch_options_group_item" translatable="false">lunch_options_group_item</string>
-    <string name="id_transition_burza_lunch_item" translatable="false">burza_lunch_item</string>
+    <string name="id_transition_lunch_burza_item" translatable="false">lunch_burza_item</string>
 </resources>

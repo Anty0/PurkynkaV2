@@ -23,20 +23,17 @@ import android.os.Bundle
 import android.view.*
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.Constants
 import cz.anty.purkynka.Constants.ICON_LUNCHES_BURZA
 import cz.anty.purkynka.R
-import cz.anty.purkynka.Utils
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.exceptions.WrongLoginDataException
-import cz.anty.purkynka.lunches.data.BurzaLunch
+import cz.anty.purkynka.lunches.data.LunchBurza
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
-import cz.anty.purkynka.lunches.ui.BurzaLunchItem
-import cz.anty.purkynka.lunches.ui.CreditItem
-import eu.codetopic.java.utils.JavaExtensions.ifFalse
+import cz.anty.purkynka.lunches.ui.LunchBurzaItem
+import cz.anty.purkynka.lunches.ui.LunchesCreditItem
 import eu.codetopic.java.utils.JavaExtensions.ifTrue
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions
@@ -90,7 +87,7 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider 
 
     private var userLoggedIn: Boolean = false
     private var credit: Float? = null
-    private var burzaList: List<BurzaLunch>? = null
+    private var burzaList: List<LunchBurza>? = null
 
     private var recyclerManager: Recycler.RecyclerManagerImpl? = null
     private var adapter: CustomItemAdapter<CustomItem>? = null
@@ -292,11 +289,11 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider 
                 accountHolder.accountId?.also { accountId ->
                     burzaList
                             ?.takeIf { it.isNotEmpty() }
-                            ?.map { BurzaLunchItem(accountId, it) }
+                            ?.map { LunchBurzaItem(accountId, it) }
                             ?.also {
                                 // add credit only if burzaList is not null
                                 credit?.also {
-                                    add(CreditItem(it))
+                                    add(LunchesCreditItem(it))
                                 }
                             }
                             ?.let { addAll(it) }

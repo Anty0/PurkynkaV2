@@ -25,15 +25,15 @@ import kotlinx.serialization.Serializable
  * @author anty
  */
 @Serializable
-data class BurzaLunch(val lunchNumber: Int, val date: Long, val name: String,
+data class LunchBurza(val lunchNumber: Int, val date: Long, val name: String,
                       val canteen: String, val pieces: Int, val orderUrl: String) {
 
     companion object {
 
-        val BurzaLunch.dateStr: String
+        val LunchBurza.dateStr: String
             get() = LunchesParser.FORMAT_DATE_SHOW.format(date)
 
-        val BurzaLunch.dateStrShort: String
+        val LunchBurza.dateStrShort: String
             get() = LunchesParser.FORMAT_DATE_SHOW_SHORT.format(date)
     }
 
@@ -41,7 +41,7 @@ data class BurzaLunch(val lunchNumber: Int, val date: Long, val name: String,
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as BurzaLunch
+        other as LunchBurza
 
         if (date != other.date) return false
         if (name != other.name) return false
