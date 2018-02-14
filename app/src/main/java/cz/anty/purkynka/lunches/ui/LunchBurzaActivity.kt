@@ -26,7 +26,12 @@ import android.transition.Transition
 import android.view.View
 import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
+import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.data.LunchBurza
+import cz.anty.purkynka.lunches.load.LunchesFetcher
+import cz.anty.purkynka.lunches.load.LunchesParser
+import cz.anty.purkynka.lunches.save.LunchesData
+import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
@@ -36,7 +41,13 @@ import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
 import kotlinx.android.synthetic.main.activity_lunch_burza.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
+import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import java.io.IOException
 
 /**
  * @author anty
@@ -88,9 +99,60 @@ class LunchBurzaActivity : LoadingModularActivity(ToolbarModule(), TransitionBac
                 .also { boxLunchBurza.addView(it.itemView, 0) }
         lunchBurzaItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)
 
+        val self = this.asReference()
         butOrder.onClick {
-            // TODO: implement
-            Log.w(LOG_TAG, "Not implemented yet")
+            holder.showLoading()
+
+            val success = bg {
+                try {
+                    val loginData = LunchesLoginData.loginData
+
+                    if (!loginData.isLoggedIn(accountId))
+                        throw IllegalStateException("User is not logged in")
+
+                    val (username, password) = loginData.getCredentials(accountId)
+
+                    if (username == null || password == null)
+                        throw IllegalStateException("Username or password is null")
+
+                    val cookies = LunchesFetcher.login(username, password)
+
+                    if (!LunchesFetcher.isLoggedIn(cookies))
+                        throw WrongLoginDataException("Failed to login user with provided credentials")
+
+                    val lunchesHtml = LunchesFetcher.getLunchesBurzaElements(cookies)
+                    val burzaLunches = LunchesParser.parseLunchesBurza(lunchesHtml)
+                    val nLunchBurza = burzaLunches.indexOf(lunchBurza)
+                            .takeIf { it != -1 }
+                            ?.let { burzaLunches[it] }
+                            ?: throw IllegalStateException("Lunch burza not found")
+
+                    val url = nLunchBurza.orderUrl
+
+                    LunchesFetcher.orderLunch(cookies, url)
+
+                    LunchesFetcher.logout(cookies)
+
+                    LunchesData.instance.invalidateData(accountId)
+                    return@bg true
+                } catch (e: Exception) {
+                    Log.w(LOG_TAG, "butOrder.onClick(" +
+                            "lunchBurza=$lunchBurza)" +
+                            " -> Failed to order lunch", e)
+
+                    launch(UI) {
+                        longSnackbar(self().boxLunchBurza, when (e) {
+                            is WrongLoginDataException -> R.string.snackbar_lunches_order_fail_login
+                            is IOException -> R.string.snackbar_lunches_order_fail_connect
+                            else -> R.string.snackbar_lunches_order_fail_unknown
+                        })
+                    }
+                    return@bg false
+                }
+            }.await()
+
+            if (success) self().finish()
+            holder.hideLoading()
         }
 
         if (savedInstanceState == null) {

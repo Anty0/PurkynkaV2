@@ -253,8 +253,8 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider 
                             if (!LunchesFetcher.isLoggedIn(cookies))
                                 throw WrongLoginDataException("Failed to login user with provided credentials")
 
-                            val burzaLunchesHtml = LunchesFetcher.getBurzaLunchesElements(cookies)
-                            val nBurzaLunches = LunchesParser.parseBurzaLunches(burzaLunchesHtml)
+                            val burzaLunchesHtml = LunchesFetcher.getLunchesBurzaElements(cookies)
+                            val nBurzaLunches = LunchesParser.parseLunchesBurza(burzaLunchesHtml)
 
                             LunchesFetcher.logout(cookies)
 

@@ -90,7 +90,7 @@ object GradesFetcher {
     @Throws(IOException::class)
     fun getGradesElements(loginCookies: Map<String, String>, semester: Semester): Elements =
             getGradesPage(loginCookies, semester)
-                    .alsoIfNot({ isLoggedIn(it) }) { throw LoginExpiredException() }
+                    //.alsoIfNot({ isLoggedIn(it) }) { throw LoginExpiredException() }
                     .select("table.isas-tabulka")
                     .select("tr")
                     .not("tr.zahlavi")

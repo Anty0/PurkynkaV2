@@ -196,8 +196,8 @@ class LunchesBurzaWatcherService : Service() {
                 while (status.running && !status.stopping) {
                     try {
                         run checkBurza@ {
-                            val burzaLunchesHtml = LunchesFetcher.getBurzaLunchesElements(cookies)
-                            val burzaLunchesList = LunchesParser.parseBurzaLunches(burzaLunchesHtml)
+                            val burzaLunchesHtml = LunchesFetcher.getLunchesBurzaElements(cookies)
+                            val burzaLunchesList = LunchesParser.parseLunchesBurza(burzaLunchesHtml)
 
                             val selectedLunch = burzaLunchesList
                                     .firstOrNull {

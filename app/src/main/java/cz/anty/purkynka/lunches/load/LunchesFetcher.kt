@@ -188,7 +188,7 @@ object LunchesFetcher {
 
     @WorkerThread
     @Throws(IOException::class)
-    fun getBurzaLunchesElements(loginCookies: Map<String, String>): Elements =
+    fun getLunchesBurzaElements(loginCookies: Map<String, String>): Elements =
             Jsoup.connect(URL_BURZA)
                     .userAgent(Utils.userAgent)
                     .data(

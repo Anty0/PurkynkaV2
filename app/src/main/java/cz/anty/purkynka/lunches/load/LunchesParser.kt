@@ -85,15 +85,15 @@ object LunchesParser {
                 )
             }
 
-    fun parseBurzaLunches(lunchesElements: Elements, syncResult: SyncResult? = null): List<LunchBurza> {
-        Log.d(LOG_TAG, "parseBurzaLunches(lunchesElements=$lunchesElements)")
+    fun parseLunchesBurza(lunchesElements: Elements, syncResult: SyncResult? = null): List<LunchBurza> {
+        Log.d(LOG_TAG, "parseLunchesBurza(lunchesElements=$lunchesElements)")
         return lunchesElements.mapNotNull {
             try {
                 syncResult?.apply { stats.numEntries++ }
                 parseBurzaLunch(it)
             } catch (e: Exception) {
                 syncResult?.apply { stats.numParseExceptions++ }
-                Log.w(LOG_TAG, "parseBurzaLunches", e); null
+                Log.w(LOG_TAG, "parseLunchesBurza", e); null
             }
         }
     }

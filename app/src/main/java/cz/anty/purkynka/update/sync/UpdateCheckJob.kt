@@ -131,6 +131,7 @@ class UpdateCheckJob : Job() {
 
     override fun onRunJob(params: Params): Result {
         Log.w(LOG_TAG, "onRunJob(params=$params) -> Checking for update")
+        // TODO: check if is being executed
 
         return fetchUpdates().alsoIf({
             it == Result.SUCCESS && UpdateData.instance.latestVersionCode != BuildConfig.VERSION_CODE
