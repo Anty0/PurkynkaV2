@@ -19,14 +19,15 @@
 package cz.anty.purkynka.lunches
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.*
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.Constants.ICON_LUNCHES_ORDER
+import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_ORDER
 import cz.anty.purkynka.R
-import cz.anty.purkynka.Utils
+import cz.anty.purkynka.utils.Utils
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.save.LunchesData
@@ -43,6 +44,7 @@ import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -58,6 +60,7 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
 
 /**
@@ -65,7 +68,7 @@ import proguard.annotation.KeepName
  */
 @KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider {
+class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconProvider {
 
     companion object {
 
@@ -76,6 +79,8 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         get() = getText(R.string.title_fragment_lunches_order)
     override val themeId: Int
         get() = R.style.AppTheme_Lunches
+    override val icon: Bitmap
+        get() = ctx.getIconics(ICON_LUNCHES_ORDER).sizeDp(48).toBitmap()
 
     private val accountHolder = ActiveAccountHolder(holder)
 

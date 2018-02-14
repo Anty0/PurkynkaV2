@@ -37,18 +37,17 @@ import android.view.View
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import eu.codetopic.utils.Constants.ICON_DEBUG
 import eu.codetopic.utils.Constants.ICON_SETTINGS
-import cz.anty.purkynka.Constants.ICON_ATTENDANCE
-import cz.anty.purkynka.Constants.ICON_DONATE
-import cz.anty.purkynka.Constants.ICON_FACEBOOK
-import cz.anty.purkynka.Constants.ICON_GRADES
-import cz.anty.purkynka.Constants.ICON_HOME_DASHBOARD
-import cz.anty.purkynka.Constants.ICON_LUNCHES
-import cz.anty.purkynka.Constants.ICON_LUNCHES_BURZA
-import cz.anty.purkynka.Constants.ICON_LUNCHES_BURZA_WATCHER
-import cz.anty.purkynka.Constants.ICON_LUNCHES_ORDER
-import cz.anty.purkynka.Constants.ICON_TIMETABLES
-import cz.anty.purkynka.Constants.ICON_WEB
-import cz.anty.purkynka.Constants.ICON_WIFI_LOGIN
+import cz.anty.purkynka.utils.Constants.ICON_ATTENDANCE
+import cz.anty.purkynka.utils.Constants.ICON_DONATE
+import cz.anty.purkynka.utils.Constants.ICON_FACEBOOK
+import cz.anty.purkynka.utils.Constants.ICON_GRADES
+import cz.anty.purkynka.utils.Constants.ICON_HOME_DASHBOARD
+import cz.anty.purkynka.utils.Constants.ICON_LUNCHES
+import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_BURZA
+import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_BURZA_WATCHER
+import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_ORDER
+import cz.anty.purkynka.utils.Constants.ICON_WEB
+import cz.anty.purkynka.utils.Constants.ICON_WIFI_LOGIN
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.account.ui.AccountEditActivity
@@ -59,16 +58,15 @@ import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.lunches.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.settings.SettingsActivity
-import cz.anty.purkynka.timetables.TimetablesListFragment
+import cz.anty.purkynka.utils.Constants
+import cz.anty.purkynka.utils.Utils
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
 import eu.codetopic.java.utils.JavaExtensions.to
-import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.broadcast.LocalBroadcast
-import io.michaelrocks.bimap.HashBiMap
 import org.jetbrains.anko.bundleOf
 
 
@@ -88,7 +86,6 @@ class MainActivity : NavigationActivity() {
                 R.id.nav_dashboard to DashboardFragment::class.java,
                 R.id.nav_grades to GradesFragment::class.java,
                 R.id.nav_wifi_login to WifiLoginFragment::class.java,
-                R.id.nav_timetables to TimetablesListFragment::class.java,
                 R.id.nav_attendance to AttendanceSearchFragment::class.java,
                 R.id.nav_lunches to LunchesDecideFragment::class.java,
                 R.id.nav_lunches_login to LunchesLoginFragment::class.java,
@@ -279,8 +276,6 @@ class MainActivity : NavigationActivity() {
                 getIconics(ICON_GRADES).actionBar()
         menu.findItem(R.id.nav_wifi_login).icon =
                 getIconics(ICON_WIFI_LOGIN).actionBar()
-        menu.findItem(R.id.nav_timetables).icon =
-                getIconics(ICON_TIMETABLES).actionBar()
         menu.findItem(R.id.nav_attendance).icon =
                 getIconics(ICON_ATTENDANCE).actionBar()
 

@@ -19,7 +19,7 @@
 package cz.anty.purkynka.images.load
 
 import android.support.annotation.WorkerThread
-import cz.anty.purkynka.Utils
+import cz.anty.purkynka.utils.Utils
 import kotlinx.io.IOException
 import org.json.JSONObject
 import org.jsoup.Jsoup

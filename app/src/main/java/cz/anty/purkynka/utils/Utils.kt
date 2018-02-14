@@ -1,6 +1,6 @@
 /*
  * app
- * Copyright (C)   2017  anty
+ * Copyright (C)   2018  anty
  *
  * This program is free  software: you can redistribute it and/or modify
  * it under the terms  of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka
+package cz.anty.purkynka.utils
 
 import android.accounts.Account
 import android.content.ContentResolver
@@ -24,6 +24,7 @@ import android.content.SyncStatusObserver
 import android.graphics.Color
 import android.os.Build
 import android.support.annotation.ColorInt
+import cz.anty.purkynka.BuildConfig
 import eu.codetopic.java.utils.JavaExtensions.ifNull
 import eu.codetopic.java.utils.JavaExtensions.ifTrue
 import eu.codetopic.java.utils.JavaExtensions.join

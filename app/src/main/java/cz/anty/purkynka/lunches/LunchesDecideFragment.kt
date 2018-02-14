@@ -18,13 +18,17 @@
 
 package cz.anty.purkynka.lunches
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import cz.anty.purkynka.utils.Constants.ICON_LUNCHES
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import kotlinx.android.extensions.CacheImplementation
@@ -32,6 +36,7 @@ import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.Keep
 import proguard.annotation.KeepName
 
@@ -41,7 +46,7 @@ import proguard.annotation.KeepName
 @Keep
 @KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class LunchesDecideFragment : NavigationFragment(), ThemeProvider {
+class LunchesDecideFragment : NavigationFragment(), ThemeProvider, IconProvider {
 
     companion object {
 
@@ -52,6 +57,8 @@ class LunchesDecideFragment : NavigationFragment(), ThemeProvider {
 
     override val themeId: Int
         get() = R.style.AppTheme_Lunches
+    override val icon: Bitmap
+        get() = ctx.getIconics(ICON_LUNCHES).sizeDp(48).toBitmap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

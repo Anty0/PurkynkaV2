@@ -26,10 +26,8 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
-import cz.anty.purkynka.Constants.ICON_GRADES
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
-import cz.anty.purkynka.Utils
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.grades.GradesFragment
@@ -41,7 +39,6 @@ import cz.anty.purkynka.grades.ui.GradeItem
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.alsoIfNull
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
-import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
 import eu.codetopic.utils.notifications.manager.data.NotifyId

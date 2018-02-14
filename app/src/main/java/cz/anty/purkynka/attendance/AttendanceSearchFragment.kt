@@ -18,28 +18,35 @@
 
 package cz.anty.purkynka.attendance
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import cz.anty.purkynka.utils.Constants.ICON_ATTENDANCE
 import cz.anty.purkynka.R
+import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import org.jetbrains.anko.support.v4.ctx
 
 /**
  * @author anty
  */
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class AttendanceSearchFragment : NavigationFragment(), TitleProvider, ThemeProvider {
+class AttendanceSearchFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconProvider {
 
     override val title: CharSequence
         get() = getText(R.string.title_fragment_attendance_search)
     override val themeId: Int
         get() = R.style.AppTheme_Attendance
+    override val icon: Bitmap
+        get() = ctx.getIconics(ICON_ATTENDANCE).sizeDp(48).toBitmap()
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {

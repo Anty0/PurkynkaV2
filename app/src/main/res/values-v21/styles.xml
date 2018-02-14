@@ -20,69 +20,96 @@
 <resources>
 
     <style name="AppTheme.Grades" parent="AppTheme.Grades.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryGrades</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkGrades</item>
+        <item name="android:colorAccent">@color/colorAccentGrades</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorGrades</item>-->
     </style>
 
     <style name="AppTheme.Attendance" parent="AppTheme.Attendance.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryAttendance</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkAttendance</item>
+        <item name="android:colorAccent">@color/colorAccentAttendance</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorAttendance</item>-->
     </style>
 
     <style name="AppTheme.Lunches" parent="AppTheme.Lunches.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryLunches</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
+        <item name="android:colorAccent">@color/colorAccentLunches</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorLunches</item>-->
     </style>
 
-    <style name="AppTheme.Timetables" parent="AppTheme.Timetables.Base">
-        <!--<item name="android:navigationBarColor">@color/navigationBarColorTimetables</item>-->
-    </style>
-
     <style name="AppTheme.WifiLogin" parent="AppTheme.WifiLogin.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryWifiLogin</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
+        <item name="android:colorAccent">@color/colorAccentWifiLogin</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorWifiLogin</item>-->
     </style>
 
 
     <style name="AppTheme.Dialog.Grades" parent="AppTheme.Dialog.Grades.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryGrades</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkGrades</item>
+        <item name="android:colorAccent">@color/colorAccentGrades</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorGrades</item>-->
     </style>
 
     <style name="AppTheme.Dialog.Attendance" parent="AppTheme.Dialog.Attendance.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryAttendance</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkAttendance</item>
+        <item name="android:colorAccent">@color/colorAccentAttendance</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorAttendance</item>-->
     </style>
 
     <style name="AppTheme.Dialog.Lunches" parent="AppTheme.Dialog.Lunches.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryLunches</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
+        <item name="android:colorAccent">@color/colorAccentLunches</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorLunches</item>-->
     </style>
 
-    <style name="AppTheme.Dialog.Timetables" parent="AppTheme.Dialog.Timetables.Base">
-        <!--<item name="android:navigationBarColor">@color/navigationBarColorTimetables</item>-->
-    </style>
-
     <style name="AppTheme.Dialog.WifiLogin" parent="AppTheme.Dialog.WifiLogin.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryWifiLogin</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
+        <item name="android:colorAccent">@color/colorAccentWifiLogin</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorWifiLogin</item>-->
     </style>
 
 
     <style name="AppTheme.NoActionBar.Grades" parent="AppTheme.NoActionBar.Grades.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryGrades</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkGrades</item>
+        <item name="android:colorAccent">@color/colorAccentGrades</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorGrades</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar.Attendance" parent="AppTheme.NoActionBar.Attendance.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryAttendance</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkAttendance</item>
+        <item name="android:colorAccent">@color/colorAccentAttendance</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorAttendance</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar.Lunches" parent="AppTheme.NoActionBar.Lunches.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryLunches</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
+        <item name="android:colorAccent">@color/colorAccentLunches</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorLunches</item>-->
     </style>
 
-    <style name="AppTheme.NoActionBar.Timetables" parent="AppTheme.NoActionBar.Timetables.Base">
-        <!--<item name="android:navigationBarColor">@color/navigationBarColorTimetables</item>-->
-    </style>
-
     <style name="AppTheme.NoActionBar.WifiLogin" parent="AppTheme.NoActionBar.WifiLogin.Base">
+        <item name="android:colorPrimary">@color/colorPrimaryWifiLogin</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
+        <item name="android:colorAccent">@color/colorAccentWifiLogin</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColorWifiLogin</item>-->
     </style>
 
 
     <style name="AppTheme" parent="AppTheme.Base">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColor</item>-->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
@@ -92,6 +119,9 @@
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme.NoActionBar.Base">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColor</item>-->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
@@ -101,6 +131,9 @@
     </style>
 
     <style name="AppTheme.Dialog" parent="AppTheme.Dialog.Base">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
         <!--<item name="android:navigationBarColor">@color/navigationBarColor</item>-->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>

@@ -27,12 +27,9 @@ import org.jsoup.select.Elements
 
 import java.io.IOException
 
-import cz.anty.purkynka.Constants
-import cz.anty.purkynka.Utils
-import cz.anty.purkynka.exceptions.LoginExpiredException
+import cz.anty.purkynka.utils.Constants
+import cz.anty.purkynka.utils.Utils
 import cz.anty.purkynka.grades.data.Semester
-
-import eu.codetopic.java.utils.JavaExtensions.alsoIfNot
 
 /**
  * @author anty

@@ -18,14 +18,10 @@
 
 package cz.anty.purkynka.grades.ui
 
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
-import android.content.Intent
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
-import cz.anty.purkynka.Utils.colorForValue
 import cz.anty.purkynka.grades.data.Subject
 import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.data.Subject.Companion.averageColor

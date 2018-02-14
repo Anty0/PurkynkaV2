@@ -21,10 +21,9 @@ package cz.anty.purkynka.grades.sync
 import android.accounts.Account
 import android.content.*
 import android.os.Bundle
-import cz.anty.purkynka.Constants
+import cz.anty.purkynka.utils.Constants
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
-import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
@@ -38,8 +37,6 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
 import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.bundle.BundleSerializer
-import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
-import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder.Companion.requestShowAll
 import kotlinx.serialization.list
 import org.jetbrains.anko.bundleOf
 import java.io.IOException

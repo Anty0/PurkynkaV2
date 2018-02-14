@@ -38,10 +38,6 @@
             android:title="@string/action_show_wifi_login" /> <!--Icon will be added after inflating-->
 
         <item
-            android:id="@+id/nav_timetables"
-            android:title="@string/action_show_timetables" /> <!--Icon will be added after inflating-->
-
-        <item
             android:id="@+id/nav_attendance"
             android:title="@string/action_show_attendance" /> <!--Icon will be added after inflating-->
 

@@ -20,6 +20,7 @@ package cz.anty.purkynka.grades
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.ContextThemeWrapper
@@ -31,10 +32,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.Constants.ICON_GRADES
+import cz.anty.purkynka.utils.Constants.ICON_GRADES
 
 import cz.anty.purkynka.R
-import cz.anty.purkynka.Utils
+import cz.anty.purkynka.utils.Utils
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.grades.data.Semester
@@ -62,6 +63,7 @@ import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.NotifyManager
+import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -86,6 +88,7 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
 
 /**
@@ -93,7 +96,7 @@ import proguard.annotation.KeepName
  */
 @KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
+class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconProvider {
 
     companion object {
 
@@ -104,6 +107,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider {
         get() = getText(R.string.title_fragment_grades)
     override val themeId: Int
         get() = R.style.AppTheme_Grades
+    override val icon: Bitmap
+        get() = ctx.getIconics(ICON_GRADES).sizeDp(48).toBitmap()
 
     private val accountHolder = ActiveAccountHolder(holder)
     private val layLogin = LayoutLogin(accountHolder, holder)

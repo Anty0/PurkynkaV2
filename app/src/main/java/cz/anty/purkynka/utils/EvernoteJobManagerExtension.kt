@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka
+package cz.anty.purkynka.utils
 
 import com.evernote.android.job.JobConfig
 import com.evernote.android.job.util.JobLogger

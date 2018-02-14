@@ -19,8 +19,7 @@
 package cz.anty.purkynka.grades.data
 
 import android.support.annotation.ColorInt
-import cz.anty.purkynka.Utils
-import cz.anty.purkynka.grades.load.GradesParser
+import cz.anty.purkynka.utils.Utils
 import eu.codetopic.java.utils.JavaExtensions.letIf
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat

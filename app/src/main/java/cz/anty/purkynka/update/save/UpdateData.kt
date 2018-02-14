@@ -21,11 +21,9 @@ package cz.anty.purkynka.update.save
 import android.content.Context
 import android.content.SharedPreferences
 import cz.anty.purkynka.BuildConfig
-import cz.anty.purkynka.PrefNames.*
+import cz.anty.purkynka.utils.PrefNames.*
 import eu.codetopic.utils.data.preferences.PreferencesData
-import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.preference.IntPreference
-import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject

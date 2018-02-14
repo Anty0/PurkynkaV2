@@ -22,13 +22,11 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.v4.content.ContextCompat;
 
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
-import com.mikepenz.aboutlibraries.util.Colors;
 
-import cz.anty.purkynka.Constants;
+import cz.anty.purkynka.utils.Constants;
 import cz.anty.purkynka.R;
 import cz.anty.purkynka.update.UpdateActivity;
 import eu.codetopic.utils.AndroidUtils;

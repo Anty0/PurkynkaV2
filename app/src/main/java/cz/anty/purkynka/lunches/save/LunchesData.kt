@@ -20,7 +20,7 @@ package cz.anty.purkynka.lunches.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.PrefNames.*
+import cz.anty.purkynka.utils.PrefNames.*
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import eu.codetopic.java.utils.JavaExtensions.kSerializer
 import eu.codetopic.utils.data.preferences.PreferencesData

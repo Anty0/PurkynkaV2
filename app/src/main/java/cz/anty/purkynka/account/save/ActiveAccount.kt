@@ -23,7 +23,7 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import cz.anty.purkynka.PrefNames
+import cz.anty.purkynka.utils.PrefNames
 import cz.anty.purkynka.account.Accounts
 import eu.codetopic.utils.AndroidExtensions.accountManager
 import eu.codetopic.utils.data.preferences.PreferencesData

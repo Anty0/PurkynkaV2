@@ -35,10 +35,6 @@
 
     </style>
 
-    <style name="AppTheme.Timetables" parent="AppTheme.Timetables.Base">
-
-    </style>
-
     <style name="AppTheme.WifiLogin" parent="AppTheme.WifiLogin.Base">
 
     </style>
@@ -64,13 +60,6 @@
         <item name="colorAccent">@color/colorAccentLunches</item>
     </style>
 
-    <style name="AppTheme.Timetables.Base" parent="AppTheme">
-        <item name="colorPrimary">@color/colorPrimaryTimetables</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkTimetables</item>
-        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkTimetables</item>
-        <item name="colorAccent">@color/colorAccentTimetables</item>
-    </style>
-
     <style name="AppTheme.WifiLogin.Base" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimaryWifiLogin</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
@@ -88,10 +77,6 @@
     </style>
 
     <style name="AppTheme.Dialog.Lunches" parent="AppTheme.Dialog.Lunches.Base">
-
-    </style>
-
-    <style name="AppTheme.Dialog.Timetables" parent="AppTheme.Dialog.Timetables.Base">
 
     </style>
 
@@ -120,13 +105,6 @@
         <item name="colorAccent">@color/colorAccentLunches</item>
     </style>
 
-    <style name="AppTheme.Dialog.Timetables.Base" parent="AppTheme.Dialog">
-        <item name="colorPrimary">@color/colorPrimaryTimetables</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkTimetables</item>
-        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkTimetables</item>
-        <item name="colorAccent">@color/colorAccentTimetables</item>
-    </style>
-
     <style name="AppTheme.Dialog.WifiLogin.Base" parent="AppTheme.Dialog">
         <item name="colorPrimary">@color/colorPrimaryWifiLogin</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkWifiLogin</item>
@@ -144,10 +122,6 @@
     </style>
 
     <style name="AppTheme.NoActionBar.Lunches" parent="AppTheme.NoActionBar.Lunches.Base">
-
-    </style>
-
-    <style name="AppTheme.NoActionBar.Timetables" parent="AppTheme.NoActionBar.Timetables.Base">
 
     </style>
 
@@ -174,13 +148,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDarkLunches</item>
         <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkLunches</item>
         <item name="colorAccent">@color/colorAccentLunches</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar.Timetables.Base" parent="AppTheme.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimaryTimetables</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkTimetables</item>
-        <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDarkTimetables</item>
-        <item name="colorAccent">@color/colorAccentTimetables</item>
     </style>
 
     <style name="AppTheme.NoActionBar.WifiLogin.Base" parent="AppTheme.NoActionBar">

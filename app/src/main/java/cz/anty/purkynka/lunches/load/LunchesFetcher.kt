@@ -19,10 +19,8 @@
 package cz.anty.purkynka.lunches.load
 
 import android.support.annotation.WorkerThread
-import cz.anty.purkynka.Utils
-import cz.anty.purkynka.exceptions.LoginExpiredException
+import cz.anty.purkynka.utils.Utils
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.JavaExtensions.alsoIfNot
 import eu.codetopic.java.utils.JavaExtensions.ifTrue
 import org.jsoup.Jsoup
 import kotlinx.io.IOException

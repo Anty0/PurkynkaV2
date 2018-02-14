@@ -26,10 +26,8 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
-import cz.anty.purkynka.Constants.ICON_UPDATE
 import cz.anty.purkynka.R
 import eu.codetopic.java.utils.JavaExtensions.letIf
-import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import eu.codetopic.utils.notifications.manager.util.NotifyChannel

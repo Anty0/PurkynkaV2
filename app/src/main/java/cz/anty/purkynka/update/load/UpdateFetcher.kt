@@ -21,7 +21,7 @@ package cz.anty.purkynka.update.load
 import android.content.Context
 import android.support.annotation.WorkerThread
 import cz.anty.purkynka.R
-import cz.anty.purkynka.Utils
+import cz.anty.purkynka.utils.Utils
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.JavaExtensions.letIf
 import eu.codetopic.java.utils.debug.DebugMode

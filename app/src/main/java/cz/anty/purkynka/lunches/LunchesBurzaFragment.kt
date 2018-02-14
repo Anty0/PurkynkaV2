@@ -19,11 +19,12 @@
 package cz.anty.purkynka.lunches
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.Constants.ICON_LUNCHES_BURZA
+import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_BURZA
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.exceptions.WrongLoginDataException
@@ -40,6 +41,7 @@ import eu.codetopic.utils.AndroidExtensions
 import eu.codetopic.utils.AndroidExtensions.edit
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -54,6 +56,7 @@ import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
 import java.io.IOException
 
@@ -62,7 +65,7 @@ import java.io.IOException
  */
 @KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider {
+class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconProvider {
 
     companion object {
 
@@ -73,6 +76,8 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider 
         get() = getText(R.string.title_fragment_lunches_burza)
     override val themeId: Int
         get() = R.style.AppTheme_Lunches
+    override val icon: Bitmap
+        get() = ctx.getIconics(ICON_LUNCHES_BURZA).sizeDp(48).toBitmap()
 
     private val accountHolder = ActiveAccountHolder(holder)
 

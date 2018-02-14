@@ -19,12 +19,14 @@
 package cz.anty.purkynka.wifilogin
 
 import android.accounts.Account
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import cz.anty.purkynka.utils.Constants.ICON_WIFI_LOGIN
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.save.ActiveAccount
@@ -34,8 +36,10 @@ import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.broadcast
+import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -50,17 +54,20 @@ import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.ctx
 
 /**
  * @author anty
  */
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider {
+class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconProvider {
 
     override val title: CharSequence
         get() = getText(R.string.title_fragment_wifi_login)
     override val themeId: Int
         get() = R.style.AppTheme_WifiLogin
+    override val icon: Bitmap
+        get() = ctx.getIconics(ICON_WIFI_LOGIN).sizeDp(48).toBitmap()
 
 
     private var account: Account? = null

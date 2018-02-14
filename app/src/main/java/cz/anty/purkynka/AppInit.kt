@@ -42,6 +42,7 @@ import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.sync.UpdateCheckJob
 import cz.anty.purkynka.update.sync.UpdateCheckJobCreator
 import cz.anty.purkynka.update.save.UpdateData
+import cz.anty.purkynka.utils.EvernoteJobManagerExtension
 import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
@@ -179,7 +180,6 @@ class AppInit : MultiDexApplication() {
                 ContextCompat.getColor(this, R.color.colorPrimaryGrades),
                 ContextCompat.getColor(this, R.color.colorPrimaryAttendance),
                 ContextCompat.getColor(this, R.color.colorPrimaryLunches),
-                ContextCompat.getColor(this, R.color.colorPrimaryTimetables),
                 ContextCompat.getColor(this, R.color.colorPrimaryWifiLogin)
         )
     }

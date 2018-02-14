@@ -1,6 +1,6 @@
 /*
  * app
- * Copyright (C)   2017  anty
+ * Copyright (C)   2018  anty
  *
  * This program is free  software: you can redistribute it and/or modify
  * it under the terms  of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka
+package cz.anty.purkynka.utils
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
@@ -30,7 +30,6 @@ object Constants {
     val ICON_GRADES = GoogleMaterial.Icon.gmd_book
     val ICON_WIFI_LOGIN = GoogleMaterial.Icon.gmd_wifi_lock
     val ICON_LUNCHES = GoogleMaterial.Icon.gmd_restaurant
-    val ICON_TIMETABLES = GoogleMaterial.Icon.gmd_access_time
     val ICON_ATTENDANCE = GoogleMaterial.Icon.gmd_people
 
     val ICON_LUNCHES_ORDER = GoogleMaterial.Icon.gmd_shopping_basket

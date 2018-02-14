@@ -20,7 +20,7 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.PrefNames.FILE_NAME_GRADES_DATA
+import cz.anty.purkynka.utils.PrefNames.FILE_NAME_GRADES_DATA
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPreferences

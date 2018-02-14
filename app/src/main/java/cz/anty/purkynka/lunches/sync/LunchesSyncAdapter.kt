@@ -21,7 +21,7 @@ package cz.anty.purkynka.lunches.sync
 import android.accounts.Account
 import android.content.*
 import android.os.Bundle
-import cz.anty.purkynka.Constants
+import cz.anty.purkynka.utils.Constants
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
 import cz.anty.purkynka.exceptions.WrongLoginDataException
@@ -35,7 +35,6 @@ import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.broadcast.BroadcastsConnector
 import java.io.IOException
-import java.text.ParseException
 
 /**
  * @author anty

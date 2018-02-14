@@ -18,6 +18,7 @@
 
 package cz.anty.purkynka.lunches
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.text.SpannableStringBuilder
@@ -27,6 +28,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.DatePicker
+import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_BURZA_WATCHER
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.lunches.data.LunchOption
@@ -40,9 +42,11 @@ import eu.codetopic.java.utils.JavaExtensions.letIf
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.AndroidExtensions.broadcast
+import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.AndroidExtensions.intentFilter
 import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
@@ -67,7 +71,7 @@ import kotlin.math.max
  */
 @KeepName
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemeProvider {
+class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconProvider {
 
     companion object {
 
@@ -78,6 +82,8 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
         get() = getText(R.string.title_fragment_lunches_burza_watcher)
     override val themeId: Int
         get() = R.style.AppTheme_Lunches
+    override val icon: Bitmap
+        get() = ctx.getIconics(ICON_LUNCHES_BURZA_WATCHER).sizeDp(48).toBitmap()
 
     private val accountHolder = ActiveAccountHolder(holder)
 

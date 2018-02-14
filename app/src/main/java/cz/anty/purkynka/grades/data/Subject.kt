@@ -18,17 +18,9 @@
 
 package cz.anty.purkynka.grades.data
 
-import android.content.Context
 import android.support.annotation.ColorInt
-import android.widget.TextView
-import android.widget.Toast
-import cz.anty.purkynka.R
-import cz.anty.purkynka.Utils
-import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
-import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
+import cz.anty.purkynka.utils.Utils
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 /**
  * @author anty
