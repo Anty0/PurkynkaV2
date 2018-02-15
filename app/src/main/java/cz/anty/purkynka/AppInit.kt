@@ -200,8 +200,11 @@ class AppInit : MultiDexApplication() {
         // Initialize data provider of dashboard framework
         DashboardData.initialize(this)
 
+        // Init Evernote's JobManager used here for app updates checking
+        initJobManager()
+
         // Request init of Evernote's JobManager used here for app updates checking
-        requestInitJobManager()
+        //requestInitJobManager()
 
         // Initialize sync adapters
         GradesSyncAdapter.init(this)
@@ -222,9 +225,6 @@ class AppInit : MultiDexApplication() {
         WifiLoginData.initialize(this)
         LunchesData.initialize(this)
         LunchesLoginData.initialize(this)
-
-        // Init Evernote's JobManager used here for app updates checking
-        initJobManager()
     }
 
     private fun initProcessNotifyManager() {
@@ -263,9 +263,9 @@ class AppInit : MultiDexApplication() {
         UpdateCheckJob.schedule()
     }
 
-    private fun requestInitJobManager() {
+    /*private fun requestInitJobManager() {
         UpdateCheckJob.requestSchedule(this)
-    }
+    }*/
 
     private fun initAccounts() {
         Accounts.initialize(

@@ -95,64 +95,13 @@ class UpdateCheckJob : Job() {
 
             UpdateData.instance.jobScheduleVersion = BuildConfig.VERSION_CODE
         }
-
-        fun fetchUpdates(): Result {
-            Log.w(LOG_TAG, "fetchUpdates(process=${UtilsBase.Process.name})")
-
-            val code = UpdateFetcher.fetchVersionCode() ?: return Result.FAILURE
-            val name = UpdateFetcher.fetchVersionName() ?: return Result.FAILURE
-
-            UpdateData.instance.setLatestVersion(code, name)
-
-            return Result.SUCCESS
-        }
-
-        fun requestFetchUpdates(context: Context) =
-                context.sendBroadcast(UpdateFetchReceiver.getIntent(context))
-
-        suspend fun requestSuspendFetchUpdates(context: Context): Result =
-                context.sendSuspendOrderedBroadcast(
-                        intent = UpdateFetchReceiver.getIntent(context),
-                        initialResult = OrderedBroadcastResult(REQUEST_RESULT_UNKNOWN)
-                ).let {
-                    when (it.code) {
-                        REQUEST_RESULT_OK ->
-                            it.extras?.getSerializable(REQUEST_EXTRA_RESULT) as? Result
-                                    ?: throw RuntimeException("Failed to extract result of UpdateFetchReceiver")
-                        REQUEST_RESULT_FAIL ->
-                            throw it.extras?.getSerializable(REQUEST_EXTRA_THROWABLE) as? Throwable
-                                    ?: RuntimeException("Unknown fail result received from UpdateFetchReceiver")
-                        REQUEST_RESULT_UNKNOWN ->
-                            throw RuntimeException("Failed to process broadcast by UpdateFetchReceiver")
-                        else -> throw RuntimeException("Unknown resultCode received from UpdateFetchReceiver: ${it.code}")
-                    }
-                }
     }
 
     override fun onRunJob(params: Params): Result {
-        Log.w(LOG_TAG, "onRunJob(params=$params) -> Checking for update")
-        // TODO: check if is being executed
+        Log.w(LOG_TAG, "onRunJob(params=$params) -> Starting UpdateCheckService")
 
-        return fetchUpdates().alsoIf({
-            it == Result.SUCCESS && UpdateData.instance.latestVersionCode != BuildConfig.VERSION_CODE
-        }) {
-            Log.w(LOG_TAG, "onRunJob(params=$params) -> Check for update -> Found update ->" +
-                    " (${BuildConfig.VERSION_CODE} -> ${UpdateData.instance.latestVersionCode})")
+        UpdateCheckService.start(context)
 
-            val latestVersion = UpdateData.instance.latestVersion
-
-            NotificationBuilder.create(
-                    groupId = UpdateNotifyGroup.ID,
-                    channelId = UpdateNotifyChannel.ID,
-                    init = {
-                        persistent = true
-                        refreshable = true
-                        data = UpdateNotifyChannel.dataForVersion(
-                                code = latestVersion.first,
-                                name = latestVersion.second
-                        )
-                    }
-            ).requestShow(context)
-        }
+        return Job.Result.SUCCESS
     }
 }

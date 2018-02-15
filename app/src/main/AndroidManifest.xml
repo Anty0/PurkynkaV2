@@ -111,8 +111,7 @@
         <receiver
             android:name=".update.receiver.UpdateCheckJobScheduleReceiver"
             android:enabled="true"
-            android:exported="false"
-            android:process=":syncs" />
+            android:exported="false" />
         <receiver
             android:name=".update.receiver.UpdateFetchReceiver"
             android:enabled="true"
@@ -167,6 +166,12 @@
             <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+        <service
+            android:name=".update.sync.UpdateCheckService"
+            android:label=""
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs"/>
         <service
             android:name=".grades.sync.GradesSyncService"
             android:label="@string/label_service_sync_grades"
@@ -257,39 +262,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimary" />
-
-
-
-        <service
-            android:name="com.evernote.android.job.v21.PlatformJobService"
-            android:process=":syncs"
-            tools:node="merge" />
-        <service
-            android:name="com.evernote.android.job.v14.PlatformAlarmService"
-            android:process=":syncs"
-            tools:node="merge" />
-        <service
-            android:name="com.evernote.android.job.v14.PlatformAlarmServiceExact"
-            android:process=":syncs"
-            tools:node="merge" />
-
-        <receiver
-            android:name="com.evernote.android.job.v14.PlatformAlarmReceiver"
-            android:process=":syncs"
-            tools:node="merge" />
-        <receiver
-            android:name="com.evernote.android.job.JobBootReceiver"
-            android:process=":syncs"
-            tools:node="merge" />
-
-        <service
-            android:name="com.evernote.android.job.gcm.PlatformGcmService"
-            android:process=":syncs"
-            tools:node="merge" />
-        <service
-            android:name="com.evernote.android.job.JobRescheduleService"
-            android:process=":syncs"
-            tools:node="merge" />
     </application>
 
 </manifest>

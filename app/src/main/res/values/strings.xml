@@ -205,14 +205,16 @@
     <string name="updates_but_install_update">Install update</string>
     <string name="updates_but_show_changelog">Show changelog</string>
 
+    <string name="empty_view_text_dashboard">No items on dashboard</string>
+    <string name="empty_view_text_small_dashboard">All important information will appear here.</string>
     <string name="empty_view_text_no_grades">No grades</string>
     <string name="empty_view_text_small_no_grades">All your grades from selected semester will appear here.</string>
     <string name="empty_view_text_no_lunches_to_order">No lunches to order</string>
     <string name="empty_view_text_small_no_lunches_to_order">All lunches to order will appear here.</string>
     <string name="empty_view_text_no_burza_lunches">No lunches in burza</string>
     <string name="empty_view_text_small_no_burza_lunches">All lunches in burza will appear here.</string>
-    <string name="empty_view_text_dashboard">No items on dashboard</string>
-    <string name="empty_view_text_small_dashboard">All important information will appear here.</string>
+    <string name="empty_view_text_attendance_people">No people found</string>
+    <string name="empty_view_text_small_attendance_people">People found by search in attendance will appear here.</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
     <string name="toast_wifi_logging_start">Sending login request to wifi <i>%1$s</i></string>

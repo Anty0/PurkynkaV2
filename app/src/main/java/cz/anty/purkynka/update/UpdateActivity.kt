@@ -31,6 +31,7 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.update.sync.UpdateCheckJob
+import cz.anty.purkynka.update.sync.UpdateCheckService
 import eu.codetopic.java.utils.JavaExtensions.alsoIf
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.broadcast
@@ -177,7 +178,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
     private suspend fun fetchUpdate(): Job.Result =
             try {
-                UpdateCheckJob.requestSuspendFetchUpdates(this)
+                UpdateCheckService.requestSuspendFetchUpdates(this)
             } catch (e: Exception) {
                 Log.w(LOG_TAG, "fetchUpdate", e)
                 Job.Result.FAILURE
