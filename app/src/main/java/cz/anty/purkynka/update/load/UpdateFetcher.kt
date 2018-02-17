@@ -49,6 +49,7 @@ object UpdateFetcher { // TODO: create new/better api
     @WorkerThread
     fun fetchVersionCode(): Int? = try {
         Jsoup.connect(URL_VERSION_CODE)
+                .ignoreContentType(true)
                 .userAgent(Utils.userAgent)
                 .followRedirects(false)
                 .execute().body().trim().toInt()
@@ -61,6 +62,7 @@ object UpdateFetcher { // TODO: create new/better api
     @WorkerThread
     fun fetchVersionName(): String? = try {
         Jsoup.connect(URL_VERSION_NAME)
+                .ignoreContentType(true)
                 .userAgent(Utils.userAgent)
                 .followRedirects(false)
                 .execute().body()

@@ -93,7 +93,8 @@ object LunchesFetcher {
                     )
                     .followRedirects(false)
                     .method(Connection.Method.POST)
-                    .execute().cookies()
+                    .execute()
+                    .cookies()
 
     @WorkerThread
     @Throws(IOException::class)
@@ -106,14 +107,13 @@ object LunchesFetcher {
                             PARAM_PRINTER, PARAM_PRINTER_VAL
                     )
                     .followRedirects(false)
-                    .method(Connection.Method.GET)
                     .cookies(loginCookies)
                     .get()
 
     @WorkerThread
     @Throws(IOException::class)
     fun isLoggedIn(loginCookies: Map<String, String>): Boolean =
-            isLoggedIn(getPage(URL_MAIN, loginCookies))
+            isLoggedIn(getMainPage(loginCookies))
 
     fun isLoggedIn(page: Document): Boolean =
             page.select("div.login_menu").isEmpty() &&
@@ -157,13 +157,11 @@ object LunchesFetcher {
                             PARAM_KEYBOARD, PARAM_KEYBOARD_VAL
                     )
                     .followRedirects(false)
-                    .method(Connection.Method.GET)
                     .cookies(loginCookies)
                     .get()
                     .select("div#mainContext")
                     .select("table")
-                    .select("td")
-                    .get(0)
+                    .select("td")[0]
 
     @WorkerThread
     @Throws(IOException::class)
@@ -176,7 +174,6 @@ object LunchesFetcher {
                             PARAM_PRINTER, PARAM_PRINTER_VAL
                     )
                     .followRedirects(false)
-                    .method(Connection.Method.GET)
                     .cookies(loginCookies)
                     .get()
                     .select("div#mainContext")
@@ -195,7 +192,6 @@ object LunchesFetcher {
                             PARAM_PRINTER, PARAM_PRINTER_VAL
                     )
                     .followRedirects(false)
-                    .method(Connection.Method.GET)
                     .cookies(loginCookies)
                     .get()
                     .select("div#mainContext")
@@ -213,17 +209,6 @@ object LunchesFetcher {
                             PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,
                             PARAM_PRINTER, PARAM_PRINTER_VAL
                     )
-                    .followRedirects(false)
-                    .method(Connection.Method.GET)
-                    .cookies(loginCookies)
-                    .get()
-
-    @WorkerThread
-    @Throws(IOException::class)
-    @Deprecated("")
-    private fun getPage(url: String, loginCookies: Map<String, String>): Document =
-            Jsoup.connect(url)
-                    .userAgent(Utils.userAgent)
                     .followRedirects(false)
                     .cookies(loginCookies)
                     .get()

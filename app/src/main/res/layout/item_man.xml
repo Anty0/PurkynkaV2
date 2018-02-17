@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ app
+  ~ Copyright (C)   2018  anty
+  ~
+  ~ This program is free  software: you can redistribute it and/or modify
+  ~ it under the terms  of the GNU General Public License as published by
+  ~ the Free Software  Foundation, either version 3 of the License, or
+  ~ (at your option) any  later version.
+  ~
+  ~ This program is distributed in the hope that it  will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied  warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You  should have received a copy of the GNU General Public License
+  ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".attendance.ui.ManItem"
+    android:id="@+id/boxClickTarget"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+    <!--android:background="?android:attr/selectableItemBackground"-->
+
+    <TextView
+        android:id="@+id/txtClassId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:textSize="28sp"
+        android:typeface="monospace" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Is in school"
+            android:textSize="13sp" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/imgIsInSchoolYes"
+            android:layout_width="32sp"
+            android:layout_height="32sp"
+            android:padding="4dp"
+            app:iiv_color="@color/materialGreen"
+            app:iiv_icon="gmd-check"
+            app:iiv_size="24sp"
+            android:visibility="gone" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/imgIsInSchoolNo"
+            android:layout_width="32sp"
+            android:layout_height="32sp"
+            android:padding="4dp"
+            app:iiv_color="@color/materialLightRed"
+            app:iiv_icon="gmd-close"
+            app:iiv_size="24sp"
+            android:visibility="gone" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/imgIsInSchoolUnknown"
+            android:layout_width="32sp"
+            android:layout_height="32sp"
+            android:padding="4dp"
+            app:iiv_color="@color/materialBlue"
+            app:iiv_icon="gmd-not-interested"
+            app:iiv_size="24sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="start"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtLastEnterDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+</LinearLayout>

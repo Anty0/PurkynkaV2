@@ -114,6 +114,7 @@
     <string name="menu_item_text_semester_second">Second</string>
     <string name="menu_item_text_refresh">Refresh</string>
     <string name="menu_item_text_log_out">Logout</string>
+    <string name="menu_item_text_search">Search</string>
 
     <string name="insert_new_account_name">New account name</string>
     <string name="insert_account_name">Account name</string>

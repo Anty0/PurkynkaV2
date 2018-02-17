@@ -19,7 +19,12 @@
 package cz.anty.purkynka.attendance.load
 
 import android.support.annotation.WorkerThread
+import cz.anty.purkynka.utils.Utils
 import kotlinx.io.IOException
+import kotlinx.serialization.internal.StringSerializer
+import kotlinx.serialization.json.JSON
+import kotlinx.serialization.map
+import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import java.net.URLEncoder
@@ -30,27 +35,48 @@ import java.net.URLEncoder
  */
 object AttendanceFetcher {
 
-    private val URL_DEFAULT = "http://www2.sspbrno.cz/main.asp"
+    private const val URL_DEFAULT = "http://www2.sspbrno.cz/main.asp"
 
-    private val PARAM_TYPE = "DRUH"
-    private val PARAM_TYPE_VAL = "7"
-    private val PARAM_SUBMIT = "ODESLI"
-    private val PARAM_SUBMIT_VAL = "Vyhledat"
-    private val PARAM_QUERY = "KL_SLOVO"
-    private val PARAM_PAGE = "OD"
+    private const val PARAM_TYPE = "DRUH"
+    private const val PARAM_TYPE_VAL = "7"
+    private const val PARAM_SUBMIT = "ODESLI"
+    private const val PARAM_SUBMIT_VAL = "Vyhledat"
+    private const val PARAM_QUERY = "KL_SLOVO"
+    private const val PARAM_PAGE = "OD"
 
     @WorkerThread
     @Throws(IOException::class)
     fun getMansElements(search: String, page: Int): Elements {
-        val urlStr = URL_DEFAULT +
+        /*val urlStr = URL_DEFAULT +
                 "?" + PARAM_QUERY + "=" + URLEncoder.encode(search, "Windows-1250") +
                 "&" + PARAM_SUBMIT + "=" + PARAM_SUBMIT_VAL +
                 "&" + PARAM_TYPE + "=" + PARAM_TYPE_VAL +
-                "&" + PARAM_PAGE + "=" + page.toString()
+                "&" + PARAM_PAGE + "=" + page.toString()*/
 
         return Jsoup
-                .connect(urlStr)
-                .get()
+                .connect(URL_DEFAULT)
+                .data(
+                        PARAM_QUERY, search,
+                        PARAM_SUBMIT, PARAM_SUBMIT_VAL,
+                        PARAM_TYPE, PARAM_TYPE_VAL,
+                        PARAM_PAGE, page.toString()
+                )
+                .postDataCharset("Windows-1250")
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                /*.requestBody(
+                        JSON.stringify(
+                                (StringSerializer to StringSerializer).map,
+                                mapOf(
+                                        PARAM_QUERY to search,
+                                        PARAM_SUBMIT to PARAM_SUBMIT_VAL,
+                                        PARAM_TYPE to PARAM_TYPE_VAL,
+                                        PARAM_PAGE to page.toString()
+                                )
+                        )
+                )
+                .header("Content-Type", "application/json")*/
+                .userAgent(Utils.userAgent)
+                .post()
                 .select("table[3]")
                 .select("tr[bgcolor=#FFFFFF]")
     }

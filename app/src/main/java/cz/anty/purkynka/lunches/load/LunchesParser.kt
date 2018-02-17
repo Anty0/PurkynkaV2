@@ -38,8 +38,18 @@ object LunchesParser {
 
     private const val LOG_TAG = "LunchesParser"
 
+    private val REGEX_LUNCH_NUMBER = Regex("^Oběd (\\d+?)$")
+    private val REGEX_PIECES = Regex("^(\\d+?) ks$")
+    private val REGEX_CREDIT = Regex("^([\\d,.]+?) Kč$")
 
-    internal val FORMAT_DATE_SHOW =
+    private const val COL_BURZA_LUNCH_NUMBER = 0
+    private const val COL_BURZA_DATE = 1
+    private const val COL_BURZA_NAME = 2
+    private const val COL_BURZA_CANTEEN = 3
+    private const val COL_BURZA_PIECES = 4
+    private const val COL_BURZA_ORDER_URL = 5
+
+            internal val FORMAT_DATE_SHOW =
             SimpleDateFormat("dd. MM. yyyy", Locale.getDefault())
     internal val FORMAT_DATE_SHOW_SHORT =
             SimpleDateFormat("d. M.", Locale.getDefault())
@@ -48,21 +58,18 @@ object LunchesParser {
     internal val FORMAT_DATE_BURZA_LUNCH =
             SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH)
 
-    private val REGEX_LUNCH_NUMBER = Regex("^Oběd (\\d+?)$")
-
-    private val REGEX_CREDIT = Regex("^([\\d,.]+?) Kč$")
-
     private fun parseBurzaLunch(lunchElement: Element): LunchBurza =
             lunchElement.children().let { lunchElements ->
                 LunchBurza(
-                        lunchNumber = lunchElements[0].text()
+                        lunchNumber = lunchElements[COL_BURZA_LUNCH_NUMBER].text()
                                 .let { REGEX_LUNCH_NUMBER.find(it) }
                                 ?.groupValues?.getOrNull(1)?.toIntOrNull()
                                 ?: throw IllegalArgumentException(
                                         "Failed to parse lunchNumber from lunchElement: $lunchElement"
                                 ),
                         date = try {
-                            lunchElements[1].text().split("\n").firstOrNull()?.trim()
+                            lunchElements[COL_BURZA_DATE].text()
+                                    .split("\n").firstOrNull()?.trim()
                                     ?.let { FORMAT_DATE_BURZA_LUNCH.parse(it).time }
                         } catch (e: ParseException) {
                             throw IllegalArgumentException(
@@ -71,13 +78,16 @@ object LunchesParser {
                         } ?: throw IllegalArgumentException(
                                 "Failed to parse date from lunchElement: $lunchElement"
                         ),
-                        name = lunchElements[2].text(),
-                        canteen = lunchElements[3].text(),
-                        pieces = lunchElements[4].text().toIntOrNull()
+                        name = lunchElements[COL_BURZA_NAME].text(),
+                        canteen = lunchElements[COL_BURZA_CANTEEN].text(),
+                        pieces = lunchElements[COL_BURZA_PIECES].text()
+                                .let { REGEX_PIECES.find(it) }
+                                ?.groupValues?.getOrNull(1)?.toIntOrNull()
                                 ?: throw IllegalArgumentException(
                                         "Failed to parse pieces from lunchElement: $lunchElement"
                                 ),
-                        orderUrl = lunchElements[5].child(0).attr("onClick")
+                        orderUrl = lunchElements[COL_BURZA_ORDER_URL]
+                                .child(0).attr("onClick")
                                 .substringOrNull("document.location='", "';")
                                 ?: throw IllegalArgumentException(
                                         "Failed to parse orderUrl from lunchElement: $lunchElement"

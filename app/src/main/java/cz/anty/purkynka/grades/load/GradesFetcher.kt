@@ -70,7 +70,8 @@ object GradesFetcher {
                 .followRedirects(false)
                 .timeout(Constants.CONNECTION_TIMEOUT_SAS)
                 .method(Connection.Method.POST)
-                .execute().cookies()
+                .execute()
+                .cookies()
     }
 
     @WorkerThread
@@ -80,8 +81,8 @@ object GradesFetcher {
                     .userAgent(Utils.userAgent)
                     .followRedirects(false)
                     .timeout(Constants.CONNECTION_TIMEOUT_SAS)
-                    .method(Connection.Method.GET)
-                    .cookies(loginCookies).get()
+                    .cookies(loginCookies)
+                    .get()
 
     @WorkerThread
     @Throws(IOException::class)
@@ -113,6 +114,6 @@ object GradesFetcher {
                     )
                     .followRedirects(false)
                     .timeout(Constants.CONNECTION_TIMEOUT_SAS)
-                    .method(Connection.Method.GET)
-                    .cookies(loginCookies).get()
+                    .cookies(loginCookies)
+                    .get()
 }
