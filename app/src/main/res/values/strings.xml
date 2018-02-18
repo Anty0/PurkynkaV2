@@ -82,6 +82,7 @@
     <string name="label_provider_update">Updates</string>
     <string name="label_provider_grades">Grades</string>
     <string name="label_provider_grades_login">Grades credentials</string>
+    <string name="label_provider_grades_preferences">Grades preferences</string>
     <string name="label_provider_wifi">Wifi auto login</string>
     <string name="label_provider_wifi_login">Wifi auto login credentials</string>
     <string name="label_provider_lunches">Lunches</string>
@@ -142,6 +143,7 @@
     <string name="item_title_subject_symbol">Subject symbol</string>
     <string name="item_title_lunch_options">Lunch options</string>
     <string name="item_title_lunch_burza">Burza</string>
+    <string name="item_subject_bad_average_info_subtitle">"You've got bad diameter - %1$s"</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 

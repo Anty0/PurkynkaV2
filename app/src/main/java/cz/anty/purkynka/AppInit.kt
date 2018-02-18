@@ -27,6 +27,7 @@ import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
+import cz.anty.purkynka.grades.save.GradesPreferences
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherResultChannel
@@ -192,6 +193,7 @@ class AppInit : MultiDexApplication() {
         GradesUiData.initialize(this)
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
+        GradesPreferences.initialize(this)
         WifiData.initialize(this)
         WifiLoginData.initialize(this)
         LunchesData.initialize(this)

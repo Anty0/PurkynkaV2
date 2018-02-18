@@ -49,6 +49,10 @@ public final class PrefNames {
     /// GradesUiData
     public static final String FILE_NAME_GRADES_UI_DATA = "GradesUI";
     public static final String LAST_SORT_GRADES = "SORT_GRADES";
+    /// GradesPreferences
+    public static final String FILE_NAME_GRADES_PREFERENCES = "GradesPreferences";
+    public static final String GRADES_SUBJECT_BAD_AVERAGE = "GRADES_SUBJECT_BAD_AVERAGE";
+    //public static final String DASHBOARD_DISMISSED_SUBJECTS = "DASHBOARD_DISMISSED_SUBJECTS";
     // WifiLogin
     /// WifiData
     public static final String FILE_NAME_WIFI_DATA = "WifiData";

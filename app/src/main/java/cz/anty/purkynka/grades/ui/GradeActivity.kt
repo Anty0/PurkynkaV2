@@ -36,6 +36,7 @@ import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.activity_grade.*
+import org.jetbrains.anko.ctx
 
 /**
  * @author anty
@@ -82,27 +83,15 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
             boxSubjectSymbol.visibility = View.VISIBLE
             txtSubjectSymbol.text = gradeItem.base.subjectShort
         } else boxSubjectSymbol.visibility = View.GONE
+    }
 
-        if (savedInstanceState == null) {
-            val gradeInfoAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
-            val showGradeInfo = {
-                boxGradeInfo.apply {
+    override fun onResume() {
+        super.onResume()
+
+        boxGradeInfo.takeIf { it.visibility == View.GONE }
+                ?.apply {
                     visibility = View.VISIBLE
-                    startAnimation(gradeInfoAnimation)
+                    startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.slide_down))
                 }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.sharedElementEnterTransition?.apply {
-                    addListener(object : SimpleTransitionListener() {
-                        override fun onTransitionEnd(transition: Transition) {
-                            run(showGradeInfo)
-                        }
-                    })
-                } ?: run(showGradeInfo)
-            } else run(showGradeInfo)
-        } else {
-            boxGradeInfo.visibility = View.VISIBLE
-        }
     }
 }

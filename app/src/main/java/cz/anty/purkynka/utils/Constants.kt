@@ -54,4 +54,8 @@ object Constants {
 
     const val SYNC_FREQUENCY_GRADES: Long = 60 * 60 * 1 // 1 hour in seconds
     const val SYNC_FREQUENCY_LUNCHES: Long = 60 * 60 * 3 // 3 hours in seconds
+
+    //---------------------------------------------------------------------
+
+    const val DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD = 10000 // + <100; 500> = (average * 100).toInt()
 }

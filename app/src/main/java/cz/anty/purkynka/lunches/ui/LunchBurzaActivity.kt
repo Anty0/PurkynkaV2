@@ -45,6 +45,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.ctx
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.io.IOException
@@ -154,27 +155,15 @@ class LunchBurzaActivity : LoadingModularActivity(ToolbarModule(), TransitionBac
             if (success) self().finish()
             holder.hideLoading()
         }
+    }
 
-        if (savedInstanceState == null) {
-            val lunchBurzaInfoAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
-            val showLunchBurzaInfo = {
-                boxLunchBurzaInfo.apply {
+    override fun onResume() {
+        super.onResume()
+
+        boxLunchBurzaInfo.takeIf { it.visibility == View.GONE }
+                ?.apply {
                     visibility = View.VISIBLE
-                    startAnimation(lunchBurzaInfoAnimation)
+                    startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.slide_down))
                 }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.sharedElementEnterTransition?.apply {
-                    addListener(object : SimpleTransitionListener() {
-                        override fun onTransitionEnd(transition: Transition) {
-                            run(showLunchBurzaInfo)
-                        }
-                    })
-                } ?: run(showLunchBurzaInfo)
-            } else run(showLunchBurzaInfo)
-        } else {
-            boxLunchBurzaInfo.visibility = View.VISIBLE
-        }
     }
 }

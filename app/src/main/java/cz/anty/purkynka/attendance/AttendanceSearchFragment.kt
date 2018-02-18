@@ -33,6 +33,7 @@ import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import eu.codetopic.utils.ui.container.recycler.Recycler
+import eu.codetopic.utils.ui.view.holder.loading.SoftKeyboardSupportLoadingVH
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.android.UI
@@ -46,7 +47,9 @@ import org.jetbrains.anko.support.v4.ctx
  * @author anty
  */
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class AttendanceSearchFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconProvider {
+class AttendanceSearchFragment : NavigationFragment(SoftKeyboardSupportLoadingVH::class.java),
+        TitleProvider, ThemeProvider, IconProvider {
+
     // TODO: add search indexing support
 
     companion object {

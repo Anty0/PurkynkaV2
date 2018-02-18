@@ -18,24 +18,21 @@
 
 package cz.anty.purkynka.dashboard
 
-import android.support.v7.widget.helper.ItemTouchHelper
+import android.content.Context
+import cz.anty.purkynka.account.ActiveAccountHolder
+import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import kotlinx.coroutines.experimental.Job
 
 /**
  * @author anty
  */
-abstract class SwipeableDashboardItem : DashboardItem() {
+abstract class DashboardManager(protected val context: Context,
+                                protected val accountHolder: ActiveAccountHolder,
+                                protected val adapter: MultiAdapter<DashboardItem>) {
 
-    companion object {
+    abstract fun register(): Job?
 
-        const val UP = ItemTouchHelper.UP
-        const val DOWN = ItemTouchHelper.DOWN
-        const val LEFT = ItemTouchHelper.LEFT
-        const val RIGHT = ItemTouchHelper.RIGHT
-        const val START = ItemTouchHelper.START
-        const val END = ItemTouchHelper.END
-    }
+    abstract fun unregister(): Job?
 
-    abstract fun getSwipeDirections(holder: ViewHolder): Int
-
-    abstract fun onSwiped(holder: ViewHolder, direction: Int)
+    abstract fun update(): Job?
 }

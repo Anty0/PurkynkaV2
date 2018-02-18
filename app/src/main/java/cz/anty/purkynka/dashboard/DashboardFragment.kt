@@ -24,9 +24,12 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import cz.anty.purkynka.R
+import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.grades.dashboard.SubjectsAverageDashboardManager
 import cz.anty.purkynka.utils.Constants.ICON_HOME_DASHBOARD
 import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.java.utils.JavaExtensions.to
+import eu.codetopic.java.utils.JavaExtensions.letIfNull
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -38,6 +41,10 @@ import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.recycler.Recycler
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.support.v4.ctx
 
 /**
@@ -58,11 +65,21 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     override val icon: Bitmap
         get() = ctx.getIconics(ICON_HOME_DASHBOARD).sizeDp(48).toBitmap()
 
+    private val accountHolder = ActiveAccountHolder(holder)
+
     private var recyclerManager: Recycler.RecyclerManagerImpl? = null
+    private var managers: List<DashboardManager>? = null
     private var adapter: MultiAdapter<DashboardItem>? = null
 
     init {
         setHasOptionsMenu(true)
+
+        val self = this.asReference()
+        accountHolder.addChangeListener {
+            self().managers
+                    ?.map { it.update() }
+                    ?.forEach { it?.join() }
+        }
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -70,9 +87,16 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         val themedContext = ContextThemeWrapper(inflater.context, themeId)
         val themedInflater = inflater.cloneInContext(themedContext)
 
-        adapter = MultiAdapter(
+        val adapter = MultiAdapter<DashboardItem>(
                 context = themedContext,
                 comparator = Comparator { o1, o2 -> o2.priority - o1.priority }
+        )
+        this.adapter = adapter
+
+        managers = listOf(
+                // TODO: create try swipe out item
+                SubjectsAverageDashboardManager(themedContext, accountHolder, adapter)
+                // TODO: add here all items managers
         )
 
         val manager = Recycler.inflate()
@@ -85,7 +109,7 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
                     fun getItem(viewHolder: RecyclerView.ViewHolder): SwipeableDashboardItem? =
                             viewHolder.adapterPosition.takeIf { it != -1 }
-                                    ?.let { adapter?.getItem(it) }
+                                    ?.let { adapter.getItem(it) }
                                     .to<SwipeableDashboardItem>()
 
                     fun getItemHolder(viewHolder: RecyclerView.ViewHolder) =
@@ -124,6 +148,7 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
     override fun onDestroyView() {
         recyclerManager = null
+        managers = null
         adapter = null
 
         super.onDestroyView()
@@ -136,18 +161,53 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        // TODO: update items here
+        updateWithLoading()
     }
 
     override fun onStart() {
         super.onStart()
 
-        // TODO: register
+        register()
     }
 
     override fun onStop() {
-        // TODO: unregister
+        unregister()
 
         super.onStop()
+    }
+
+    private fun register() {
+        managers?.forEach { it.register() }
+        accountHolder.register()
+    }
+
+    private fun unregister() {
+        accountHolder.unregister()
+        managers?.forEach { it.unregister() }
+    }
+
+    private fun update(): Job? {
+        val jobs = managers
+                ?.map { it.update() }
+                .letIfNull { emptyList() }
+                .plus(accountHolder.update())
+
+        return launch(UI) {
+            jobs.forEach { it?.join() }
+        }
+    }
+
+    private fun updateWithLoading(): Job? {
+        val holder = holder
+        val self = this.asReference()
+        return launch(UI) {
+            holder.showLoading()
+
+            val jobs = self().managers?.map { it.update() }
+            self().accountHolder.update().join()
+            jobs?.forEach { it?.join() }
+
+            holder.hideLoading()
+        }
     }
 }

@@ -112,6 +112,5 @@
                 android:gravity="end"
                 android:textSize="13sp" />
         </LinearLayout>
-
     </LinearLayout>
 </FrameLayout>

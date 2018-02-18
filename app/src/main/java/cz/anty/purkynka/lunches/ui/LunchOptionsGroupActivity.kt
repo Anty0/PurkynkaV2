@@ -49,6 +49,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.ctx
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.radioButton
 import org.jetbrains.anko.textResource
@@ -312,27 +313,15 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                         }
                     }
                 }
+    }
 
-        if (savedInstanceState == null) {
-            val lunchOptionsGroupInfoAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
-            val showLunchOptionsGroupInfo = {
-                boxLunchOptionsGroupInfo.apply {
+    override fun onResume() {
+        super.onResume()
+
+        boxLunchOptionsGroupInfo.takeIf { it.visibility == View.GONE }
+                ?.apply {
                     visibility = View.VISIBLE
-                    startAnimation(lunchOptionsGroupInfoAnimation)
+                    startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.slide_down))
                 }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.sharedElementEnterTransition?.apply {
-                    addListener(object : SimpleTransitionListener() {
-                        override fun onTransitionEnd(transition: Transition) {
-                            run(showLunchOptionsGroupInfo)
-                        }
-                    })
-                } ?: run(showLunchOptionsGroupInfo)
-            } else run(showLunchOptionsGroupInfo)
-        } else {
-            boxLunchOptionsGroupInfo.visibility = View.VISIBLE
-        }
     }
 }

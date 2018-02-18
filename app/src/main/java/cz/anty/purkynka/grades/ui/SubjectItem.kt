@@ -33,13 +33,10 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.baseActivity
 import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
 import kotlinx.android.synthetic.main.item_subject.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 /**
  * @author anty
  */
-@Serializable
 class SubjectItem(val base: Subject,
                   val changes: Map<Int, List<String>> = emptyMap()): CustomItem() { // TODO: use changes
 
@@ -48,7 +45,6 @@ class SubjectItem(val base: Subject,
         private const val LOG_TAG = "SubjectItem"
     }
 
-    @Transient
     val isChnaged get() = changes.isNotEmpty()
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
@@ -95,7 +91,7 @@ class SubjectItem(val base: Subject,
 
                 ContextCompat.startActivity(
                         context,
-                        SubjectActivity.getStartIntent(context, this),
+                        SubjectActivity.getStartIntent(context, base, changes),
                         options
                 )
             }

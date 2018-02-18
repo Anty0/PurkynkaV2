@@ -31,19 +31,25 @@ import android.transition.Transition
 import android.view.View
 import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
+import cz.anty.purkynka.grades.data.Subject
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
-import eu.codetopic.utils.simple.SimpleAnimatorListener
 import eu.codetopic.utils.simple.SimpleTransitionListener
+import eu.codetopic.utils.thread.LooperUtils
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
-import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.recycler.Recycler
 import kotlinx.android.synthetic.main.activity_subject.*
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.internal.IntSerializer
+import kotlinx.serialization.internal.StringSerializer
+import kotlinx.serialization.list
+import kotlinx.serialization.map
+import org.jetbrains.anko.ctx
+import org.jetbrains.anko.toast
+import java.lang.ref.WeakReference
 
 /**
  * @author anty
@@ -54,67 +60,66 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
 
         private const val LOG_TAG = "SubjectActivity"
 
-        private const val EXTRA_SUBJECT_ITEM =
-                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_SUBJECT_ITEM"
+        private const val EXTRA_SUBJECT =
+                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_SUBJECT"
+        private const val EXTRA_SUBJECT_CHANGES =
+                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_SUBJECT_CHANGES"
+        private val EXTRA_SUBJECT_CHANGES_SERIALIZER =
+                (IntSerializer to StringSerializer.list).map
 
-        fun getStartIntent(context: Context, subjectItem: SubjectItem) =
+        fun getStartIntent(context: Context, subject: Subject,
+                           changes: Map<Int, List<String>> = emptyMap()) =
                 Intent(context, SubjectActivity::class.java)
-                        .putKSerializableExtra(EXTRA_SUBJECT_ITEM, subjectItem)
+                        .putKSerializableExtra(EXTRA_SUBJECT, subject)
+                        .putKSerializableExtra(EXTRA_SUBJECT_CHANGES, changes,
+                                EXTRA_SUBJECT_CHANGES_SERIALIZER)
 
-        fun start(context: Context, subjectItem: SubjectItem) =
-                context.startActivity(getStartIntent(context, subjectItem))
+        fun start(context: Context, subject: Subject, changes: Map<Int, List<String>> = emptyMap()) =
+                context.startActivity(getStartIntent(context, subject, changes))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_subject)
 
-        val subjectItem = intent
-                ?.getKSerializableExtra<SubjectItem>(EXTRA_SUBJECT_ITEM)
-                ?:
-                run {
-                    Log.e(LOG_TAG, "Can't create $LOG_TAG: No SubjectItem received")
+        val subject = intent
+                ?.getKSerializableExtra<Subject>(EXTRA_SUBJECT)
+                ?: run {
+                    Log.e(LOG_TAG, "Can't create $LOG_TAG: No Subject received")
                     finish()
                     return
                 }
+        val subjectChanges = intent
+                ?.getKSerializableExtra(EXTRA_SUBJECT_CHANGES,
+                        EXTRA_SUBJECT_CHANGES_SERIALIZER)
+                ?: emptyMap()
 
-        title = subjectItem.base.fullName
+        title = subject.fullName
 
+        val subjectItem = SubjectItem(subject, subjectChanges)
         val itemVH = subjectItem.createViewHolder(this, boxSubject)
                 .also { boxSubject.addView(it.itemView) }
         subjectItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)
 
         Recycler.inflate().on(layoutInflater, boxRecycler, true)
                 .setAdapter(
-                        subjectItem.base.grades.map {
+                        subject.grades.map {
                             GradeItem(
                                     base = it,
                                     showSubject = false,
-                                    changes = subjectItem.changes[it.id]
+                                    changes = subjectChanges[it.id]
                             )
                         }
                 )
+    }
 
-        if (savedInstanceState == null) {
-            val recyclerAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
-            val showRecycler = {
-                boxRecycler.apply {
+    override fun onResume() {
+        super.onResume()
+
+        boxRecycler.takeIf { it.visibility == View.GONE }
+                ?.apply {
                     visibility = View.VISIBLE
-                    startAnimation(recyclerAnimation)
+                    startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.slide_down))
                 }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.sharedElementEnterTransition?.apply {
-                    addListener(object : SimpleTransitionListener() {
-                        override fun onTransitionEnd(transition: Transition) {
-                            run(showRecycler)
-                        }
-                    })
-                } ?: run(showRecycler)
-            } else run(showRecycler)
-        } else {
-            boxRecycler.visibility = View.VISIBLE
-        }
     }
 }

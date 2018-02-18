@@ -232,6 +232,12 @@
             android:exported="false"
             android:process=":providers" />
         <provider
+            android:name=".grades.save.GradesPreferencesProvider"
+            android:authorities="cz.anty.purkynka.grades.preferences"
+            android:label="@string/label_provider_grades_preferences"
+            android:exported="false"
+            android:process=":providers" />
+        <provider
             android:name=".wifilogin.save.WifiDataProvider"
             android:authorities="cz.anty.purkynka.wifilogin.data"
             android:label="@string/label_provider_wifi"
