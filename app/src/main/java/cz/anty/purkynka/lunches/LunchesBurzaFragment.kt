@@ -111,22 +111,12 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         }
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        adapter = CustomItemAdapter(context)
-    }
-
-    override fun onDetach() {
-        adapter = null
-
-        super.onDetach()
-    }
-
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {
         val themedContext = ContextThemeWrapper(inflater.context, themeId)
         val themedInflater = inflater.cloneInContext(themedContext)
+
+        adapter = CustomItemAdapter(themedContext)
 
         val manager = Recycler.inflate().withSwipeToRefresh().withItemDivider()
                 .on(themedInflater, container, false)
@@ -141,6 +131,7 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
     override fun onDestroyView() {
         recyclerManager = null
+        adapter = null
 
         super.onDestroyView()
     }

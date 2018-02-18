@@ -59,6 +59,7 @@
     <string name="title_activity_lunch_options_group">Lunch order</string>
     <string name="title_activity_lunches_burza_lunch">Lunch order</string>
 
+    <string name="title_fragment_dashboard">Dashboard</string>
     <string name="title_fragment_grades">Grades</string>
     <string name="title_fragment_wifi_login">Wifi auto login</string>
     <string name="title_fragment_lunches_login">Lunches</string>
