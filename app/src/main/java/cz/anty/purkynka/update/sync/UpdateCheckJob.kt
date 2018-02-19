@@ -72,8 +72,8 @@ class UpdateCheckJob : Job() {
         fun schedule() {
             Log.d(LOG_TAG, "schedule")
 
-            if (UpdateData.instance.jobScheduleVersion != BuildConfig.VERSION_CODE
-                    || JobManager.instance().getAllJobRequestsForTag(TAG).isNotEmpty())
+            if (UpdateData.instance.jobScheduleVersion == BuildConfig.VERSION_CODE
+                    && JobManager.instance().getAllJobRequestsForTag(TAG).isNotEmpty())
                 return
 
             JobRequest.Builder(TAG)
