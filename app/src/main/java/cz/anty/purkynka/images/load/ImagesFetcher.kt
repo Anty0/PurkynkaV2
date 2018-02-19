@@ -20,6 +20,7 @@ package cz.anty.purkynka.images.load
 
 import android.support.annotation.WorkerThread
 import cz.anty.purkynka.utils.Utils
+import eu.codetopic.java.utils.log.Log
 import kotlinx.io.IOException
 import org.json.JSONObject
 import org.jsoup.Jsoup
@@ -50,6 +51,7 @@ object ImagesFetcher {
                             PARAM_QUERY, query
                     )
                     .followRedirects(false)
+                    .ignoreContentType(true)
                     .execute().body()
                     .let { JSONObject(it) }
 

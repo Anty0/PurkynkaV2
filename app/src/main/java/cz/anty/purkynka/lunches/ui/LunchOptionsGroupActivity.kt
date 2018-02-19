@@ -22,14 +22,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutCompat
 import android.transition.Transition
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import cz.anty.purkynka.R
+import cz.anty.purkynka.utils.Utils.suspendInto
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
+import eu.codetopic.utils.AndroidExtensions.getIconics
 import eu.codetopic.utils.simple.SimpleTransitionListener
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
@@ -38,21 +42,25 @@ import kotlinx.android.synthetic.main.activity_lunch_options_group.*
 import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import android.widget.RadioButton
+import android.widget.RadioGroup
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.squareup.picasso.Picasso
 import cz.anty.purkynka.exceptions.WrongLoginDataException
+import cz.anty.purkynka.images.sync.ImagesLoader
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
+import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.*
+import org.jetbrains.anko.appcompat.v7.linearLayoutCompat
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
-import org.jetbrains.anko.ctx
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.radioButton
-import org.jetbrains.anko.textResource
 import java.io.IOException
 
 
@@ -69,6 +77,8 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                 "cz.anty.purkynka.lunches.ui.$LOG_TAG.EXTRA_ACCOUNT_ID"
         private const val EXTRA_LUNCH_OPTIONS_GROUP =
                 "cz.anty.purkynka.lunches.ui.$LOG_TAG.EXTRA_LUNCH_OPTIONS_GROUP"
+
+        private val REGEX_BRACKETS = Regex("\\(.*?\\)")
 
         fun getStartIntent(context: Context, accountId: String, lunchOptionsGroup: LunchOptionsGroup) =
                 Intent(context, LunchOptionsGroupActivity::class.java)
@@ -137,6 +147,72 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
 
                     onCheckedChange { _, isChecked ->
                         if (isChecked) butLunchOrder.isEnabled = this@radioButton.tag != null
+                    }
+                }
+                val progress = horizontalProgressBar {
+                    layoutParams = RadioGroup.LayoutParams(matchParent, wrapContent)
+                    isIndeterminate = true
+                }
+                horizontalScrollView {
+                    layoutParams = RadioGroup.LayoutParams(matchParent, wrapContent)
+
+                    val query = lunchOption.name.replace(REGEX_BRACKETS, "")
+                    val layoutRef = this.asReference()
+                    val progressRef = progress.asReference()
+                    launch(UI) {
+                        val images = try {
+                            // FIXME: causes too many requests exception
+                            // bg { ImagesLoader.loadImages(query, count = 5) }.await()
+                            emptyList<Pair<String?, String?>>()
+                        } catch (e: Exception) {
+                            Log.w(LOG_TAG, "loadImages(query=$query)", e)
+                            emptyList<Pair<String?, String?>>()
+                            // listOf<Pair<String?, String?>>(null to null)
+                        }
+
+                        var jobs: List<Pair<Pair<String?, String?>, Deferred<Nothing?>?>> = emptyList()
+                        val contentRef = layoutRef().linearLayoutCompat {
+                            orientation = LinearLayoutCompat.HORIZONTAL
+                            visibility = View.GONE
+
+                            jobs += images.map mkJob@ {
+                                val (imgName, imgUrl) = it
+
+                                val imgView = imageView {
+                                    contentDescription = imgName
+                                    scaleType = ImageView.ScaleType.FIT_CENTER
+                                    if (imgUrl == null) {
+                                        image = this.context
+                                                .getIconics(GoogleMaterial.Icon.gmd_warning)
+                                                .sizeDp(96)
+                                    }
+                                }.lparams(
+                                        width = wrapContent,
+                                        height = dip(96)
+                                )
+
+                                return@mkJob it to imgUrl?.let {
+                                    Picasso.with(imgView.context).load(imgUrl)
+                                            .error(imgView.context
+                                                    .getIconics(GoogleMaterial.Icon.gmd_warning)
+                                                    .sizeDp(96))
+                                            .suspendInto(imgView)
+                                }
+                            }
+                        }.asReference()
+
+                        jobs.forEach {
+                            val (imageInfo, job) = it
+                            try {
+                                job?.await()
+                            } catch (e: Exception) {
+                                val (imgName, imgUrl) = imageInfo
+                                Log.w(LOG_TAG, "loadImage(imgName=$imgName, imgUrl=$imgUrl)", e)
+                            }
+                        }
+
+                        progressRef().visibility = View.GONE
+                        contentRef().visibility = View.VISIBLE
                     }
                 }
             }

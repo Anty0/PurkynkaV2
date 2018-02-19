@@ -24,6 +24,9 @@ import android.content.SyncStatusObserver
 import android.graphics.Color
 import android.os.Build
 import android.support.annotation.ColorInt
+import android.widget.ImageView
+import com.squareup.picasso.Callback
+import com.squareup.picasso.RequestCreator
 import cz.anty.purkynka.BuildConfig
 import eu.codetopic.java.utils.JavaExtensions.ifNull
 import eu.codetopic.java.utils.JavaExtensions.ifTrue
@@ -32,6 +35,8 @@ import eu.codetopic.java.utils.log.Log
 import io.michaelrocks.bimap.BiMap
 import io.michaelrocks.bimap.HashBiMap
 import io.michaelrocks.bimap.MutableBiMap
+import kotlinx.coroutines.experimental.CompletableDeferred
+import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.withTimeoutOrNull
 import kotlin.coroutines.experimental.suspendCoroutine
 import kotlin.math.max
@@ -165,4 +170,25 @@ object Utils {
 
     fun <K : Any, V : Any> mutableBiMapOf(vararg pairs: Pair<K, V>): MutableBiMap<K, V> =
             pairs.toMap(HashBiMap(pairs.size))
+
+    //////////////////////////////////////
+    //////REGION - PICASSO////////////////
+    //////////////////////////////////////
+
+    fun RequestCreator.suspendInto(target: ImageView): Deferred<Nothing?> {
+        val result = CompletableDeferred<Nothing?>(parent = null)
+
+        into(target, object : Callback {
+
+            override fun onSuccess() {
+                result.complete(null)
+            }
+
+            override fun onError() {
+                result.completeExceptionally(RuntimeException("Failed to load image"))
+            }
+        })
+
+        return result
+    }
 }
