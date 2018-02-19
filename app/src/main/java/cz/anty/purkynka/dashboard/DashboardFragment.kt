@@ -25,6 +25,7 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.grades.dashboard.NewGradesDashboardManager
 import cz.anty.purkynka.grades.dashboard.SubjectsAverageDashboardManager
 import cz.anty.purkynka.utils.Constants.ICON_HOME_DASHBOARD
 import eu.codetopic.utils.AndroidExtensions.getIconics
@@ -95,7 +96,8 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
         managers = listOf(
                 // TODO: create try swipe out item
-                SubjectsAverageDashboardManager(themedContext, accountHolder, adapter)
+                SubjectsAverageDashboardManager(themedContext, accountHolder, adapter),
+                NewGradesDashboardManager(themedContext, accountHolder, adapter)
                 // TODO: add here all items managers
         )
 

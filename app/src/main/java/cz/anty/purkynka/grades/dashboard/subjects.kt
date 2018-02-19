@@ -92,23 +92,24 @@ class SubjectsAverageDashboardManager(context: Context, accountHolder: ActiveAcc
                 }
         val adapterRef = adapter.asReference()
         return launch(UI) {
-            val badSubjectsItems = bg calcItems@ {
-                val userLoggedIn = GradesLoginData.loginData.isLoggedIn(accountId)
-                if (!userLoggedIn) return@calcItems null
+            adapterRef().mapReplaceAll(
+                    id = ID,
+                    items = bg calcItems@ {
+                        val userLoggedIn = GradesLoginData.loginData.isLoggedIn(accountId)
+                        if (!userLoggedIn) return@calcItems null
 
-                //val dismissedSubjects = GradesPreferences.instance.getDismissedSubjects(accountId)
-                val badAverage = GradesPreferences.instance.subjectBadAverage
-                val semester = Semester.AUTO.stableSemester
-                return@calcItems GradesData.instance
-                        .getSubjects(accountId)[semester.value]
-                        ?.filter { subject ->
-                            subject.average > badAverage
+                        //val dismissedSubjects = GradesPreferences.instance.getDismissedSubjects(accountId)
+                        val badAverage = GradesPreferences.instance.subjectBadAverage
+                        val semester = Semester.AUTO.stableSemester
+                        return@calcItems GradesData.instance
+                                .getSubjects(accountId)[semester.value]
+                                ?.filter { subject ->
+                                    subject.average > badAverage
                                     //&& dismissedSubjects.none { it.idEquals(semester, subject) }
-                        }
-                        ?.map { BadSubjectAverageDashboardItem(accountId, semester, it) }
-            }.await()
-
-            adapterRef().mapReplaceAll(ID, badSubjectsItems ?: emptyList())
+                                }
+                                ?.map { BadSubjectAverageDashboardItem(accountId, semester, it) }
+                    }.await() ?: emptyList()
+            )
         }
     }
 }

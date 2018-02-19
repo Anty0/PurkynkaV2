@@ -20,22 +20,23 @@ package cz.anty.purkynka.grades.ui
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.transition.Transition
 import android.view.View
 import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
+import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Grade.Companion.dateStr
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
 import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
-import eu.codetopic.utils.simple.SimpleTransitionListener
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.activity_grade.*
+import kotlinx.serialization.internal.NullableSerializer
+import kotlinx.serialization.internal.StringSerializer
+import kotlinx.serialization.list
 import org.jetbrains.anko.ctx
 
 /**
@@ -47,41 +48,57 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
 
         private const val LOG_TAG = "GradeActivity"
 
-        private const val EXTRA_GRADE_ITEM =
-                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_GRADE_ITEM"
+        private const val EXTRA_GRADE =
+                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_GRADE"
+        private const val EXTRA_GRADE_SHOW_SUBJECT =
+                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_GRADE_SHOW_SUBJECT"
+        private const val EXTRA_GRADE_CHANGES =
+                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_GRADE_CHANGES"
+        private val EXTRA_GRADE_CHANGES_SERIALIZER = NullableSerializer(StringSerializer.list)
 
-        fun getStartIntent(context: Context, gradeItem: GradeItem) =
+        fun getStartIntent(context: Context, grade: Grade, showSubject: Boolean = true,
+                           changes: List<String>? = null) =
                 Intent(context, GradeActivity::class.java)
-                        .putKSerializableExtra(EXTRA_GRADE_ITEM, gradeItem)
+                        .putKSerializableExtra(EXTRA_GRADE, grade)
+                        .putExtra(EXTRA_GRADE_SHOW_SUBJECT, showSubject)
+                        .putKSerializableExtra(EXTRA_GRADE_CHANGES, changes,
+                                EXTRA_GRADE_CHANGES_SERIALIZER)
 
-        fun start(context: Context, gradeItem: GradeItem) =
-                context.startActivity(getStartIntent(context, gradeItem))
+        fun start(context: Context, grade: Grade, showSubject: Boolean = true,
+                  changes: List<String>? = null) =
+                context.startActivity(getStartIntent(context, grade, showSubject, changes))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_grade)
 
-        val gradeItem = intent?.getKSerializableExtra<GradeItem>(EXTRA_GRADE_ITEM)
+        val grade = intent?.getKSerializableExtra<Grade>(EXTRA_GRADE)
                 ?:
                 run {
-                    Log.e(LOG_TAG, "Can't create $LOG_TAG: No GradeItem received")
+                    Log.e(LOG_TAG, "Can't create $LOG_TAG: No Grade received")
                     finish()
                     return
                 }
+        val gradeShowSubject = intent
+                ?.getBooleanExtra(EXTRA_GRADE_SHOW_SUBJECT, true)
+                ?: true
+        val gradeChanges = intent?.getKSerializableExtra(EXTRA_GRADE_CHANGES,
+                EXTRA_GRADE_CHANGES_SERIALIZER)
 
-        //title = gradeItem.base.? //TODO: maybe set title to something
+        //title = grade.? //TODO: maybe set title to something
 
+        val gradeItem = GradeItem(grade, gradeShowSubject, gradeChanges)
         val itemVH = gradeItem.createViewHolder(this, boxGrade)
                 .also { boxGrade.addView(it.itemView, 0) }
         gradeItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)
 
-        txtDate.text = gradeItem.base.dateStr
-        txtType.text = gradeItem.base.type
-        txtSubjectName.text = gradeItem.base.subjectLong
-        if (!gradeItem.showSubject) {
+        txtDate.text = grade.dateStr
+        txtType.text = grade.type
+        txtSubjectName.text = grade.subjectLong
+        if (!gradeShowSubject) {
             boxSubjectSymbol.visibility = View.VISIBLE
-            txtSubjectSymbol.text = gradeItem.base.subjectShort
+            txtSubjectSymbol.text = grade.subjectShort
         } else boxSubjectSymbol.visibility = View.GONE
     }
 

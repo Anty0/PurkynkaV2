@@ -100,7 +100,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
 
                 ContextCompat.startActivity(
                         context,
-                        GradeActivity.getStartIntent(context, this),
+                        GradeActivity.getStartIntent(context, base, showSubject, changes),
                         options?.toBundle()
                 )
             }

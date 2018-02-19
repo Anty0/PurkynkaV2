@@ -57,5 +57,7 @@ object Constants {
 
     //---------------------------------------------------------------------
 
-    const val DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD = 10000 // + <100; 500> = (average * 100).toInt()
+    const val DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD = 1000 // + <100; 500> = (average * 100).toInt()
+
+    const val DASHBOARD_PRIORITY_GRADES_NEW = 2000
 }

@@ -149,7 +149,7 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
         if (grade != null) {
             context.startActivities(arrayOf(
                     MainActivity.getStartIntent(context, GradesFragment::class.java),
-                    GradeActivity.getStartIntent(context, GradeItem(grade, changes = changes))
+                    GradeActivity.getStartIntent(context, grade, changes = changes)
             ))
         } else {
             MainActivity.start(context, GradesFragment::class.java)
