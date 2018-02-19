@@ -18,25 +18,16 @@
 
 package cz.anty.purkynka.update.sync
 
-import android.app.Activity
 import android.content.Context
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import cz.anty.purkynka.BuildConfig
-import cz.anty.purkynka.update.load.UpdateFetcher
-import cz.anty.purkynka.update.notify.UpdateNotifyChannel
-import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.receiver.UpdateCheckJobScheduleReceiver
-import cz.anty.purkynka.update.receiver.UpdateFetchReceiver
 import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.JavaExtensions.alsoIf
-import eu.codetopic.utils.AndroidExtensions.OrderedBroadcastResult
-import eu.codetopic.utils.AndroidExtensions.sendSuspendOrderedBroadcast
-import eu.codetopic.utils.UtilsBase
-import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
-import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
+import eu.codetopic.utils.OrderedBroadcastResult
+import eu.codetopic.utils.sendSuspendOrderedBroadcast
 
 /**
  * @author anty

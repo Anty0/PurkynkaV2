@@ -33,10 +33,10 @@ import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusGroup
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
-import eu.codetopic.java.utils.JavaExtensions.kSerializer
+import eu.codetopic.java.utils.kSerializer
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
-import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
+import eu.codetopic.utils.putKSerializableExtra
+import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.build

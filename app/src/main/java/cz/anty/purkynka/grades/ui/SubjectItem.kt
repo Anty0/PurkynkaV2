@@ -25,13 +25,13 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Subject
 import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.data.Subject.Companion.averageColor
-import eu.codetopic.java.utils.JavaExtensions
-import eu.codetopic.java.utils.JavaExtensions.fillToLen
+import eu.codetopic.java.utils.Anchor
+import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import eu.codetopic.java.utils.JavaExtensions.format
+import eu.codetopic.java.utils.format
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.baseActivity
-import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
+import eu.codetopic.utils.baseActivity
+import eu.codetopic.utils.getFormattedQuantityText
 import kotlinx.android.synthetic.main.item_subject.*
 
 /**
@@ -48,7 +48,7 @@ class SubjectItem(val base: Subject,
     val isChnaged get() = changes.isNotEmpty()
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        holder.txtNameShort.text = base.shortName.fillToLen(4, JavaExtensions.Anchor.LEFT)
+        holder.txtNameShort.text = base.shortName.fillToLen(4, Anchor.LEFT)
 
         holder.txtAverage.apply {
             setTextColor(base.averageColor)
@@ -95,7 +95,7 @@ class SubjectItem(val base: Subject,
                         options
                 )
             }
-        }
+        } else holder.boxClickTarget.setOnClickListener(null)
     }
 
     override fun getItemLayoutResId(context: Context): Int = R.layout.item_subject

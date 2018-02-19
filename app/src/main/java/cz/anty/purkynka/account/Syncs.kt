@@ -19,16 +19,9 @@
 package cz.anty.purkynka.account
 
 import android.accounts.Account
-import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
-import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.accountManager
-import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.broadcast.LocalBroadcast
-import eu.codetopic.utils.data.getter.DataGetter
 import eu.codetopic.utils.data.preferences.extension.LoginDataExtension
 import org.jetbrains.anko.bundleOf
 

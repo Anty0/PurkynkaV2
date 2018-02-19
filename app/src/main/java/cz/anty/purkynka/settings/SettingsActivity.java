@@ -26,12 +26,13 @@ import android.preference.PreferenceFragment;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 
-import cz.anty.purkynka.utils.Constants;
 import cz.anty.purkynka.R;
 import cz.anty.purkynka.update.UpdateActivity;
 import eu.codetopic.utils.AndroidUtils;
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule;
 import eu.codetopic.utils.ui.activity.modular.ModularActivity;
+
+import static cz.anty.purkynka.utils.ConstantsKt.*;
 
 /**
  * Created by anty on 6/21/17.
@@ -111,15 +112,15 @@ public class SettingsActivity extends ModularActivity {
                 return true;
             });
             findPreference("activity_facebook").setOnPreferenceClickListener(preference -> {
-                AndroidUtils.openUri(getActivity(), Constants.URL_FACEBOOK_PAGE, R.string.toast_browser_failed);
+                AndroidUtils.openUri(getActivity(), URL_FACEBOOK_PAGE, R.string.toast_browser_failed);
                 return true;
             });
             findPreference("activity_web_page").setOnPreferenceClickListener(preference -> {
-                AndroidUtils.openUri(getActivity(), Constants.URL_WEB_PAGE, R.string.toast_browser_failed);
+                AndroidUtils.openUri(getActivity(), URL_WEB_PAGE, R.string.toast_browser_failed);
                 return true;
             });
             findPreference("activity_web_page_donate").setOnPreferenceClickListener(preference -> {
-                AndroidUtils.openUri(getActivity(), Constants.URL_WEB_DONATE_PAGE, R.string.toast_browser_failed);
+                AndroidUtils.openUri(getActivity(), URL_WEB_DONATE_PAGE, R.string.toast_browser_failed);
                 return true;
             });
         }

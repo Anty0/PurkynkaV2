@@ -20,12 +20,10 @@ package cz.anty.purkynka.lunches.ui
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
-import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import cz.anty.purkynka.R
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.item_credit.*
 import java.text.DecimalFormat

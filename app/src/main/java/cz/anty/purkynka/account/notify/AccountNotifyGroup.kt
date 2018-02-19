@@ -26,8 +26,8 @@ import android.os.Build
 import android.support.annotation.MainThread
 import android.support.annotation.RequiresApi
 import cz.anty.purkynka.account.Accounts
-import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 

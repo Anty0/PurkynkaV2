@@ -20,21 +20,18 @@ package cz.anty.purkynka.lunches.ui
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutCompat
-import android.transition.Transition
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.Utils.suspendInto
+import cz.anty.purkynka.utils.suspendInto
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
-import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
-import eu.codetopic.utils.AndroidExtensions.getIconics
-import eu.codetopic.utils.simple.SimpleTransitionListener
+import eu.codetopic.utils.getKSerializableExtra
+import eu.codetopic.utils.putKSerializableExtra
+import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
@@ -46,7 +43,6 @@ import android.widget.RadioGroup
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.squareup.picasso.Picasso
 import cz.anty.purkynka.exceptions.WrongLoginDataException
-import cz.anty.purkynka.images.sync.ImagesLoader
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser

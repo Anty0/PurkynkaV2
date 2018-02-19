@@ -23,8 +23,8 @@ import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.attendance.data.Man
 import cz.anty.purkynka.attendance.data.Man.Companion.lastEnterStr
-import eu.codetopic.java.utils.JavaExtensions
-import eu.codetopic.java.utils.JavaExtensions.fillToLen
+import eu.codetopic.java.utils.*
+import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.item_man.*
 
@@ -39,7 +39,7 @@ class ManItem(val base: Man) : CustomItem() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        holder.txtClassId.text = base.classId.fillToLen(4, JavaExtensions.Anchor.LEFT)
+        holder.txtClassId.text = base.classId.fillToLen(4, Anchor.LEFT)
 
         holder.imgIsInSchoolYes.visibility = if (base.isInSchool == true) View.VISIBLE else View.GONE
         holder.imgIsInSchoolNo.visibility = if (base.isInSchool == false) View.VISIBLE else View.GONE

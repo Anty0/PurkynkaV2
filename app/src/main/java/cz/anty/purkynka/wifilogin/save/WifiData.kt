@@ -20,7 +20,7 @@ package cz.anty.purkynka.wifilogin.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.utils.PrefNames.LOGIN_COUNTER
+import cz.anty.purkynka.utils.LOGIN_COUNTER
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.IntPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider

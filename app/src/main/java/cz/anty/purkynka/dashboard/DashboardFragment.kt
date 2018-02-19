@@ -27,10 +27,11 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.grades.dashboard.NewGradesDashboardManager
 import cz.anty.purkynka.grades.dashboard.SubjectsAverageDashboardManager
-import cz.anty.purkynka.utils.Constants.ICON_HOME_DASHBOARD
-import eu.codetopic.utils.AndroidExtensions.getIconics
-import eu.codetopic.java.utils.JavaExtensions.to
-import eu.codetopic.java.utils.JavaExtensions.letIfNull
+import cz.anty.purkynka.update.dashboard.UpdateCheckDashboardManager
+import cz.anty.purkynka.utils.ICON_HOME_DASHBOARD
+import eu.codetopic.utils.getIconics
+import eu.codetopic.java.utils.to
+import eu.codetopic.java.utils.letIfNull
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -96,6 +97,7 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
         managers = listOf(
                 // TODO: create try swipe out item
+                UpdateCheckDashboardManager(themedContext, accountHolder, adapter),
                 SubjectsAverageDashboardManager(themedContext, accountHolder, adapter),
                 NewGradesDashboardManager(themedContext, accountHolder, adapter)
                 // TODO: add here all items managers

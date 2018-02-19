@@ -37,17 +37,17 @@ import android.view.View
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import eu.codetopic.utils.Constants.ICON_DEBUG
 import eu.codetopic.utils.Constants.ICON_SETTINGS
-import cz.anty.purkynka.utils.Constants.ICON_ATTENDANCE
-import cz.anty.purkynka.utils.Constants.ICON_DONATE
-import cz.anty.purkynka.utils.Constants.ICON_FACEBOOK
-import cz.anty.purkynka.utils.Constants.ICON_GRADES
-import cz.anty.purkynka.utils.Constants.ICON_HOME_DASHBOARD
-import cz.anty.purkynka.utils.Constants.ICON_LUNCHES
-import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_BURZA
-import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_BURZA_WATCHER
-import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_ORDER
-import cz.anty.purkynka.utils.Constants.ICON_WEB
-import cz.anty.purkynka.utils.Constants.ICON_WIFI_LOGIN
+import cz.anty.purkynka.utils.ICON_ATTENDANCE
+import cz.anty.purkynka.utils.ICON_DONATE
+import cz.anty.purkynka.utils.ICON_FACEBOOK
+import cz.anty.purkynka.utils.ICON_GRADES
+import cz.anty.purkynka.utils.ICON_HOME_DASHBOARD
+import cz.anty.purkynka.utils.ICON_LUNCHES
+import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA
+import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA_WATCHER
+import cz.anty.purkynka.utils.ICON_LUNCHES_ORDER
+import cz.anty.purkynka.utils.ICON_WEB
+import cz.anty.purkynka.utils.ICON_WIFI_LOGIN
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.account.ui.AccountEditActivity
@@ -58,13 +58,12 @@ import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.lunches.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.settings.SettingsActivity
-import cz.anty.purkynka.utils.Constants
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
-import eu.codetopic.java.utils.JavaExtensions.to
-import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.AndroidExtensions.intentFilter
-import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.java.utils.to
+import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.intentFilter
+import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import org.jetbrains.anko.bundleOf
@@ -82,7 +81,7 @@ class MainActivity : NavigationActivity() {
         private const val EXTRA_FRAGMENT_CLASS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_CLASS"
         private const val EXTRA_FRAGMENT_EXTRAS = "cz.anty.purkynka.$LOG_TAG.EXTRA_FRAGMENT_EXTRAS"
 
-        private val optionsMenuMap = Utils.biMapOf<Int, Class<out Fragment>>(
+        private val optionsMenuMap = biMapOf<Int, Class<out Fragment>>(
                 R.id.nav_dashboard to DashboardFragment::class.java,
                 R.id.nav_grades to GradesFragment::class.java,
                 R.id.nav_wifi_login to WifiLoginFragment::class.java,
@@ -330,9 +329,9 @@ class MainActivity : NavigationActivity() {
                     when (item.itemId) {
                         R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
                         R.id.nav_debug -> startActivity(Intent(this, DebugActivity::class.java))
-                        R.id.nav_contact_facebook -> AndroidUtils.openUri(this, Constants.URL_FACEBOOK_PAGE, R.string.toast_browser_failed)
-                        R.id.nav_contact_web_page -> AndroidUtils.openUri(this, Constants.URL_WEB_PAGE, R.string.toast_browser_failed)
-                        R.id.nav_contact_web_page_donate -> AndroidUtils.openUri(this, Constants.URL_WEB_DONATE_PAGE, R.string.toast_browser_failed)
+                        R.id.nav_contact_facebook -> AndroidUtils.openUri(this, URL_FACEBOOK_PAGE, R.string.toast_browser_failed)
+                        R.id.nav_contact_web_page -> AndroidUtils.openUri(this, URL_WEB_PAGE, R.string.toast_browser_failed)
+                        R.id.nav_contact_web_page_donate -> AndroidUtils.openUri(this, URL_WEB_DONATE_PAGE, R.string.toast_browser_failed)
                         else -> return super.onNavigationItemSelected(item)
                     }
                     return true

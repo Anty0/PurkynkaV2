@@ -21,12 +21,9 @@ package cz.anty.purkynka.update.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.evernote.android.job.Job
 import cz.anty.purkynka.update.sync.UpdateCheckJob
 import cz.anty.purkynka.update.sync.UpdateCheckService
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions
-import eu.codetopic.utils.AndroidExtensions.sendSuspendOrderedBroadcast
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.bundleOf

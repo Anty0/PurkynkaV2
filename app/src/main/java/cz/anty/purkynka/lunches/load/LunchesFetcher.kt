@@ -19,9 +19,9 @@
 package cz.anty.purkynka.lunches.load
 
 import android.support.annotation.WorkerThread
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.JavaExtensions.ifTrue
+import eu.codetopic.java.utils.ifTrue
 import org.jsoup.Jsoup
 import kotlinx.io.IOException
 import org.json.JSONObject
@@ -82,7 +82,7 @@ object LunchesFetcher {
     @Throws(IOException::class)
     fun login(username: String, password: String): Map<String, String> =
             Jsoup.connect(URL_LOGIN)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .data(
                             PARAM_USERNAME, username,
                             PARAM_PASSWORD, password,
@@ -100,7 +100,7 @@ object LunchesFetcher {
     @Throws(IOException::class)
     fun logout(loginCookies: Map<String, String>): Document =
             Jsoup.connect(URL_LOGOUT)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .data(
                             PARAM_TERMINAL, PARAM_TERMINAL_VAL,
                             PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,
@@ -149,7 +149,7 @@ object LunchesFetcher {
     @Throws(IOException::class)
     fun getLunchOptionsGroupElement(loginCookies: Map<String, String>, date: Long): Element =
             Jsoup.connect(URL_DAY)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .data(
                             PARAM_DAY, PARAM_DAY_FORMAT.format(date),
                             PARAM_TERMINAL, PARAM_TERMINAL_VAL,
@@ -167,7 +167,7 @@ object LunchesFetcher {
     @Throws(IOException::class)
     fun getLunchOptionsGroupsElements(loginCookies: Map<String, String>): Elements =
             Jsoup.connect(URL_MONTH)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .data(
                             PARAM_TERMINAL, PARAM_TERMINAL_VAL,
                             PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,
@@ -185,7 +185,7 @@ object LunchesFetcher {
     @Throws(IOException::class)
     fun getLunchesBurzaElements(loginCookies: Map<String, String>): Elements =
             Jsoup.connect(URL_BURZA)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .data(
                             PARAM_TERMINAL, PARAM_TERMINAL_VAL,
                             PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,
@@ -203,7 +203,7 @@ object LunchesFetcher {
     @Throws(IOException::class)
     fun getMainPage(loginCookies: Map<String, String>): Document =
             Jsoup.connect(URL_MAIN)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .data(
                             PARAM_TERMINAL, PARAM_TERMINAL_VAL,
                             PARAM_KEYBOARD, PARAM_KEYBOARD_VAL,

@@ -26,7 +26,7 @@ import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter.Companion.EXTRA_ACCOUNT_ID
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter.Companion.EXTRA_GRADES_CHANGES
-import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
+import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder

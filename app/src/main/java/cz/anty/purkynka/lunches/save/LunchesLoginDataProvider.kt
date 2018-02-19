@@ -19,7 +19,7 @@
 package cz.anty.purkynka.lunches.save
 
 import android.content.SharedPreferences
-import cz.anty.purkynka.utils.PrefNames.FILE_NAME_LUNCHES_LOGIN_DATA
+import cz.anty.purkynka.utils.FILE_NAME_LUNCHES_LOGIN_DATA
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.SecureSharedPreferencesProvider

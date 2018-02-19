@@ -26,10 +26,10 @@ import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Grade.Companion.valueColor
-import eu.codetopic.java.utils.JavaExtensions.Anchor
-import eu.codetopic.java.utils.JavaExtensions.fillToLen
+import eu.codetopic.java.utils.Anchor
+import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.baseActivity
+import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.item_grade.*
 import kotlinx.serialization.Serializable
@@ -104,7 +104,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
                         options?.toBundle()
                 )
             }
-        }
+        } else holder.boxClickTarget.setOnClickListener(null)
     }
 
     override fun getItemLayoutResId(context: Context) = R.layout.item_grade

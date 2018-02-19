@@ -23,7 +23,6 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
-import cz.anty.purkynka.dashboard.SwipeableDashboardItem
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.data.Subject
 import cz.anty.purkynka.grades.data.Subject.Companion.average
@@ -32,14 +31,14 @@ import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesPreferences
 import cz.anty.purkynka.grades.ui.SubjectActivity
-import cz.anty.purkynka.utils.Constants.DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD
-import eu.codetopic.java.utils.JavaExtensions
-import eu.codetopic.java.utils.JavaExtensions.fillToLen
-import eu.codetopic.java.utils.JavaExtensions.format
-import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
-import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
-import eu.codetopic.utils.AndroidExtensions.intentFilter
+import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD
+import eu.codetopic.java.utils.Anchor
+import eu.codetopic.java.utils.fillToLen
+import eu.codetopic.java.utils.format
+import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.getFormattedText
+import eu.codetopic.utils.getFormattedQuantityText
+import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import kotlinx.android.synthetic.main.item_subject_bad_average.*
@@ -48,7 +47,6 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
-import org.jetbrains.anko.longToast
 
 /**
  * @author anty
@@ -130,7 +128,7 @@ class BadSubjectAverageDashboardItem(val accountId: String, val semester: Semest
     }*/
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        holder.txtNameShort.text = subject.shortName.fillToLen(4, JavaExtensions.Anchor.LEFT)
+        holder.txtNameShort.text = subject.shortName.fillToLen(4, Anchor.LEFT)
 
         holder.txtAverage.apply {
             setTextColor(averageColor)
@@ -153,7 +151,7 @@ class BadSubjectAverageDashboardItem(val accountId: String, val semester: Semest
             holder.boxClickTarget.setOnClickListener {
                 SubjectActivity.start(holder.context, subject)
             }
-        }
+        } else holder.boxClickTarget.setOnClickListener(null)
     }
 
     override fun getItemLayoutResId(context: Context): Int = R.layout.item_subject_bad_average

@@ -27,10 +27,9 @@ import android.support.design.widget.Snackbar
 import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
-import eu.codetopic.utils.AndroidExtensions.accountManager
+import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
-import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import kotlinx.android.synthetic.main.activity_edit_account.*
 

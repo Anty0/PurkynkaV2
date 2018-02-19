@@ -21,9 +21,9 @@ package cz.anty.purkynka.update.load
 import android.content.Context
 import android.support.annotation.WorkerThread
 import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.JavaExtensions.letIf
+import eu.codetopic.java.utils.letIf
 import eu.codetopic.java.utils.debug.DebugMode
 import eu.codetopic.utils.AndroidUtils
 import org.jsoup.Jsoup
@@ -50,7 +50,7 @@ object UpdateFetcher { // TODO: create new/better api
     fun fetchVersionCode(): Int? = try {
         Jsoup.connect(URL_VERSION_CODE)
                 .ignoreContentType(true)
-                .userAgent(Utils.userAgent)
+                .userAgent(userAgent)
                 .followRedirects(false)
                 .execute().body().trim().toInt()
     } catch (e: Exception) {
@@ -63,7 +63,7 @@ object UpdateFetcher { // TODO: create new/better api
     fun fetchVersionName(): String? = try {
         Jsoup.connect(URL_VERSION_NAME)
                 .ignoreContentType(true)
-                .userAgent(Utils.userAgent)
+                .userAgent(userAgent)
                 .followRedirects(false)
                 .execute().body()
                 .letIf({ it.toLowerCase().contains("<html>") }) {

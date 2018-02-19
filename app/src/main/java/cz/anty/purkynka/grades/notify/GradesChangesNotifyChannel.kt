@@ -35,10 +35,9 @@ import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Grade.Companion.valueColor
 import cz.anty.purkynka.grades.data.Subject.Companion.averageColor
 import cz.anty.purkynka.grades.ui.GradeActivity
-import cz.anty.purkynka.grades.ui.GradeItem
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.JavaExtensions.alsoIfNull
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
+import eu.codetopic.java.utils.alsoIfNull
+import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
 import eu.codetopic.utils.notifications.manager.data.NotifyId

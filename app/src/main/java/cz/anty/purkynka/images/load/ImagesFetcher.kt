@@ -19,8 +19,7 @@
 package cz.anty.purkynka.images.load
 
 import android.support.annotation.WorkerThread
-import cz.anty.purkynka.utils.Utils
-import eu.codetopic.java.utils.log.Log
+import cz.anty.purkynka.utils.*
 import kotlinx.io.IOException
 import org.json.JSONObject
 import org.jsoup.Jsoup
@@ -43,7 +42,7 @@ object ImagesFetcher {
     @Throws(IOException::class)
     fun fetchImages(query: String, offset: Int = 0, count: Int = 5): JSONObject =
             Jsoup.connect(URL)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .data(
                             PARAM_LOCALE, PARAM_LOCALE_VALUE,
                             PARAM_COUNT, count.toString(),

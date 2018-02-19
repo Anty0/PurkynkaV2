@@ -18,13 +18,12 @@
 
 package cz.anty.purkynka.lunches
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_BURZA
+import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.exceptions.WrongLoginDataException
@@ -35,11 +34,11 @@ import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.ui.LunchBurzaItem
 import cz.anty.purkynka.lunches.ui.LunchesCreditItem
-import eu.codetopic.java.utils.JavaExtensions.ifTrue
+import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions
-import eu.codetopic.utils.AndroidExtensions.edit
-import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.utils.*
+import eu.codetopic.utils.edit
+import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
@@ -81,11 +80,11 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
     private val accountHolder = ActiveAccountHolder(holder)
 
-    private val loginDataChangedReceiver = AndroidExtensions.broadcast { _, _ ->
+    private val loginDataChangedReceiver = broadcast { _, _ ->
         Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
         updateWithLoading(updateBurza = true)
     }
-    private val dataChangedReceiver = AndroidExtensions.broadcast { _, _ ->
+    private val dataChangedReceiver = broadcast { _, _ ->
         Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
         update()
     }
@@ -169,9 +168,9 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
     private fun register(): Job? {
         LocalBroadcast.registerReceiver(loginDataChangedReceiver,
-                AndroidExtensions.intentFilter(LunchesLoginData.getter))
+                intentFilter(LunchesLoginData.getter))
         LocalBroadcast.registerReceiver(dataChangedReceiver,
-                AndroidExtensions.intentFilter(LunchesData.getter))
+                intentFilter(LunchesData.getter))
 
         return update()
     }

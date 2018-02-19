@@ -23,9 +23,9 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import cz.anty.purkynka.utils.PrefNames
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.Accounts
-import eu.codetopic.utils.AndroidExtensions.accountManager
+import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
@@ -88,7 +88,7 @@ class ActiveAccount private constructor(context: Context) :
                     avAccounts[0]
                 } else null
             }
-            val name = preferences.getString(PrefNames.ACTIVE_ACCOUNT_NAME, null)
+            val name = preferences.getString(ACTIVE_ACCOUNT_NAME, null)
                     ?: return run(useFirstAccount)
 
             avAccounts.firstOrNull { name == it.name }
@@ -115,7 +115,7 @@ class ActiveAccount private constructor(context: Context) :
         get() = activeAccount.let { it to it?.let { Accounts.getId(accountManager, it) } }
 
     fun setActiveAccount(accountName: String?) {
-        edit { putString(PrefNames.ACTIVE_ACCOUNT_NAME, accountName) }
+        edit { putString(ACTIVE_ACCOUNT_NAME, accountName) }
     }
 
     private class Getter : PreferencesGetterAbs<ActiveAccount>() {

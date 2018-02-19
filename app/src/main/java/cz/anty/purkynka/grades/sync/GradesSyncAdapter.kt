@@ -21,7 +21,7 @@ package cz.anty.purkynka.grades.sync
 import android.accounts.Account
 import android.content.*
 import android.os.Bundle
-import cz.anty.purkynka.utils.Constants
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
 import cz.anty.purkynka.exceptions.WrongLoginDataException
@@ -34,7 +34,7 @@ import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.*
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
+import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.bundle.BundleSerializer
 import kotlinx.serialization.list
@@ -59,7 +59,7 @@ class GradesSyncAdapter(context: Context) :
                 "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_GRADES_CHANGES"
 
         const val CONTENT_AUTHORITY = GradesDataProvider.AUTHORITY
-        const val SYNC_FREQUENCY = Constants.SYNC_FREQUENCY_GRADES
+        const val SYNC_FREQUENCY = SYNC_FREQUENCY_GRADES
 
         const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_SEMESTER"
 

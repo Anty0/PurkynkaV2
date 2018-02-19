@@ -33,9 +33,9 @@ import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.lunches.LunchesOrderFragment
-import eu.codetopic.java.utils.JavaExtensions.alsoIfNull
+import eu.codetopic.java.utils.alsoIfNull
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
+import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
 import eu.codetopic.utils.notifications.manager.data.NotifyId

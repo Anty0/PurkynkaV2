@@ -21,7 +21,7 @@ package cz.anty.purkynka.account
 import android.accounts.Account
 import cz.anty.purkynka.account.save.ActiveAccount
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions
+import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.view.holder.loading.LoadingVH
 import kotlinx.coroutines.experimental.Job
@@ -40,7 +40,7 @@ class ActiveAccountHolder(private val holder: LoadingVH? = null) {
         private const val LOG_TAG = "ActiveAccountHolder"
     }
 
-    private val accountChangedReceiver = AndroidExtensions.broadcast { _, _ ->
+    private val accountChangedReceiver = broadcast { _, _ ->
         Log.d(LOG_TAG, "accountChangedReceiver.onReceive()")
         updateWithLoading()
     }
@@ -87,7 +87,7 @@ class ActiveAccountHolder(private val holder: LoadingVH? = null) {
 
     fun register(): Job {
         LocalBroadcast.registerReceiver(accountChangedReceiver,
-                AndroidExtensions.intentFilter(ActiveAccount.getter))
+                intentFilter(ActiveAccount.getter))
 
         return update()
     }

@@ -20,8 +20,8 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.utils.PrefNames.FILE_NAME_GRADES_UI_DATA
-import cz.anty.purkynka.utils.PrefNames.LAST_SORT_GRADES
+import cz.anty.purkynka.utils.FILE_NAME_GRADES_UI_DATA
+import cz.anty.purkynka.utils.LAST_SORT_GRADES
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.preference.EnumPreference
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider

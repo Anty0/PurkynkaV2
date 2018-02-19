@@ -18,16 +18,15 @@
 
 package cz.anty.purkynka.lunches
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.*
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.utils.Constants.ICON_LUNCHES_ORDER
+import cz.anty.purkynka.utils.ICON_LUNCHES_ORDER
 import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.save.LunchesData
@@ -36,13 +35,13 @@ import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
 import cz.anty.purkynka.lunches.ui.LunchesCreditItem
 import cz.anty.purkynka.lunches.ui.LunchOptionsGroupItem
-import eu.codetopic.java.utils.JavaExtensions.ifFalse
-import eu.codetopic.java.utils.JavaExtensions.ifTrue
+import eu.codetopic.java.utils.ifFalse
+import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions
-import eu.codetopic.utils.AndroidExtensions.edit
-import eu.codetopic.utils.AndroidExtensions.getIconics
-import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.*
+import eu.codetopic.utils.edit
+import eu.codetopic.utils.getIconics
+import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
@@ -84,11 +83,11 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
     private val accountHolder = ActiveAccountHolder(holder)
 
-    private val loginDataChangedReceiver = AndroidExtensions.broadcast { _, _ ->
+    private val loginDataChangedReceiver = broadcast { _, _ ->
         Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
         updateWithLoading()
     }
-    private val dataChangedReceiver = AndroidExtensions.broadcast { _, _ ->
+    private val dataChangedReceiver = broadcast { _, _ ->
         Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
         update()
     }
@@ -366,7 +365,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
             LunchesSyncAdapter.requestSync(account)
 
-            Utils.awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
+            awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
                 longSnackbar(viewRef(), R.string.snackbar_sync_start_fail)
             }
 
@@ -390,7 +389,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         return launch(UI) {
             LunchesSyncAdapter.requestSync(account)
 
-            Utils.awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
+            awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
                 longSnackbar(viewRef(), R.string.snackbar_sync_start_fail)
             }
 

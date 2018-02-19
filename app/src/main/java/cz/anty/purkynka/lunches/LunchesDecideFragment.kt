@@ -21,13 +21,13 @@ package cz.anty.purkynka.lunches
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import cz.anty.purkynka.utils.Constants.ICON_LUNCHES
+import cz.anty.purkynka.utils.ICON_LUNCHES
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment

@@ -22,10 +22,10 @@ import android.content.Context
 import android.support.annotation.MainThread
 import android.support.annotation.UiThread
 import cz.anty.purkynka.R
-import eu.codetopic.utils.AndroidExtensions.wifiManager
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
+import eu.codetopic.utils.wifiManager
+import eu.codetopic.utils.getFormattedText
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.JavaExtensions.substringOrNull
+import eu.codetopic.java.utils.substringOrNull
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI

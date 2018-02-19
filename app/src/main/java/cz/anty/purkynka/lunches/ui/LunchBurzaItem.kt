@@ -25,11 +25,11 @@ import android.text.SpannableStringBuilder
 import cz.anty.purkynka.R
 import cz.anty.purkynka.lunches.data.LunchBurza
 import cz.anty.purkynka.lunches.data.LunchBurza.Companion.dateStrShort
-import eu.codetopic.java.utils.JavaExtensions.Anchor
-import eu.codetopic.java.utils.JavaExtensions.fillToLen
+import eu.codetopic.java.utils.Anchor
+import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.baseActivity
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
+import eu.codetopic.utils.baseActivity
+import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.item_lunch_burza.*
 import org.jetbrains.anko.textColorResource
@@ -111,7 +111,7 @@ class LunchBurzaItem(val accountId: String, val base: LunchBurza) : CustomItem()
                         options?.toBundle()
                 )
             }
-        }
+        } else holder.boxClickTarget.setOnClickListener(null)
     }
 
     override fun getItemLayoutResId(context: Context): Int = R.layout.item_lunch_burza

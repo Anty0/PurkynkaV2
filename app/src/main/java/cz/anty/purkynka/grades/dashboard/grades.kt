@@ -33,12 +33,12 @@ import cz.anty.purkynka.grades.data.Grade.Companion.valueColor
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.ui.GradeActivity
-import cz.anty.purkynka.utils.Constants.DASHBOARD_PRIORITY_GRADES_NEW
-import eu.codetopic.java.utils.JavaExtensions
-import eu.codetopic.java.utils.JavaExtensions.fillToLen
+import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_GRADES_NEW
+import eu.codetopic.java.utils.Anchor
+import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions
-import eu.codetopic.utils.AndroidExtensions.baseActivity
+import eu.codetopic.utils.*
+import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
@@ -62,12 +62,12 @@ class NewGradesDashboardManager(context: Context, accountHolder: ActiveAccountHo
         private const val ID = "cz.anty.purkynka.grades.dashboard.$LOG_TAG"
     }
 
-    private val updateReceiver = AndroidExtensions.broadcast { _, _ -> update() }
+    private val updateReceiver = broadcast { _, _ -> update() }
 
     override fun register(): Job? {
         LocalBroadcast.registerReceiver(
                 receiver = updateReceiver,
-                filter = AndroidExtensions.intentFilter(
+                filter = intentFilter(
                         GradesLoginData.getter,
                         NotifyManager.getOnChangeBroadcastAction()
                 )
@@ -129,7 +129,7 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
 
         holder.txtSubject.apply {
             visibility = View.VISIBLE
-            text = grade.subjectShort.fillToLen(4, JavaExtensions.Anchor.LEFT)
+            text = grade.subjectShort.fillToLen(4, Anchor.LEFT)
         }
 
         holder.txtGrade.apply {
@@ -171,10 +171,9 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
                         options?.toBundle()
                 )
             }
-        }
-
+        } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_grade
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_grade_new
 
 }

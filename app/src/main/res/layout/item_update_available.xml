@@ -20,7 +20,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".grades.dashboard.BadSubjectAverageDashboardItem"
+    tools:context=".update.dashboard.UpdateAvailableDashboardItem"
     style="?attr/cardViewTheme"
     android:id="@+id/boxClickTarget"
     android:layout_width="match_parent"
@@ -41,38 +41,14 @@
         android:layout_height="60dp"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/txtNameShort"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:layout_width="28sp"
+            android:layout_height="28sp"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:textSize="28sp"
-            android:typeface="monospace" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_view_average"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/txtAverage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+            app:iiv_icon="gmd_system_update"
+            app:iiv_color="@color/materialLightRed" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -82,19 +58,20 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/txtNameLong"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lines="1"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:text="@string/item_update_available_title" />
 
             <TextView
-                android:id="@+id/txtInfoAndGradesCount"
+                android:id="@+id/txtUpdateInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:text="@string/item_update_available_subtitle"/>
         </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

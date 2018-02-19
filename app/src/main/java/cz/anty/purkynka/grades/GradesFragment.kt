@@ -32,10 +32,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.utils.Constants.ICON_GRADES
+import cz.anty.purkynka.utils.ICON_GRADES
 
 import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.grades.data.Semester
@@ -53,14 +53,14 @@ import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
-import eu.codetopic.java.utils.JavaExtensions.ifFalse
+import eu.codetopic.java.utils.ifFalse
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.broadcast
+import eu.codetopic.utils.broadcast
 import eu.codetopic.utils.broadcast.LocalBroadcast
-import eu.codetopic.utils.AndroidExtensions.edit
-import eu.codetopic.utils.AndroidExtensions.getIconics
-import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
-import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.edit
+import eu.codetopic.utils.getIconics
+import eu.codetopic.utils.getKSerializableExtra
+import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
@@ -296,7 +296,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                 }.await()
 
                 // Sync will be triggered later by login change broadcast
-                if (Utils.awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY)) {
+                if (awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY)) {
                     val syncResult = bg { GradesData.instance.getLastSyncResult(accountId) }.await()
                     if (syncResult == FAIL_LOGIN) {
                         longSnackbar(boxLoginRef(), R.string.snackbar_grades_login_fail)
@@ -672,7 +672,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
 
                 GradesSyncAdapter.requestSync(account, semester)
 
-                Utils.awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
+                awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
                     longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail)
                 }
 
@@ -693,7 +693,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             launch(UI) {
                 GradesSyncAdapter.requestSync(account, semester)
 
-                Utils.awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
+                awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY) ifFalse {
                     longSnackbar(boxGradesRef(), R.string.snackbar_sync_start_fail)
                 }
 

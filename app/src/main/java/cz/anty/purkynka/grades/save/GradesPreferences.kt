@@ -20,18 +20,12 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.utils.PrefNames.*
-import cz.anty.purkynka.grades.data.Semester
-import cz.anty.purkynka.grades.data.Subject
-import eu.codetopic.java.utils.JavaExtensions.kSerializer
+import cz.anty.purkynka.utils.*
 
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.FloatPreference
-import eu.codetopic.utils.data.preferences.preference.KSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.list
 
 /**
  * @author anty

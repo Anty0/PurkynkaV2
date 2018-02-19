@@ -23,11 +23,11 @@ import android.os.Bundle
 import android.support.v7.widget.SearchView
 import android.view.*
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.utils.Constants.ICON_ATTENDANCE
+import cz.anty.purkynka.utils.ICON_ATTENDANCE
 import cz.anty.purkynka.R
 import cz.anty.purkynka.attendance.ui.AttendanceAdapter
-import eu.codetopic.java.utils.JavaExtensions.to
-import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.java.utils.to
+import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider

@@ -25,19 +25,19 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import cz.anty.purkynka.utils.Constants.ICON_LUNCHES
+import cz.anty.purkynka.utils.ICON_LUNCHES
 import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
-import eu.codetopic.java.utils.JavaExtensions.ifTrue
+import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions
-import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.AndroidExtensions.getIconics
+import eu.codetopic.utils.*
+import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
@@ -77,7 +77,7 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
             }.await()
 
             // Sync will be triggered later by login change broadcast
-            return if (Utils.awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY)) {
+            return if (awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY)) {
                 val syncResult = bg { LunchesData.instance.getLastSyncResult(accountId) }.await()
                 if (syncResult == FAIL_LOGIN) {
                     longSnackbar(viewRef(), R.string.snackbar_lunches_login_fail)
@@ -186,7 +186,7 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
     private fun register(): Job {
         LocalBroadcast.registerReceiver(
                 receiver = loginDataChangedReceiver,
-                filter = AndroidExtensions.intentFilter(LunchesLoginData.getter)
+                filter = intentFilter(LunchesLoginData.getter)
         )
 
         return update()

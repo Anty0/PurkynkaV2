@@ -27,7 +27,7 @@ import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
 import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
-import eu.codetopic.java.utils.JavaExtensions.alsoIf
+import eu.codetopic.java.utils.alsoIf
 import eu.codetopic.java.utils.log.Log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay

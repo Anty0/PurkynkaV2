@@ -144,6 +144,8 @@
     <string name="item_title_lunch_options">Lunch options</string>
     <string name="item_title_lunch_burza">Burza</string>
     <string name="item_subject_bad_average_info_subtitle">"You've got bad diameter - %1$s"</string>
+    <string name="item_update_available_title">Update available</string>
+    <string name="item_update_available_subtitle">(%1$s -> %2$s)</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 

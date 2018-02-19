@@ -19,8 +19,8 @@
 package cz.anty.purkynka.grades.data
 
 import android.support.annotation.ColorInt
-import cz.anty.purkynka.utils.Utils
-import eu.codetopic.java.utils.JavaExtensions.letIf
+import cz.anty.purkynka.utils.*
+import eu.codetopic.java.utils.letIf
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,7 +41,7 @@ data class Grade(val id: Int, val date: Long, val subjectShort: String, val subj
 
         @get:ColorInt
         val Grade.valueColor: Int
-            get() = Utils.colorForValue(
+            get() = colorForValue(
                     value = value.toInt()
                             .letIf({ it == 0 }) { null }
                             ?.let { it - 1 },

@@ -20,9 +20,7 @@ package cz.anty.purkynka.lunches.ui
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.transition.Transition
 import android.view.View
 import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
@@ -33,9 +31,8 @@ import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
-import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
-import eu.codetopic.utils.simple.SimpleTransitionListener
+import eu.codetopic.utils.getKSerializableExtra
+import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem

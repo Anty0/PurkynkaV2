@@ -25,7 +25,7 @@ import eu.codetopic.utils.data.preferences.VersionedPreferencesData
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 
-import cz.anty.purkynka.utils.PrefNames.*
+import cz.anty.purkynka.utils.*
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 
 /**

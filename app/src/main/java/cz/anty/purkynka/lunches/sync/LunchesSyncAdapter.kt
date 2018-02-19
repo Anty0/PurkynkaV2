@@ -21,7 +21,7 @@ package cz.anty.purkynka.lunches.sync
 import android.accounts.Account
 import android.content.*
 import android.os.Bundle
-import cz.anty.purkynka.utils.Constants
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
 import cz.anty.purkynka.exceptions.WrongLoginDataException
@@ -47,7 +47,7 @@ class LunchesSyncAdapter(context: Context) :
         private const val LOG_TAG = "LunchesSyncAdapter"
 
         const val CONTENT_AUTHORITY = LunchesDataProvider.AUTHORITY
-        const val SYNC_FREQUENCY = Constants.SYNC_FREQUENCY_LUNCHES
+        const val SYNC_FREQUENCY = SYNC_FREQUENCY_LUNCHES
 
         fun init(context: Context) {
             BroadcastsConnector.connect(

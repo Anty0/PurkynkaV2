@@ -19,7 +19,7 @@
 package cz.anty.purkynka.grades.data
 
 import android.support.annotation.ColorInt
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import kotlinx.serialization.Serializable
 
 /**
@@ -51,7 +51,7 @@ data class Subject(val fullName: String, val shortName: String, val grades: List
 
         @get:ColorInt
         val Collection<Grade>.averageColor: Int
-            get() = Utils.colorForValue(
+            get() = colorForValue(
                     value = (average * 100).toInt() - 100,
                     size = 500
             )

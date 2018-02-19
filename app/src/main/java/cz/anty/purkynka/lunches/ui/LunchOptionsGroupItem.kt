@@ -24,13 +24,13 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
-import eu.codetopic.java.utils.JavaExtensions.Anchor
-import eu.codetopic.java.utils.JavaExtensions.fillToLen
-import eu.codetopic.java.utils.JavaExtensions.letIfNull
+import eu.codetopic.java.utils.Anchor
+import eu.codetopic.java.utils.fillToLen
+import eu.codetopic.java.utils.letIfNull
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.baseActivity
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
-import eu.codetopic.utils.AndroidExtensions.getFormattedQuantityText
+import eu.codetopic.utils.baseActivity
+import eu.codetopic.utils.getFormattedText
+import eu.codetopic.utils.getFormattedQuantityText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import kotlinx.android.synthetic.main.item_lunch_options_group.*
 import org.jetbrains.anko.textColorResource
@@ -121,7 +121,7 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
                         options?.toBundle()
                 )
             }
-        }
+        } else holder.boxClickTarget.setOnClickListener(null)
     }
 
     override fun getItemLayoutResId(context: Context): Int = R.layout.item_lunch_options_group

@@ -27,8 +27,7 @@ import org.jsoup.select.Elements
 
 import java.io.IOException
 
-import cz.anty.purkynka.utils.Constants
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.grades.data.Semester
 
 /**
@@ -61,14 +60,14 @@ object GradesFetcher {
     fun login(username: String, password: String): Map<String, String> {
         return Jsoup
                 .connect(URL_MAIN + URL_ADD_LOGIN)
-                .userAgent(Utils.userAgent)
+                .userAgent(userAgent)
                 .data(
                         PARAM_USERNAME, username,
                         PARAM_PASSWORD, password,
                         PARAM_SUBMIT, PARAM_SUBMIT_VAL
                 )
                 .followRedirects(false)
-                .timeout(Constants.CONNECTION_TIMEOUT_SAS)
+                .timeout(CONNECTION_TIMEOUT_SAS)
                 .method(Connection.Method.POST)
                 .execute()
                 .cookies()
@@ -78,9 +77,9 @@ object GradesFetcher {
     @Throws(IOException::class)
     fun logout(loginCookies: Map<String, String>): Document =
             Jsoup.connect(URL_MAIN + URL_ADD_LOGOUT)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .followRedirects(false)
-                    .timeout(Constants.CONNECTION_TIMEOUT_SAS)
+                    .timeout(CONNECTION_TIMEOUT_SAS)
                     .cookies(loginCookies)
                     .get()
 
@@ -107,13 +106,13 @@ object GradesFetcher {
     @Throws(IOException::class)
     private fun getGradesPage(loginCookies: Map<String, String>, semester: Semester): Document =
             Jsoup.connect(URL_MAIN + URL_ADD_GRADES)
-                    .userAgent(Utils.userAgent)
+                    .userAgent(userAgent)
                     .data(
                             PARAM_SEMESTER, Integer.toString(semester.value),
                             PARAM_SHOW, PARAM_SHOW_VAL_BY_DATE
                     )
                     .followRedirects(false)
-                    .timeout(Constants.CONNECTION_TIMEOUT_SAS)
+                    .timeout(CONNECTION_TIMEOUT_SAS)
                     .cookies(loginCookies)
                     .get()
 }

@@ -28,10 +28,10 @@ import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.receiver.UpdateFetchReceiver
 import cz.anty.purkynka.update.save.UpdateData
-import eu.codetopic.java.utils.JavaExtensions.alsoIf
+import eu.codetopic.java.utils.alsoIf
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions
-import eu.codetopic.utils.AndroidExtensions.sendSuspendOrderedBroadcast
+import eu.codetopic.utils.*
+import eu.codetopic.utils.sendSuspendOrderedBroadcast
 import eu.codetopic.utils.UtilsBase
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
@@ -55,7 +55,7 @@ class UpdateCheckService : IntentService(LOG_TAG) {
         suspend fun requestSuspendFetchUpdates(context: Context): Job.Result =
                 context.sendSuspendOrderedBroadcast(
                         intent = UpdateFetchReceiver.getIntent(context),
-                        initialResult = AndroidExtensions.OrderedBroadcastResult(UpdateCheckJob.REQUEST_RESULT_UNKNOWN)
+                        initialResult = OrderedBroadcastResult(UpdateCheckJob.REQUEST_RESULT_UNKNOWN)
                 ).let {
                     when (it.code) {
                         UpdateCheckJob.REQUEST_RESULT_OK ->

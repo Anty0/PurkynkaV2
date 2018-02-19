@@ -18,25 +18,16 @@
 
 package cz.anty.purkynka.grades.ui
 
-import android.animation.Animator
-import android.animation.AnimatorInflater
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.support.graphics.drawable.AnimatorInflaterCompat
-import android.support.transition.TransitionInflater
-import android.support.transition.TransitionManager
-import android.transition.Transition
 import android.view.View
 import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Subject
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.AndroidExtensions.getKSerializableExtra
-import eu.codetopic.utils.AndroidExtensions.putKSerializableExtra
-import eu.codetopic.utils.simple.SimpleTransitionListener
-import eu.codetopic.utils.thread.LooperUtils
+import eu.codetopic.utils.getKSerializableExtra
+import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
@@ -48,8 +39,6 @@ import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.list
 import kotlinx.serialization.map
 import org.jetbrains.anko.ctx
-import org.jetbrains.anko.toast
-import java.lang.ref.WeakReference
 
 /**
  * @author anty

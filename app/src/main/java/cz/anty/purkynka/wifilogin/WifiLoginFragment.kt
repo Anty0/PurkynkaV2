@@ -26,7 +26,7 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import cz.anty.purkynka.utils.Constants.ICON_WIFI_LOGIN
+import cz.anty.purkynka.utils.ICON_WIFI_LOGIN
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.save.ActiveAccount
@@ -34,10 +34,10 @@ import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher.LoginResult.*
 import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
-import eu.codetopic.utils.AndroidExtensions.getFormattedText
-import eu.codetopic.utils.AndroidExtensions.broadcast
-import eu.codetopic.utils.AndroidExtensions.getIconics
-import eu.codetopic.utils.AndroidExtensions.intentFilter
+import eu.codetopic.utils.getFormattedText
+import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.getIconics
+import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider

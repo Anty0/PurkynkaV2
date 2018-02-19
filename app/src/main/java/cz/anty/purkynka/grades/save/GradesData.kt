@@ -20,11 +20,11 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.utils.PrefNames.*
+import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
-import eu.codetopic.java.utils.JavaExtensions.kSerializer
+import eu.codetopic.java.utils.kSerializer
 
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.BooleanPreference

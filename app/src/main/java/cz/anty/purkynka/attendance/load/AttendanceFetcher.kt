@@ -19,15 +19,10 @@
 package cz.anty.purkynka.attendance.load
 
 import android.support.annotation.WorkerThread
-import cz.anty.purkynka.utils.Utils
+import cz.anty.purkynka.utils.*
 import kotlinx.io.IOException
-import kotlinx.serialization.internal.StringSerializer
-import kotlinx.serialization.json.JSON
-import kotlinx.serialization.map
-import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
-import java.net.URLEncoder
 
 
 /**
@@ -75,7 +70,7 @@ object AttendanceFetcher {
                         )
                 )
                 .header("Content-Type", "application/json")*/
-                .userAgent(Utils.userAgent)
+                .userAgent(userAgent)
                 .post()
                 .select("table[3]")
                 .select("tr[bgcolor=#FFFFFF]")
