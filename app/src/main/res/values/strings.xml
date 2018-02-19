@@ -26,6 +26,7 @@
     <string name="notify_group_name_lunches_burza_watcher_status">Lunches burza watcher</string>
     <string name="notify_channel_name_lunches_burza_watcher_status">Lunches burza watcher status</string>
     <string name="notify_channel_name_lunches_burza_watcher_result">Lunches burza watcher result</string>
+    <string name="notify_channel_name_lunches_changes">Lunches changes</string>
 
     <string name="account_default_name">User</string>
 
@@ -47,6 +48,20 @@
     <string name="notify_lunches_watcher_result_title_fail">Failed to ordered lunch from burza</string>
     <string name="notify_lunches_watcher_result_text">By lunches burza watcher</string>
     <string name="notify_lunches_watcher_result_text_multi_user">For %1$s by lunches burza watcher</string>
+    <string name="notify_lunch_new_title">New lunches on %1$s</string>
+    <plurals name="notify_lunch_new_text">
+        <item quantity="one">%1$d Lunch option</item>
+        <item quantity="other">%1$d Lunch options</item>
+    </plurals>
+    <string name="notify_lunch_new_big_text_no_options">No options available</string>
+    <string name="notify_lunches_new_summary_title">New lunches available</string>
+    <string name="notify_lunches_new_summary_text">On %1$s - %2$s</string>
+    <string name="notify_lunches_new_summary_text_single_date">On %1$s</string>
+    <string name="notify_lunches_new_summary_text_no_date">On -. -.</string>
+    <plurals name="notify_lunches_new_summary_line">
+        <item quantity="one">%1$d Lunch option on %1$s</item>
+        <item quantity="other">%1$d Lunch options on %1$s</item>
+    </plurals>
 
     <string name="title_activity_update">Update check</string>
     <string name="title_activity_settings">Settings</string>
@@ -136,6 +151,8 @@
     <string name="but_no_lunch">No lunch</string>
     <string name="but_start">Start</string>
     <string name="but_stop">Stop</string>
+    <string name="but_no">No</string>
+    <string name="but_uninstall">Uninstall</string>
 
     <string name="item_title_date">Date</string>
     <string name="item_title_type">Type</string>
@@ -221,6 +238,9 @@
     <string name="empty_view_text_small_no_burza_lunches">All lunches in burza will appear here.</string>
     <string name="empty_view_text_attendance_people">No people found</string>
     <string name="empty_view_text_small_attendance_people">People found by search in attendance will appear here.</string>
+
+    <string name="dialog_uninstall_old_app_title">Old application</string>
+    <string name="dialog_uninstall_old_app_message">We found old version of application Purkynka installed on your phone. Should we remove it?</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
     <string name="toast_wifi_logging_start">Sending login request to wifi <i>%1$s</i></string>

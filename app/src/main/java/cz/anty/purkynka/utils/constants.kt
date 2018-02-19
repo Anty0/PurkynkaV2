@@ -24,6 +24,11 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 /**
  * @author anty
  */
+
+const val APP_OLD_PACKAGE_NAME = "cz.anty.purkynkamanager"
+
+//---------------------------------------------------------------------
+
 val ICON_HOME_DASHBOARD = GoogleMaterial.Icon.gmd_home
 val ICON_GRADES = GoogleMaterial.Icon.gmd_book
 val ICON_WIFI_LOGIN = GoogleMaterial.Icon.gmd_wifi_lock

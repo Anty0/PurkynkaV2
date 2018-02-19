@@ -595,17 +595,15 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                 bg { GradesData.instance.getGrades(it) }.await()
             }
             accountHolder.accountId?.let { accountId ->
-                boxRecycler?.context?.let { context ->
-                    // All grades changes will be displayed to user, so let's remove them all
-                    NotifyManager
-                            .requestSuspendCancelAll(
-                                    context = context,
-                                    groupId = AccountNotifyGroup.idFor(accountId),
-                                    channelId = GradesChangesNotifyChannel.ID
-                            )
-                            .takeIf { it.isNotEmpty() }
-                            ?.also { addGradesChanges(accountId, it.values) }
-                }
+                // All grades changes will be displayed to user, so let's remove them all
+                NotifyManager
+                        .requestSuspendCancelAll(
+                                context = boxRecycler?.context ?: return@let,
+                                groupId = AccountNotifyGroup.idFor(accountId),
+                                channelId = GradesChangesNotifyChannel.ID
+                        )
+                        .takeIf { it.isNotEmpty() }
+                        ?.also { addGradesChanges(accountId, it.values) }
             }
 
             updateUi()

@@ -54,6 +54,8 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.linearLayoutCompat
+import org.jetbrains.anko.appcompat.v7.tintedImageView
+import org.jetbrains.anko.appcompat.v7.tintedRadioButton
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
@@ -116,19 +118,19 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
         // TODO: if lunch is not ordered and can't be ordered, check burza for available lunches and show info to user.
 
         boxOptionsGroup.apply {
-            val butNoLunch = radioButton {
+            val butNoLunch = tintedRadioButton button@ {
                 tag = null
                 textResource = R.string.but_no_lunch
                 id = 0
                 onCheckedChange { _, isChecked ->
-                    if (isChecked) butLunchOrder.isEnabled = this@radioButton.tag != null
+                    if (isChecked) butLunchOrder.isEnabled = this@button.tag != null
                 }
             }
 
             var toCheck = butNoLunch.id
 
             lunchOptionsGroup.options?.forEachIndexed { index, lunchOption ->
-                radioButton {
+                tintedRadioButton button@ {
                     tag = lunchOption.takeUnless { it.ordered }
                     text = lunchOption.name
                     id = index + 1
@@ -142,7 +144,7 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                     }
 
                     onCheckedChange { _, isChecked ->
-                        if (isChecked) butLunchOrder.isEnabled = this@radioButton.tag != null
+                        if (isChecked) butLunchOrder.isEnabled = this@button.tag != null
                     }
                 }
                 val progress = horizontalProgressBar {
@@ -174,7 +176,7 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                             jobs += images.map mkJob@ {
                                 val (imgName, imgUrl) = it
 
-                                val imgView = imageView {
+                                val imgView = tintedImageView {
                                     contentDescription = imgName
                                     scaleType = ImageView.ScaleType.FIT_CENTER
                                     if (imgUrl == null) {

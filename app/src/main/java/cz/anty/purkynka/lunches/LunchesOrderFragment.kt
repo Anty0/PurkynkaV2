@@ -28,7 +28,9 @@ import cz.anty.purkynka.utils.ICON_LUNCHES_ORDER
 import cz.anty.purkynka.R
 import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
+import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
@@ -43,6 +45,7 @@ import eu.codetopic.utils.edit
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -247,6 +250,12 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                     else self().accountHolder.accountId?.let {
                         bg { LunchesData.instance.getLastSyncResult(it) }.await()
                     }
+            self().accountHolder.accountId?.let {
+                NotifyManager.requestSuspendCancelAll(
+                        context = self().ctx,
+                        groupId = AccountNotifyGroup.idFor(it),
+                        channelId = LunchesChangesNotifyChannel.ID)
+            }
 
             self().updateUi()
         }

@@ -44,6 +44,20 @@ data class LunchOptionsGroup(val date: Long, val options: Array<LunchOption>?) {
                 ?.takeIf { it != -1 }
                 ?.let { it to options[it] }
 
+    infix fun isDifferentFrom(other: LunchOptionsGroup): Boolean {
+        return date != other.date ||
+                run checkOptions@ {
+            if (options == null) return other.options != null
+            if (other.options == null) return true
+
+            if (options.size != other.options.size) return true
+
+            return (0 until options.size).any {
+                options[it] isDifferentFrom other.options[it]
+            }
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

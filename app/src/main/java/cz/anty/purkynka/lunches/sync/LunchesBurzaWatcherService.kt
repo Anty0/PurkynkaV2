@@ -22,6 +22,7 @@ import android.app.Notification
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
@@ -114,6 +115,10 @@ class LunchesBurzaWatcherService : Service() {
                 Intent(ACTION_STATUS_UPDATE)
                         .putKSerializableExtra(EXTRA_STATUS_MAP, status,
                                 EXTRA_STATUS_MAP_SERIALIZER)
+                        .also {
+                            if (Build.VERSION.SDK_INT >= 16)
+                                it.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+                        }
         )
     }
 

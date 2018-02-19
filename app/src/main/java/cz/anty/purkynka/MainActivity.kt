@@ -29,6 +29,7 @@ import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.view.Menu
@@ -60,13 +61,18 @@ import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.settings.SettingsActivity
 import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
+import eu.codetopic.java.utils.debug.DebugMode
 import eu.codetopic.java.utils.to
-import eu.codetopic.utils.broadcast
-import eu.codetopic.utils.intentFilter
-import eu.codetopic.utils.getIconics
-import eu.codetopic.utils.AndroidUtils
+import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.bundleOf
+import org.jetbrains.anko.coroutines.experimental.asReference
+import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.ctx
 
 
 class MainActivity : NavigationActivity() {
@@ -126,21 +132,54 @@ class MainActivity : NavigationActivity() {
         enableSwitchingAccounts = true
         enableActiveAccountEditButton = true
 
-        val iconBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_foreground)
-        val iconWidth = iconBitmap.width
-        val iconHeight = iconBitmap.height
-        val cropWidth = iconWidth / 2
-        val cropHeight = iconHeight / 2
-        val cropStartX = (iconWidth - cropWidth) / 2
-        val cropStartY = (iconHeight - cropHeight) / 2
-        val croppedIconBitmap = Bitmap.createBitmap(iconBitmap,
-                cropStartX, cropStartY, cropWidth, cropHeight)
-        setNavigationViewAppIconBitmap(croppedIconBitmap)
+        setNavigationViewAppIconBitmap(run cropImage@ {
+            val iconBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_foreground)
+            val iconWidth = iconBitmap.width
+            val iconHeight = iconBitmap.height
+            val cropWidth = iconWidth / 2
+            val cropHeight = iconHeight / 2
+            val cropStartX = (iconWidth - cropWidth) / 2
+            val cropStartY = (iconHeight - cropHeight) / 2
+            return@cropImage Bitmap.createBitmap(iconBitmap,
+                    cropStartX, cropStartY, cropWidth, cropHeight)
+        })
 
         findViewById<NavigationView>(R.id.navigationView).apply {
-            val white = ContextCompat.getColorStateList(this@MainActivity, android.R.color.white)
+            val white = ContextCompat.getColorStateList(ctx, android.R.color.white)
             itemTextColor = white
             itemIconTintList = white
+        }
+
+        DebugMode.ifDisabled {
+            val appCtx = applicationContext
+            val self = this.asReference()
+            launch(UI) checkForOld@ {
+                val isOldInstalled = bg {
+                    appCtx.packageManager.isAppInstalled(APP_OLD_PACKAGE_NAME)
+                }.await()
+
+                if (!isOldInstalled) return@checkForOld
+
+                self().apply {
+                    alert(Appcompat) {
+                        titleResource = R.string.dialog_uninstall_old_app_title
+                        messageResource = R.string.dialog_uninstall_old_app_message
+                        isCancelable = true
+                        negativeButton(R.string.but_no) { it.cancel() }
+                        positiveButton(R.string.but_uninstall) {
+                            it.dismiss()
+                            startActivity(Intent(
+                                    Intent.ACTION_DELETE,
+                                    Uri.fromParts(
+                                            "package",
+                                            APP_OLD_PACKAGE_NAME,
+                                            null
+                                    )
+                            ))
+                        }
+                    }.show()
+                }
+            }
         }
     }
 

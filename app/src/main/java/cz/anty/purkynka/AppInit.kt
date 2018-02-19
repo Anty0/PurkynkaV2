@@ -22,6 +22,9 @@ import android.content.Context
 import android.support.multidex.MultiDexApplication
 import android.support.v4.content.ContextCompat
 import com.evernote.android.job.JobManager
+import com.mikepenz.community_material_typeface_library.CommunityMaterial
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.mikepenz.iconics.Iconics
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
@@ -33,6 +36,7 @@ import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherResultChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusGroup
+import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.receiver.UpdateLunchesSyncReceiver
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
@@ -161,6 +165,11 @@ class AppInit : MultiDexApplication() {
             override val filterPriorities: Array<Priority>?
                 get() = arrayOf(Priority.ERROR)
         })
+
+        // Setup Iconics
+        Iconics.registerFont(GoogleMaterial())
+        Iconics.registerFont(CommunityMaterial())
+        Iconics.markInitDone()
     }
 
     private fun initAllProcesses() {
@@ -273,7 +282,8 @@ class AppInit : MultiDexApplication() {
         Accounts.initialize(
                 this,
                 GradesChangesNotifyChannel.ID,
-                LunchesBurzaWatcherResultChannel.ID
+                LunchesBurzaWatcherResultChannel.ID,
+                LunchesChangesNotifyChannel.ID
         )
     }
 
@@ -288,7 +298,8 @@ class AppInit : MultiDexApplication() {
                 UpdateNotifyChannel(),
                 GradesChangesNotifyChannel(),
                 LunchesBurzaWatcherStatusChannel(),
-                LunchesBurzaWatcherResultChannel()
+                LunchesBurzaWatcherResultChannel(),
+                LunchesChangesNotifyChannel()
         )
     }
 }

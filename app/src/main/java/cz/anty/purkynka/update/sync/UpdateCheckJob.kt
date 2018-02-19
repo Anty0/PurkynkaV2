@@ -76,15 +76,19 @@ class UpdateCheckJob : Job() {
                     && JobManager.instance().getAllJobRequestsForTag(TAG).isNotEmpty())
                 return
 
-            JobRequest.Builder(TAG)
-                    .setPeriodic(INTERVAL, FLEX)
-                    .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
-                    .setRequiresBatteryNotLow(true)
-                    .setUpdateCurrent(true)
-                    .build()
-                    .schedule()
+            try {
+                JobRequest.Builder(TAG)
+                        .setPeriodic(INTERVAL, FLEX)
+                        .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+                        .setRequiresBatteryNotLow(true)
+                        .setUpdateCurrent(true)
+                        .build()
+                        .schedule()
 
-            UpdateData.instance.jobScheduleVersion = BuildConfig.VERSION_CODE
+                UpdateData.instance.jobScheduleVersion = BuildConfig.VERSION_CODE
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "schedule(version=${BuildConfig.VERSION_CODE})", e)
+            }
         }
     }
 

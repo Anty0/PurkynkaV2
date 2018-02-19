@@ -28,6 +28,12 @@ import kotlinx.serialization.Serializable
 data class LunchOption(val name: String, val enabled: Boolean, val ordered: Boolean,
                        val orderOrCancelUrl: String?, val isInBurza: Boolean?, val toOrFromBurzaUrl: String?) {
 
+    infix fun isDifferentFrom(other: LunchOption): Boolean =
+            this != other ||
+                    enabled != other.enabled ||
+                    ordered != other.ordered ||
+                    isInBurza != other.isInBurza
+
     override fun hashCode(): Int {
         return name.hashCode()
     }

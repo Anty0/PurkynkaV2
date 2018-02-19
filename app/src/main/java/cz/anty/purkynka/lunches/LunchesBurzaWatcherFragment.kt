@@ -56,6 +56,7 @@ import kotlinx.android.synthetic.main.fragment_lunches_burza_watcher.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.appcompat.v7.tintedCheckBox
 import org.jetbrains.anko.checkBox
 import org.jetbrains.anko.childrenSequence
 import org.jetbrains.anko.coroutines.experimental.asReference
@@ -386,7 +387,7 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
                     ?: arrayOfNulls<LunchOption>(minSize)
 
             checkOptions.forEachIndexed { index, lunchOption ->
-                checkBox {
+                tintedCheckBox {
                     text = SpannableStringBuilder().apply {
                         append(
                                 ctx.getFormattedText(

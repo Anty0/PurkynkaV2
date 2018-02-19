@@ -24,9 +24,12 @@ import android.os.Bundle
 import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.exceptions.WrongLoginDataException
+import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
+import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.receiver.UpdateLunchesSyncReceiver
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
@@ -34,6 +37,8 @@ import cz.anty.purkynka.lunches.save.LunchesDataProvider
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.broadcast.BroadcastsConnector
+import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
+import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder.Companion.requestShowAll
 import java.io.IOException
 
 /**
@@ -137,11 +142,12 @@ class LunchesSyncAdapter(context: Context) :
             }
             val nLunchesList = LunchesParser.parseLunchOptionsGroups(nLunchesHtml, syncResult)
 
-            // TODO: check if user have enough credit and warn him (in gui and maybe optionally in notification)
-
-            // TODO: check for new lunches and show notification (but do nothing if firstSync)
-
-            // TODO: check if user have ordered lunch for at last three days and when no, but can, warn about it (in gui and optionally in notification)
+            if (!firstSync) {
+                checkForDifferences(accountId, lunchesList, nLunchesList, syncResult)
+            } else {
+                syncResult.stats.numDeletes += lunchesList.count()
+                syncResult.stats.numInserts += nLunchesList.count()
+            }
 
             data.setCredit(accountId, nCredit)
             data.setLunches(accountId, nLunchesList)
@@ -166,5 +172,62 @@ class LunchesSyncAdapter(context: Context) :
                 }
             })
         }
+    }
+
+    fun checkForDifferences(accountId: String,
+                            oldLunches: List<LunchOptionsGroup>,
+                            newLunches:  List<LunchOptionsGroup>,
+                            syncResult: SyncResult) {
+        val inserts = newLunches.toMutableList()
+        val removes = mutableListOf<LunchOptionsGroup>()
+        val changes = mutableListOf<LunchOptionsGroup>()
+
+        val interestingChanges = mutableListOf<LunchOptionsGroup>()
+
+        oldLunches.forEach {
+            val newIndex = inserts.indexOf(it)
+            if (newIndex == -1) {
+                syncResult.stats.numDeletes++
+                removes.add(it)
+                return@forEach
+            }
+
+            val newIt = inserts.removeAt(newIndex)
+            if (it isDifferentFrom newIt) {
+                syncResult.stats.numUpdates++
+                changes.add(newIt)
+
+                val hadNoUsableOptions = it.options == null ||
+                        (it.orderedOption == null && it.options.all { !it.enabled })
+                if (hadNoUsableOptions) {
+                    val haveUsableOptions = newIt.options != null
+                            && newIt.options.any { it.enabled }
+                    if (haveUsableOptions) {
+                        interestingChanges.add(newIt)
+                    }
+                }
+            }
+        }
+
+        syncResult.stats.numInserts += inserts.count()
+
+        interestingChanges.addAll(
+                inserts.filter {
+                    it.options != null && it.options.any { it.enabled }
+                }
+        )
+
+        if (interestingChanges.isEmpty()) return
+
+        MultiNotificationBuilder.create(
+                groupId = AccountNotifyGroup.idFor(accountId),
+                channelId = LunchesChangesNotifyChannel.ID
+        ) {
+            persistent = true
+            refreshable = true
+            data = interestingChanges.map {
+                LunchesChangesNotifyChannel.dataFor(it)
+            }
+        }.requestShowAll(context)
     }
 }
