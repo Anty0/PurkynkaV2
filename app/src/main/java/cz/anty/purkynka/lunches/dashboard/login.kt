@@ -16,18 +16,9 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.update.sync
-
-import com.evernote.android.job.Job
-import com.evernote.android.job.JobCreator
+package cz.anty.purkynka.lunches.dashboard
 
 /**
  * @author anty
  */
-class UpdateCheckJobCreator : JobCreator {
-
-    override fun create(tag: String): Job? = when(tag) {
-        UpdateCheckJob.JOB_TAG -> UpdateCheckJob()
-        else -> null
-    }
-}
+// TODO: create

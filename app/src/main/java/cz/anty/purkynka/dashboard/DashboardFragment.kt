@@ -74,8 +74,6 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     private var adapter: MultiAdapter<DashboardItem>? = null
 
     init {
-        setHasOptionsMenu(true)
-
         val self = this.asReference()
         accountHolder.addChangeListener {
             self().managers
@@ -96,7 +94,6 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         this.adapter = adapter
 
         managers = listOf(
-                // TODO: create try swipe out item
                 UpdateCheckDashboardManager(themedContext, accountHolder, adapter),
                 SubjectsAverageDashboardManager(themedContext, accountHolder, adapter),
                 NewGradesDashboardManager(themedContext, accountHolder, adapter)
@@ -156,10 +153,6 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         adapter = null
 
         super.onDestroyView()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater) // TODO: 2.6.16 add options to menu
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

@@ -85,6 +85,8 @@
 
     <string name="shortcut_grades_label_short">Grades</string>
     <string name="shortcut_grades_label_long">Show grades</string>
+    <string name="shortcut_wifi_login_label_short">Wifi auto login</string>
+    <string name="shortcut_wifi_login_label_long">Show wifi auto login</string>
     <string name="shortcut_lunches_order_label_short">Lunches order</string>
     <string name="shortcut_lunches_order_label_long">Show lunches order</string>
 

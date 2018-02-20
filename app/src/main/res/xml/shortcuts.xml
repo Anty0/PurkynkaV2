@@ -32,6 +32,19 @@
             android:data="shortcut://cz.anty.purkynka.grades.GradesFragment" />
     </shortcut>
     <shortcut
+        android:shortcutId="wifi_login"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_wifi_login"
+        android:shortcutShortLabel="@string/shortcut_wifi_login_label_short"
+        android:shortcutLongLabel="@string/shortcut_wifi_login_label_long">
+        <!--android:shortcutDisabledMessage="@string/compose_disabled_message1"-->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="cz.anty.purkynka"
+            android:targetClass="cz.anty.purkynka.MainActivity"
+            android:data="shortcut://cz.anty.purkynka.wifilogin.WifiLoginFragment" />
+    </shortcut>
+    <shortcut
         android:shortcutId="lunchesOrder"
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_lunches_order"

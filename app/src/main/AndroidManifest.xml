@@ -109,15 +109,6 @@
             android:theme="@style/AppTheme.NoActionBar.Lunches"/>
 
         <receiver
-            android:name=".update.receiver.UpdateCheckJobScheduleReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
-            android:name=".update.receiver.UpdateFetchReceiver"
-            android:enabled="true"
-            android:exported="false"
-            android:process=":syncs" />
-        <receiver
             android:name=".wifilogin.receiver.WifiChangedReceiver"
             android:label="@string/label_receiver_wifi_changed"
             android:enabled="true"
@@ -166,12 +157,6 @@
             <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-        <service
-            android:name=".update.sync.UpdateCheckService"
-            android:label=""
-            android:enabled="true"
-            android:exported="false"
-            android:process=":syncs"/>
         <service
             android:name=".grades.sync.GradesSyncService"
             android:label="@string/label_service_sync_grades"

@@ -24,8 +24,10 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
+import cz.anty.purkynka.update.UpdateActivity
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
+import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_UPDATE_AVAILABLE
 import eu.codetopic.utils.broadcast
 import eu.codetopic.utils.intentFilter
@@ -50,8 +52,8 @@ class UpdateCheckDashboardManager(context: Context, accountHolder: ActiveAccount
 
     companion object {
 
-        private const val LOG_TAG = "NewGradesDashboardManager"
-        private const val ID = "cz.anty.purkynka.grades.dashboard.$LOG_TAG"
+        private const val LOG_TAG = "UpdateCheckDashboardManager"
+        private const val ID = "cz.anty.purkynka.update.dashboard.$LOG_TAG"
     }
 
     private val updateReceiver = broadcast { _, _ -> update() }
@@ -60,7 +62,7 @@ class UpdateCheckDashboardManager(context: Context, accountHolder: ActiveAccount
         LocalBroadcast.registerReceiver(
                 receiver = updateReceiver,
                 filter = intentFilter(
-                        NotifyManager.getOnChangeBroadcastAction()
+                        UpdateData.getter
                 )
         )
 
@@ -79,19 +81,15 @@ class UpdateCheckDashboardManager(context: Context, accountHolder: ActiveAccount
             adapterRef().mapReplaceAll(
                     id = ID,
                     items = bg calcItems@ {
-                        NotifyManager.getAllData(
-                                groupId = UpdateNotifyGroup.ID,
-                                channelId = UpdateNotifyChannel.ID
-                        ).mapNotNull {
-                            it.value.let {
-                                UpdateAvailableDashboardItem(
-                                        versionCode = UpdateNotifyChannel.readDataVersionCode(it)
-                                                ?: return@let null,
-                                        versionName = UpdateNotifyChannel.readDataVersionName(it)
-                                                ?: return@let null
-                                )
-                            }
-                        }
+                        val (targetVersionCode, targetVersionName) = UpdateData.instance.latestVersion
+                        return@calcItems if (targetVersionCode != BuildConfig.VERSION_CODE) {
+                            listOf(
+                                    UpdateAvailableDashboardItem(
+                                            targetVersionCode,
+                                            targetVersionName
+                                    )
+                            )
+                        } else emptyList()
                     }.await()
             )
         }
@@ -111,7 +109,7 @@ class UpdateAvailableDashboardItem(val versionCode: Int, val versionName: String
 
         if (itemPosition != NO_POSITION) {
             holder.boxClickTarget.setOnClickListener {
-
+                UpdateActivity.start(holder.context)
             }
         } else holder.boxClickTarget.setOnClickListener(null)
     }

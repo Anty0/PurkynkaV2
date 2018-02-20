@@ -274,10 +274,6 @@ class AppInit : MultiDexApplication() {
         UpdateCheckJob.schedule()
     }
 
-    /*private fun requestInitJobManager() {
-        UpdateCheckJob.requestSchedule(this)
-    }*/
-
     private fun initAccounts() {
         Accounts.initialize(
                 this,

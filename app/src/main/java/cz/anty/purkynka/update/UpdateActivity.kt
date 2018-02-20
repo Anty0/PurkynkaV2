@@ -30,7 +30,7 @@ import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.save.UpdateData
-import cz.anty.purkynka.update.sync.UpdateCheckService
+import cz.anty.purkynka.update.sync.Updater
 import eu.codetopic.java.utils.alsoIf
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.broadcast
@@ -44,6 +44,7 @@ import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.activity_update.*
+import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
@@ -176,14 +177,10 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     }
 
     private suspend fun fetchUpdate(): Job.Result =
-            try {
-                UpdateCheckService.requestSuspendFetchUpdates(this)
-            } catch (e: Exception) {
-                Log.w(LOG_TAG, "fetchUpdate", e)
-                Job.Result.FAILURE
-            }.alsoIf({ it == Job.Result.FAILURE }) {
-                snackbarUpdateFetchFailed()
-            }
+            bg { Updater.fetchUpdates() }.await()
+                    .alsoIf({ it == Job.Result.FAILURE }) {
+                        snackbarUpdateFetchFailed()
+                    }
 
     private fun snackbarUpdateFetchFailed() = longSnackbar(
             boxRefreshLayout,
