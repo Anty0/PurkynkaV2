@@ -32,8 +32,7 @@ import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.update.sync.Updater
 import eu.codetopic.java.utils.alsoIf
-import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.intentFilter
@@ -44,7 +43,6 @@ import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.activity_update.*
-import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
@@ -79,7 +77,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     private var isDownloading: Boolean = false // TODO: implement
     private var isDownloaded: Boolean = false // TODO: implement
 
-    private val updateDataChangedReceiver = broadcast { _, _ -> updateData() }
+    private val updateDataChangedReceiver = receiver { _, _ -> updateData() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

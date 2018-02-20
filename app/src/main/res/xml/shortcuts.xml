@@ -45,7 +45,7 @@
             android:data="shortcut://cz.anty.purkynka.wifilogin.WifiLoginFragment" />
     </shortcut>
     <shortcut
-        android:shortcutId="lunchesOrder"
+        android:shortcutId="lunches_order"
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_lunches_order"
         android:shortcutShortLabel="@string/shortcut_lunches_order_label_short"
@@ -56,5 +56,44 @@
             android:targetPackage="cz.anty.purkynka"
             android:targetClass="cz.anty.purkynka.MainActivity"
             android:data="shortcut://cz.anty.purkynka.lunches.LunchesDecideFragment?TARGET_CLASS_NAME=cz.anty.purkynka.lunches.LunchesOrderFragment" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="lunches_burza"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_lunches_burza"
+        android:shortcutShortLabel="@string/shortcut_lunches_burza_label_short"
+        android:shortcutLongLabel="@string/shortcut_lunches_burza_label_long">
+        <!--android:shortcutDisabledMessage="@string/compose_disabled_message1"-->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="cz.anty.purkynka"
+            android:targetClass="cz.anty.purkynka.MainActivity"
+            android:data="shortcut://cz.anty.purkynka.lunches.LunchesDecideFragment?TARGET_CLASS_NAME=cz.anty.purkynka.lunches.LunchesBurzaFragment" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="lunches_burza_watcher"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_lunches_burza_watcher"
+        android:shortcutShortLabel="@string/shortcut_lunches_burza_watcher_label_short"
+        android:shortcutLongLabel="@string/shortcut_lunches_burza_watcher_label_long">
+        <!--android:shortcutDisabledMessage="@string/compose_disabled_message1"-->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="cz.anty.purkynka"
+            android:targetClass="cz.anty.purkynka.MainActivity"
+            android:data="shortcut://cz.anty.purkynka.lunches.LunchesDecideFragment?TARGET_CLASS_NAME=cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="attendance"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_attendance"
+        android:shortcutShortLabel="@string/shortcut_attendance_label_short"
+        android:shortcutLongLabel="@string/shortcut_attendance_label_long">
+        <!--android:shortcutDisabledMessage="@string/compose_disabled_message1"-->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="cz.anty.purkynka"
+            android:targetClass="cz.anty.purkynka.MainActivity"
+            android:data="shortcut://cz.anty.purkynka.attendance.AttendanceSearchFragment" />
     </shortcut>
 </shortcuts>

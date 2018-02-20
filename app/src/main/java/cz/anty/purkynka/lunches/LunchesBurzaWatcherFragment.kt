@@ -41,7 +41,7 @@ import eu.codetopic.java.utils.to
 import eu.codetopic.java.utils.letIf
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
-import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.getKSerializableExtra
@@ -57,7 +57,6 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.appcompat.v7.tintedCheckBox
-import org.jetbrains.anko.checkBox
 import org.jetbrains.anko.childrenSequence
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
@@ -88,15 +87,15 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
 
     private val accountHolder = ActiveAccountHolder(holder)
 
-    private val loginDataChangedReceiver = broadcast { _, _ ->
+    private val loginDataChangedReceiver = receiver { _, _ ->
         Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
         updateWithLoading()
     }
-    private val dataChangedReceiver = broadcast { _, _ ->
+    private val dataChangedReceiver = receiver { _, _ ->
         Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
         update()
     }
-    private val watcherServiceStatusChangedReceiver = broadcast { _, intent ->
+    private val watcherServiceStatusChangedReceiver = receiver { _, intent ->
         Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
 
         if (serviceLoading) {
@@ -107,7 +106,7 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
         serviceStatus = intent?.getKSerializableExtra(
                 name = LunchesBurzaWatcherService.EXTRA_STATUS_MAP,
                 loader = LunchesBurzaWatcherService.EXTRA_STATUS_MAP_SERIALIZER
-        ) ?: return@broadcast
+        ) ?: return@receiver
 
         update()
     }

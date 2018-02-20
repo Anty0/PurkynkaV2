@@ -26,7 +26,7 @@ import android.os.Build
 import android.support.annotation.MainThread
 import android.support.annotation.RequiresApi
 import cz.anty.purkynka.account.Accounts
-import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.notifications.manager.util.NotifyGroup
@@ -46,33 +46,33 @@ class AccountNotifyGroup(val accountId: String, val account: Account, vararg cha
         fun idFor(accountId: String) = "GROUP_ID{$accountId}"
 
         private val accountAddedReceiver: BroadcastReceiver =
-                broadcast { context, intent ->
-                    intent ?: return@broadcast
-                    val account = intent.getParcelableExtra<Account>(Accounts.EXTRA_ACCOUNT) ?: return@broadcast
-                    val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@broadcast
-                    val channelIds = channelIds ?: return@broadcast
+                receiver { context, intent ->
+                    intent ?: return@receiver
+                    val account = intent.getParcelableExtra<Account>(Accounts.EXTRA_ACCOUNT) ?: return@receiver
+                    val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@receiver
+                    val channelIds = channelIds ?: return@receiver
 
-                    if (NotifyManager.hasGroup(idFor(accountId))) return@broadcast
+                    if (NotifyManager.hasGroup(idFor(accountId))) return@receiver
                     NotifyManager.installGroup(context, AccountNotifyGroup(accountId, account, *channelIds))
                 }
 
         private val accountRemovedReceiver: BroadcastReceiver =
-                broadcast { context, intent ->
-                    intent ?: return@broadcast
-                    val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@broadcast
+                receiver { context, intent ->
+                    intent ?: return@receiver
+                    val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@receiver
 
-                    if (!NotifyManager.hasGroup(idFor(accountId))) return@broadcast
+                    if (!NotifyManager.hasGroup(idFor(accountId))) return@receiver
                     NotifyManager.uninstallGroup(context, idFor(accountId))
                 }
 
         private val accountRenamedReceiver: BroadcastReceiver =
-                broadcast { context, intent ->
-                    intent ?: return@broadcast
-                    val account = intent.getParcelableExtra<Account>(Accounts.EXTRA_ACCOUNT) ?: return@broadcast
-                    val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@broadcast
-                    val channelIds = channelIds ?: return@broadcast
+                receiver { context, intent ->
+                    intent ?: return@receiver
+                    val account = intent.getParcelableExtra<Account>(Accounts.EXTRA_ACCOUNT) ?: return@receiver
+                    val accountId = intent.getStringExtra(Accounts.EXTRA_ACCOUNT_ID) ?: return@receiver
+                    val channelIds = channelIds ?: return@receiver
 
-                    if (!NotifyManager.hasGroup(idFor(accountId))) return@broadcast
+                    if (!NotifyManager.hasGroup(idFor(accountId))) return@receiver
                     NotifyManager.replaceGroup(context, AccountNotifyGroup(accountId, account, *channelIds))
                 }
 

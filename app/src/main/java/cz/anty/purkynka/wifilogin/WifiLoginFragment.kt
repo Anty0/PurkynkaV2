@@ -35,7 +35,7 @@ import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher.LoginResult.*
 import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.getFormattedText
-import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
@@ -79,7 +79,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
     private var loginCount: Int? = null
 
-    private val activeAccountChangeReceiver = broadcast { _, _ ->
+    private val activeAccountChangeReceiver = receiver { _, _ ->
         holder.showLoading()
         val holderRef = holder.asReference()
 
@@ -91,9 +91,9 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         }
     }
 
-    private val wifiLoginDataChangeReceiver = broadcast { _, _ -> updateData() }
+    private val wifiLoginDataChangeReceiver = receiver { _, _ -> updateData() }
 
-    private val wifiDataChangeReceiver = broadcast { _, _ -> updateData() }
+    private val wifiDataChangeReceiver = receiver { _, _ -> updateData() }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {

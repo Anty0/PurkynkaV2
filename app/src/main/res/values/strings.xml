@@ -89,6 +89,12 @@
     <string name="shortcut_wifi_login_label_long">Show wifi auto login</string>
     <string name="shortcut_lunches_order_label_short">Lunches order</string>
     <string name="shortcut_lunches_order_label_long">Show lunches order</string>
+    <string name="shortcut_lunches_burza_label_short">Lunches burza</string>
+    <string name="shortcut_lunches_burza_label_long">Show lunches burza</string>
+    <string name="shortcut_lunches_burza_watcher_label_short">Lunches burza watcher</string>
+    <string name="shortcut_lunches_burza_watcher_label_long">Show lunches burza watcher</string>
+    <string name="shortcut_attendance_label_short">Attendance</string>
+    <string name="shortcut_attendance_label_long">Show attendance search</string>
 
     <string name="label_receiver_wifi_changed">Wifi change receiver for Wifi auto login</string>
     <string name="label_service_authenticator">Account authenticator</string>
@@ -165,6 +171,8 @@
     <string name="item_subject_bad_average_info_subtitle">"You've got bad diameter - %1$s"</string>
     <string name="item_update_available_title">Update available</string>
     <string name="item_update_available_subtitle">(%1$s -> %2$s)</string>
+    <string name="item_attendance_exception_page_load">Failed to load page…</string>
+    <string name="item_man_is_in_school">Is in school</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 

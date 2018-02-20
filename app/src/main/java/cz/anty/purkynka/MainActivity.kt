@@ -29,7 +29,6 @@ import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.view.Menu
@@ -67,8 +66,6 @@ import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
@@ -79,6 +76,8 @@ class MainActivity : NavigationActivity() {
 
     companion object {
         private const val LOG_TAG = "MainActivity"
+
+        private const val TAG_DIALOG_UNINSTALL_OLD_APP = "DIALOG_UNINSTALL_OLD_APP"
 
         private const val REQUEST_CODE_EDIT_ACCOUNT: Int = 1
 
@@ -116,13 +115,13 @@ class MainActivity : NavigationActivity() {
         get() = DashboardFragment::class.java
 
     private val activeAccountChangeReceiver: BroadcastReceiver =
-            broadcast { _, _ -> invalidateNavigationMenu() }
+            receiver { _, _ -> invalidateNavigationMenu() }
 
     private val accountsChangeReceiver: BroadcastReceiver =
-            broadcast { _, _ -> invalidateNavigationMenu() }
+            receiver { _, _ -> invalidateNavigationMenu() }
 
     private val lunchesLoginDataChangeReceiver: BroadcastReceiver =
-            broadcast { _, _ -> invalidateNavigationMenu() }
+            receiver { _, _ -> invalidateNavigationMenu() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar) // TODO: Animated app splash screen
@@ -150,7 +149,7 @@ class MainActivity : NavigationActivity() {
             itemIconTintList = white
         }
 
-        DebugMode.ifDisabled {
+        if (savedInstanceState == null && !DebugMode.isEnabled) {
             val appCtx = applicationContext
             val self = this.asReference()
             launch(UI) checkForOld@ {
@@ -161,23 +160,10 @@ class MainActivity : NavigationActivity() {
                 if (!isOldInstalled) return@checkForOld
 
                 self().apply {
-                    alert(Appcompat) {
-                        titleResource = R.string.dialog_uninstall_old_app_title
-                        messageResource = R.string.dialog_uninstall_old_app_message
-                        isCancelable = true
-                        negativeButton(R.string.but_no) { it.cancel() }
-                        positiveButton(R.string.but_uninstall) {
-                            it.dismiss()
-                            startActivity(Intent(
-                                    Intent.ACTION_DELETE,
-                                    Uri.fromParts(
-                                            "package",
-                                            APP_OLD_PACKAGE_NAME,
-                                            null
-                                    )
-                            ))
-                        }
-                    }.show()
+                    UninstallOldAppDialogFragment().show(
+                            supportFragmentManager,
+                            TAG_DIALOG_UNINSTALL_OLD_APP
+                    )
                 }
             }
         }

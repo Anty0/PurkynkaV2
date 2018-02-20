@@ -71,7 +71,7 @@ class AttendanceAdapter(context: Context) : AutoLoadAdapter(context) {
             } catch (e: Exception) {
                 Log.w(LOG_TAG, "onLoadNextPage(page=$page)", e)
 
-                // TODO: add exception info item to editor
+                editor.add(PageLoadExceptionItem(e))
 
                 return@bg false
             }

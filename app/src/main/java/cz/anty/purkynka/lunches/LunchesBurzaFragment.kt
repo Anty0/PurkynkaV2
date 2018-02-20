@@ -80,11 +80,11 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
     private val accountHolder = ActiveAccountHolder(holder)
 
-    private val loginDataChangedReceiver = broadcast { _, _ ->
+    private val loginDataChangedReceiver = receiver { _, _ ->
         Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
         updateWithLoading(updateBurza = true)
     }
-    private val dataChangedReceiver = broadcast { _, _ ->
+    private val dataChangedReceiver = receiver { _, _ ->
         Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
         update()
     }
@@ -343,11 +343,11 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
         val self = this.asReference()
         val holder = holder
-        //val appContext = view.context.applicationContext
+        val appContext = view.context.applicationContext
         return launch(UI) {
             holder.showLoading()
 
-            LunchesLoginFragment.doLogout(accountId) ifTrue {
+            LunchesLoginFragment.doLogout(appContext, accountId) ifTrue {
                 // Success :D
                 // Let's switch fragment
                 self().switchFragment(LunchesLoginFragment::class.java)

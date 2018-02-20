@@ -25,15 +25,12 @@ import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
 import cz.anty.purkynka.update.UpdateActivity
-import cz.anty.purkynka.update.notify.UpdateNotifyChannel
-import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_UPDATE_AVAILABLE
-import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.getFormattedText
-import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import kotlinx.android.synthetic.main.item_update_available.*
 import kotlinx.coroutines.experimental.Job
@@ -41,7 +38,6 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
-import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
  * @author anty
@@ -56,7 +52,7 @@ class UpdateCheckDashboardManager(context: Context, accountHolder: ActiveAccount
         private const val ID = "cz.anty.purkynka.update.dashboard.$LOG_TAG"
     }
 
-    private val updateReceiver = broadcast { _, _ -> update() }
+    private val updateReceiver = receiver { _, _ -> update() }
 
     override fun register(): Job? {
         LocalBroadcast.registerReceiver(

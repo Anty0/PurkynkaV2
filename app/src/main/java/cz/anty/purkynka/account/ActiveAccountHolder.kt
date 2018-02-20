@@ -40,7 +40,7 @@ class ActiveAccountHolder(private val holder: LoadingVH? = null) {
         private const val LOG_TAG = "ActiveAccountHolder"
     }
 
-    private val accountChangedReceiver = broadcast { _, _ ->
+    private val accountChangedReceiver = receiver { _, _ ->
         Log.d(LOG_TAG, "accountChangedReceiver.onReceive()")
         updateWithLoading()
     }

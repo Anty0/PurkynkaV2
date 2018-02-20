@@ -19,6 +19,7 @@
 package cz.anty.purkynka.lunches
 
 import android.accounts.Account
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.ContextThemeWrapper
@@ -29,6 +30,8 @@ import cz.anty.purkynka.utils.ICON_LUNCHES
 import cz.anty.purkynka.R
 import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
+import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
@@ -36,9 +39,10 @@ import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
 import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.*
-import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -93,18 +97,18 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
             }
         }
 
-        suspend fun doLogout(accountId: String): Boolean {
+        suspend fun doLogout(appContext: Context,
+                             accountId: String): Boolean {
             bg {
                 LunchesLoginData.loginData.logout(accountId)
                 LunchesData.instance.resetFirstSyncState(accountId)
             }.await()
 
-            // TODO: after adding notifications to lunches, add their canceling here
-            /*NotifyManager.requestCancelAll(
+            NotifyManager.requestCancelAll(
                     context = appContext,
                     groupId = AccountNotifyGroup.idFor(accountId),
-                    channelId = ?
-            )*/
+                    channelId = LunchesChangesNotifyChannel.ID
+            )
 
             return true
         }
@@ -122,7 +126,7 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
     private var userLoggedIn = false
     private var username = ""
 
-    private val loginDataChangedReceiver = broadcast { _, _ ->
+    private val loginDataChangedReceiver = receiver { _, _ ->
         Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
         updateWithLoading()
     }

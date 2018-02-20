@@ -69,6 +69,7 @@
                 android:id="@+id/txtUpdateInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lines="1"
                 android:gravity="end"
                 android:textSize="13sp"
                 android:text="@string/item_update_available_subtitle"/>

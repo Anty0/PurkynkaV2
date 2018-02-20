@@ -35,7 +35,7 @@ import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD
 import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.format
-import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.getFormattedQuantityText
 import eu.codetopic.utils.intentFilter
@@ -61,7 +61,7 @@ class SubjectsAverageDashboardManager(context: Context, accountHolder: ActiveAcc
         private const val ID = "cz.anty.purkynka.grades.dashboard.$LOG_TAG"
     }
 
-    private val updateReceiver = broadcast { _, _ -> update() }
+    private val updateReceiver = receiver { _, _ -> update() }
 
     override fun register(): Job? {
         LocalBroadcast.registerReceiver(

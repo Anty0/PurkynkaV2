@@ -62,7 +62,7 @@ class NewGradesDashboardManager(context: Context, accountHolder: ActiveAccountHo
         private const val ID = "cz.anty.purkynka.grades.dashboard.$LOG_TAG"
     }
 
-    private val updateReceiver = broadcast { _, _ -> update() }
+    private val updateReceiver = receiver { _, _ -> update() }
 
     override fun register(): Job? {
         LocalBroadcast.registerReceiver(

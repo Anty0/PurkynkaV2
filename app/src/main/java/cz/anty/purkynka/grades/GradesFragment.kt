@@ -55,7 +55,7 @@ import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
 import eu.codetopic.java.utils.ifFalse
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.broadcast
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.edit
 import eu.codetopic.utils.getIconics
@@ -209,7 +209,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
 
         override var containerView: View? = null
 
-        private val loginDataChangedReceiver = broadcast { _, _ ->
+        private val loginDataChangedReceiver = receiver { _, _ ->
             Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
             updateWithLoading()
         }
@@ -357,29 +357,29 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
 
         override var containerView: View? = null
 
-        private val loginDataChangedReceiver = broadcast { _, _ ->
+        private val loginDataChangedReceiver = receiver { _, _ ->
             Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
             updateWithLoading()
         }
-        private val dataChangedReceiver = broadcast { _, _ ->
+        private val dataChangedReceiver = receiver { _, _ ->
             Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
             update()
         }
-        private val uiDataChangedReceiver = broadcast { _, _ ->
+        private val uiDataChangedReceiver = receiver { _, _ ->
             Log.d(LOG_TAG, "uiDataChangedReceiver.onReceive()")
             update()
         }
-        private val newGradesChangesReceiver = broadcast { _, intent ->
+        private val newGradesChangesReceiver = receiver { _, intent ->
             Log.d(LOG_TAG, "newGradesChangesReceiver.onReceive()")
 
             val accountId = intent
                     ?.getStringExtra(GradesSyncAdapter.EXTRA_ACCOUNT_ID)
-                    ?: return@broadcast
+                    ?: return@receiver
             val gradesChanges = intent
                     .getKSerializableExtra(
                             GradesSyncAdapter.EXTRA_GRADES_CHANGES,
                             BundleSerializer.list
-                    ) ?: return@broadcast
+                    ) ?: return@receiver
 
             addGradesChanges(accountId, gradesChanges)
 
@@ -712,11 +712,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
 
         override var containerView: View? = null
 
-        private val loginDataChangedReceiver = broadcast { _, _ ->
+        private val loginDataChangedReceiver = receiver { _, _ ->
             Log.d(LOG_TAG, "loginDataChangedReceiver.onReceive()")
             update()
         }
-        private val dataChangedReceiver = broadcast { _, _ ->
+        private val dataChangedReceiver = receiver { _, _ ->
             Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
             update()
         }

@@ -48,6 +48,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
+            android:lines="1"
             android:textSize="28sp"
             android:typeface="monospace" />
 
@@ -63,6 +64,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:lines="1"
                 android:text="@string/text_view_average"
                 android:textSize="13sp" />
 
@@ -70,6 +72,7 @@
                 android:id="@+id/txtAverage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:lines="1"
                 android:textSize="24sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -93,6 +96,7 @@
                 android:id="@+id/txtInfoAndGradesCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lines="1"
                 android:gravity="end"
                 android:textSize="13sp" />
         </LinearLayout>

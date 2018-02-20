@@ -109,7 +109,7 @@ class LunchesBurzaWatcherResultChannel : NotifyChannel(ID, true) {
                 //setShowWhen(true)
                 //setStyle()
 
-                setSmallIcon(R.drawable.ic_notify_lunches_watcher)
+                setSmallIcon(R.drawable.ic_notify_lunches_burza_watcher)
                 //setLargeIcon()
                 color = ContextCompat.getColor(context, R.color.colorPrimaryLunches)
                 //setColorized(true)
