@@ -21,6 +21,8 @@ package cz.anty.purkynka.grades.notify
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
@@ -147,11 +149,12 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrid
 
         if (grade != null) {
             context.startActivities(arrayOf(
-                    MainActivity.getStartIntent(context, GradesFragment::class.java),
+                    MainActivity.getStartIntent(context, GradesFragment::class.java)
+                            .addFlags(FLAG_ACTIVITY_NEW_TASK),
                     GradeActivity.getStartIntent(context, grade, changes = changes)
             ))
         } else {
-            MainActivity.start(context, GradesFragment::class.java)
+            MainActivity.getStartIntent(context, GradesFragment::class.java)
         }
     }
 

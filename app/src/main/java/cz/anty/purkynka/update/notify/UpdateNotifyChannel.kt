@@ -21,6 +21,8 @@ package cz.anty.purkynka.update.notify
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
@@ -79,7 +81,10 @@ class UpdateNotifyChannel : NotifyChannel(ID, false) {
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
-        UpdateActivity.start(context)
+        context.startActivity(
+                UpdateActivity.generateIntent(context)
+                        .addFlags(FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     private fun buildNotificationBase(context: Context,

@@ -22,6 +22,7 @@ import android.content.Context
 import android.support.multidex.MultiDexApplication
 import android.support.v4.content.ContextCompat
 import com.evernote.android.job.JobManager
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.Iconics
@@ -162,6 +163,8 @@ class AppInit : MultiDexApplication() {
 
             Log.d("UExHandler", "Oh no, something went wrong (error logged). " +
                     "Ok, let's enable Feedback module...")
+
+            // TODO: log exception to FirebaseAnalytics or Crashlytics
 
             // TODO: 6/16/17 enable feedback module
         }

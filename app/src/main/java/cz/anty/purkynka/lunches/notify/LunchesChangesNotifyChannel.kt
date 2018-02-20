@@ -21,6 +21,7 @@ package cz.anty.purkynka.lunches.notify
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
@@ -106,7 +107,8 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverri
 
         if (accountId != null && lunchGroup != null) {
             context.startActivities(arrayOf(
-                    MainActivity.getStartIntent(context, LunchesOrderFragment::class.java),
+                    MainActivity.getStartIntent(context, LunchesOrderFragment::class.java)
+                            .addFlags(FLAG_ACTIVITY_NEW_TASK),
                     LunchOptionsGroupActivity.getStartIntent(context, accountId, lunchGroup)
             ))
         } else {
@@ -181,7 +183,10 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverri
                             .bigText(
                                     lunchGroup.options
                                             ?.takeIf { it.isNotEmpty() }
-                                            ?.joinToString("\n") { it.name }
+                                            ?.joinToString(
+                                                    separator = "\n - ",
+                                                    prefix = " - "
+                                            ) { it.name }
                                             ?: context.getText(
                                                     R.string.notify_lunch_new_big_text_no_options
                                             )
