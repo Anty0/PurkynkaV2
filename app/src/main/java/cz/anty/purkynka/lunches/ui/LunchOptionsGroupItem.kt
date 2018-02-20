@@ -112,7 +112,7 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
                     )
                 }
 
-                if (options == null) Log.w(LOG_TAG, "Can't start LunchOptionsGroupActivity " +
+                if (options == null) Log.e(LOG_TAG, "Can't start LunchOptionsGroupActivity " +
                         "with transition: Cannot find Activity in context hierarchy")
 
                 ContextCompat.startActivity(

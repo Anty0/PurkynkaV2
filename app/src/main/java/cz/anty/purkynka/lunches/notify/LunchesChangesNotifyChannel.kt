@@ -48,7 +48,7 @@ import kotlinx.serialization.json.JSON
 /**
  * @author anty
  */
-class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
+class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrides = true) {
 
     companion object {
 
@@ -192,9 +192,16 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
 
     override fun createSummaryNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,
                                            data: Map<out NotifyId, Bundle>): NotificationCompat.Builder {
+        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+            Log.e(LOG_TAG, "createSummaryNotification(id=$notifyId, group=$group," +
+                    " notifyId=$notifyId, data=$data)",
+                    IllegalArgumentException("Group is not AccountNotifyGroup, " +
+                            "can't obtain account."))
+        }
+
         val allLunchesGroups = data.values.mapNotNull {
             readData(it).alsoIfNull {
-                Log.w(LOG_TAG, "Data doesn't contains lunchOptionsGroup")
+                Log.e(LOG_TAG, "Data doesn't contains lunchOptionsGroup")
             }
         }
 
@@ -225,8 +232,8 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
             setContentText(text)
             setStyle(
                     NotificationCompat.InboxStyle()
+                            .setSummaryText(account?.name ?: title)
                             .setBigContentTitle(title)
-                            .setSummaryText(text)
                             .also { n -> lines.forEach { n.addLine(it) } }
             )
         }

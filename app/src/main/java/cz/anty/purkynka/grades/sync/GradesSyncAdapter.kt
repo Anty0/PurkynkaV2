@@ -123,7 +123,7 @@ class GradesSyncAdapter(context: Context) :
                 try {
                     Semester.valueOf(extras.getString(EXTRA_SEMESTER)).stableSemester
                 } catch (e: Exception) {
-                    Log.w(LOG_TAG, e)
+                    Log.e(LOG_TAG, "onPerformSync() -> Failed to parse semester parameter", e)
                     Semester.AUTO.stableSemester
                 }
             } else Semester.AUTO.stableSemester

@@ -43,10 +43,10 @@ class SettingsData private constructor(context: Context) :
         private const val SAVE_VERSION = 0
     }
 
-    val requiredNetworkType: NetworkType
+    /*val requiredNetworkType: NetworkType
         @Synchronized get() =
             if (preferences.getBoolean(SettingsActivity.PREFERENCE_KEY_REFRESH_ON_WIFI, true))
-                NetworkType.WIFI else NetworkType.ANY
+                NetworkType.WIFI else NetworkType.ANY*/
 
     @Synchronized
     override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {

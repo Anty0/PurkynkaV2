@@ -42,7 +42,7 @@ import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
-import kotlinx.android.synthetic.main.item_grade.*
+import kotlinx.android.synthetic.main.item_grade_new.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -147,22 +147,18 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
 
         holder.txtTeacher.text = grade.teacher
 
-        holder.boxColoredBackground.setBackgroundResource(
-                android.R.color.transparent
-        )
-
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
                 val context = holder.context
                 val options = context.baseActivity?.let {
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             it,
-                            holder.boxColoredBackground,
+                            holder.boxClickTarget,
                             context.getString(R.string.id_transition_grade_item)
                     )
                 }
 
-                if (options == null) Log.w(LOG_TAG, "Can't start GradeActivity " +
+                if (options == null) Log.e(LOG_TAG, "Can't start GradeActivity " +
                         "with transition: Cannot find Activity in context hierarchy")
 
                 ContextCompat.startActivity(

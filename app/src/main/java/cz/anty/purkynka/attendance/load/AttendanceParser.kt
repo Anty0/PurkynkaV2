@@ -62,8 +62,7 @@ object AttendanceParser {
         } catch (e: ParseException) {
             throw IllegalArgumentException(
                     "Parameter error: invalid " +
-                            "last enter date ${manData[COL_LAST_ENTER_DATE].text()}",
-                    e
+                            "last enter date ${manData[COL_LAST_ENTER_DATE].text()}", e
             )
         }
         val isInSchool = parseIsInSchool(manData[COL_IS_IN_SCHOOL])

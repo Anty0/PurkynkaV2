@@ -51,7 +51,7 @@ import kotlin.coroutines.experimental.buildSequence
 /**
  * @author anty
  */
-class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
+class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrides = true) {
 
     companion object {
 
@@ -248,26 +248,42 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, true) {
 
     override fun createSummaryNotification(context: Context, group: NotifyGroup, notifyId: NotifyId,
                                            data: Map<out NotifyId, Bundle>): NotificationCompat.Builder {
+        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+            Log.e(LOG_TAG, "createSummaryNotification(id=$notifyId, group=$group," +
+                    " notifyId=$notifyId, data=$data)",
+                    IllegalArgumentException("Group is not AccountNotifyGroup, " +
+                            "can't obtain account."))
+        }
+
         val allGrades = data.values.mapNotNull {
             readDataGrade(it).alsoIfNull {
-                Log.w(LOG_TAG, "Data doesn't contains grade")
+                Log.e(LOG_TAG, "Data doesn't contains grade")
             }
         }
         val subjects = allGrades.map { it.subjectShort }.distinct().joinToString(", ")
         val color = allGrades.averageColor
 
+
+        val title = context.getText(R.string.notify_grade_summary_title)
+        val text = context.getFormattedText(R.string.notify_grade_summary_text, subjects)
+
         return buildNotificationBase(context, group, color).apply {
-            setContentTitle(context.getText(R.string.notify_grade_summary_title))
-            setContentText(context.getFormattedText(R.string.notify_grade_summary_text, subjects))
-            setStyle(NotificationCompat.InboxStyle()
-                    .setBigContentTitle(context.getText(R.string.notify_grade_summary_title))
-                    .setSummaryText(context.getFormattedText(R.string.notify_grade_summary_text, subjects))
-                    .also { n ->
-                        allGrades.forEach {
-                            n.addLine(context.getFormattedText(R.string.notify_grade_summary_line,
-                                    it.valueToShow, it.subjectShort))
-                        }
-                    })
+            setContentTitle(title)
+            setContentText(text)
+            setStyle(
+                    NotificationCompat.InboxStyle()
+                            .setSummaryText(account?.name ?: title)
+                            .setBigContentTitle(title)
+                            .also { n ->
+                                allGrades.forEach {
+                                    n.addLine(
+                                            context.getFormattedText(
+                                                    R.string.notify_grade_summary_line,
+                                                    it.valueToShow, it.subjectShort)
+                                    )
+                                }
+                            }
+            )
         }
     }
 }

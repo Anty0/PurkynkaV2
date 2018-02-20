@@ -19,6 +19,8 @@
 package cz.anty.purkynka.grades.dashboard
 
 import android.content.Context
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
@@ -35,10 +37,8 @@ import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD
 import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.format
-import eu.codetopic.utils.receiver
-import eu.codetopic.utils.getFormattedText
-import eu.codetopic.utils.getFormattedQuantityText
-import eu.codetopic.utils.intentFilter
+import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import kotlinx.android.synthetic.main.item_subject_bad_average.*
@@ -115,6 +115,11 @@ class SubjectsAverageDashboardManager(context: Context, accountHolder: ActiveAcc
 class BadSubjectAverageDashboardItem(val accountId: String, val semester: Semester,
                                      val subject: Subject) : /*Swipeable*/DashboardItem() {
 
+    companion object {
+
+        private const val LOG_TAG = "BadSubjectAverageDashboardItem"
+    }
+
     private val average: Double = subject.average
     private val averageColor: Int = subject.averageColor
 
@@ -149,7 +154,23 @@ class BadSubjectAverageDashboardItem(val accountId: String, val semester: Semest
 
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
-                SubjectActivity.start(holder.context, subject)
+                val context = holder.context
+                val options = context.baseActivity?.let {
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            it,
+                            holder.boxFrame,
+                            context.getString(R.string.id_transition_subject_item)
+                    )
+                }
+
+                if (options == null) Log.e(LOG_TAG, "Can't start SubjectActivity " +
+                        "with transition: Cannot find Activity in context hierarchy")
+
+                ContextCompat.startActivity(
+                        context,
+                        SubjectActivity.getStartIntent(context, subject),
+                        options?.toBundle()
+                )
             }
         } else holder.boxClickTarget.setOnClickListener(null)
     }

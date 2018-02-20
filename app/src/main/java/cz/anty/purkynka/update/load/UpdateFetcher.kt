@@ -66,7 +66,7 @@ object UpdateFetcher { // TODO: create new/better api
                 .userAgent(userAgent)
                 .followRedirects(false)
                 .execute().body()
-                .letIf({ it.toLowerCase().contains("<html>") }) {
+                .letIf({ it.contains("<html>", ignoreCase = true) }) {
                     Log.w(LOG_TAG, "fetchVersionName()",
                             IOException("Invalid page loaded: $it"))
                     return@letIf null

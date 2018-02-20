@@ -184,6 +184,11 @@ object LunchesFetcher {
     @WorkerThread
     @Throws(IOException::class)
     fun getLunchesBurzaElements(loginCookies: Map<String, String>): Elements =
+            getBurzaPage(loginCookies)
+                    .let { getLunchesBurzaElements(it) }
+    @WorkerThread
+    @Throws(IOException::class)
+    fun getBurzaPage(loginCookies: Map<String, String>): Document =
             Jsoup.connect(URL_BURZA)
                     .userAgent(userAgent)
                     .data(
@@ -194,6 +199,10 @@ object LunchesFetcher {
                     .followRedirects(false)
                     .cookies(loginCookies)
                     .get()
+
+
+    fun getLunchesBurzaElements(burzaPage: Document): Elements =
+            burzaPage
                     .select("div#mainContext")
                     .select("table")
                     .select("tr")

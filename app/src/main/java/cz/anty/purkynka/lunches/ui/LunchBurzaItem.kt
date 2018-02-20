@@ -102,7 +102,7 @@ class LunchBurzaItem(val accountId: String, val base: LunchBurza) : CustomItem()
                     )
                 }
 
-                if (options == null) Log.w(LOG_TAG, "Can't start LunchBurzaActivity " +
+                if (options == null) Log.e(LOG_TAG, "Can't start LunchBurzaActivity " +
                         "with transition: Cannot find Activity in context hierarchy")
 
                 ContextCompat.startActivity(

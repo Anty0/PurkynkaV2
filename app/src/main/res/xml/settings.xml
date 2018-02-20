@@ -21,10 +21,10 @@
 
     <PreferenceCategory android:title="@string/pref_header_global">
 
-        <SwitchPreference
+        <!--<SwitchPreference
             android:key="REFRESH_ON_WIFI"
             android:defaultValue="false"
-            android:title="@string/pref_switch_refresh_on_wifi"/> <!-- TODO: Remove (unused and not required) -->
+            android:title="@string/pref_switch_refresh_on_wifi"/>--> <!-- TODO: Remove (unused and not required) -->
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_system">

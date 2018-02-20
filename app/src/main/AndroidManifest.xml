@@ -109,6 +109,16 @@
             android:theme="@style/AppTheme.NoActionBar.Lunches"/>
 
         <receiver
+            android:name=".update.receiver.AppUpdatedReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":syncs">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+        <receiver
             android:name=".wifilogin.receiver.WifiChangedReceiver"
             android:label="@string/label_receiver_wifi_changed"
             android:enabled="true"

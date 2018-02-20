@@ -150,21 +150,21 @@ class AppInit : MultiDexApplication() {
         Thread.setDefaultUncaughtExceptionHandler { thread, ex ->
             Log.d("UExHandler", "Oh no, something went wrong (uncaught exception). " +
                     "Ok, let's enable Feedback module...")
+
             // TODO: 6/16/17 enable feedback module
+
             defaultHandler.uncaughtException(thread, ex)
         }
 
         // Setup error logged listener
-        Logger.logsHandler.addOnLoggedListener(object : LogsHandler.OnLoggedListener {
-            override fun onLogged(logLine: LogLine) {
-                Log.d("UExHandler", "Oh no, something went wrong (error logged). " +
-                        "Ok, let's enable Feedback module...")
-                // TODO: 6/16/17 enable feedback module
-            }
+        Logger.logsHandler.addOnLoggedListener onLogged@ {
+            if (it.priority != Priority.ERROR) return@onLogged
 
-            override val filterPriorities: Array<Priority>?
-                get() = arrayOf(Priority.ERROR)
-        })
+            Log.d("UExHandler", "Oh no, something went wrong (error logged). " +
+                    "Ok, let's enable Feedback module...")
+
+            // TODO: 6/16/17 enable feedback module
+        }
 
         // Setup Iconics
         Iconics.registerFont(GoogleMaterial())

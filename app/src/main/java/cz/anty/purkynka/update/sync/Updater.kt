@@ -39,7 +39,7 @@ object Updater {
     private const val LOG_TAG = "Updater"
 
     fun fetchUpdates(): Job.Result {
-        Log.w(LOG_TAG, "fetchUpdates(process=${UtilsBase.Process.name})")
+        Log.b(LOG_TAG, "fetchUpdates(process=${UtilsBase.Process.name})")
 
         val code = UpdateFetcher.fetchVersionCode() ?: return Job.Result.FAILURE
         val name = UpdateFetcher.fetchVersionName() ?: return Job.Result.FAILURE
@@ -50,13 +50,13 @@ object Updater {
     }
 
     fun fetchUpdatesAndNotify(context: Context): Job.Result {
-        Log.w(LOG_TAG, "fetchUpdatesAndNotify() -> Checking for update")
+        Log.b(LOG_TAG, "fetchUpdatesAndNotify() -> Checking for update")
 
         val result = fetchUpdates().alsoIf({
             it == Job.Result.SUCCESS &&
                     UpdateData.instance.latestVersionCode != BuildConfig.VERSION_CODE
         }) {
-            Log.w(LOG_TAG, "fetchUpdatesAndNotify()" +
+            Log.b(LOG_TAG, "fetchUpdatesAndNotify()" +
                     " -> Check for update -> Found update" +
                     " -> (${BuildConfig.VERSION_CODE} -> ${UpdateData.instance.latestVersionCode})")
 
@@ -76,7 +76,7 @@ object Updater {
             ).requestShow(context)
         }
 
-        Log.w(LOG_TAG, "fetchUpdatesAndNotify()" +
+        Log.b(LOG_TAG, "fetchUpdatesAndNotify()" +
                 " -> Checking for update -> Update result -> (result=$result)")
 
         return result

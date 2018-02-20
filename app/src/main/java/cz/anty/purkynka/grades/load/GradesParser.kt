@@ -73,13 +73,14 @@ object GradesParser {
                     it.isNotEmpty() && !it[0].text().contains("žádné", true)
                 }
             }
-            ?.mapNotNull {
+            ?.mapNotNull map@ {
                 try {
                     syncResult?.apply { stats.numEntries++ }
-                    parseGrade(it)
+                    return@map parseGrade(it)
                 } catch (e: Exception) {
                     syncResult?.apply { stats.numParseExceptions++ }
-                    Log.w(LOG_TAG, "parseGrades", e); null
+                    Log.w(LOG_TAG, "parseGrades", e)
+                    return@map null
                 }
             }
             ?: emptyList()

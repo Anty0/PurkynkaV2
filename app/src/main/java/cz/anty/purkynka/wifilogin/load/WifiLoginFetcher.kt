@@ -82,7 +82,7 @@ object WifiLoginFetcher {
                         .also { contextRef.toastR { R.string.toast_wifi_logging_success } }
                         .let { LoginResult.SUCCESS }
             } catch (e: Exception) {
-                Log.w(LOG_TAG, "tryLoginGui(force=$force)", e)
+                Log.w(LOG_TAG, "tryLoginBackground(force=$force)", e)
                 contextRef.toastR { R.string.toast_wifi_logging_fail }
                 return@login LoginResult.FAIL_CONNECTION
             }

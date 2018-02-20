@@ -26,6 +26,7 @@ import android.os.Build
 import android.os.IBinder
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
+import cz.anty.purkynka.exceptions.LoginExpiredException
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
@@ -192,7 +193,7 @@ class LunchesBurzaWatcherService : Service() {
                 if (username == null || password == null)
                     throw IllegalStateException("Username or password is null")
 
-                val cookies = LunchesFetcher.login(username, password)
+                var cookies = LunchesFetcher.login(username, password)
 
                 if (!LunchesFetcher.isLoggedIn(cookies))
                     throw WrongLoginDataException("Failed to login user with provided credentials")
@@ -201,7 +202,13 @@ class LunchesBurzaWatcherService : Service() {
                 while (status.running && !status.stopping) {
                     try {
                         run checkBurza@ {
-                            val burzaLunchesHtml = LunchesFetcher.getLunchesBurzaElements(cookies)
+                            val burzaPge = LunchesFetcher.getBurzaPage(cookies)
+                            if (!LunchesFetcher.isLoggedIn(burzaPge)) {
+                                LunchesFetcher.logout(cookies)
+
+                                throw LoginExpiredException()
+                            }
+                            val burzaLunchesHtml = LunchesFetcher.getLunchesBurzaElements(burzaPge)
                             val burzaLunchesList = LunchesParser.parseLunchesBurza(burzaLunchesHtml)
 
                             val selectedLunch = burzaLunchesList
@@ -237,12 +244,21 @@ class LunchesBurzaWatcherService : Service() {
                         if (failCount > 10)
                             failCount -= 10
                         else failCount = 0
+
+                        status.fail = failCount > 10
                     } catch (e: Exception) {
+                        // Due to loop this catch can receive spam of exceptions.
+                        // So this exception will be logged as debug,
+                        //  to protect app from issues spam.
                         Log.d(LOG_TAG, "startWatcher(accountId=$accountId)", e)
 
-                        // TODO: do something to prevent exception (re-login, etc.)
+                        if (e is LoginExpiredException) {
+                            cookies = LunchesFetcher.login(username, password)
+                            if (!LunchesFetcher.isLoggedIn(cookies))
+                                throw WrongLoginDataException("Failed to login user with provided credentials")
+                        }
 
-                        status.fail = ++failCount > 10
+                        failCount++
                         if (failCount > 100) failCount = 100
                     }
                 }

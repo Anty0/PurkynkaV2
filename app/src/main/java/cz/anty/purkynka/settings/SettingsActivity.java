@@ -41,7 +41,7 @@ import static cz.anty.purkynka.utils.ConstantsKt.*;
  */
 public class SettingsActivity extends ModularActivity {
 
-    static final String PREFERENCE_KEY_REFRESH_ON_WIFI = "REFRESH_ON_WIFI";
+    //static final String PREFERENCE_KEY_REFRESH_ON_WIFI = "REFRESH_ON_WIFI";
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
         String stringValue = value.toString();
@@ -79,11 +79,11 @@ public class SettingsActivity extends ModularActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.settings);
 
-            findPreference(PREFERENCE_KEY_REFRESH_ON_WIFI).setOnPreferenceChangeListener((preference, o) -> {
-                /*TimedComponentsManager.getInstance().setRequiredNetwork(
-                        SettingsData.Companion.getInstance().getRequiredNetworkType());*/ // TODO: apply change to runtime
+            /*findPreference(PREFERENCE_KEY_REFRESH_ON_WIFI).setOnPreferenceChangeListener((preference, o) -> {
+                *//*TimedComponentsManager.getInstance().setRequiredNetwork(
+                        SettingsData.Companion.getInstance().getRequiredNetworkType());*//* // TODO: apply change to runtime
                 return true;
-            });
+            });*/
             findPreference("activity_update").setOnPreferenceClickListener(preference -> {
                 UpdateActivity.Companion.start(getActivity());
                 return true;

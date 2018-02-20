@@ -97,13 +97,14 @@ object LunchesParser {
 
     fun parseLunchesBurza(lunchesElements: Elements, syncResult: SyncResult? = null): List<LunchBurza> {
         Log.d(LOG_TAG, "parseLunchesBurza(lunchesElements=$lunchesElements)")
-        return lunchesElements.mapNotNull {
+        return lunchesElements.mapNotNull map@ {
             try {
                 syncResult?.apply { stats.numEntries++ }
-                parseBurzaLunch(it)
+                return@map parseBurzaLunch(it)
             } catch (e: Exception) {
                 syncResult?.apply { stats.numParseExceptions++ }
-                Log.w(LOG_TAG, "parseLunchesBurza", e); null
+                Log.w(LOG_TAG, "parseLunchesBurza", e)
+                return@map null
             }
         }
     }
@@ -156,26 +157,30 @@ object LunchesParser {
                 ?.replace("day-", "")
                 .let { FORMAT_DATE_PARSE_LUNCH_OPTIONS.parse(it).time }
 
-        val lunchOptions = try {
-            lunchElements.getOrNull(1)
-                    ?.select("div.jidelnicekItem")
-                    ?.map { parseLunchOption(it) }
-                    ?.toTypedArray()
-        } catch (e: Exception) {
-            Log.w(LOG_TAG, "parseLunchOptionsGroups", e); null
+        val lunchOptions = run parseOptions@ {
+            try {
+                return@parseOptions lunchElements.getOrNull(1)
+                        ?.select("div.jidelnicekItem")
+                        ?.map { parseLunchOption(it) }
+                        ?.toTypedArray()
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "parseLunchOptionsGroups", e)
+                return@parseOptions null
+            }
         }
 
         return LunchOptionsGroup(date, lunchOptions)
     }
 
     fun parseLunchOptionsGroups(lunchesElements: Elements, syncResult: SyncResult? = null): List<LunchOptionsGroup> {
-        return lunchesElements.mapNotNull { lunchElement ->
+        return lunchesElements.mapNotNull map@ { lunchElement ->
             try {
                 syncResult?.apply { stats.numEntries++ }
-                return@mapNotNull parseLunchOptionsGroup(lunchElement)
+                return@map parseLunchOptionsGroup(lunchElement)
             } catch (e: Exception) {
                 syncResult?.apply { stats.numParseExceptions++ }
-                Log.w(LOG_TAG, "parseLunchOptionsGroups", e); null
+                Log.w(LOG_TAG, "parseLunchOptionsGroups", e)
+                return@map null
             }
         }
     }

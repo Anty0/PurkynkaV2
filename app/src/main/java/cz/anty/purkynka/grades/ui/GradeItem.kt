@@ -95,7 +95,7 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
                     )
                 }
 
-                if (options == null) Log.w(LOG_TAG, "Can't start GradeActivity " +
+                if (options == null) Log.e(LOG_TAG, "Can't start GradeActivity " +
                         "with transition: Cannot find Activity in context hierarchy")
 
                 ContextCompat.startActivity(

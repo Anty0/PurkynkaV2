@@ -27,6 +27,7 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
+import cz.anty.purkynka.update.UpdateActivity
 import eu.codetopic.java.utils.letIf
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.notifications.manager.data.NotifyId
@@ -78,7 +79,7 @@ class UpdateNotifyChannel : NotifyChannel(ID, false) {
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
-        TODO("implement")
+        UpdateActivity.start(context)
     }
 
     private fun buildNotificationBase(context: Context,

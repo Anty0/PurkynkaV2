@@ -412,7 +412,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                 semester = try {
                     savedInstanceState.getSerializable(SAVE_EXTRA_SEMESTER) as Semester
                 } catch (e: Exception) {
-                    Log.w(LOG_TAG, "onCreate() -> restoreSemesterState()", e)
+                    Log.e(LOG_TAG, "onCreate() -> restoreSemesterState()", e)
                     Semester.AUTO.stableSemester
                 }
             }
@@ -424,7 +424,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                             ?.toMap()?.toMutableMap()
                             ?: throw RuntimeException()
                 } catch (e: Exception) {
-                    Log.w(LOG_TAG, "onCreate() -> restoreChangesMapState()", e)
+                    Log.e(LOG_TAG, "onCreate() -> restoreChangesMapState()", e)
                     mutableMapOf()
                 }
             }

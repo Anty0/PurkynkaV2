@@ -71,28 +71,22 @@ class SubjectItem(val base: Subject,
 
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
-                /*Toast.makeText(
-                        holder.context,
-                        "onClick(position$itemPosition, subject=$this)",
-                        Toast.LENGTH_LONG
-                ).show()*/
-
                 val context = holder.context
                 val options = context.baseActivity?.let {
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             it,
                             holder.boxColoredBackground,
                             context.getString(R.string.id_transition_subject_item)
-                    ).toBundle()
+                    )
                 }
 
-                if (options == null) Log.w(LOG_TAG, "Can't start SubjectActivity " +
+                if (options == null) Log.e(LOG_TAG, "Can't start SubjectActivity " +
                         "with transition: Cannot find Activity in context hierarchy")
 
                 ContextCompat.startActivity(
                         context,
                         SubjectActivity.getStartIntent(context, base, changes),
-                        options
+                        options?.toBundle()
                 )
             }
         } else holder.boxClickTarget.setOnClickListener(null)

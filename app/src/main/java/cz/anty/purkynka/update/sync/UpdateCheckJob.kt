@@ -63,7 +63,7 @@ class UpdateCheckJob : Job() {
     }
 
     override fun onRunJob(params: Params): Result {
-        Log.w(LOG_TAG, "onRunJob(params=$params) -> Starting update check")
+        Log.b(LOG_TAG, "onRunJob(params=$params) -> Starting update check")
 
         return Updater.fetchUpdatesAndNotify(context)
     }
