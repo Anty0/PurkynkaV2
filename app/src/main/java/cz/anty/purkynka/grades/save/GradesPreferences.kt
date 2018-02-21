@@ -54,7 +54,7 @@ class GradesPreferences private constructor(context: Context) :
         }
     }
 
-    val subjectBadAverage by FloatPreference(
+    var subjectBadAverage by FloatPreference(
             key = GRADES_SUBJECT_BAD_AVERAGE,
             provider = accessProvider,
             defaultValue = 4.5F

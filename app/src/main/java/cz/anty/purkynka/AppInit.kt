@@ -29,6 +29,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.Iconics
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.exceptions.LoggedException
+import cz.anty.purkynka.feedback.save.FeedbackData
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.GradesData
@@ -155,7 +156,8 @@ class AppInit : MultiDexApplication() {
             Log.d("UExHandler", "Oh no, something went wrong (uncaught exception). " +
                     "Ok, let's enable Feedback module...")
 
-            // TODO: 6/16/17 enable feedback module
+            FeedbackData.takeIf { it.isInitialized() }
+                    ?.instance?.notifyErrorReceived()
 
             defaultHandler.uncaughtException(thread, ex)
         }
@@ -169,7 +171,8 @@ class AppInit : MultiDexApplication() {
 
             Crashlytics.logException(LoggedException(it))
 
-            // TODO: 6/16/17 enable feedback module
+            FeedbackData.takeIf { it.isInitialized() }
+                    ?.instance?.notifyErrorReceived()
         }
 
         // Setup Iconics
@@ -179,6 +182,9 @@ class AppInit : MultiDexApplication() {
     }
 
     private fun initAllProcesses() {
+        // Let's initialize FeedbackData first, as they plays important role in error handling.
+        FeedbackData.initialize(this)
+
         // Prepare broadcasts connections (very helpful tool)
         initBroadcastConnections()
 

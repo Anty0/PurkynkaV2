@@ -36,6 +36,10 @@ const val FILE_NAME_ACTIVE_ACCOUNT_DATA = "ActiveAccountData"
 const val ACTIVE_ACCOUNT_NAME = "ACTIVE_ACCOUNT_NAME"
 /// SettingsData
 const val FILE_NAME_SETTINGS_DATA = "SettingsData"
+/// FeedbackData
+const val FILE_NAME_FEEDBACK_DATA = "FeedbackData"
+const val LAST_ERROR_VERSION = "LAST_ERROR_VERSION"
+
 
 // Grades
 /// GradesData

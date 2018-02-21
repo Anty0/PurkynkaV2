@@ -223,6 +223,12 @@
             android:exported="false"
             android:process=":providers" />
         <provider
+            android:name=".feedback.save.FeedbackDataProvider"
+            android:authorities="cz.anty.purkynka.feedback.data"
+            android:label="@string/label_provider_feedback"
+            android:exported="false"
+            android:process=":providers" />
+        <provider
             android:name=".grades.save.GradesDataProvider"
             android:authorities="cz.anty.purkynka.grades.data"
             android:label="@string/label_provider_grades"

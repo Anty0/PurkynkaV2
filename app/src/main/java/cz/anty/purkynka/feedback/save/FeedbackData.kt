@@ -18,9 +18,67 @@
 
 package cz.anty.purkynka.feedback.save
 
+import android.content.Context
+import android.content.SharedPreferences
+import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.utils.LAST_ERROR_VERSION
+import eu.codetopic.utils.data.preferences.PreferencesData
+import eu.codetopic.utils.data.preferences.preference.FloatPreference
+import eu.codetopic.utils.data.preferences.preference.IntPreference
+import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
+import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
+import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
+import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
+
 /**
  * @author anty
  */
-class FeedbackData {
-    // TODO: create
+class FeedbackData private constructor(context: Context) :
+        PreferencesData<ContentProviderSharedPreferences>(context,
+                ContentProviderPreferencesProvider(context, FeedbackDataProvider.AUTHORITY)) {
+
+    companion object : PreferencesCompanionObject<FeedbackData>(
+            FeedbackData.LOG_TAG,
+            ::FeedbackData,
+            ::Getter
+    ) {
+
+        private const val LOG_TAG = "FeedbackData"
+        internal const val SAVE_VERSION = 0
+
+        @Suppress("UNUSED_PARAMETER")
+        internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
+            // This function will be executed by provider in provider process
+            when (from) {
+                -1 -> {
+                    // First start, nothing to do
+                }
+            } // No more versions yet
+        }
+    }
+
+    private var lastErrorVersion by IntPreference(
+            key = LAST_ERROR_VERSION,
+            provider = accessProvider,
+            defaultValue = -1
+    )
+
+    val isFeedbackEnabled: Boolean
+        get() = lastErrorVersion == BuildConfig.VERSION_CODE
+
+    fun notifyErrorReceived() {
+        lastErrorVersion = BuildConfig.VERSION_CODE
+    }
+
+    fun notifyFeedbackDone() {
+        lastErrorVersion = -1
+    }
+
+    private class Getter : PreferencesGetterAbs<FeedbackData>() {
+
+        override fun get(): FeedbackData = FeedbackData.instance
+
+        override val dataClass: Class<out FeedbackData>
+            get() = FeedbackData::class.java
+    }
 }

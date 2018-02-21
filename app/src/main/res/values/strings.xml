@@ -106,12 +106,15 @@
     <string name="shortcut_attendance_label_long">Show attendance search</string>
 
     <string name="label_receiver_wifi_changed">Wifi change receiver for Wifi auto login</string>
+
     <string name="label_service_authenticator">Account authenticator</string>
     <string name="label_service_sync_grades">Grades sync service</string>
     <string name="label_service_sync_lunches">Lunches sync service</string>
     <string name="label_service_lunches_burza_watcher">Lunches burza watcher service</string>
+
     <string name="label_provider_account_active">Active account</string>
     <string name="label_provider_update">Updates</string>
+    <string name="label_provider_feedback">Feedback</string>
     <string name="label_provider_grades">Grades</string>
     <string name="label_provider_grades_login">Grades credentials</string>
     <string name="label_provider_grades_preferences">Grades preferences</string>
