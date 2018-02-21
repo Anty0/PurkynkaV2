@@ -105,6 +105,7 @@
             android:visibility="gone" />
 
         <android.support.v7.widget.AppCompatButton
+            style="@style/Widget.AppCompat.Button.Colored"
             android:id="@+id/butEnable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -114,6 +115,7 @@
             android:text="@string/but_save_and_enable"/>
 
         <android.support.v7.widget.AppCompatButton
+            style="@style/Widget.AppCompat.Button.Colored"
             android:id="@+id/butDisable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -124,6 +126,7 @@
             android:visibility="gone"/>
 
         <android.support.v7.widget.AppCompatButton
+            style="@style/Widget.AppCompat.Button.Colored"
             android:id="@+id/butLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

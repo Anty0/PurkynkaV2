@@ -83,6 +83,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.v7.widget.AppCompatButton
+                style="@style/Widget.AppCompat.Button.Colored"
                 android:id="@+id/butLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

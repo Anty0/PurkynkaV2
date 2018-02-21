@@ -21,12 +21,14 @@ package cz.anty.purkynka
 import android.content.Context
 import android.support.multidex.MultiDexApplication
 import android.support.v4.content.ContextCompat
+import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.Iconics
 import cz.anty.purkynka.account.Accounts
+import cz.anty.purkynka.exceptions.LoggedException
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.GradesData
@@ -45,6 +47,7 @@ import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
 import cz.anty.purkynka.settings.SettingsData
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
+import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel
 import cz.anty.purkynka.update.sync.UpdateCheckJob
 import cz.anty.purkynka.update.sync.UpdateCheckJobCreator
 import cz.anty.purkynka.update.save.UpdateData
@@ -164,7 +167,7 @@ class AppInit : MultiDexApplication() {
             Log.d("UExHandler", "Oh no, something went wrong (error logged). " +
                     "Ok, let's enable Feedback module...")
 
-            // TODO: log exception to FirebaseAnalytics or Crashlytics
+            Crashlytics.logException(LoggedException(it))
 
             // TODO: 6/16/17 enable feedback module
         }
@@ -295,6 +298,7 @@ class AppInit : MultiDexApplication() {
         NotifyManager.installChannels(
                 this,
                 UpdateNotifyChannel(),
+                VersionChangesNotifyChannel(),
                 GradesChangesNotifyChannel(),
                 LunchesBurzaWatcherStatusChannel(),
                 LunchesBurzaWatcherResultChannel(),

@@ -21,7 +21,6 @@ package cz.anty.purkynka.update.notify
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import android.os.Bundle
@@ -29,7 +28,7 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
-import cz.anty.purkynka.update.UpdateActivity
+import cz.anty.purkynka.update.ui.UpdateActivity
 import eu.codetopic.java.utils.letIf
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.notifications.manager.data.NotifyId
@@ -39,7 +38,7 @@ import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 /**
  * @author anty
  */
-class UpdateNotifyChannel : NotifyChannel(ID, false) {
+class UpdateNotifyChannel : NotifyChannel(ID, checkForIdOverrides = false) {
 
     companion object {
 
@@ -82,7 +81,7 @@ class UpdateNotifyChannel : NotifyChannel(ID, false) {
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
         context.startActivity(
-                UpdateActivity.generateIntent(context)
+                UpdateActivity.getIntent(context)
                         .addFlags(FLAG_ACTIVITY_NEW_TASK)
         )
     }

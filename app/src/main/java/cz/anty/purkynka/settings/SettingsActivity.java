@@ -27,7 +27,7 @@ import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 
 import cz.anty.purkynka.R;
-import cz.anty.purkynka.update.UpdateActivity;
+import cz.anty.purkynka.update.ui.UpdateActivity;
 import eu.codetopic.utils.AndroidUtils;
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule;
 import eu.codetopic.utils.ui.activity.modular.ModularActivity;

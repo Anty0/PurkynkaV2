@@ -90,18 +90,16 @@ class LunchesDecideFragment : NavigationFragment(), ThemeProvider, IconProvider 
             holder.showLoading()
 
             run switcher@ {
-                val accountId = bg { ActiveAccount.getId() }.await()/* ?: run {
+                val accountId = bg { ActiveAccount.getId() }.await() ?: run {
                     Log.w(LOG_TAG, "onCreate()" +
-                            " -> No active account, switching to dashboard")
-                    switchFragment(DashboardFragment::class.java)
+                            " -> No active account, switching to login")
+                    switchFragment(LunchesLoginFragment::class.java)
                     return@switcher
-                }*/
+                }
 
-                val userLoggedId =
-                        if (accountId == null) false
-                        else bg { LunchesLoginData.loginData.isLoggedIn(accountId) }.await()
+                val userLoggedId = bg { LunchesLoginData.loginData.isLoggedIn(accountId) }.await()
 
-                switchFragment(
+                navigationActivity?.replaceFragment(
                         if (userLoggedId) targetClass
                         else LunchesLoginFragment::class.java
                 )

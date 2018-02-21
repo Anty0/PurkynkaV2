@@ -56,6 +56,12 @@ class UpdateData private constructor(context: Context) :
         }
     }
 
+    var lastKnownVersion by IntPreference(
+            LAST_KNOWN_VERSION,
+            accessProvider,
+            -1
+    )
+
     var jobScheduleVersion by IntPreference(
             SCHEDULE_VERSION,
             accessProvider,

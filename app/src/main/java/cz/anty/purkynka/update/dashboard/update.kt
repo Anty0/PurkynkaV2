@@ -24,7 +24,7 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
-import cz.anty.purkynka.update.UpdateActivity
+import cz.anty.purkynka.update.ui.UpdateActivity
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_UPDATE_AVAILABLE
 import eu.codetopic.utils.receiver

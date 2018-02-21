@@ -39,7 +39,7 @@ object Updater {
     private const val LOG_TAG = "Updater"
 
     fun fetchUpdates(): Job.Result {
-        Log.b(LOG_TAG, "fetchUpdates(process=${UtilsBase.Process.name})")
+        Log.d(LOG_TAG, "fetchUpdates(process=${UtilsBase.Process.name})")
 
         val code = UpdateFetcher.fetchVersionCode() ?: return Job.Result.FAILURE
         val name = UpdateFetcher.fetchVersionName() ?: return Job.Result.FAILURE
@@ -49,36 +49,37 @@ object Updater {
         return Job.Result.SUCCESS
     }
 
-    fun fetchUpdatesAndNotify(context: Context): Job.Result {
-        Log.b(LOG_TAG, "fetchUpdatesAndNotify() -> Checking for update")
+    fun fetchUpdatesAndNotify(context: Context): Job.Result =
+            fetchUpdates().also checkResult@ {
+                when (it) {
+                    Job.Result.SUCCESS -> {
+                        val currentVersionCode = BuildConfig.VERSION_CODE
+                        val latestVersionCode = UpdateData.instance.latestVersionCode
+                        if (latestVersionCode == currentVersionCode) return@checkResult
 
-        val result = fetchUpdates().alsoIf({
-            it == Job.Result.SUCCESS &&
-                    UpdateData.instance.latestVersionCode != BuildConfig.VERSION_CODE
-        }) {
-            Log.b(LOG_TAG, "fetchUpdatesAndNotify()" +
-                    " -> Check for update -> Found update" +
-                    " -> (${BuildConfig.VERSION_CODE} -> ${UpdateData.instance.latestVersionCode})")
+                        Log.b(LOG_TAG, "fetchUpdatesAndNotify() -> Found update" +
+                                " -> ($currentVersionCode -> $latestVersionCode)")
 
-            val latestVersion = UpdateData.instance.latestVersion
+                        val latestVersion = UpdateData.instance.latestVersion
 
-            NotificationBuilder.create(
-                    groupId = UpdateNotifyGroup.ID,
-                    channelId = UpdateNotifyChannel.ID,
-                    init = {
-                        persistent = true
-                        refreshable = true
-                        data = UpdateNotifyChannel.dataForVersion(
-                                code = latestVersion.first,
-                                name = latestVersion.second
-                        )
+                        NotificationBuilder.create(
+                                groupId = UpdateNotifyGroup.ID,
+                                channelId = UpdateNotifyChannel.ID,
+                                init = {
+                                    persistent = true
+                                    refreshable = true
+                                    data = UpdateNotifyChannel.dataForVersion(
+                                            code = latestVersion.first,
+                                            name = latestVersion.second
+                                    )
+                                }
+                        ).requestShow(context)
                     }
-            ).requestShow(context)
-        }
-
-        Log.b(LOG_TAG, "fetchUpdatesAndNotify()" +
-                " -> Checking for update -> Update result -> (result=$result)")
-
-        return result
-    }
+                    else -> {
+                        Log.b(LOG_TAG, "fetchUpdatesAndNotify()" +
+                                " -> Failed to check for update" +
+                                " -> (result=$it)")
+                    }
+                }
+            }
 }

@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.update
+package cz.anty.purkynka.update.ui
 
 import android.content.Context
 import android.content.Intent
@@ -28,7 +28,6 @@ import com.evernote.android.job.Job
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
-import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.update.sync.Updater
 import eu.codetopic.java.utils.alsoIf
@@ -46,9 +45,11 @@ import kotlinx.android.synthetic.main.activity_update.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.Job as KJob
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
  * @author anty
@@ -60,11 +61,11 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
         private const val LOG_TAG = "UpdateActivity"
 
-        fun generateIntent(context: Context): Intent =
+        fun getIntent(context: Context): Intent =
                 Intent(context, UpdateActivity::class.java)
 
         fun start(context: Context) =
-                context.startActivity(generateIntent(context))
+                context.startActivity(getIntent(context))
     }
 
     private var versionNameCurrent: String = "unknown"
@@ -77,28 +78,21 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     private var isDownloading: Boolean = false // TODO: implement
     private var isDownloaded: Boolean = false // TODO: implement
 
-    private val updateDataChangedReceiver = receiver { _, _ -> updateData() }
+    private val updateDataChangedReceiver = receiver { _, _ -> update() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
 
         boxRefreshLayout.setOnRefreshListener {
-            requestUpdateCheckWithRefreshLayout()
+            refreshWithRefreshLayout()
         }
 
-        butDownloadUpdate.setOnClickListener { downloadUpdate() }
-        butInstallUpdate.setOnClickListener { installUpdate() }
-        butShowChangelog.setOnClickListener { showChangelog() }
+        butDownloadUpdate.onClick { downloadUpdate() }
+        butInstallUpdate.onClick { installUpdate() }
+        butShowChangelog.onClick { showChangelog() }
 
-        val holder = holder
-        launch(UI) {
-            holder.showLoading()
-
-            updateData().join()
-
-            holder.hideLoading()
-        }
+        updateWithLoading()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -114,7 +108,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_refresh -> requestUpdateCheckWithLoading()
+            R.id.action_refresh -> refreshWithLoading()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
@@ -128,7 +122,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
                 filter = intentFilter(UpdateData.getter)
         )
 
-        updateData()
+        update()
     }
 
     override fun onStop() {
@@ -139,7 +133,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         super.onStop()
     }
 
-    private fun requestUpdateCheckWithLoading() {
+    private fun refreshWithLoading() {
         if (isDownloading || isDownloaded) return // Update is being prepared,
         //  refreshing available version here will have no effect.
 
@@ -156,7 +150,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         }
     }
 
-    private fun requestUpdateCheckWithRefreshLayout() {
+    private fun refreshWithRefreshLayout() {
         if (isDownloading || isDownloaded) {
             // If update is being prepared, refreshing available version will have no effect.
             boxRefreshLayout.isRefreshing = false
@@ -184,7 +178,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
             boxRefreshLayout,
             R.string.snackbar_updates_fetch_fail,
             R.string.snackbar_action_updates_retry,
-            { requestUpdateCheckWithLoading() }
+            { refreshWithLoading() }
     )
 
     private fun downloadUpdate() {
@@ -199,19 +193,33 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);*/
     }
 
-    private fun showChangelog() = UpdateFetcher.showChangelog(this)
+    private fun showChangelog() = startActivity(ChangelogActivity.getIntent(this))
 
-    private fun updateData() = launch(UI) {
-        versionCodeCurrent = BuildConfig.VERSION_CODE
-        versionNameCurrent = BuildConfig.VERSION_NAME
+    private fun updateWithLoading(): KJob {
+        val holder = holder
+        return launch(UI) {
+            holder.showLoading()
 
-        versionCodeAvailable = bg { UpdateData.instance.latestVersionCode }.await()
-        versionNameAvailable = bg { UpdateData.instance.latestVersionName }.await()
+            update().join()
 
-        updateViews()
+            holder.hideLoading()
+        }
     }
 
-    private fun updateViews() {
+    private fun update(): KJob {
+        val self = this.asReference()
+        return launch(UI) {
+            self().versionCodeCurrent = BuildConfig.VERSION_CODE
+            self().versionNameCurrent = BuildConfig.VERSION_NAME
+
+            self().versionCodeAvailable = bg { UpdateData.instance.latestVersionCode }.await()
+            self().versionNameAvailable = bg { UpdateData.instance.latestVersionName }.await()
+
+            self().updateUi()
+        }
+    }
+
+    private fun updateUi() {
         arrayOf(boxUpToDate, boxUpdateAvailable, boxUpdateDownloading, boxUpdateDownloaded)
                 .forEach { it.visibility = View.GONE }
 

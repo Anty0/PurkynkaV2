@@ -43,7 +43,6 @@ object UpdateFetcher { // TODO: create new/better api
 
     private val URL_VERSION_CODE = "$URL_BASE/latestVersionCode"
     private val URL_VERSION_NAME = "$URL_BASE/latestVersionName"
-    private val URL_CHANGELOG = "$URL_BASE/latestChangeLog"
     private val URL_APK = "$URL_BASE/latest.apk"
 
     @WorkerThread
@@ -77,25 +76,6 @@ object UpdateFetcher { // TODO: create new/better api
     }.also {
         Log.d(LOG_TAG, "fetchVersionName() -> (versionName=$it)")
     }
-
-    /*fun fetchChangelog(): String? = try { // TODO: use html page as changelog in new api
-        Jsoup.connect(URL_CHANGELOG)
-                .followRedirects(false)
-                .execute().body()
-                .letIf({ it.toLowerCase().contains("<html>") }) {
-                    Log.w(LOG_TAG, "fetchChangelog()",
-                            IOException("Invalid page loaded: $it"))
-                    return@letIf null
-                }
-                ?.trim()
-    } catch (e: Exception) {
-        Log.w(LOG_TAG, "fetchChangelog()", e); null
-    }.also {
-        Log.d(LOG_TAG, "fetchChangelog() -> (changeLog=$it)")
-    }*/
-
-    fun showChangelog(context: Context) =
-            AndroidUtils.openUri(context, URL_CHANGELOG, R.string.toast_browser_failed)
 
     fun fetchApk(context: Context): String? {
         // TODO: implement

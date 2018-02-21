@@ -28,7 +28,7 @@ import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 /**
  * @author anty
  */
-class UpdateNotifyGroup : NotifyGroup(ID, UpdateNotifyChannel.ID) {
+class UpdateNotifyGroup : NotifyGroup(ID, UpdateNotifyChannel.ID, VersionChangesNotifyChannel.ID) {
 
     companion object {
 

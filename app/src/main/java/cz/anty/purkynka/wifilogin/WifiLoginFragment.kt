@@ -83,7 +83,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         holder.showLoading()
         val holderRef = holder.asReference()
 
-        val job = updateData()
+        val job = update()
         launch(UI) {
             job?.join()
 
@@ -91,9 +91,9 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         }
     }
 
-    private val wifiLoginDataChangeReceiver = receiver { _, _ -> updateData() }
+    private val wifiLoginDataChangeReceiver = receiver { _, _ -> update() }
 
-    private val wifiDataChangeReceiver = receiver { _, _ -> updateData() }
+    private val wifiDataChangeReceiver = receiver { _, _ -> update() }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {
@@ -112,7 +112,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         val holder = holder
         launch(UI) {
             holder.showLoading()
-            updateData()?.join()
+            update()?.join()
             holder.hideLoading()
         }
     }
@@ -133,7 +133,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                 intentFilter(WifiLoginData.getter)
         )
 
-        updateData()
+        update()
     }
 
     override fun onStop() {
@@ -144,7 +144,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         super.onStop()
     }
 
-    private fun updateData(): Job? {
+    private fun update(): Job? {
         val contextRef = context?.asReference() ?: return null
         return launch(UI) {
             val (nAccount, nAccountId) = bg { ActiveAccount.getWithId() }.await()
@@ -163,11 +163,13 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                 bg { WifiData.instance.getLoginCount(it) }.await()
             }
 
-            update()
+            updateUi()
         }
     }
 
-    private fun update() {
+    private fun updateUi() {
+        view ?: return
+
         txtWarnUnsupportedDevice.visibility =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                     View.VISIBLE

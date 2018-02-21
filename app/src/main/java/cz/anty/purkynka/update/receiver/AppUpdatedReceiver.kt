@@ -21,7 +21,14 @@ package cz.anty.purkynka.update.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.update.CHANGELOG_MAP
+import cz.anty.purkynka.update.notify.UpdateNotifyGroup
+import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel
+import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
+import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
 
 /**
  * @author anty
@@ -35,9 +42,30 @@ class AppUpdatedReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Intent.ACTION_MY_PACKAGE_REPLACED) return
+        Log.d(LOG_TAG, "onReceive() -> Received app replaced intent")
 
-        Log.b(LOG_TAG, "onReceive() -> Received app replaced intent")
+        val currentVersion = BuildConfig.VERSION_CODE
+        val lastKnownVersion = UpdateData.instance.lastKnownVersion
 
-        // TODO: implement (save last known version code and if...)
+        if (lastKnownVersion != currentVersion) {
+            if (lastKnownVersion != -1) {
+                Log.d(LOG_TAG, "onReceive() -> Detected update")
+
+                if (currentVersion in CHANGELOG_MAP) {
+                    NotificationBuilder.create(
+                            groupId = UpdateNotifyGroup.ID,
+                            channelId = VersionChangesNotifyChannel.ID
+                    ) {
+                        persistent = true
+                        refreshable = true
+                        data = VersionChangesNotifyChannel.dataFor(
+                                versionCode = currentVersion
+                        )
+                    }.requestShow(context)
+                }
+            }
+
+            UpdateData.instance.lastKnownVersion = currentVersion
+        }
     }
 }

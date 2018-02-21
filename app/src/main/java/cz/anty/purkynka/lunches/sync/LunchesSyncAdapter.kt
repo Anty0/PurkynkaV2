@@ -197,12 +197,15 @@ class LunchesSyncAdapter(context: Context) :
                 syncResult.stats.numUpdates++
                 changes.add(newIt)
 
-                val hadNoUsableOptions = it.options == null ||
+                val oldHadNoUsableOptions = it.options == null ||
                         (it.orderedOption == null && it.options.all { !it.enabled })
-                if (hadNoUsableOptions) {
-                    val haveUsableOptions = newIt.options != null
+                if (oldHadNoUsableOptions) {
+                    val newHaveUsableOptions = newIt.options != null
                             && newIt.options.any { it.enabled }
-                    if (haveUsableOptions) {
+                    if (newHaveUsableOptions) {
+                        Log.b(LOG_TAG, "checkForDifferences()" +
+                                " -> Found interesting change" +
+                                " -> (oldLunch=$it, newLunch=$newIt)")
                         interestingChanges.add(newIt)
                     }
                 }
