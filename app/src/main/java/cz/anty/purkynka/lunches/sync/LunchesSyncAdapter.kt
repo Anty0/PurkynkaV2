@@ -38,7 +38,7 @@ import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
-import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder.Companion.requestShowAll
+import eu.codetopic.utils.notifications.manager.requestShowAll
 import java.io.IOException
 
 /**

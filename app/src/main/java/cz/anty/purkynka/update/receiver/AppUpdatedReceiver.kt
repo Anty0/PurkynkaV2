@@ -28,7 +28,7 @@ import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel
 import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
-import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
+import eu.codetopic.utils.notifications.manager.requestShow
 
 /**
  * @author anty

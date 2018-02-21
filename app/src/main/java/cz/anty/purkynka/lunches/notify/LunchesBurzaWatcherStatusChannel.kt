@@ -29,6 +29,7 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
 import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
+import eu.codetopic.utils.notifications.manager.combinedIdFor
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import eu.codetopic.utils.notifications.manager.util.NotifyChannel
 import eu.codetopic.utils.notifications.manager.util.NotifyGroup

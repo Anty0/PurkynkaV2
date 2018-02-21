@@ -31,6 +31,7 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.update.ui.UpdateActivity
 import eu.codetopic.java.utils.letIf
 import eu.codetopic.utils.getFormattedText
+import eu.codetopic.utils.notifications.manager.combinedIdFor
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import eu.codetopic.utils.notifications.manager.util.NotifyChannel
 import eu.codetopic.utils.notifications.manager.util.NotifyGroup

@@ -25,11 +25,10 @@ import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.save.UpdateData
-import eu.codetopic.java.utils.alsoIf
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.UtilsBase
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
-import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
+import eu.codetopic.utils.notifications.manager.requestShow
 
 /**
  * @author anty

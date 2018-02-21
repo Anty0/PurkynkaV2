@@ -96,24 +96,20 @@ class SubjectsAverageDashboardManager(context: Context, accountHolder: ActiveAcc
                         val userLoggedIn = GradesLoginData.loginData.isLoggedIn(accountId)
                         if (!userLoggedIn) return@calcItems null
 
-                        //val dismissedSubjects = GradesPreferences.instance.getDismissedSubjects(accountId)
                         val badAverage = GradesPreferences.instance.subjectBadAverage
                         val semester = Semester.AUTO.stableSemester
                         return@calcItems GradesData.instance
                                 .getSubjects(accountId)[semester.value]
-                                ?.filter { subject ->
-                                    subject.average > badAverage
-                                    //&& dismissedSubjects.none { it.idEquals(semester, subject) }
-                                }
-                                ?.map { BadSubjectAverageDashboardItem(accountId, semester, it) }
+                                ?.filter { subject -> subject.average > badAverage }
+                                ?.map { BadSubjectAverageDashboardItem(accountId, it) }
                     }.await() ?: emptyList()
             )
         }
     }
 }
 
-class BadSubjectAverageDashboardItem(val accountId: String, val semester: Semester,
-                                     val subject: Subject) : /*Swipeable*/DashboardItem() {
+class BadSubjectAverageDashboardItem(val accountId: String,
+                                     val subject: Subject) : DashboardItem() {
 
     companion object {
 
@@ -125,12 +121,6 @@ class BadSubjectAverageDashboardItem(val accountId: String, val semester: Semest
 
     override val priority: Int
         get() = DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD + (average * 100).toInt()
-
-    /*override fun getSwipeDirections(holder: ViewHolder): Int = LEFT or RIGHT
-
-    override fun onSwiped(holder: ViewHolder, direction: Int) {
-        bg { GradesPreferences.instance.dismissSubject(accountId, semester, subject) }
-    }*/
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
         holder.txtNameShort.text = subject.shortName.fillToLen(4, Anchor.LEFT)

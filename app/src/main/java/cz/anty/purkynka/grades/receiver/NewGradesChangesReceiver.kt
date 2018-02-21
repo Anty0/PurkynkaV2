@@ -30,7 +30,7 @@ import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
-import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder.Companion.requestShowAll
+import eu.codetopic.utils.notifications.manager.requestShowAll
 import kotlinx.serialization.list
 
 /**

@@ -39,10 +39,10 @@ import eu.codetopic.java.utils.kSerializer
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.getKSerializableExtra
+import eu.codetopic.utils.notifications.manager.build
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
-import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.requestShow
-import eu.codetopic.utils.notifications.manager.create.NotificationBuilder.Companion.build
 import eu.codetopic.utils.notifications.manager.data.NotifyId
+import eu.codetopic.utils.notifications.manager.requestShow
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.serialization.Serializable

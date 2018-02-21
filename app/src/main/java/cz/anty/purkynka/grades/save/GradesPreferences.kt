@@ -60,57 +60,6 @@ class GradesPreferences private constructor(context: Context) :
             defaultValue = 4.5F
     )
 
-    /*private val dashboardDismissedSubjectsPref = KSerializedPreference<List<SubjectId>>(
-            key = DASHBOARD_DISMISSED_SUBJECTS,
-            serializer = kSerializer<SubjectId>().list,
-            provider = accessProvider,
-            defaultValue = { emptyList() }
-    )
-
-    fun dismissSubject(id: String, semester: Semester, subject: Subject) {
-        val dismissed = dashboardDismissedSubjectsPref.getValue(this, id).toMutableList()
-        dismissed.add(SubjectId(semester, subject))
-        dashboardDismissedSubjectsPref.setValue(this, id, dismissed)
-    }
-
-    fun restoreSubject(id: String, semester: Semester, subject: Subject) {
-        val dismissed = dashboardDismissedSubjectsPref.getValue(this, id).toMutableList()
-        dismissed.remove(SubjectId(semester, subject))
-        dashboardDismissedSubjectsPref.setValue(this, id, dismissed)
-    }
-
-    fun getDismissedSubjects(id: String): List<SubjectId> =
-            dashboardDismissedSubjectsPref.getValue(this, id)
-
-    @Serializable
-    class SubjectId(val semesterValue: Int, val subjectShortName: String) {
-
-        constructor(semester: Semester, subject: Subject)
-                : this(semester.value, subject.shortName)
-
-        fun idEquals(semester: Semester, subject: Subject): Boolean =
-                this.semesterValue == semester.value
-                        && this.subjectShortName == subject.shortName
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as SubjectId
-
-            if (semesterValue != other.semesterValue) return false
-            if (subjectShortName != other.subjectShortName) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = semesterValue
-            result = 31 * result + subjectShortName.hashCode()
-            return result
-        }
-    }*/
-
     private class Getter : PreferencesGetterAbs<GradesPreferences>() {
 
         override fun get(): GradesPreferences = instance

@@ -51,7 +51,6 @@ const val LAST_SORT_GRADES = "SORT_GRADES"
 /// GradesPreferences
 const val FILE_NAME_GRADES_PREFERENCES = "GradesPreferences"
 const val GRADES_SUBJECT_BAD_AVERAGE = "GRADES_SUBJECT_BAD_AVERAGE"
-//public static final String DASHBOARD_DISMISSED_SUBJECTS = "DASHBOARD_DISMISSED_SUBJECTS";
 
 // WifiLogin
 /// WifiData

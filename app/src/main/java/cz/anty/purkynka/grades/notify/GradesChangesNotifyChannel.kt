@@ -42,6 +42,7 @@ import eu.codetopic.java.utils.alsoIfNull
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
+import eu.codetopic.utils.notifications.manager.combinedIdFor
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 import eu.codetopic.utils.notifications.manager.util.SummarizedNotifyChannel
