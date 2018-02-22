@@ -26,11 +26,14 @@ import android.view.*
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.feedback.dashboard.ErrorFeedbackDashboardManager
+import cz.anty.purkynka.grades.dashboard.GradesLoginDashboardManager
 import cz.anty.purkynka.grades.dashboard.NewGradesDashboardManager
 import cz.anty.purkynka.grades.dashboard.SubjectsAverageDashboardManager
+import cz.anty.purkynka.lunches.dashboard.LunchesLoginDashboardManager
 import cz.anty.purkynka.update.dashboard.UpdateCheckDashboardManager
 import cz.anty.purkynka.update.dashboard.VersionChangesDashboardManager
 import cz.anty.purkynka.utils.ICON_HOME_DASHBOARD
+import cz.anty.purkynka.wifilogin.dashboard.WifiLoginDashboardManager
 import eu.codetopic.utils.getIconics
 import eu.codetopic.java.utils.to
 import eu.codetopic.java.utils.letIfNull
@@ -96,13 +99,22 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         this.adapter = adapter
 
         managers = listOf(
-                UpdateCheckDashboardManager(themedContext, accountHolder, adapter),
-                VersionChangesDashboardManager(themedContext, accountHolder, adapter),
-                ErrorFeedbackDashboardManager(themedContext, accountHolder, adapter),
-                NewGradesDashboardManager(themedContext, accountHolder, adapter),
-                SubjectsAverageDashboardManager(themedContext, accountHolder, adapter)
+                // System
+                ::UpdateCheckDashboardManager,
+                ::VersionChangesDashboardManager,
+                ::ErrorFeedbackDashboardManager,
+
+                // Other
+                ::NewGradesDashboardManager,
+                ::SubjectsAverageDashboardManager,
+
+                // Login
+                ::GradesLoginDashboardManager,
+                ::LunchesLoginDashboardManager,
+                ::WifiLoginDashboardManager
+
                 // TODO: add here all items managers
-        )
+        ).map { it(themedContext, accountHolder, adapter) }
 
         val manager = Recycler.inflate()
                 .on(themedInflater, container, false)

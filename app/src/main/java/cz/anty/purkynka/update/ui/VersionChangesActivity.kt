@@ -87,7 +87,7 @@ class VersionChangesActivity : ModularActivity(ToolbarModule(), BackButtonModule
         versionInfo.inflateChangesLayout(boxVersionChanges)
 
         val self = this.asReference()
-        launch(UI) {
+        launch(UI) notifyCancel@ {
             val notifyId = bg {
                 NotifyManager.getAllData(
                         groupId = UpdateNotifyGroup.ID,
@@ -95,7 +95,7 @@ class VersionChangesActivity : ModularActivity(ToolbarModule(), BackButtonModule
                 ).entries.firstOrNull {
                     versionCode == VersionChangesNotifyChannel.readDataVersionCode(it.value)
                 }?.key
-            }.await() ?: return@launch
+            }.await() ?: return@notifyCancel
 
             notifyId.requestCancel(self())
         }

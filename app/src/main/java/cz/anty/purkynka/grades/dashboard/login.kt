@@ -18,7 +18,102 @@
 
 package cz.anty.purkynka.grades.dashboard
 
+import android.content.Context
+import cz.anty.purkynka.R
+import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.dashboard.DashboardItem
+import cz.anty.purkynka.dashboard.DashboardManager
+import cz.anty.purkynka.grades.GradesFragment
+import cz.anty.purkynka.grades.save.GradesLoginData
+import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_LOGIN_GRADES
+import eu.codetopic.java.utils.to
+import eu.codetopic.utils.baseActivity
+import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.intentFilter
+import eu.codetopic.utils.receiver
+import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
+import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import kotlinx.android.synthetic.main.item_dashboard_login_grades.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
+import org.jetbrains.anko.coroutines.experimental.bg
+
 /**
  * @author anty
  */
-// TODO: create
+class GradesLoginDashboardManager(context: Context, accountHolder: ActiveAccountHolder,
+                                  adapter: MultiAdapter<DashboardItem>) :
+        DashboardManager(context, accountHolder, adapter) {
+
+    companion object {
+
+        private const val LOG_TAG = "GradesLoginDashboardManager"
+        private const val ID = "cz.anty.purkynka.grades.dashboard.login"
+    }
+
+    private val updateReceiver = receiver { _, _ -> update() }
+
+    override fun register(): Job? {
+        LocalBroadcast.registerReceiver(
+                receiver = updateReceiver,
+                filter = intentFilter(
+                        GradesLoginData.getter
+                )
+        )
+
+        return update()
+    }
+
+    override fun unregister(): Job? {
+        LocalBroadcast.unregisterReceiver(updateReceiver)
+
+        return null
+    }
+
+    override fun update(): Job? {
+        val accountId = accountHolder.accountId
+                ?: run {
+                    adapter.mapRemoveAll(ID)
+                    return null
+                }
+        val adapterRef = adapter.asReference()
+
+        return launch(UI) {
+            adapterRef().mapReplaceAll(
+                    id = ID,
+                    items = bg calcItems@ {
+                        GradesLoginData.loginData.isLoggedIn(accountId).let {
+                            if (it) emptyList()
+                            else listOf(GradesLoginDashboardItem())
+                        }
+                    }.await()
+            )
+        }
+    }
+}
+
+class GradesLoginDashboardItem : DashboardItem() {
+
+    companion object {
+
+        private const val LOG_TAG = "GradesLoginDashboardItem"
+    }
+
+    override val priority: Int
+        get() = DASHBOARD_PRIORITY_LOGIN_GRADES
+
+    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+        if (itemPosition != NO_POSITION) { // detects usage in header
+            holder.boxClickTarget.setOnClickListener {
+                holder.context.baseActivity
+                        ?.to<NavigationActivity>()
+                        ?.replaceFragment(GradesFragment::class.java)
+            }
+        } else holder.boxClickTarget.setOnClickListener(null)
+    }
+
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_login_grades
+
+}

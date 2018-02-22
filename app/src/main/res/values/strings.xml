@@ -85,7 +85,7 @@
 
     <string name="title_fragment_dashboard">Dashboard</string>
     <string name="title_fragment_grades">Grades</string>
-    <string name="title_fragment_wifi_login">Wifi auto login</string>
+    <string name="title_fragment_wifi_login">WiFi auto login</string>
     <string name="title_fragment_lunches_login">Lunches</string>
     <string name="title_fragment_lunches_order">Lunches order</string>
     <string name="title_fragment_lunches_burza">Lunches burza</string>
@@ -94,8 +94,8 @@
 
     <string name="shortcut_grades_label_short">Grades</string>
     <string name="shortcut_grades_label_long">Show grades</string>
-    <string name="shortcut_wifi_login_label_short">Wifi auto login</string>
-    <string name="shortcut_wifi_login_label_long">Show wifi auto login</string>
+    <string name="shortcut_wifi_login_label_short">WiFi auto login</string>
+    <string name="shortcut_wifi_login_label_long">Show WiFi auto login</string>
     <string name="shortcut_lunches_order_label_short">Lunches order</string>
     <string name="shortcut_lunches_order_label_long">Show lunches order</string>
     <string name="shortcut_lunches_burza_label_short">Lunches burza</string>
@@ -105,7 +105,7 @@
     <string name="shortcut_attendance_label_short">Attendance</string>
     <string name="shortcut_attendance_label_long">Show attendance search</string>
 
-    <string name="label_receiver_wifi_changed">Wifi change receiver for Wifi auto login</string>
+    <string name="label_receiver_wifi_changed">WiFi change receiver for WiFi auto login</string>
 
     <string name="label_service_authenticator">Account authenticator</string>
     <string name="label_service_sync_grades">Grades sync service</string>
@@ -118,14 +118,14 @@
     <string name="label_provider_grades">Grades</string>
     <string name="label_provider_grades_login">Grades credentials</string>
     <string name="label_provider_grades_preferences">Grades preferences</string>
-    <string name="label_provider_wifi">Wifi auto login</string>
-    <string name="label_provider_wifi_login">Wifi auto login credentials</string>
+    <string name="label_provider_wifi">WiFi auto login</string>
+    <string name="label_provider_wifi_login">WiFi auto login credentials</string>
     <string name="label_provider_lunches">Lunches</string>
     <string name="label_provider_lunches_login">Lunches credentials</string>
 
     <string name="action_show_dashboard">Dashboard</string>
     <string name="action_show_grades">Grades</string>
-    <string name="action_show_wifi_login">Wifi auto login</string>
+    <string name="action_show_wifi_login">WiFi auto login</string>
     <string name="action_show_lunches">Lunches</string>
     <string name="action_show_lunches_order">Order</string>
     <string name="action_show_lunches_burza">Burza</string>
@@ -193,6 +193,12 @@
     <string name="item_debug_but_fake_version_changes">Fake application upgrade</string>
     <string name="item_debug_toast_fake_update_fetch_result">Fake fetch done! Result: %1$s</string>
     <string name="item_debug_toast_fake_version_changes_result">Fake application upgrade done!</string>
+    <string name="item_login_grades_title">Login to grades</string>
+    <string name="item_login_grades_subtitle">And browse your grades right on your device.</string>
+    <string name="item_login_lunches_title">Login to lunches</string>
+    <string name="item_login_lunches_subtitle">And order lunches right on your device.</string>
+    <string name="item_login_wifi_title">Login to WiFi auto login</string>
+    <string name="item_login_wifi_subtitle">And never log in to school WiFi manually again.</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 
@@ -246,7 +252,7 @@
     <string name="txt_day_short_saturday">SAT</string>
     <string name="txt_day_short_unknown">"???"</string>
 
-    <string name="text_view_warn_non_primary_account">This account is not primary account.\nFor automatic wifi login will be used primary account.</string>
+    <string name="text_view_warn_non_primary_account">This account is not primary account.\nFor automatic WiFi login will be used primary account.</string>
     <string name="text_view_warn_unsupported_device">Your device has Android 7 or higher.\nAutomatic login may not work properly on your device…\nThis problem cannot be fixed…</string>
     <string name="text_view_login_counter">You was automatically logged in %1$s times.</string>
 
@@ -275,10 +281,10 @@
     <string name="dialog_uninstall_old_app_message">We found old version of application Purkynka installed on your phone. Should we remove it?</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
-    <string name="toast_wifi_logging_start">Sending login request to wifi <i>%1$s</i></string>
-    <string name="toast_wifi_logging_start_unknown">Sending login request to unknown wifi</string>
-    <string name="toast_wifi_logging_fail">Failed to sent login request to wifi</string>
-    <string name="toast_wifi_logging_success">Successfully sent login request to wifi</string>
+    <string name="toast_wifi_logging_start">Sending login request to WiFi <i>%1$s</i></string>
+    <string name="toast_wifi_logging_start_unknown">Sending login request to unknown WiFi</string>
+    <string name="toast_wifi_logging_fail">Failed to sent login request to WiFi</string>
+    <string name="toast_wifi_logging_success">Successfully sent login request to WiFi</string>
 
     <string name="snackbar_no_account_sync">"No account available, I can't request sync for you."</string>
     <string name="snackbar_no_account_login">"No account available, I can't log you in."</string>
@@ -292,9 +298,9 @@
     <string name="snackbar_grades_fail_no_account">"No account available, can't load grades."</string>
     <string name="snackbar_grades_login_fail">Failed to login. Are login credentials in order?</string>
     <string name="snackbar_failed_to_retrieve_login_data">"Failed to retrieve user credentials, I can't log you in."</string>
-    <string name="snackbar_wifi_logging_fail">Failed to sent login request to wifi.</string>
-    <string name="snackbar_wifi_logging_success">Successfully sent login request to wifi.</string>
-    <string name="snackbar_wifi_logging_fail_no_page">Failed to sent login request to wifi, you are probably still logged in.</string>
+    <string name="snackbar_wifi_logging_fail">Failed to sent login request to WiFi.</string>
+    <string name="snackbar_wifi_logging_success">Successfully sent login request to WiFi.</string>
+    <string name="snackbar_wifi_logging_fail_no_page">Failed to sent login request to WiFi, you are probably still logged in.</string>
     <string name="snackbar_updates_fetch_fail">Failed to check for updates.</string>
     <string name="snackbar_lunches_login_fail">Failed to login. Are login credentials in order?</string>
     <string name="snackbar_lunches_order_fail_internal">Failed to order lunch. Stay easy, just internal error. :)</string>
@@ -327,8 +333,8 @@
     <string name="snackbar_login_failed">Login failed, account with same name probably exists</string>
     <string name="snackbar_edit_failed">Edit failed, account with same name probably exists</string>
 
-    <string name="dialog_title_wifi_unknown">Unknown wifi</string>
-    <string name="dialog_text_wifi_unknown">"You're connected to unknown wifi. Do you want to continue?"</string>
+    <string name="dialog_title_wifi_unknown">Unknown WiFi</string>
+    <string name="dialog_text_wifi_unknown">"You're connected to unknown WiFi. Do you want to continue?"</string>
 
     <string name="content_description_logo">Logo</string>
     <string name="content_description_ready_image">Ready image</string>
@@ -337,7 +343,7 @@
     <string name="pref_header_system">System</string>
     <string name="pref_header_other">Other</string>
 
-    <!--<string name="pref_switch_refresh_on_wifi">Refresh data using Wi-Fi only</string>-->
+    <!--<string name="pref_switch_refresh_on_WiFi">Refresh data using Wi-Fi only</string>-->
     <string name="pref_about">About</string>
     <string name="pref_update">Update check</string>
 

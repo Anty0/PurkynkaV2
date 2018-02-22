@@ -24,6 +24,7 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
+import cz.anty.purkynka.dashboard.SwipeableDashboardItem
 import cz.anty.purkynka.update.CHANGELOG_MAP
 import cz.anty.purkynka.update.VersionInfo
 import cz.anty.purkynka.update.inflateChangesLayout
@@ -35,6 +36,7 @@ import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.notifications.manager.NotifyManager
+import eu.codetopic.utils.notifications.manager.data.requestCancel
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import kotlinx.android.synthetic.main.item_dashboard_version_changes.*
@@ -98,10 +100,29 @@ class VersionChangesDashboardManager(context: Context, accountHolder: ActiveAcco
     }
 }
 
-class VersionChangesDashboardItem(val versionCode: Int, val versionInfo: VersionInfo) : DashboardItem() {
+class VersionChangesDashboardItem(val versionCode: Int,
+                                  val versionInfo: VersionInfo) : SwipeableDashboardItem() {
 
     override val priority: Int
         get() = DASHBOARD_PRIORITY_VERSION_CHANGES + (BuildConfig.VERSION_CODE - versionCode)
+
+    override fun getSwipeDirections(holder: ViewHolder): Int = LEFT or RIGHT
+
+    override fun onSwiped(holder: ViewHolder, direction: Int) {
+        val contextRef = holder.context.asReference()
+        launch(UI) notifyCancel@ {
+            val notifyId = bg {
+                NotifyManager.getAllData(
+                        groupId = UpdateNotifyGroup.ID,
+                        channelId = VersionChangesNotifyChannel.ID
+                ).entries.firstOrNull {
+                    versionCode == VersionChangesNotifyChannel.readDataVersionCode(it.value)
+                }?.key
+            }.await() ?: return@notifyCancel
+
+            notifyId.requestCancel(contextRef())
+        }
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
         holder.txtVersion.text = holder.context.getFormattedText(

@@ -37,7 +37,8 @@
     <LinearLayout
         android:id="@+id/boxFrame"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
+        android:minHeight="60dp"
         android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
