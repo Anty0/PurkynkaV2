@@ -58,6 +58,7 @@
                     app:iiv_color="@color/materialGreen" />
 
                 <TextView
+                    style="?attr/textAppearanceListItem"
                     android:id="@+id/txtUpToDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -86,6 +87,7 @@
                     app:iiv_color="@color/materialLightRed" />
 
                 <TextView
+                    style="?attr/textAppearanceListItem"
                     android:id="@+id/txtUpdateAvailable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -130,12 +132,14 @@
                     android:layout_marginTop="16dp" />
 
                 <TextView
+                    style="?attr/textAppearanceListItemSmall"
                     android:id="@+id/txtDownloadProgress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end" />
 
                 <TextView
+                    style="?attr/textAppearanceListItem"
                     android:id="@+id/txtUpdateDownloading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -164,6 +168,7 @@
                     app:iiv_color="@color/materialYellow" />
 
                 <TextView
+                    style="?attr/textAppearanceListItem"
                     android:id="@+id/txtUpdateDownloaded"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

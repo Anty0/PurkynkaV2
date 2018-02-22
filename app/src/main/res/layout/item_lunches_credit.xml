@@ -27,6 +27,7 @@
     android:paddingRight="16dp">
 
     <TextView
+        style="?attr/textAppearanceListItem"
         android:id="@+id/txtCredit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

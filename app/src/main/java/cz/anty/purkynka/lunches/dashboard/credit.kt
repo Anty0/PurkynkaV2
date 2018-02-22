@@ -91,6 +91,9 @@ class LunchesCreditDashboardManager(context: Context, accountHolder: ActiveAccou
             adapterRef().mapReplaceAll(
                     id = ID,
                     items = bg calcItems@ {
+                        // TODO: create LunchesPreferences and add there option to disable this item
+                        // TODO: add swipe support (to disable item) and show snackbar with option to revert that
+
                         val userLoggedIn = LunchesLoginData.loginData.isLoggedIn(accountId)
                         if (!userLoggedIn) return@calcItems null
 

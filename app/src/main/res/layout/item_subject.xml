@@ -36,6 +36,7 @@
         android:paddingRight="16dp">
 
         <TextView
+            style="?attr/textAppearanceListItem"
             android:id="@+id/txtNameShort"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,6 +45,7 @@
             android:layout_marginRight="16dp"
             android:lines="1"
             android:textSize="28sp"
+            android:fontFamily="monospace"
             android:typeface="monospace" />
 
         <LinearLayout
@@ -56,6 +58,7 @@
             android:orientation="vertical">
 
             <TextView
+                style="?attr/textAppearanceListItem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:lines="1"
@@ -63,6 +66,7 @@
                 android:textSize="13sp" />
 
             <TextView
+                style="?attr/textAppearanceListItemSecondary"
                 android:id="@+id/txtAverage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,6 +83,7 @@
             android:orientation="vertical">
 
             <TextView
+                style="?attr/textAppearanceListItem"
                 android:id="@+id/txtNameLong"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -87,6 +92,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                style="?attr/textAppearanceListItemSmall"
                 android:id="@+id/txtGradesCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

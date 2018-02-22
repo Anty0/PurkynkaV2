@@ -153,7 +153,7 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
                 val options = context.baseActivity?.let {
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             it,
-                            holder.boxClickTarget,
+                            holder.boxTransition,
                             context.getString(R.string.id_transition_grade_item)
                     )
                 }

@@ -31,6 +31,7 @@ import cz.anty.purkynka.grades.dashboard.NewGradesDashboardManager
 import cz.anty.purkynka.grades.dashboard.SubjectsAverageDashboardManager
 import cz.anty.purkynka.lunches.dashboard.LunchesCreditDashboardManager
 import cz.anty.purkynka.lunches.dashboard.LunchesLoginDashboardManager
+import cz.anty.purkynka.lunches.dashboard.NextLunchDashboardManager
 import cz.anty.purkynka.update.dashboard.UpdateCheckDashboardManager
 import cz.anty.purkynka.update.dashboard.VersionChangesDashboardManager
 import cz.anty.purkynka.utils.ICON_HOME_DASHBOARD
@@ -107,6 +108,7 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
                 // Other
                 ::LunchesCreditDashboardManager,
+                ::NextLunchDashboardManager,
                 ::NewGradesDashboardManager,
                 ::SubjectsAverageDashboardManager,
 

@@ -133,13 +133,10 @@ class BadSubjectAverageDashboardItem(val accountId: String,
         holder.txtNameLong.text = subject.fullName
 
         val gradesCount = subject.grades.size
-        holder.txtInfoAndGradesCount.text =
-                holder.context.getFormattedText(
-                        R.string.item_subject_bad_average_info_subtitle,
-                        holder.context.getFormattedQuantityText(
-                                R.plurals.text_view_grades_count,
-                                gradesCount, gradesCount
-                        )
+        holder.txtGradesCount.text =
+                holder.context.getFormattedQuantityText(
+                        R.plurals.text_view_grades_count,
+                        gradesCount, gradesCount
                 )
 
         if (itemPosition != NO_POSITION) { // detects usage in header
@@ -148,7 +145,7 @@ class BadSubjectAverageDashboardItem(val accountId: String,
                 val options = context.baseActivity?.let {
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                             it,
-                            holder.boxFrame,
+                            holder.boxTransition,
                             context.getString(R.string.id_transition_subject_item)
                     )
                 }

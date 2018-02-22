@@ -180,12 +180,15 @@
     <string name="item_title_subject_symbol">Subject symbol</string>
     <string name="item_title_lunch_options">Lunch options</string>
     <string name="item_title_lunch_burza">Burza</string>
-    <string name="item_subject_bad_average_info_subtitle">"You've got bad diameter - %1$s"</string>
+    <string name="item_grades_new_grade_title_main">New grade</string>
+    <string name="item_subject_bad_average_info_title_main">"Bad average in"</string>
     <string name="item_update_available_title">Update available</string>
     <string name="item_update_available_subtitle">%1$s -> %2$s</string>
     <string name="item_attendance_exception_page_load">Failed to load page…</string>
     <string name="item_man_is_in_school">Is in school</string>
+    <string name="item_version_changes_title_main">Something was changed</string>
     <string name="item_version_name">Version %1$s</string>
+    <string name="item_error_feedback_title_main">Detected internal crash</string>
     <string name="item_error_feedback_title">Did you noticed something wired?</string>
     <string name="item_error_feedback_subtitle">Send me feedback and let me fix that!</string>
     <string name="item_error_feedback_click_hint">To send me an feedback, text me on Facebook.</string>
@@ -199,7 +202,8 @@
     <string name="item_login_lunches_subtitle">And order lunches right on your device!</string>
     <string name="item_login_wifi_title">Login to WiFi auto login</string>
     <string name="item_login_wifi_subtitle">And never log in to school WiFi manually again!</string>
-    <string name="item_credit_subtitle">Low lunches credit</string>
+    <string name="item_credit_title_main">Low lunches credit</string>
+    <string name="item_lunches_next_lunch_title_main">Next lunch</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 

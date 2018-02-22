@@ -20,7 +20,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".grades.dashboard.BadSubjectAverageDashboardItem"
+    tools:context=".lunches.dashboard.NextLunchDashboardItem"
     style="?attr/cardViewTheme"
     android:id="@+id/boxClickTarget"
     android:layout_width="match_parent"
@@ -47,7 +47,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:textSize="14sp"
-            android:text="@string/item_subject_bad_average_info_title_main" />
+            android:text="@string/item_lunches_next_lunch_title_main" />
 
         <LinearLayout
             android:id="@+id/boxTransition"
@@ -57,11 +57,11 @@
             android:orientation="horizontal"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:transitionName="@string/id_transition_subject_item">
+            android:transitionName="@string/id_transition_lunch_options_group_item">
 
             <TextView
                 style="?attr/textAppearanceListItem"
-                android:id="@+id/txtNameShort"
+                android:id="@+id/txtDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -73,51 +73,44 @@
                 android:typeface="monospace" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <TextView
-                    style="?attr/textAppearanceListItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:text="@string/text_view_average"
-                    android:textSize="13sp" />
-
-                <TextView
-                    style="?attr/textAppearanceListItemSecondary"
-                    android:id="@+id/txtAverage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="start"
                 android:orientation="vertical">
 
-                <TextView
-                    style="?attr/textAppearanceListItem"
-                    android:id="@+id/txtNameLong"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:gravity="top">
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:id="@+id/txtDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:lines="1"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="monospace"
+                        android:typeface="monospace" />
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:id="@+id/txtName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lines="1"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <TextView
                     style="?attr/textAppearanceListItemSmall"
-                    android:id="@+id/txtGradesCount"
+                    android:id="@+id/txtOrderedIndex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lines="1"

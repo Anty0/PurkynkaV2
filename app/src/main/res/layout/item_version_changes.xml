@@ -37,11 +37,13 @@
         android:paddingBottom="8dp">
 
         <TextView
+            style="?attr/textAppearanceListItem"
             android:id="@+id/txtVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lines="1"
             android:textSize="24sp"
+            android:fontFamily="monospace"
             android:typeface="monospace" />
 
         <android.support.v4.widget.Space
