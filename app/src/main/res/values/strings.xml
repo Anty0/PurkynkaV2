@@ -194,11 +194,12 @@
     <string name="item_debug_toast_fake_update_fetch_result">Fake fetch done! Result: %1$s</string>
     <string name="item_debug_toast_fake_version_changes_result">Fake application upgrade done!</string>
     <string name="item_login_grades_title">Login to grades</string>
-    <string name="item_login_grades_subtitle">And browse your grades right on your device.</string>
+    <string name="item_login_grades_subtitle">And browse your grades right on your device!</string>
     <string name="item_login_lunches_title">Login to lunches</string>
-    <string name="item_login_lunches_subtitle">And order lunches right on your device.</string>
+    <string name="item_login_lunches_subtitle">And order lunches right on your device!</string>
     <string name="item_login_wifi_title">Login to WiFi auto login</string>
-    <string name="item_login_wifi_subtitle">And never log in to school WiFi manually again.</string>
+    <string name="item_login_wifi_subtitle">And never log in to school WiFi manually again!</string>
+    <string name="item_credit_subtitle">Low lunches credit</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 

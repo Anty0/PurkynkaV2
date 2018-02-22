@@ -29,6 +29,7 @@ import cz.anty.purkynka.feedback.dashboard.ErrorFeedbackDashboardManager
 import cz.anty.purkynka.grades.dashboard.GradesLoginDashboardManager
 import cz.anty.purkynka.grades.dashboard.NewGradesDashboardManager
 import cz.anty.purkynka.grades.dashboard.SubjectsAverageDashboardManager
+import cz.anty.purkynka.lunches.dashboard.LunchesCreditDashboardManager
 import cz.anty.purkynka.lunches.dashboard.LunchesLoginDashboardManager
 import cz.anty.purkynka.update.dashboard.UpdateCheckDashboardManager
 import cz.anty.purkynka.update.dashboard.VersionChangesDashboardManager
@@ -105,6 +106,7 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                 ::ErrorFeedbackDashboardManager,
 
                 // Other
+                ::LunchesCreditDashboardManager,
                 ::NewGradesDashboardManager,
                 ::SubjectsAverageDashboardManager,
 

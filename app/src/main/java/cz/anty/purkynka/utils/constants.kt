@@ -61,11 +61,12 @@ const val SYNC_FREQUENCY_LUNCHES: Long = 60 * 60 * 3 // 3 hours in seconds
 //---------------------------------------------------------------------
 
 // System
-const val DASHBOARD_PRIORITY_UPDATE_AVAILABLE: Int = 10_000_000
-const val DASHBOARD_PRIORITY_VERSION_CHANGES: Int = 8_000_000 // + (currentVersionCode - changesVersionCode)
-const val DASHBOARD_PRIORITY_ERROR_FEEDBACK: Int = 6_000_000
+const val DASHBOARD_PRIORITY_UPDATE_AVAILABLE: Int = 12_000_000
+const val DASHBOARD_PRIORITY_VERSION_CHANGES: Int = 10_000_000 // + (currentVersionCode - changesVersionCode)
+const val DASHBOARD_PRIORITY_ERROR_FEEDBACK: Int = 8_000_000
 
 // Other
+const val DASHBOARD_PRIORITY_LUNCHES_CREDIT: Int = 4_000_000
 const val DASHBOARD_PRIORITY_GRADES_NEW: Int = 3_000_000
 const val DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD: Int = 2_000_000 // + <100; 500> = (average * 100).toInt()
 
