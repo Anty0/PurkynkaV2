@@ -41,7 +41,7 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
-import kotlinx.android.synthetic.main.item_subject_bad_average.*
+import kotlinx.android.synthetic.main.item_dashboard_subject_bad_average.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -165,5 +165,5 @@ class BadSubjectAverageDashboardItem(val accountId: String,
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_subject_bad_average
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_subject_bad_average
 }

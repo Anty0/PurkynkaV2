@@ -29,7 +29,8 @@ import kotlinx.android.synthetic.main.item_version_changes.*
 /**
  * @author anty
  */
-class VersionChangesItem(val versionCode: Int, val versionInfo: VersionInfo) : CustomItem() {
+class VersionChangesItem(val versionCode: Int, val versionInfo: VersionInfo,
+                         val highlight: Boolean = false) : CustomItem() {
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
         holder.txtVersion.text = holder.context.getFormattedText(
@@ -41,6 +42,11 @@ class VersionChangesItem(val versionCode: Int, val versionInfo: VersionInfo) : C
             removeAllViews()
             versionInfo.inflateChangesLayout(this, 5)
         }
+
+        holder.boxColoredBackground.setBackgroundResource(
+                if (!highlight) android.R.color.transparent
+                else R.color.cardview_dark_background
+        )
 
         if (itemPosition != NO_POSITION) {
             holder.boxClickTarget.setOnClickListener {

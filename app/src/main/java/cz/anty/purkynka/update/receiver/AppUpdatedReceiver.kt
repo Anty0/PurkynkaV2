@@ -27,8 +27,10 @@ import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel
 import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.requestShow
+import eu.codetopic.utils.notifications.manager.requestShowAll
 
 /**
  * @author anty
@@ -38,10 +40,17 @@ class AppUpdatedReceiver : BroadcastReceiver() {
     companion object {
 
         private const val LOG_TAG = "AppUpdatedReceiver"
+
+        const val ACTION_FAKE_MY_PACKAGE_REPLACED =
+                "cz.anty.purkynka.update.FAKE_MY_PACKAGE_REPLACED"
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Intent.ACTION_MY_PACKAGE_REPLACED) return
+        intent.action?.takeIf {
+            it == Intent.ACTION_MY_PACKAGE_REPLACED
+                    || it == ACTION_FAKE_MY_PACKAGE_REPLACED
+        } ?: return
+
         Log.d(LOG_TAG, "onReceive() -> Received app replaced intent")
 
         val currentVersion = BuildConfig.VERSION_CODE
@@ -51,18 +60,24 @@ class AppUpdatedReceiver : BroadcastReceiver() {
             if (lastKnownVersion != -1) {
                 Log.d(LOG_TAG, "onReceive() -> Detected update")
 
-                if (currentVersion in CHANGELOG_MAP) {
-                    NotificationBuilder.create(
-                            groupId = UpdateNotifyGroup.ID,
-                            channelId = VersionChangesNotifyChannel.ID
-                    ) {
-                        persistent = true
-                        refreshable = true
-                        data = VersionChangesNotifyChannel.dataFor(
-                                versionCode = currentVersion
-                        )
-                    }.requestShow(context)
-                }
+                CHANGELOG_MAP.keys
+                        .filter { it in (lastKnownVersion + 1)..currentVersion }
+                        .map {
+                            VersionChangesNotifyChannel.dataFor(
+                                    versionCode = it
+                            )
+                        }
+                        .takeIf { it.isNotEmpty() }
+                        ?.also {
+                            MultiNotificationBuilder.create(
+                                    groupId = UpdateNotifyGroup.ID,
+                                    channelId = VersionChangesNotifyChannel.ID
+                            ) {
+                                persistent = true
+                                refreshable = true
+                                data = it
+                            }.requestShowAll(context)
+                        }
             }
 
             UpdateData.instance.lastKnownVersion = currentVersion

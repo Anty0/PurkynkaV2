@@ -16,45 +16,44 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".update.ui.VersionChangesItem"
-    android:id="@+id/boxClickTarget"
+    android:id="@+id/boxColoredBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
-    android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:background="@android:color/transparent">
 
-    <TextView
-        android:id="@+id/txtVersion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:lines="1"
-        android:textSize="24sp"
-        android:typeface="monospace" />
-
-    <android.support.v4.widget.Space
-        android:layout_width="wrap_content"
-        android:layout_height="16dp" />
-
-    <android.support.v7.widget.LinearLayoutCompat
-        android:id="@+id/boxChanges"
+    <LinearLayout
+        android:id="@+id/boxClickTarget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
         android:orientation="vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp" />
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
-    <!--<TextView
-        android:id="@+id/txtChanges"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:textSize="14sp" />-->
-</LinearLayout>
+        <TextView
+            android:id="@+id/txtVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:textSize="24sp"
+            android:typeface="monospace" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="wrap_content"
+            android:layout_height="16dp" />
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/boxChanges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp" />
+    </LinearLayout>
+</FrameLayout>

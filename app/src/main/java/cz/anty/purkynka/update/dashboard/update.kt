@@ -32,7 +32,7 @@ import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
-import kotlinx.android.synthetic.main.item_update_available.*
+import kotlinx.android.synthetic.main.item_dashboard_update_available.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -110,5 +110,5 @@ class UpdateAvailableDashboardItem(val versionCode: Int, val versionName: String
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_update_available
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_update_available
 }

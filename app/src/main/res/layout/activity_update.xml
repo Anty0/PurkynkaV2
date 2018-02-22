@@ -62,6 +62,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
                     android:textSize="18sp"
                     android:text="@string/updates_text_up_to_date" />
 
@@ -80,14 +82,16 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="48dp"
                     android:layout_marginBottom="24dp"
-                    app:iiv_icon="gmd-close"
-                    app:iiv_color="@color/materialRed" />
+                    app:iiv_icon="cmd-alert-circle-outline"
+                    app:iiv_color="@color/materialLightRed" />
 
                 <TextView
                     android:id="@+id/txtUpdateAvailable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
                     android:textSize="18sp"
                     android:text="@string/updates_text_update_available" />
 
@@ -116,26 +120,28 @@
                     android:layout_marginTop="48dp"
                     android:layout_marginBottom="24dp"
                     app:iiv_icon="gmd-file-download"
-                    app:iiv_color="@color/materialYellow" />
+                    app:iiv_color="@color/materialBlue" />
 
                 <ProgressBar
                     android:id="@+id/progressDownload"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp" />
 
                 <TextView
                     android:id="@+id/txtDownloadProgress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginBottom="24dp" />
+                    android:layout_gravity="end" />
 
                 <TextView
                     android:id="@+id/txtUpdateDownloading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
                     android:textSize="18sp"
                     android:text="@string/updates_text_update_downloading" />
 
@@ -162,6 +168,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
                     android:textSize="18sp"
                     android:text="@string/updates_text_update_downloaded" />
 

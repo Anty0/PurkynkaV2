@@ -182,13 +182,17 @@
     <string name="item_title_lunch_burza">Burza</string>
     <string name="item_subject_bad_average_info_subtitle">"You've got bad diameter - %1$s"</string>
     <string name="item_update_available_title">Update available</string>
-    <string name="item_update_available_subtitle">(%1$s -> %2$s)</string>
+    <string name="item_update_available_subtitle">%1$s -> %2$s</string>
     <string name="item_attendance_exception_page_load">Failed to load page…</string>
     <string name="item_man_is_in_school">Is in school</string>
     <string name="item_version_name">Version %1$s</string>
     <string name="item_error_feedback_title">Did you noticed something wired?</string>
     <string name="item_error_feedback_subtitle">Send me feedback and let me fix that!</string>
     <string name="item_error_feedback_click_hint">To send me an feedback, text me on Facebook.</string>
+    <string name="item_debug_but_fake_update_fetch">Fetch fake update</string>
+    <string name="item_debug_but_fake_version_changes">Fake application upgrade</string>
+    <string name="item_debug_toast_fake_update_fetch_result">Fake fetch done! Result: %1$s</string>
+    <string name="item_debug_toast_fake_version_changes_result">Fake application upgrade done!</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 
@@ -246,10 +250,10 @@
     <string name="text_view_warn_unsupported_device">Your device has Android 7 or higher.\nAutomatic login may not work properly on your device…\nThis problem cannot be fixed…</string>
     <string name="text_view_login_counter">You was automatically logged in %1$s times.</string>
 
-    <string name="updates_text_up_to_date">Application is up to date (%1$s)</string>
-    <string name="updates_text_update_available">Update available (%1$s -> %2$s)</string>
-    <string name="updates_text_update_downloading">Downloading update (%1$s -> %2$s)</string>
-    <string name="updates_text_update_downloaded">Update downloaded (%1$s -> %2$s)</string>
+    <string name="updates_text_up_to_date">Application is up to date&lt;br /&gt;&lt;b&gt;Version: %1$s&lt;/b&gt;</string>
+    <string name="updates_text_update_available">Update available&lt;br /&gt;&lt;b&gt;Version: %1$s -> %2$s&lt;/b&gt;</string>
+    <string name="updates_text_update_downloading">Downloading update&lt;br /&gt;&lt;b&gt;Version: %1$s -> %2$s&lt;/b&gt;</string>
+    <string name="updates_text_update_downloaded">Update downloaded&lt;br /&gt;&lt;b&gt;Version: %1$s -> %2$s&lt;/b&gt;</string>
     <string name="updates_but_download_update">Download update</string>
     <string name="updates_but_install_update">Install update</string>
     <string name="updates_but_show_changelog">Show changelog</string>

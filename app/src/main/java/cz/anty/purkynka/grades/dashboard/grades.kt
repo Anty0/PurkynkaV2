@@ -42,7 +42,7 @@ import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
-import kotlinx.android.synthetic.main.item_grade_new.*
+import kotlinx.android.synthetic.main.item_dashboard_grade_new.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -170,6 +170,6 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_grade_new
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_grade_new
 
 }

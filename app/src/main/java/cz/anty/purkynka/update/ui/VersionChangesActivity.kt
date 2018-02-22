@@ -25,12 +25,20 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.update.CHANGELOG_MAP
 import cz.anty.purkynka.update.getChangesText
 import cz.anty.purkynka.update.inflateChangesLayout
+import cz.anty.purkynka.update.notify.UpdateNotifyGroup
+import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
+import eu.codetopic.utils.notifications.manager.NotifyManager
+import eu.codetopic.utils.notifications.manager.data.requestCancel
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import kotlinx.android.synthetic.main.activity_version_changes.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
+import org.jetbrains.anko.coroutines.experimental.bg
 
 /**
  * @author anty
@@ -77,5 +85,19 @@ class VersionChangesActivity : ModularActivity(ToolbarModule(), BackButtonModule
         )
 
         versionInfo.inflateChangesLayout(boxVersionChanges)
+
+        val self = this.asReference()
+        launch(UI) {
+            val notifyId = bg {
+                NotifyManager.getAllData(
+                        groupId = UpdateNotifyGroup.ID,
+                        channelId = VersionChangesNotifyChannel.ID
+                ).entries.firstOrNull {
+                    versionCode == VersionChangesNotifyChannel.readDataVersionCode(it.value)
+                }?.key
+            }.await() ?: return@launch
+
+            notifyId.requestCancel(self())
+        }
     }
 }

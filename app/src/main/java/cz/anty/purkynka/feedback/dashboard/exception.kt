@@ -32,7 +32,7 @@ import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
-import kotlinx.android.synthetic.main.item_error_feedback.*
+import kotlinx.android.synthetic.main.item_dashboard_error_feedback.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -121,6 +121,6 @@ class ErrorFeedbackDashboardItem : SwipeableDashboardItem() {
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_error_feedback
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_error_feedback
 
 }

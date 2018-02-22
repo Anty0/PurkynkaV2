@@ -22,6 +22,7 @@ import android.content.Context
 import android.support.multidex.MultiDexApplication
 import android.support.v4.content.ContextCompat
 import com.crashlytics.android.Crashlytics
+import com.crashlytics.android.beta.Beta
 import com.evernote.android.job.JobManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
@@ -69,6 +70,7 @@ import eu.codetopic.utils.UtilsBase.processNameProviders
 import eu.codetopic.utils.UtilsBase.processNameNotifyManager
 import eu.codetopic.utils.broadcast.BroadcastsConnector
 import eu.codetopic.utils.notifications.manager.NotifyManager
+import io.fabric.sdk.android.Fabric
 import org.jetbrains.anko.bundleOf
 
 
@@ -150,6 +152,9 @@ class AppInit : MultiDexApplication() {
     }
 
     private fun initAllProcessesBeforeUtils() {
+        // Setup crashlytics
+        Fabric.with(this, Crashlytics())
+
         // Setup uncaught exception handler
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, ex ->
@@ -169,7 +174,8 @@ class AppInit : MultiDexApplication() {
             Log.d("UExHandler", "Oh no, something went wrong (error logged). " +
                     "Ok, let's enable Feedback module...")
 
-            Crashlytics.logException(LoggedException(it))
+            Crashlytics.getInstance()?.core
+                    ?.logException(LoggedException(it))
 
             FeedbackData.takeIf { it.isInitialized() }
                     ?.instance?.notifyErrorReceived()

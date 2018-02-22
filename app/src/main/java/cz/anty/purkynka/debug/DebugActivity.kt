@@ -30,6 +30,8 @@ class DebugActivity : BaseDebugActivity() {
 
     override fun prepareDebugItems(items: MutableList<CustomItem>) {
         // add here App debug items
+        items.add(AppDebugItem())
+
         super.prepareDebugItems(items)
     }
 }

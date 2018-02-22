@@ -19,6 +19,8 @@
 package cz.anty.purkynka.update.sync
 
 import android.content.Context
+import android.support.annotation.MainThread
+import android.support.annotation.WorkerThread
 import com.evernote.android.job.Job
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.update.load.UpdateFetcher
@@ -27,8 +29,16 @@ import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.UtilsBase
+import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
+import eu.codetopic.utils.notifications.manager.data.NotifyId
+import eu.codetopic.utils.notifications.manager.data.requestCancel
 import eu.codetopic.utils.notifications.manager.requestShow
+import eu.codetopic.utils.thread.LooperUtils
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.Ref
+import org.jetbrains.anko.coroutines.experimental.bg
 
 /**
  * @author anty
@@ -37,8 +47,9 @@ object Updater {
 
     private const val LOG_TAG = "Updater"
 
+    @WorkerThread
     fun fetchUpdates(): Job.Result {
-        Log.d(LOG_TAG, "fetchUpdates(process=${UtilsBase.Process.name})")
+        Log.d(LOG_TAG, "fetchUpdates()")
 
         val code = UpdateFetcher.fetchVersionCode() ?: return Job.Result.FAILURE
         val name = UpdateFetcher.fetchVersionName() ?: return Job.Result.FAILURE
@@ -48,37 +59,64 @@ object Updater {
         return Job.Result.SUCCESS
     }
 
-    fun fetchUpdatesAndNotify(context: Context): Job.Result =
-            fetchUpdates().also checkResult@ {
-                when (it) {
-                    Job.Result.SUCCESS -> {
-                        val currentVersionCode = BuildConfig.VERSION_CODE
-                        val latestVersionCode = UpdateData.instance.latestVersionCode
-                        if (latestVersionCode == currentVersionCode) return@checkResult
+    @WorkerThread
+    fun fetchFakeUpdates(): Job.Result {
+        Log.d(LOG_TAG, "fetchFakeUpdates()")
 
-                        Log.b(LOG_TAG, "fetchUpdatesAndNotify() -> Found update" +
-                                " -> ($currentVersionCode -> $latestVersionCode)")
+        val code = BuildConfig.VERSION_CODE + 1
+        val name = BuildConfig.VERSION_NAME + "-FAKE"
 
-                        val latestVersion = UpdateData.instance.latestVersion
+        UpdateData.instance.setLatestVersion(code, name)
 
-                        NotificationBuilder.create(
-                                groupId = UpdateNotifyGroup.ID,
-                                channelId = UpdateNotifyChannel.ID,
-                                init = {
-                                    persistent = true
-                                    refreshable = true
-                                    data = UpdateNotifyChannel.dataForVersion(
-                                            code = latestVersion.first,
-                                            name = latestVersion.second
-                                    )
-                                }
-                        ).requestShow(context)
+        return Job.Result.SUCCESS
+    }
+
+    @WorkerThread
+    fun notifyAboutUpdate(appContext: Context) {
+        val currentVersionCode = BuildConfig.VERSION_CODE
+        val latestVersionCode = UpdateData.instance.latestVersionCode
+
+        if (latestVersionCode == currentVersionCode) {
+            LooperUtils.postOnMainThread { appContext.cancelUpdateNotification() }
+        } else {
+            val (code, name) = UpdateData.instance.latestVersion
+            LooperUtils.postOnMainThread { appContext.showUpdateNotification(code, name) }
+        }
+    }
+
+    suspend fun suspendNotifyAboutUpdate(contextRef: Ref<Context>) = launch(UI) {
+        val currentVersionCode = BuildConfig.VERSION_CODE
+        val (code, name) = bg { UpdateData.instance.latestVersion }.await()
+
+        if (code == currentVersionCode) {
+            contextRef().cancelUpdateNotification()
+        } else {
+            contextRef().showUpdateNotification(code, name)
+        }
+    }
+
+    @MainThread
+    private fun Context.cancelUpdateNotification() {
+        NotifyId.forCommon(
+                groupId = UpdateNotifyGroup.ID,
+                channelId = UpdateNotifyChannel.ID,
+                id = UpdateNotifyChannel.NOTIFY_ID
+        ).requestCancel(this)
+    }
+
+    @MainThread
+    private fun Context.showUpdateNotification(versionCode: Int, versionName: String) {
+        NotificationBuilder.create(
+                    groupId = UpdateNotifyGroup.ID,
+                    channelId = UpdateNotifyChannel.ID,
+                    init = {
+                        persistent = false
+                        refreshable = false
+                        data = UpdateNotifyChannel.dataForVersion(
+                                code = versionCode,
+                                name = versionName
+                        )
                     }
-                    else -> {
-                        Log.b(LOG_TAG, "fetchUpdatesAndNotify()" +
-                                " -> Failed to check for update" +
-                                " -> (result=$it)")
-                    }
-                }
-            }
+            ).requestShow(this)
+    }
 }

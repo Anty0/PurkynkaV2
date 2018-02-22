@@ -45,6 +45,7 @@ class UpdateNotifyChannel : NotifyChannel(ID, checkForIdOverrides = false) {
 
         private const val LOG_TAG = "UpdateNotifyChannel"
         const val ID = "cz.anty.purkynka.update.notify.$LOG_TAG"
+        const val NOTIFY_ID = 0
 
         private const val PARAM_VERSION_CODE = "VERSION_CODE"
         private const val PARAM_VERSION_NAME = "VERSION_NAME"
@@ -77,7 +78,7 @@ class UpdateNotifyChannel : NotifyChannel(ID, checkForIdOverrides = false) {
             }
 
     override fun nextId(context: Context, group: NotifyGroup,
-                        data: Bundle): Int = 0 // = Replace existing notification
+                        data: Bundle): Int = NOTIFY_ID // Constant id = Replace existing notification
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
@@ -113,7 +114,7 @@ class UpdateNotifyChannel : NotifyChannel(ID, checkForIdOverrides = false) {
                 setDefaults(NotificationCompat.DEFAULT_ALL)
                 priority = NotificationCompat.PRIORITY_HIGH
 
-                setAutoCancel(true)
+                //setAutoCancel(true)
                 setCategory(NotificationCompat.CATEGORY_EVENT)
 
                 setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

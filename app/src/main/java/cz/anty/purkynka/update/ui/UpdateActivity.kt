@@ -168,11 +168,14 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         }
     }
 
-    private suspend fun fetchUpdate(): Job.Result =
-            bg { Updater.fetchUpdates() }.await()
-                    .alsoIf({ it == Job.Result.FAILURE }) {
-                        snackbarUpdateFetchFailed()
-                    }
+    private suspend fun fetchUpdate(): Job.Result {
+        val self = this.asReference()
+        return bg { Updater.fetchUpdates() }.await()
+                .also { Updater.suspendNotifyAboutUpdate(self) }
+                .alsoIf({ it == Job.Result.FAILURE }) {
+                    snackbarUpdateFetchFailed()
+                }
+    }
 
     private fun snackbarUpdateFetchFailed() = longSnackbar(
             boxRefreshLayout,
