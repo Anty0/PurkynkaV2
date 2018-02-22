@@ -72,6 +72,7 @@ object LunchesParser {
                                     .split("\n").firstOrNull()?.trim()
                                     ?.let { FORMAT_DATE_BURZA_LUNCH.parse(it).time }
                         } catch (e: ParseException) {
+                            if (e is InterruptedException) throw e
                             throw IllegalArgumentException(
                                     "Failed to parse date from lunchElement: $lunchElement", e
                             )
@@ -102,6 +103,7 @@ object LunchesParser {
                 syncResult?.apply { stats.numEntries++ }
                 return@map parseBurzaLunch(it)
             } catch (e: Exception) {
+                if (e is InterruptedException) throw e
                 syncResult?.apply { stats.numParseExceptions++ }
                 Log.w(LOG_TAG, "parseLunchesBurza", e)
                 return@map null
@@ -164,6 +166,7 @@ object LunchesParser {
                         ?.map { parseLunchOption(it) }
                         ?.toTypedArray()
             } catch (e: Exception) {
+                if (e is InterruptedException) throw e
                 Log.w(LOG_TAG, "parseLunchOptionsGroups", e)
                 return@parseOptions null
             }
@@ -178,6 +181,7 @@ object LunchesParser {
                 syncResult?.apply { stats.numEntries++ }
                 return@map parseLunchOptionsGroup(lunchElement)
             } catch (e: Exception) {
+                if (e is InterruptedException) throw e
                 syncResult?.apply { stats.numParseExceptions++ }
                 Log.w(LOG_TAG, "parseLunchOptionsGroups", e)
                 return@map null

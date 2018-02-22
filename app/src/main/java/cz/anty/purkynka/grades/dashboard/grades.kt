@@ -59,7 +59,7 @@ class NewGradesDashboardManager(context: Context, accountHolder: ActiveAccountHo
     companion object {
 
         private const val LOG_TAG = "NewGradesDashboardManager"
-        private const val ID = "cz.anty.purkynka.grades.dashboard.$LOG_TAG"
+        private const val ID = "cz.anty.purkynka.grades.dashboard.grades"
     }
 
     private val updateReceiver = receiver { _, _ -> update() }

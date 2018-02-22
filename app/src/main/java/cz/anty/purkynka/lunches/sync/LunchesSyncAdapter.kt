@@ -134,6 +134,8 @@ class LunchesSyncAdapter(context: Context) :
             val nCredit = try {
                 LunchesParser.parseCredit(mainPage)
             } catch (e: Exception) {
+                if (e is InterruptedException) throw e
+
                 // Problems with parsing credit shouldn't cause whole sync to fail,
                 //  but system will be notified about result
                 syncResult.stats.numParseExceptions++
@@ -157,20 +159,23 @@ class LunchesSyncAdapter(context: Context) :
         } catch (e: Exception) {
             Log.w(LOG_TAG, "Failed to refresh lunches", e)
 
-            data.setLastSyncResult(accountId, when (e) {
-                is WrongLoginDataException -> {
-                    syncResult.stats.numAuthExceptions++
-                    FAIL_LOGIN
-                }
-                is IOException -> {
-                    syncResult.stats.numIoExceptions++
-                    FAIL_CONNECT
-                }
-                else -> {
-                    syncResult.stats.numIoExceptions++
-                    FAIL_UNKNOWN
-                }
-            })
+            run setResult@ {
+                data.setLastSyncResult(accountId, when (e) {
+                    is WrongLoginDataException -> {
+                        syncResult.stats.numAuthExceptions++
+                        FAIL_LOGIN
+                    }
+                    is IOException -> {
+                        syncResult.stats.numIoExceptions++
+                        FAIL_CONNECT
+                    }
+                    is InterruptedException -> return@setResult
+                    else -> {
+                        syncResult.stats.numIoExceptions++
+                        FAIL_UNKNOWN
+                    }
+                })
+            }
         }
     }
 

@@ -61,5 +61,6 @@ const val SYNC_FREQUENCY_LUNCHES: Long = 60 * 60 * 3 // 3 hours in seconds
 //---------------------------------------------------------------------
 
 const val DASHBOARD_PRIORITY_UPDATE_AVAILABLE = 10_000
+const val DASHBOARD_PRIORITY_ERROR_FEEDBACK = 9_000
 const val DASHBOARD_PRIORITY_GRADES_NEW = 2_000
 const val DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD = 1_000 // + <100; 500> = (average * 100).toInt()

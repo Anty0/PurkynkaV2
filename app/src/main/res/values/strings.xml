@@ -186,6 +186,9 @@
     <string name="item_attendance_exception_page_load">Failed to load page…</string>
     <string name="item_man_is_in_school">Is in school</string>
     <string name="item_version_name">Version %1$s</string>
+    <string name="item_error_feedback_title">Did you noticed something wired?</string>
+    <string name="item_error_feedback_subtitle">Send me feedback and let me fix that!</string>
+    <string name="item_error_feedback_click_hint">To send me an feedback, text me on Facebook.</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 

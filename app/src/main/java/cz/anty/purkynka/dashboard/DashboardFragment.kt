@@ -25,6 +25,7 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.feedback.dashboard.ErrorFeedbackDashboardManager
 import cz.anty.purkynka.grades.dashboard.NewGradesDashboardManager
 import cz.anty.purkynka.grades.dashboard.SubjectsAverageDashboardManager
 import cz.anty.purkynka.update.dashboard.UpdateCheckDashboardManager
@@ -95,8 +96,9 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
         managers = listOf(
                 UpdateCheckDashboardManager(themedContext, accountHolder, adapter),
-                SubjectsAverageDashboardManager(themedContext, accountHolder, adapter),
-                NewGradesDashboardManager(themedContext, accountHolder, adapter)
+                ErrorFeedbackDashboardManager(themedContext, accountHolder, adapter),
+                NewGradesDashboardManager(themedContext, accountHolder, adapter),
+                SubjectsAverageDashboardManager(themedContext, accountHolder, adapter)
                 // TODO: add here all items managers
         )
 

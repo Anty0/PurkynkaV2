@@ -49,7 +49,7 @@ class UpdateCheckDashboardManager(context: Context, accountHolder: ActiveAccount
     companion object {
 
         private const val LOG_TAG = "UpdateCheckDashboardManager"
-        private const val ID = "cz.anty.purkynka.update.dashboard.$LOG_TAG"
+        private const val ID = "cz.anty.purkynka.update.dashboard.update"
     }
 
     private val updateReceiver = receiver { _, _ -> update() }

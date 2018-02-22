@@ -83,7 +83,7 @@ class LunchesBurzaWatcherStatusChannel : NotifyChannel(ID, false) {
                 setSmallIcon(R.drawable.ic_notify_lunches_burza_watcher)
                 //setLargeIcon()
                 color = ContextCompat.getColor(context, R.color.colorPrimaryDarkLunches)
-                setColorized(true)
+                setColorized(true) // TODO: maybe not colorize
 
                 setProgress(0, 0, true)
 

@@ -58,7 +58,7 @@ class SubjectsAverageDashboardManager(context: Context, accountHolder: ActiveAcc
     companion object {
 
         private const val LOG_TAG = "SubjectsAverageDashboardManager"
-        private const val ID = "cz.anty.purkynka.grades.dashboard.$LOG_TAG"
+        private const val ID = "cz.anty.purkynka.grades.dashboard.subjects"
     }
 
     private val updateReceiver = receiver { _, _ -> update() }

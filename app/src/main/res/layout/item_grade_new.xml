@@ -22,22 +22,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".grades.dashboard.NewGradeDashboardItem"
     style="?attr/cardViewTheme"
+    android:id="@+id/boxClickTarget"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="4dp"
     android:layout_marginRight="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     app:cardUseCompatPadding="true"
     app:contentPaddingTop="16dp"
-    app:contentPaddingBottom="16dp"
-    app:contentPaddingLeft="16dp"
-    app:contentPaddingRight="16dp">
+    app:contentPaddingBottom="16dp">
 
     <LinearLayout
-        android:id="@+id/boxClickTarget"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:transitionName="@string/id_transition_grade_item">
 
         <TextView

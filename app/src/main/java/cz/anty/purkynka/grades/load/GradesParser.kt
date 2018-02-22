@@ -78,6 +78,7 @@ object GradesParser {
                     syncResult?.apply { stats.numEntries++ }
                     return@map parseGrade(it)
                 } catch (e: Exception) {
+                    if (e is InterruptedException) throw e
                     syncResult?.apply { stats.numParseExceptions++ }
                     Log.w(LOG_TAG, "parseGrades", e)
                     return@map null
@@ -94,6 +95,7 @@ object GradesParser {
         val date = try {
             GRADE_DATE_FORMAT.parse(dateElement.text()).time
         } catch (e: ParseException) {
+            if (e is InterruptedException) throw e
             throw IllegalArgumentException(
                     "Parameter error: invalid date ${gradeData[0].text()}", e
             )

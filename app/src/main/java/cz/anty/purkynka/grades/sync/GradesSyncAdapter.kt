@@ -123,6 +123,7 @@ class GradesSyncAdapter(context: Context) :
                 try {
                     Semester.valueOf(extras.getString(EXTRA_SEMESTER)).stableSemester
                 } catch (e: Exception) {
+                    if (e is InterruptedException) throw e
                     Log.e(LOG_TAG, "onPerformSync() -> Failed to parse semester parameter", e)
                     Semester.AUTO.stableSemester
                 }
@@ -162,20 +163,23 @@ class GradesSyncAdapter(context: Context) :
         } catch (e: Exception) {
             Log.w(LOG_TAG, "Failed to refresh grades", e)
 
-            data.setLastSyncResult(accountId, when (e) {
-                is WrongLoginDataException -> {
-                    syncResult.stats.numAuthExceptions++
-                    FAIL_LOGIN
-                }
-                is IOException -> {
-                    syncResult.stats.numIoExceptions++
-                    FAIL_CONNECT
-                }
-                else -> {
-                    syncResult.stats.numIoExceptions++
-                    FAIL_UNKNOWN
-                }
-            })
+            run setResult@ {
+                data.setLastSyncResult(accountId, when (e) {
+                    is WrongLoginDataException -> {
+                        syncResult.stats.numAuthExceptions++
+                        FAIL_LOGIN
+                    }
+                    is IOException -> {
+                        syncResult.stats.numIoExceptions++
+                        FAIL_CONNECT
+                    }
+                    is InterruptedException -> return@setResult
+                    else -> {
+                        syncResult.stats.numIoExceptions++
+                        FAIL_UNKNOWN
+                    }
+                })
+            }
         }
     }
 
