@@ -48,25 +48,32 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
     }
 
     @Transient
-    val isNew = changes?.isEmpty() == true
+    private val valueColor: Int = base.valueColor
 
     @Transient
-    val isChanged = changes?.isNotEmpty() == true
+    val isNew
+        get() = changes?.isEmpty() == true
 
     @Transient
-    val hasChnges = changes != null
+    val isChanged
+        get() = changes?.isNotEmpty() == true
+
+    @Transient
+    val hasChnges
+        get() = changes != null
 
     override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
         val textStyle = if (base.weight >= 3) Typeface.BOLD else Typeface.NORMAL
 
         holder.txtSubject.apply {
+            setTextColor(valueColor)
             visibility = if (showSubject) View.VISIBLE else View.GONE
             text = base.subjectShort.fillToLen(4, Anchor.LEFT)
         }
 
         holder.txtGrade.apply {
             setTypeface(null, textStyle)
-            setTextColor(base.valueColor)
+            if (!showSubject) setTextColor(valueColor)
             text = base.valueToShow
         }
 

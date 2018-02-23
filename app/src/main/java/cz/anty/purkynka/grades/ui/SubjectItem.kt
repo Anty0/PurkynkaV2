@@ -19,6 +19,7 @@
 package cz.anty.purkynka.grades.ui
 
 import android.content.Context
+import android.graphics.Typeface
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
@@ -37,7 +38,7 @@ import kotlinx.android.synthetic.main.item_subject.*
 /**
  * @author anty
  */
-class SubjectItem(val base: Subject,
+class SubjectItem(val base: Subject, val isBad: Boolean,
                   val changes: Map<Int, List<String>> = emptyMap()): CustomItem() { // TODO: use changes
 
     companion object {
@@ -45,14 +46,23 @@ class SubjectItem(val base: Subject,
         private const val LOG_TAG = "SubjectItem"
     }
 
+    private val average: Double = base.average
+    private val averageColor: Int = base.averageColor
+
     val isChnaged get() = changes.isNotEmpty()
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        holder.txtNameShort.text = base.shortName.fillToLen(4, Anchor.LEFT)
+        val textStyle = if (isBad) Typeface.BOLD else Typeface.NORMAL
+
+        holder.txtNameShort.apply {
+            setTextColor(averageColor)
+            text = base.shortName.fillToLen(4, Anchor.LEFT)
+        }
 
         holder.txtAverage.apply {
-            setTextColor(base.averageColor)
-            text = base.average.format(2)
+            setTypeface(null, textStyle)
+            //setTextColor(averageColor)
+            text = average.format(2)
         }
 
         holder.txtNameLong.text = base.fullName
@@ -85,7 +95,7 @@ class SubjectItem(val base: Subject,
 
                 ContextCompat.startActivity(
                         context,
-                        SubjectActivity.getStartIntent(context, base, changes),
+                        SubjectActivity.getStartIntent(context, base, isBad, changes),
                         options?.toBundle()
                 )
             }

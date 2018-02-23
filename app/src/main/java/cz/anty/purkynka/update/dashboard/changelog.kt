@@ -104,7 +104,7 @@ class VersionChangesDashboardItem(val versionCode: Int,
                                   val versionInfo: VersionInfo) : SwipeableDashboardItem() {
 
     override val priority: Int
-        get() = DASHBOARD_PRIORITY_VERSION_CHANGES + (BuildConfig.VERSION_CODE - versionCode)
+        get() = DASHBOARD_PRIORITY_VERSION_CHANGES
 
     override fun getSwipeDirections(holder: ViewHolder): Int = LEFT or RIGHT
 

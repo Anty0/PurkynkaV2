@@ -121,6 +121,8 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
         private const val LOG_TAG = "NewGradeDashboardItem"
     }
 
+    private val valueColor = grade.valueColor
+
     override val priority: Int
         get() = DASHBOARD_PRIORITY_GRADES_NEW
 
@@ -128,13 +130,13 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
         val textStyle = if (grade.weight >= 3) Typeface.BOLD else Typeface.NORMAL
 
         holder.txtSubject.apply {
-            visibility = View.VISIBLE
+            setTextColor(valueColor)
             text = grade.subjectShort.fillToLen(4, Anchor.LEFT)
         }
 
         holder.txtGrade.apply {
             setTypeface(null, textStyle)
-            setTextColor(grade.valueColor)
+            //setTextColor(valueColor)
             text = grade.valueToShow
         }
 

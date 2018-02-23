@@ -105,7 +105,7 @@ object LunchesParser {
             } catch (e: Exception) {
                 if (e is InterruptedException) throw e
                 syncResult?.apply { stats.numParseExceptions++ }
-                Log.w(LOG_TAG, "parseLunchesBurza", e)
+                Log.w(LOG_TAG, "parseLunchesBurza() -> parseBurzaLunch(lunchElement=$it)", e)
                 return@map null
             }
         }
@@ -167,7 +167,8 @@ object LunchesParser {
                         ?.toTypedArray()
             } catch (e: Exception) {
                 if (e is InterruptedException) throw e
-                Log.w(LOG_TAG, "parseLunchOptionsGroups", e)
+                Log.w(LOG_TAG, "parseLunchOptionsGroups()" +
+                        " -> parseLunchOptions(lunchElements=$lunchElements)", e)
                 return@parseOptions null
             }
         }
@@ -183,7 +184,7 @@ object LunchesParser {
             } catch (e: Exception) {
                 if (e is InterruptedException) throw e
                 syncResult?.apply { stats.numParseExceptions++ }
-                Log.w(LOG_TAG, "parseLunchOptionsGroups", e)
+                Log.w(LOG_TAG, "parseLunchOptionsGroups() -> parseLunchOptionsGroup(lunchElement=$lunchElement)", e)
                 return@map null
             }
         }

@@ -43,14 +43,11 @@ import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataChanges
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataGrade
-import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
-import cz.anty.purkynka.grades.save.GradesLoginData
-import cz.anty.purkynka.grades.save.GradesMap
-import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.save.GradesUiData.Sort.*
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.data.Subject.Companion.average
+import cz.anty.purkynka.grades.save.*
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
 import eu.codetopic.java.utils.ifFalse
@@ -243,13 +240,12 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
         }
 
         private fun updateWithLoading(): Job {
-            val holderRef = holder.asReference()
             return launch(UI) {
-                holderRef().showLoading()
+                holder.showLoading()
 
                 update().join()
 
-                holderRef().hideLoading()
+                holder.hideLoading()
             }
         }
 
@@ -369,6 +365,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             Log.d(LOG_TAG, "uiDataChangedReceiver.onReceive()")
             update()
         }
+        private val preferencesDataChangedReceiver = receiver { _, _ ->
+            Log.d(LOG_TAG, "preferencesDataChangedReceiver.onReceive()")
+            update()
+        }
         private val newGradesChangesReceiver = receiver { _, intent ->
             Log.d(LOG_TAG, "newGradesChangesReceiver.onReceive()")
 
@@ -389,6 +389,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
         }
 
         private var userLoggedIn = false
+        private var badAverage: Float? = null
         private var gradesMap: GradesMap? = null
         private var gradesChangesMap: MutableMap<String, MutableMap<Int, List<String>>> = mutableMapOf()
 
@@ -471,6 +472,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                     intentFilter(GradesData.getter))
             LocalBroadcast.registerReceiver(uiDataChangedReceiver,
                     intentFilter(GradesUiData.getter))
+            LocalBroadcast.registerReceiver(preferencesDataChangedReceiver,
+                    intentFilter(GradesPreferences.getter))
             boxRecycler.context.registerReceiver(newGradesChangesReceiver,
                     intentFilter(GradesSyncAdapter.ACTION_NEW_GRADES_CHANGES))
 
@@ -479,6 +482,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
 
         fun unregister() {
             boxRecycler.context.unregisterReceiver(newGradesChangesReceiver)
+            LocalBroadcast.unregisterReceiver(preferencesDataChangedReceiver)
             LocalBroadcast.unregisterReceiver(uiDataChangedReceiver)
             LocalBroadcast.unregisterReceiver(dataChangedReceiver)
             LocalBroadcast.unregisterReceiver(loginDataChangedReceiver)
@@ -562,13 +566,12 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
         }
 
         private fun updateWithLoading(): Job {
-            val holderRef = holder.asReference()
             return launch(UI) {
-                holderRef().showLoading()
+                holder.showLoading()
 
                 update().join()
 
-                holderRef().hideLoading()
+                holder.hideLoading()
             }
         }
 
@@ -591,6 +594,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             userLoggedIn = accountHolder.accountId?.let {
                 bg { GradesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
+            badAverage = bg { GradesPreferences.instance.subjectBadAverage }.await()
             gradesMap = accountHolder.accountId?.let {
                 bg { GradesData.instance.getGrades(it) }.await()
             }
@@ -624,10 +628,15 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                             }
                             val subjects = {
                                 it.toSubjects().map {
-                                    SubjectItem(it, it.grades.mapNotNull { grade ->
-                                        gradesChangesMap[accountId]?.get(grade.id)
-                                                ?.let { grade.id to it }
-                                    }.toMap())
+                                    SubjectItem(
+                                            base = it,
+                                            isBad = badAverage?.let { av -> av < it.average }
+                                                    ?: false,
+                                            changes = it.grades.mapNotNull { grade ->
+                                                gradesChangesMap[accountId]?.get(grade.id)
+                                                        ?.let { grade.id to it }
+                                            }.toMap()
+                                    )
                                 }
                             }
                             addAll(when (sort) {

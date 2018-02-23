@@ -51,20 +51,24 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
 
         private const val EXTRA_SUBJECT =
                 "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_SUBJECT"
+        private const val EXTRA_IS_BAD =
+                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_IS_BAD"
         private const val EXTRA_SUBJECT_CHANGES =
                 "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_SUBJECT_CHANGES"
         private val EXTRA_SUBJECT_CHANGES_SERIALIZER =
                 (IntSerializer to StringSerializer.list).map
 
-        fun getStartIntent(context: Context, subject: Subject,
+        fun getStartIntent(context: Context, subject: Subject, isBad: Boolean,
                            changes: Map<Int, List<String>> = emptyMap()) =
                 Intent(context, SubjectActivity::class.java)
                         .putKSerializableExtra(EXTRA_SUBJECT, subject)
+                        .putExtra(EXTRA_IS_BAD, isBad)
                         .putKSerializableExtra(EXTRA_SUBJECT_CHANGES, changes,
                                 EXTRA_SUBJECT_CHANGES_SERIALIZER)
 
-        fun start(context: Context, subject: Subject, changes: Map<Int, List<String>> = emptyMap()) =
-                context.startActivity(getStartIntent(context, subject, changes))
+        fun start(context: Context, subject: Subject, isBad: Boolean,
+                  changes: Map<Int, List<String>> = emptyMap()) =
+                context.startActivity(getStartIntent(context, subject, isBad, changes))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +82,7 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
                     finish()
                     return
                 }
+        val isBad = intent?.getBooleanExtra(EXTRA_IS_BAD, false) ?: false
         val subjectChanges = intent
                 ?.getKSerializableExtra(EXTRA_SUBJECT_CHANGES,
                         EXTRA_SUBJECT_CHANGES_SERIALIZER)
@@ -85,7 +90,7 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
 
         title = subject.fullName
 
-        val subjectItem = SubjectItem(subject, subjectChanges)
+        val subjectItem = SubjectItem(subject, isBad, subjectChanges)
         val itemVH = subjectItem.createViewHolder(this, boxSubject)
                 .also { boxSubject.addView(it.itemView) }
         subjectItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)

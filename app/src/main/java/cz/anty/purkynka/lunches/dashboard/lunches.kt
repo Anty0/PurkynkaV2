@@ -24,15 +24,17 @@ import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
+import cz.anty.purkynka.dashboard.SwipeableDashboardItem
 import cz.anty.purkynka.lunches.LunchesOrderFragment
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
-import cz.anty.purkynka.lunches.save.LunchesData
+import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.ui.LunchOptionsGroupActivity
-import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_LUNCHES_NEXT_LUNCH
+import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_LUNCHES_NEW
 import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.letIfNull
@@ -40,9 +42,13 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.notifications.manager.NotifyManager
+import eu.codetopic.utils.notifications.manager.data.NotifyId
+import eu.codetopic.utils.notifications.manager.data.requestCancel
+import eu.codetopic.utils.thread.LooperUtils
 import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
-import kotlinx.android.synthetic.main.item_dashboard_lunches_next_lunch.*
+import kotlinx.android.synthetic.main.item_dashboard_lunches_new.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
@@ -51,20 +57,18 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.textColorResource
 import java.util.*
-import java.util.Calendar.DAY_OF_MONTH
-import java.util.Calendar.HOUR_OF_DAY
 
 /**
  * @author anty
  */
-class NextLunchDashboardManager(context: Context, accountHolder: ActiveAccountHolder,
-                                adapter: MultiAdapter<DashboardItem>) :
+class NewLunchesDashboardManager(context: Context, accountHolder: ActiveAccountHolder,
+                                 adapter: MultiAdapter<DashboardItem>) :
         DashboardManager(context, accountHolder, adapter) {
 
     companion object {
 
-        private const val LOG_TAG = "NextLunchDashboardManager"
-        private const val ID = "cz.anty.purkynka.lunches.dashboard.next"
+        private const val LOG_TAG = "NewLunchesDashboardManager"
+        private const val ID = "cz.anty.purkynka.lunches.dashboard.lunches"
     }
 
     private val updateReceiver = receiver { _, _ -> update() }
@@ -74,8 +78,7 @@ class NextLunchDashboardManager(context: Context, accountHolder: ActiveAccountHo
                 receiver = updateReceiver,
                 filter = intentFilter(
                         LunchesLoginData.getter,
-                        LunchesData.getter,
-                        Intent.ACTION_TIME_TICK
+                        NotifyManager.getOnChangeBroadcastAction()
                 )
         )
 
@@ -103,37 +106,37 @@ class NextLunchDashboardManager(context: Context, accountHolder: ActiveAccountHo
                         val userLoggedIn = LunchesLoginData.loginData.isLoggedIn(accountId)
                         if (!userLoggedIn) return@calcItems null
 
-                        val time = run time@ {
-                            Calendar.getInstance().apply {
-                                if (get(HOUR_OF_DAY) >= 15) {
-                                    set(DAY_OF_MONTH, get(DAY_OF_MONTH) + 1)
-                                }
-                                set(Calendar.HOUR_OF_DAY, 0)
-                                set(Calendar.MINUTE, 0)
-                                set(Calendar.SECOND, 0)
-                                set(Calendar.MILLISECOND, 0)
-                            }.timeInMillis
+                        return@calcItems NotifyManager.getAllData(
+                                groupId = AccountNotifyGroup.idFor(accountId),
+                                channelId = LunchesChangesNotifyChannel.ID
+                        ).mapNotNull map@ {
+                            val (id, data) = it
+                            val lunch = LunchesChangesNotifyChannel.readData(data)
+                                    ?: return@map null
+                            return@map NewLunchDashboardItem(id, accountId, lunch)
                         }
-                        return@calcItems LunchesData.instance.getLunches(accountId)
-                                .filter { it.date >= time }.minBy { it.date }
-                                ?.let { NextLunchDashboardItem(accountId, it) }
-                                ?.let { listOf(it) }
                     }.await() ?: emptyList()
             )
         }
     }
 }
 
-class NextLunchDashboardItem(val accountId: String,
-                             val lunchOptionsGroup: LunchOptionsGroup) : DashboardItem() {
+class NewLunchDashboardItem(val notifyId: NotifyId, val accountId: String,
+                            val lunchOptionsGroup: LunchOptionsGroup) : SwipeableDashboardItem() {
 
     companion object {
 
-        private const val LOG_TAG = "NextLunchDashboardItem"
+        private const val LOG_TAG = "NewLunchDashboardItem"
     }
 
     override val priority: Int
-        get() = DASHBOARD_PRIORITY_LUNCHES_NEXT_LUNCH
+        get() = DASHBOARD_PRIORITY_LUNCHES_NEW
+
+    override fun getSwipeDirections(holder: ViewHolder): Int = LEFT or RIGHT
+
+    override fun onSwiped(holder: ViewHolder, direction: Int) {
+        notifyId.requestCancel(holder.context)
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
         holder.txtDay.apply {
@@ -154,12 +157,12 @@ class NextLunchDashboardItem(val accountId: String,
                     }
                     .let { holder.context.getText(it) }
             textColorResource = when {
-            // Lunch is ordered
+                // Lunch is ordered
                 lunchOptionsGroup.orderedOption != null -> R.color.materialGreen
-            // TODO: If lunch is not ordered (and can't be ordered) and is available in burza use materialRed
-            // Lunch is not ordered and can't be ordered
+                // TODO: If lunch is not ordered (and can't be ordered) and is available in burza use materialRed
+                // Lunch is not ordered and can't be ordered
                 lunchOptionsGroup.options?.all { !it.enabled } != false -> R.color.materialBlue
-            // Lunch is not ordered, but still can be ordered
+                // Lunch is not ordered, but still can be ordered
                 else -> R.color.materialOrange
             }
         }
@@ -197,6 +200,8 @@ class NextLunchDashboardItem(val accountId: String,
 
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
+                notifyId.requestCancel(holder.context)
+
                 /*val contextRef = holder.context.asReference()
                 launch(UI) fragment@ {
                     delay(500)
@@ -229,5 +234,5 @@ class NextLunchDashboardItem(val accountId: String,
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_lunches_next_lunch
+    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_lunches_new
 }

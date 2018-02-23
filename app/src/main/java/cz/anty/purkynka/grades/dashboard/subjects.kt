@@ -19,6 +19,7 @@
 package cz.anty.purkynka.grades.dashboard
 
 import android.content.Context
+import android.graphics.Typeface
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
@@ -108,25 +109,27 @@ class SubjectsAverageDashboardManager(context: Context, accountHolder: ActiveAcc
     }
 }
 
-class BadSubjectAverageDashboardItem(val accountId: String,
-                                     val subject: Subject) : DashboardItem() {
+class BadSubjectAverageDashboardItem(val accountId: String, val subject: Subject) : DashboardItem() {
 
     companion object {
 
         private const val LOG_TAG = "BadSubjectAverageDashboardItem"
     }
 
-    private val average: Double = subject.average
+    val average: Double = subject.average
     private val averageColor: Int = subject.averageColor
 
     override val priority: Int
-        get() = DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD + (average * 100).toInt()
+        get() = DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD
 
     override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        holder.txtNameShort.text = subject.shortName.fillToLen(4, Anchor.LEFT)
+        holder.txtNameShort.apply {
+            setTextColor(averageColor)
+            text = subject.shortName.fillToLen(4, Anchor.LEFT)
+        }
 
         holder.txtAverage.apply {
-            setTextColor(averageColor)
+            //setTextColor(averageColor)
             text = average.format(2)
         }
 
@@ -155,7 +158,7 @@ class BadSubjectAverageDashboardItem(val accountId: String,
 
                 ContextCompat.startActivity(
                         context,
-                        SubjectActivity.getStartIntent(context, subject),
+                        SubjectActivity.getStartIntent(context, subject, true),
                         options?.toBundle()
                 )
             }

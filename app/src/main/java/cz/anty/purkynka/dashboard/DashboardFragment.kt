@@ -26,16 +26,18 @@ import android.view.*
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.feedback.dashboard.ErrorFeedbackDashboardManager
+import cz.anty.purkynka.grades.dashboard.BadSubjectAverageDashboardItem
 import cz.anty.purkynka.grades.dashboard.GradesLoginDashboardManager
 import cz.anty.purkynka.grades.dashboard.NewGradesDashboardManager
 import cz.anty.purkynka.grades.dashboard.SubjectsAverageDashboardManager
-import cz.anty.purkynka.lunches.dashboard.LunchesCreditDashboardManager
-import cz.anty.purkynka.lunches.dashboard.LunchesLoginDashboardManager
-import cz.anty.purkynka.lunches.dashboard.NextLunchDashboardManager
+import cz.anty.purkynka.lunches.dashboard.*
 import cz.anty.purkynka.update.dashboard.UpdateCheckDashboardManager
+import cz.anty.purkynka.update.dashboard.VersionChangesDashboardItem
 import cz.anty.purkynka.update.dashboard.VersionChangesDashboardManager
+import cz.anty.purkynka.update.ui.VersionChangesItem
 import cz.anty.purkynka.utils.ICON_HOME_DASHBOARD
 import cz.anty.purkynka.wifilogin.dashboard.WifiLoginDashboardManager
+import eu.codetopic.java.utils.letIf
 import eu.codetopic.utils.getIconics
 import eu.codetopic.java.utils.to
 import eu.codetopic.java.utils.letIfNull
@@ -96,7 +98,39 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
         val adapter = MultiAdapter<DashboardItem>(
                 context = themedContext,
-                comparator = Comparator { o1, o2 -> o2.priority - o1.priority }
+                comparator = Comparator { o1, o2 ->
+                    (o2.priority - o1.priority).letIf({ it == 0 }) {
+                        when {
+                            o1 is VersionChangesDashboardItem &&
+                                    o2 is VersionChangesDashboardItem -> {
+                                o1.versionCode - o2.versionCode
+                            }
+                            o1 is NextLunchDashboardItem &&
+                                    o2 is NextLunchDashboardItem -> {
+                                (o1.lunchOptionsGroup.date - o2.lunchOptionsGroup.date)
+                                        .let {
+                                            when {
+                                                it > 0 -> 1
+                                                it < 0 -> -1
+                                                else -> 0
+                                            }
+                                        }
+                            }
+                            o1 is BadSubjectAverageDashboardItem &&
+                                    o2 is BadSubjectAverageDashboardItem -> {
+                                (o2.average - o1.average)
+                                        .let {
+                                            when {
+                                                it > 0 -> 1
+                                                it < 0 -> -1
+                                                else -> 0
+                                            }
+                                        }
+                            }
+                            else -> 0
+                        }
+                    }
+                }
         )
         this.adapter = adapter
 
@@ -109,6 +143,7 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                 // Other
                 ::LunchesCreditDashboardManager,
                 ::NextLunchDashboardManager,
+                ::NewLunchesDashboardManager,
                 ::NewGradesDashboardManager,
                 ::SubjectsAverageDashboardManager,
 
@@ -116,8 +151,6 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                 ::GradesLoginDashboardManager,
                 ::LunchesLoginDashboardManager,
                 ::WifiLoginDashboardManager
-
-                // TODO: add here all items managers
         ).map { it(themedContext, accountHolder, adapter) }
 
         val manager = Recycler.inflate()

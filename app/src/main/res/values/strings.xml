@@ -204,6 +204,7 @@
     <string name="item_login_wifi_subtitle">And never log in to school WiFi manually again!</string>
     <string name="item_credit_title_main">Low lunches credit</string>
     <string name="item_lunches_next_lunch_title_main">Next lunch</string>
+    <string name="item_lunches_new_title_main">New lunch</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 
