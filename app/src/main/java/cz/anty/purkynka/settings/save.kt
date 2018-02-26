@@ -16,39 +16,36 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.update.save
+package cz.anty.purkynka.settings
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.BuildConfig
-import cz.anty.purkynka.update.data.AvailableVersionInfo
-import cz.anty.purkynka.utils.*
-import eu.codetopic.java.utils.kSerializer
+import cz.anty.purkynka.utils.FILE_NAME_APP_PREFERENCES
+import cz.anty.purkynka.utils.SHOW_TRY_SWIPE_ITEM
 import eu.codetopic.utils.data.preferences.PreferencesData
-import eu.codetopic.utils.data.preferences.preference.IntPreference
-import eu.codetopic.utils.data.preferences.preference.KSerializedPreference
+import eu.codetopic.utils.data.preferences.preference.BooleanPreference
+import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
+import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
-import kotlinx.serialization.internal.IntSerializer
-import kotlinx.serialization.internal.PairSerializer
-import kotlinx.serialization.internal.StringSerializer
+import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPreferences
 
 /**
  * @author anty
  */
-class UpdateData private constructor(context: Context) :
+class AppPreferences private constructor(context: Context) :
         PreferencesData<ContentProviderSharedPreferences>(context,
-                ContentProviderPreferencesProvider(context, UpdateDataProvider.AUTHORITY)) {
+                ContentProviderPreferencesProvider(context, AppPreferencesProvider.AUTHORITY)) {
 
-    companion object : PreferencesCompanionObject<UpdateData>(
-            UpdateData.LOG_TAG,
-            ::UpdateData,
+    companion object : PreferencesCompanionObject<AppPreferences>(
+            AppPreferences.LOG_TAG,
+            ::AppPreferences,
             ::Getter
     ) {
 
-        private const val LOG_TAG = "UpdateData"
+        private const val LOG_TAG = "AppPreferences"
         internal const val SAVE_VERSION = 0
 
         @Suppress("UNUSED_PARAMETER")
@@ -62,33 +59,32 @@ class UpdateData private constructor(context: Context) :
         }
     }
 
-    var lastKnownVersion by IntPreference(
-            key = LAST_KNOWN_VERSION,
+    var showTrySwipeItem by BooleanPreference(
+            key = SHOW_TRY_SWIPE_ITEM,
             provider = accessProvider,
-            defaultValue = -1
+            defaultValue = true
     )
 
-    var jobScheduleVersion by IntPreference(
-            key = SCHEDULE_VERSION,
-            provider = accessProvider,
-            defaultValue = -1
-    )
+    private class Getter : PreferencesGetterAbs<AppPreferences>() {
 
-    var latestVersion by KSerializedPreference(
-            key = LATEST_VERSION,
-            serializer = kSerializer(),
-            provider = accessProvider,
-            defaultValue = AvailableVersionInfo(
-                    code = BuildConfig.VERSION_CODE,
-                    name = BuildConfig.VERSION_NAME
-            )
-    )
+        override fun get(): AppPreferences = instance
 
-    private class Getter : PreferencesGetterAbs<UpdateData>() {
+        override val dataClass: Class<out AppPreferences>
+            get() = AppPreferences::class.java
+    }
+}
 
-        override fun get() = instance
+class AppPreferencesProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, AppPreferences.SAVE_VERSION) {
 
-        override val dataClass: Class<out UpdateData>
-            get() = UpdateData::class.java
+    companion object {
+        const val AUTHORITY = "cz.anty.purkynka.preferences"
+    }
+
+    override fun onPreparePreferencesProvider(): ISharedPreferencesProvider<SharedPreferences> {
+        return BasicSharedPreferencesProvider(context, FILE_NAME_APP_PREFERENCES, Context.MODE_PRIVATE)
+    }
+
+    override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
+        AppPreferences.onUpgrade(editor, from, to)
     }
 }

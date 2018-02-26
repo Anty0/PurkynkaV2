@@ -20,22 +20,34 @@ package cz.anty.purkynka.update.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
+import android.widget.TextView
 import com.evernote.android.job.Job
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
+import cz.anty.purkynka.update.data.AvailableVersionInfo
+import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.update.sync.Updater
+import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.alsoIf
+import eu.codetopic.java.utils.fillToLen
+import eu.codetopic.java.utils.ifFalse
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.thread.LooperUtils
+import eu.codetopic.utils.thread.progress.ProgressBarReporter
+import eu.codetopic.utils.thread.progress.ProgressInfo
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
@@ -50,6 +62,7 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import java.lang.ref.WeakReference
 
 /**
  * @author anty
@@ -68,15 +81,21 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
                 context.startActivity(getIntent(context))
     }
 
-    private var versionNameCurrent: String = "unknown"
-    private var versionNameAvailable: String = "unknown"
-    private var versionCodeCurrent: Int? = null
-    private var versionCodeAvailable: Int? = null
+    private val versionCurrent: AvailableVersionInfo =
+            AvailableVersionInfo(
+                    code = BuildConfig.VERSION_CODE,
+                    name = BuildConfig.VERSION_NAME
+            )
+    private var versionAvailable: AvailableVersionInfo =
+            AvailableVersionInfo(
+                    code = BuildConfig.VERSION_CODE,
+                    name = BuildConfig.VERSION_NAME
+            )
     private val updateAvailable: Boolean
-        get() = versionCodeCurrent != versionCodeAvailable
+        get() = versionCurrent.code != versionAvailable.code
 
-    private var isDownloading: Boolean = false // TODO: implement
-    private var isDownloaded: Boolean = false // TODO: implement
+    private var isDownloading: Boolean = false
+    private var isDownloaded: Boolean = false
 
     private val updateDataChangedReceiver = receiver { _, _ -> update() }
 
@@ -182,16 +201,49 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
             { refreshWithLoading() }
     )
 
-    private fun downloadUpdate() {
-        // TODO: implement
+    private fun downloadUpdate(): KJob? {
+        if (isDownloading || isDownloaded || !updateAvailable) return null
+        isDownloading = true
+
+        val reporter = CustomProgressBarReporter(
+                progressDownload,
+                txtDownloadProgress
+        )
+
+        updateUi()
+
+        val versionInfo = versionAvailable
+        val appContext = applicationContext
+        val self = this.asReference()
+        return launch(UI) {
+            reporter.startShowingProgress()
+
+            bg { UpdateFetcher.fetchApk(appContext, versionInfo, reporter) }.await() ifFalse {
+                longSnackbar(
+                        view = self().progressDownload,
+                        message = R.string.snackbar_updates_download_update_failed
+                )
+            }
+
+            reporter.stopShowingProgress()
+
+            self().isDownloading = false
+            self().update().join()
+        }
     }
 
     private fun installUpdate() {
-        // TODO: implement
+        if (!isDownloaded || !updateAvailable || isDownloading) return
 
-        /*new Intent(Intent.ACTION_VIEW) // Install update intent
-            .setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive")
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);*/
+        val apkFile = UpdateFetcher.getApkFileFor(this, versionAvailable)
+        startActivity(
+                Intent(Intent.ACTION_VIEW)
+                        .setDataAndType(
+                                Uri.fromFile(apkFile),
+                                "application/vnd.android.package-archive"
+                        )
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     private fun showChangelog() = startActivity(ChangelogActivity.getIntent(this))
@@ -209,14 +261,14 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     }
 
     private fun update(): KJob {
+        val appContext = applicationContext
         val self = this.asReference()
         return launch(UI) {
-            self().versionCodeCurrent = BuildConfig.VERSION_CODE
-            self().versionNameCurrent = BuildConfig.VERSION_NAME
+            val availableVersion = bg { UpdateData.instance.latestVersion }.await()
+            self().versionAvailable = availableVersion
 
-            val (versionCode, versionName) = bg { UpdateData.instance.latestVersion }.await()
-            self().versionCodeAvailable = versionCode
-            self().versionNameAvailable = versionName
+            self().isDownloaded = self().updateAvailable && !self().isDownloading
+                    && bg { UpdateFetcher.checkApk(appContext, availableVersion) }.await()
 
             self().updateUi()
         }
@@ -231,29 +283,56 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
                 boxUpdateDownloading.visibility = View.VISIBLE
                 txtUpdateDownloading.text = getFormattedText(
                         R.string.updates_text_update_downloading,
-                        versionNameCurrent, versionNameAvailable
+                        versionCurrent.name, versionAvailable.name
                 )
             }
             isDownloaded -> {
                 boxUpdateDownloaded.visibility = View.VISIBLE
                 txtUpdateDownloaded.text = getFormattedText(
                         R.string.updates_text_update_downloaded,
-                        versionNameCurrent, versionNameAvailable
+                        versionCurrent.name, versionAvailable.name
                 )
             }
             updateAvailable -> {
                 boxUpdateAvailable.visibility = View.VISIBLE
                 txtUpdateAvailable.text = getFormattedText(
                         R.string.updates_text_update_available,
-                        versionNameCurrent, versionNameAvailable
+                        versionCurrent.name, versionAvailable.name
                 )
             }
             else -> {
                 boxUpToDate.visibility = View.VISIBLE
                 txtUpToDate.text = getFormattedText(
                         R.string.updates_text_up_to_date,
-                        versionNameCurrent, versionNameAvailable
+                        versionCurrent.name, versionAvailable.name
                 )
+            }
+        }
+    }
+
+    private class CustomProgressBarReporter(
+            progressBar: ProgressBar?,
+            progressTextView: TextView?
+    ) : ProgressBarReporter(progressBar) {
+
+        private val progressTextViewRef = WeakReference(progressTextView)
+
+        override fun onChange(info: ProgressInfo) {
+            LooperUtils.postOnViewThread(progressTextViewRef.get()) {
+                progressTextViewRef.get()?.apply {
+                    text = SpannableStringBuilder().apply {
+                        val progressRatio = info.progress.toFloat() / info.maxProgress.toFloat()
+                        val progressPercent = (progressRatio * 100F).toInt()
+
+                        val maxLen = info.maxProgress.toString().length
+
+                        append(progressPercent.toString())
+                        append("%    ")
+                        append(info.progress.toString().fillToLen(maxLen, Anchor.RIGHT))
+                        append("/")
+                        append(info.maxProgress.toString())
+                    }
+                }
             }
         }
     }

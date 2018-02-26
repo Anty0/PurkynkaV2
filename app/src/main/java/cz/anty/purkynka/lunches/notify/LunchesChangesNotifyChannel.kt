@@ -50,9 +50,11 @@ import kotlinx.serialization.json.JSON
 /**
  * @author anty
  */
-class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrides = true) {
-
-    // TODO: after creating preference for this channel, make it disabled by default
+class LunchesChangesNotifyChannel : SummarizedNotifyChannel(
+        id = ID,
+        checkForIdOverrides = true,
+        defaultEnabled = false
+) {
 
     companion object {
 

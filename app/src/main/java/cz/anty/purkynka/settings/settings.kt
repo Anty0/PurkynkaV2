@@ -28,6 +28,7 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.LibsBuilder
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.save.GradesPreferences
+import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.update.ui.UpdateActivity
 import cz.anty.purkynka.utils.URL_FACEBOOK_PAGE
@@ -36,6 +37,7 @@ import cz.anty.purkynka.utils.URL_WEB_PAGE
 import eu.codetopic.java.utils.format
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidUtils
+import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import org.jetbrains.anko.ctx
@@ -145,18 +147,31 @@ class CustomDataStorage(private val context: Context) : PreferenceDataStore() {
 
     private val prefsMap: Map<String, Int> = arrayOf(
             R.string.pref_key_grades_bad_average,
-            R.string.pref_key_lunches_show_dashboard_credit_warning
+            R.string.pref_key_lunches_show_dashboard_credit_warning,
+            R.string.pref_key_lunches_notify_lunches_new
     ).map { context.getString(it) to it }.toMap()
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean = when (prefsMap[key]) {
         R.string.pref_key_lunches_show_dashboard_credit_warning ->
             LunchesPreferences.instance.showDashboardCreditWarning
+        R.string.pref_key_lunches_notify_lunches_new ->
+            NotifyManager.isChannelEnabled(
+                    groupId = null,
+                    channelId = LunchesChangesNotifyChannel.ID
+            )
         else -> super.getBoolean(key, defValue)
     }
 
     override fun putBoolean(key: String, value: Boolean) = when (prefsMap[key]) {
         R.string.pref_key_lunches_show_dashboard_credit_warning ->
             LunchesPreferences.instance.showDashboardCreditWarning = value
+        R.string.pref_key_lunches_notify_lunches_new ->
+                NotifyManager.requestSetChannelEnabled(
+                        context = context,
+                        groupId = null,
+                        channelId = LunchesChangesNotifyChannel.ID,
+                        enable = value
+                )
         else -> super.putBoolean(key, value)
     }
 

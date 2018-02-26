@@ -45,6 +45,7 @@ import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
+import cz.anty.purkynka.settings.AppPreferences
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel
@@ -216,6 +217,7 @@ class AppInit : MultiDexApplication() {
 
     private fun initProcessPrimary() {
         // Initialize data providers required in this process
+        AppPreferences.initialize(this)
         UpdateData.initialize(this)
         GradesUiData.initialize(this)
         GradesData.initialize(this)

@@ -40,8 +40,6 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
-    <!-- TODO: widgets -->
-
     <application
         android:name=".AppInit"
         android:allowBackup="true"
@@ -226,6 +224,7 @@
                 <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED" />
             </intent-filter>
         </receiver>
+        <!-- TODO: next lunch widget -->
 
         <service
             android:name=".account.service.AuthenticatorService"
@@ -290,6 +289,12 @@
             android:label="@string/label_service_lunches_burza_watcher"
             android:process=":syncs" />
 
+        <provider
+            android:name=".settings.AppPreferencesProvider"
+            android:authorities="cz.anty.purkynka.preferences"
+            android:exported="false"
+            android:label="@string/label_provider_app_preferences"
+            android:process=":providers" />
         <provider
             android:name=".account.save.ActiveAccountProvider"
             android:authorities="cz.anty.purkynka.account.active"

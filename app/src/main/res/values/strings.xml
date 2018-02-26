@@ -82,8 +82,9 @@
     <string name="title_activity_grade">Grade</string>
     <string name="title_activity_grade_with_subject">Grade from %1$s</string>
     <string name="title_activity_grades_widget">Setup grades widget</string>
-    <string name="title_activity_lunch_options_group">Lunch order</string>
-    <string name="title_activity_lunches_burza_lunch">Lunch order</string>
+    <string name="title_activity_lunch_options_group">Order lunch</string>
+    <string name="title_activity_lunch_options_group_with_date">Order lunch on %1$s</string>
+    <string name="title_activity_lunches_burza_lunch">Order lunch</string>
 
     <string name="title_fragment_dashboard">Dashboard</string>
     <string name="title_fragment_grades">Grades</string>
@@ -119,6 +120,7 @@
     <string name="label_service_sync_lunches">Lunches sync service</string>
     <string name="label_service_lunches_burza_watcher">Lunches burza watcher service</string>
 
+    <string name="label_provider_app_preferences">App preferences</string>
     <string name="label_provider_account_active">Active account</string>
     <string name="label_provider_update">Updates</string>
     <string name="label_provider_feedback">Feedback</string>
@@ -351,6 +353,7 @@
     <string name="snackbar_grades_widget_add_fail_no_account">"No account selected, can't add widget."</string>
     <string name="snackbar_grades_widget_add_fail_no_grades_sort">"No sort selected, can't add widget."</string>
     <string name="snackbar_lunches_dashboard_credit_warning_disabled">Low credit warning was disabled.</string>
+    <string name="snackbar_updates_download_update_failed">Failed to download update.</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>
@@ -378,10 +381,12 @@
     <string name="pref_about">About</string>
     <string name="pref_update">Update check</string>
     <string name="pref_grades_bad_average">Bad average</string>
-    <string name="pref_lunches_show_dashboard_credit_warning">Show low credit warning on dashboard</string>
+    <string name="pref_lunches_show_dashboard_credit_warning">Low credit warning on dashboard</string>
+    <string name="pref_lunches_notify_lunches_new">Notify about new lunches</string>
 
     <string name="pref_key_grades_bad_average" translatable="false">grades_bad_average</string>
     <string name="pref_key_lunches_show_dashboard_credit_warning" translatable="false">lunches_show_dashboard_credit_warning</string>
+    <string name="pref_key_lunches_notify_lunches_new" translatable="false">lunches_notify_lunches_new</string>
     <string name="pref_key_activity_update" translatable="false">activity_update</string>
     <string name="pref_key_activity_about" translatable="false">activity_about</string>
     <string name="pref_key_activity_facebook" translatable="false">activity_facebook</string>

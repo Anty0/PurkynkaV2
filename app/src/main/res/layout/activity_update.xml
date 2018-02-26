@@ -55,7 +55,8 @@
                     android:layout_marginTop="48dp"
                     android:layout_marginBottom="24dp"
                     app:iiv_icon="gmd-done"
-                    app:iiv_color="@color/materialGreen" />
+                    app:iiv_color="@color/materialGreen"
+                    app:iiv_size="120dp" />
 
                 <TextView
                     style="?attr/textAppearanceListItem"
@@ -84,7 +85,8 @@
                     android:layout_marginTop="48dp"
                     android:layout_marginBottom="24dp"
                     app:iiv_icon="cmd-alert-circle-outline"
-                    app:iiv_color="@color/materialLightRed" />
+                    app:iiv_color="@color/materialLightRed"
+                    app:iiv_size="120dp" />
 
                 <TextView
                     style="?attr/textAppearanceListItem"
@@ -122,14 +124,16 @@
                     android:layout_marginTop="48dp"
                     android:layout_marginBottom="24dp"
                     app:iiv_icon="gmd-file-download"
-                    app:iiv_color="@color/materialBlue" />
+                    app:iiv_color="@color/materialBlue"
+                    app:iiv_size="120dp" />
 
                 <ProgressBar
                     android:id="@+id/progressDownload"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
+                    android:layout_marginTop="16dp"
+                    android:indeterminate="true" />
 
                 <TextView
                     style="?attr/textAppearanceListItemSmall"
@@ -165,7 +169,8 @@
                     android:layout_marginTop="48dp"
                     android:layout_marginBottom="24dp"
                     app:iiv_icon="gmd-system-update"
-                    app:iiv_color="@color/materialYellow" />
+                    app:iiv_color="@color/materialYellow"
+                    app:iiv_size="120dp" />
 
                 <TextView
                     style="?attr/textAppearanceListItem"

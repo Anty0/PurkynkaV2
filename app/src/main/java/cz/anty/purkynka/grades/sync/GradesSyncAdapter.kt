@@ -183,14 +183,18 @@ class GradesSyncAdapter(context: Context) :
                 })
             }
         } finally {
-            context.sendBroadcast(
-                    GradesWidgetProvider.getUpdateIntent(
-                            context,
-                            GradesWidgetProvider.getAllWidgetIds(context)
-                                    .filter { preferences.getAppWidgetAccountId(it) == accountId }
-                                    .toIntArray()
-                    )
-            )
+            try {
+                context.sendBroadcast(
+                        GradesWidgetProvider.getUpdateIntent(
+                                context,
+                                GradesWidgetProvider.getAllWidgetIds(context)
+                                        .filter { preferences.getAppWidgetAccountId(it) == accountId }
+                                        .toIntArray()
+                        )
+                )
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "Failed to refresh grades widgets", e)
+            }
         }
     }
 

@@ -42,7 +42,8 @@
             android:layout_gravity="center_horizontal"
             android:contentDescription="@string/content_description_logo"
             app:iiv_icon="gmd-wifi-lock"
-            app:iiv_color="?attr/colorDrawable" />
+            app:iiv_color="?attr/colorDrawable"
+            app:iiv_size="72dp" />
 
         <TextView
             android:id="@+id/txtWarnUnsupportedDevice"

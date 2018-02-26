@@ -28,6 +28,7 @@ import android.widget.ImageView
 import cz.anty.purkynka.R
 import cz.anty.purkynka.utils.suspendInto
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
+import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.utils.putKSerializableExtra
@@ -48,6 +49,7 @@ import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
+import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
@@ -107,7 +109,12 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                     return
                 }
 
-        //title = lunchOptionsGroup.? //TODO: maybe set title to something
+        title = getFormattedText(
+                R.string.title_activity_lunch_options_group_with_date,
+                lunchOptionsGroup.dateStrShort
+        )
+
+        // TODO: title
 
         val lunchOptionsGroupItem = LunchOptionsGroupItem(accountId, lunchOptionsGroup)
 
@@ -126,6 +133,8 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                     if (isChecked) butLunchOrder.isEnabled = this@button.tag != null
                 }
             }
+
+            // TODO: title
 
             var toCheck = butNoLunch.id
 

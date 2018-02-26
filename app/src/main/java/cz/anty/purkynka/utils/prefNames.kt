@@ -23,6 +23,9 @@ package cz.anty.purkynka.utils
  */
 
 // Other
+/// AppPreferences
+const val FILE_NAME_APP_PREFERENCES = "UpdateData"
+const val SHOW_TRY_SWIPE_ITEM = "SHOW_TRY_SWIPE_ITEM"
 /// UpdateData
 const val FILE_NAME_UPDATE_DATA = "UpdateData"
 const val SCHEDULE_VERSION = "SCHEDULE_VERSION"

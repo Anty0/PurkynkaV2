@@ -277,7 +277,8 @@
                             android:layout_marginLeft="8dp"
                             android:contentDescription="@string/content_description_image_ready"
                             app:iiv_icon="cmd-auto-fix"
-                            app:iiv_color="?attr/colorAccent" />
+                            app:iiv_color="?attr/colorAccent"
+                            app:iiv_size="24sp" />
 
                         <TextView
                             style="?attr/textAppearanceListItemSecondary"
@@ -302,7 +303,8 @@
                             android:layout_marginLeft="8dp"
                             android:contentDescription="@string/content_description_image_ready"
                             app:iiv_icon="cmd-auto-fix"
-                            app:iiv_color="@color/materialLightRed" />
+                            app:iiv_color="@color/materialLightRed"
+                            app:iiv_size="24sp" />
 
                         <TextView
                             style="?attr/textAppearanceListItemSecondary"

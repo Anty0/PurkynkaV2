@@ -22,6 +22,7 @@ import com.evernote.android.job.Job
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
 
@@ -64,6 +65,11 @@ class UpdateCheckJob : Job() {
 
     override fun onRunJob(params: Params): Result {
         Log.d(LOG_TAG, "onRunJob(params=$params) -> Starting update check")
+
+        // Remove old apk files
+        UpdateFetcher.cleanupApksDir(context, UpdateData.instance.latestVersion)
+
+        // Check for updates and (when needed) show update notification
         return Updater.fetchUpdates().also {
             Updater.notifyAboutUpdate(context.applicationContext)
         }

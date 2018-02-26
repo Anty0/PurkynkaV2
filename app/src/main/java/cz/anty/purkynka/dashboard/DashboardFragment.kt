@@ -25,6 +25,7 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.dashboard.util.TrySwipeDashboardManager
 import cz.anty.purkynka.feedback.dashboard.ErrorFeedbackDashboardManager
 import cz.anty.purkynka.grades.dashboard.BadSubjectAverageDashboardItem
 import cz.anty.purkynka.grades.dashboard.GradesLoginDashboardManager
@@ -135,7 +136,8 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         this.adapter = adapter
 
         managers = listOf(
-                // TODO: create TrySwipeDashboardManager
+                // Helpers
+                ::TrySwipeDashboardManager,
 
                 // System
                 ::UpdateCheckDashboardManager,

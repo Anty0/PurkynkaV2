@@ -33,6 +33,10 @@
         <SwitchPreference
             android:key="@string/pref_key_lunches_show_dashboard_credit_warning"
             android:title="@string/pref_lunches_show_dashboard_credit_warning" />
+
+        <SwitchPreference
+            android:key="@string/pref_key_lunches_notify_lunches_new"
+            android:title="@string/pref_lunches_notify_lunches_new" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_system">

@@ -20,137 +20,210 @@ package cz.anty.purkynka.update.load
 
 import android.content.Context
 import android.support.annotation.WorkerThread
-import cz.anty.purkynka.R
 import cz.anty.purkynka.utils.*
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.letIf
 import eu.codetopic.java.utils.debug.DebugMode
-import eu.codetopic.utils.AndroidUtils
 import org.jsoup.Jsoup
-import java.io.IOException
+import android.os.Environment
+import android.support.annotation.MainThread
+import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.update.data.AvailableVersionInfo
+import eu.codetopic.java.utils.letIfNull
+import eu.codetopic.java.utils.to
+import eu.codetopic.utils.thread.progress.ProgressReporter
+import kotlinx.serialization.json.JSON
+import java.io.*
+import java.math.BigInteger
+import java.net.URL
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+import javax.net.ssl.HttpsURLConnection
 
 
 /**
  * @author anty
  */
-object UpdateFetcher { // TODO: create new/better api
+object UpdateFetcher {
 
     private const val LOG_TAG = "UpdateFetcher"
 
-    private val API_VERSION = if (DebugMode.isEnabled) "dev" else "v0"
+    private val API_VERSION = if (DebugMode.isEnabled) "dev" else "v1"
+    private val URL_BASE = "https://anty.codetopic.eu/purkynka/api/$API_VERSION" // TODO: implement on server side
+    private val URL_VERSION = "$URL_BASE/getAvailableVersionInfo.php"
 
-    private val URL_BASE = "https://anty.codetopic.eu/purkynka/api/$API_VERSION"
+    private const val DIR_UPDATES = "updates"
 
-    private val URL_VERSION_CODE = "$URL_BASE/latestVersionCode"
-    private val URL_VERSION_NAME = "$URL_BASE/latestVersionName"
-    private val URL_APK = "$URL_BASE/latest.apk"
+    private fun getApkPathFor(versionInfo: AvailableVersionInfo): String =
+            "$DIR_UPDATES/app-v${versionInfo.code}.apk"
 
-    @WorkerThread
-    fun fetchVersionCode(): Int? = try {
-        Jsoup.connect(URL_VERSION_CODE)
-                .ignoreContentType(true)
-                .userAgent(userAgent)
-                .followRedirects(false)
-                .execute().body().trim().toInt()
-    } catch (e: Exception) {
-        Log.w(LOG_TAG, "fetchVersionCode()", e); null
-    }.also {
-        Log.d(LOG_TAG, "fetchVersionCode() -> (versionCode=$it)")
-    }
+    private fun getApksDir(context: Context): File =
+            File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), DIR_UPDATES)
+
+    fun getApkFileFor(context: Context, versionInfo: AvailableVersionInfo): File =
+            File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+                    getApkPathFor(versionInfo))
 
     @WorkerThread
-    fun fetchVersionName(): String? = try {
-        Jsoup.connect(URL_VERSION_NAME)
-                .ignoreContentType(true)
+    fun fetchVersionInfo(): AvailableVersionInfo? = try {
+        /*val json = Jsoup.connect(URL_VERSION)
                 .userAgent(userAgent)
-                .followRedirects(false)
+                .ignoreContentType(true)
+                .followRedirects(false) // basic protection against login pages
                 .execute().body()
-                .letIf({ it.contains("<html>", ignoreCase = true) }) {
-                    Log.w(LOG_TAG, "fetchVersionName()",
-                            IOException("Invalid page loaded: $it"))
-                    return@letIf null
-                }
-                ?.replace("\n", "")
+        JSON.parse<AvailableVersionInfo>(json)*/ // TODO: uncomment after implementation on server
+        AvailableVersionInfo(
+                code =  BuildConfig.VERSION_CODE,
+                name = BuildConfig.VERSION_NAME
+        )
     } catch (e: Exception) {
-        Log.w(LOG_TAG, "fetchVersionName()", e); null
+        Log.w(LOG_TAG, "fetchVersionInfo()", e); null
     }.also {
-        Log.d(LOG_TAG, "fetchVersionName() -> (versionName=$it)")
+        Log.d(LOG_TAG, "fetchVersionInfo() -> (versionInfo=$it)")
     }
 
-    fun fetchApk(context: Context): String? {
-        // TODO: implement
-        return null
+    @MainThread
+    fun checkApk(appContext: Context, versionInfo: AvailableVersionInfo): Boolean {
+        val sha512sum = versionInfo.sha512sum
+        val apkFile = getApkFileFor(appContext, versionInfo)
+
+        if (sha512sum.isNullOrEmpty()) {
+            Log.d(LOG_TAG, "checkApk()" +
+                    " -> Can't check apk" +
+                    " -> SHA-512 string empty or null")
+            return false
+        }
+
+
+        if (!apkFile.isFile) {
+            Log.d(LOG_TAG, "checkApk()" +
+                    " -> Can't check apk" +
+                    " -> no apk file found")
+            return false
+        }
+
+        val apkSha512sum = run calcSHA@ {
+            try {
+                val digest = MessageDigest.getInstance("SHA-512")
+
+                FileInputStream(apkFile).use {
+                    it.copyTo(DigestOutputStream(digest))
+                }
+
+                val sha512sumApkBArray = digest.digest()
+                val sha512sumApkStr = BigInteger(1, sha512sumApkBArray).toString(16)
+                return@calcSHA "%32s".format(sha512sumApkStr).replace(' ', '0')
+            } catch (e: NoSuchAlgorithmException) {
+                Log.w(LOG_TAG, "checkApk()" +
+                        " -> Failed to check apk", e)
+                return@calcSHA null
+            }
+        } ?: return false
+
+        Log.v(LOG_TAG, "checkApk() -> (calculatedSum=$apkSha512sum)")
+        Log.v(LOG_TAG, "checkApk() -> (targetSum=$sha512sum)")
+
+        return apkSha512sum.equals(sha512sum, ignoreCase = true)
     }
 
-    /*@Throws(IOException::class, InterruptedException::class)
-    fun downloadUpdate(context: Context, reporter: ProgressReporter, filename: String): String {
-        var fos: FileOutputStream? = null
-        var `is`: InputStream? = null
+    @WorkerThread
+    fun removeApk(appContext: Context, versionInfo: AvailableVersionInfo) {
+        val apkFile = getApkFileFor(appContext, versionInfo)
+
         try {
-            val url = URL(URL_APK)
-            val c = url.openConnection() as HttpURLConnection
-            c.requestMethod = "GET"
-            c.instanceFollowRedirects = false
-            c.doOutput = true
-            c.connect()
+            if (!apkFile.isFile) return
+            apkFile.delete()
+        } catch (e: Exception) {
+            Log.w(LOG_TAG, "removeApk()", e)
+        }
+    }
 
-            val file = context.getExternalFilesDir(Environment
-                    .DIRECTORY_DOWNLOADS)
-            // TODO: 12.11.2015 save apk to app data if sd card is not available
+    @WorkerThread
+    fun cleanupApksDir(appContext: Context, ignoredVersionInfo: AvailableVersionInfo) {
+        val apksDir = getApksDir(appContext)
+        val ignoredApkFile = getApkFileFor(appContext, ignoredVersionInfo)
 
-            file.mkdirs()
-            val outputFile = File(file, filename)
-            if (outputFile.exists()) outputFile.delete()
-            fos = FileOutputStream(outputFile)
+        try {
+            if (!apksDir.isDirectory) return
+            apksDir.listFiles { it -> it != ignoredApkFile }.forEach {
+                try {
+                    it.delete()
+                } catch (e: Exception) {
+                    Log.w(LOG_TAG, "cleanupApksDir() -> Remove apk", e)
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(LOG_TAG, "cleanupApksDir()", e)
+        }
+    }
 
-            `is` = c.inputStream
-
-            val buffer = ByteArray(1024)
-            var len: Int
-            var completedLen = 0
-            val max = c.contentLength
-            reporter.setMaxProgress(if (max != -1) max else Integer.MAX_VALUE)
-            //Log.d("UpdateConnector", "TotalLen: " + is.available());
-            val currentThread = Thread.currentThread()
-            while ((len = `is`.read(buffer)) != -1 && !currentThread.isInterrupted) {
-                fos.write(buffer, 0, len)
-                completedLen += len
-                reporter.reportProgress(completedLen)
-                //Log.d("UpdateConnector", "CompletedLen: " + completedLen);
+    @WorkerThread
+    fun fetchApk(appContext: Context, versionInfo: AvailableVersionInfo,
+                 reporter: ProgressReporter): Boolean {
+        try {
+            val url = versionInfo.url ?: run {
+                Log.w(LOG_TAG, "Can't fetch apk -> No download url available")
+                return false
             }
 
-            if (Thread.interrupted())
-                throw InterruptedException()
+            val apkFile = getApkFileFor(appContext, versionInfo)
+            if (apkFile.isFile) apkFile.delete()
 
-            return outputFile.absolutePath
-        } finally {
-            if (fos != null) fos.close()
-            if (`is` != null) `is`.close()
+            getApksDir(appContext).mkdirs()
+
+            val c = URL(url).openConnection()
+                    .to<HttpsURLConnection>()
+                    .letIfNull {
+                        throw RuntimeException("Failed to open connection: invalid connection type")
+                    }
+                    .apply {
+                        requestMethod = "GET"
+                        instanceFollowRedirects = false // basic protection against login pages
+                        doOutput = true
+                        connect()
+                    }
+
+            FileOutputStream(apkFile).use { fOut ->
+                c.inputStream.use { cIn ->
+                    val max = c.contentLength
+
+                    reporter.setMaxProgress(if (max != -1) max else Int.MAX_VALUE)
+
+                    val buffer = ByteArray(1024)
+                    var len: Int
+                    var completedLen = 0L
+
+                    val currentThread = Thread.currentThread()
+                    while (!currentThread.isInterrupted) {
+                        len = cIn.read(buffer)
+                        if (len == -1) break
+
+                        fOut.write(buffer, 0, len)
+
+                        completedLen += len
+                        reporter.reportProgress(
+                                if (completedLen > Int.MAX_VALUE) Int.MAX_VALUE
+                                else completedLen.toInt()
+                        )
+                    }
+
+                    if (Thread.interrupted())
+                        throw InterruptedException()
+                }
+            }
+
+            return true
+        } catch (e: Exception) {
+            Log.w(LOG_TAG, "fetchApk()", e)
+            return false
         }
+    }
 
-        *//*File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-                + File.separator + filename);
-        if (file.exists()) file.delete();
+    private class DigestOutputStream(private val digest: MessageDigest) : OutputStream() {
 
-        DownloadManager.Request request = new DownloadManager
-                .Request(Uri.parse(DEFAULT_URL + LATEST_APK_URL_ADD));
-        request.setTitle(context.getString(R.string.downloading_update));
-        request.setDescription(context.getString(R.string.please_wait));
+        override fun write(b: Int) = digest.update(b.toByte())
 
-        // in order for this if to run, you must use the android 3.2 to compile your app
-        if (Build.VERSION.SDK_INT >= 11) {
-            request.allowScanningByMediaScanner();
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
-        } else {
-            //noinspection deprecation
-            request.setShowRunningNotification(false);
-        }
-        request.setVisibleInDownloadsUi(false);
-        request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, filename);
+        override fun write(b: ByteArray?) = digest.update(b)
 
-        // get download service and enqueue file
-        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        //manager.query(new DownloadManager.Query().setFilterById())
-        return manager.enqueue(request);*//*
-    }*/
+        override fun write(b: ByteArray?, off: Int, len: Int) = digest.update(b, off, len)
+    }
 }

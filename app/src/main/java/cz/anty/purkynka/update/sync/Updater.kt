@@ -23,13 +23,12 @@ import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
 import com.evernote.android.job.Job
 import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.update.data.AvailableVersionInfo
 import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.UtilsBase
-import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import eu.codetopic.utils.notifications.manager.data.requestCancel
@@ -51,10 +50,9 @@ object Updater {
     fun fetchUpdates(): Job.Result {
         Log.d(LOG_TAG, "fetchUpdates()")
 
-        val code = UpdateFetcher.fetchVersionCode() ?: return Job.Result.FAILURE
-        val name = UpdateFetcher.fetchVersionName() ?: return Job.Result.FAILURE
+        val versionInfo = UpdateFetcher.fetchVersionInfo() ?: return Job.Result.FAILURE
 
-        UpdateData.instance.latestVersion = code to name
+        UpdateData.instance.latestVersion = versionInfo
 
         return Job.Result.SUCCESS
     }
@@ -63,10 +61,12 @@ object Updater {
     fun fetchFakeUpdates(): Job.Result {
         Log.d(LOG_TAG, "fetchFakeUpdates()")
 
-        val code = BuildConfig.VERSION_CODE + 1
-        val name = BuildConfig.VERSION_NAME + "-FAKE"
+        val versionInfo = AvailableVersionInfo(
+                code = BuildConfig.VERSION_CODE + 1,
+                name = BuildConfig.VERSION_NAME + "-FAKE"
+        )
 
-        UpdateData.instance.latestVersion = code to name
+        UpdateData.instance.latestVersion = versionInfo
 
         return Job.Result.SUCCESS
     }

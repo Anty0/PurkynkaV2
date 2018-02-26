@@ -60,6 +60,9 @@ const val SYNC_FREQUENCY_LUNCHES: Long = 60 * 60 * 3 // 3 hours in seconds
 
 //---------------------------------------------------------------------
 
+// Helpers
+const val DASHBOARD_PRIORITY_TRY_SWIPE: Int = 13_000_000
+
 // System
 const val DASHBOARD_PRIORITY_UPDATE_AVAILABLE: Int = 12_000_000
 const val DASHBOARD_PRIORITY_VERSION_CHANGES: Int = 10_000_000 // AND -changesVersionCode

@@ -90,6 +90,8 @@ class LunchBurzaActivity : LoadingModularActivity(ToolbarModule(), TransitionBac
                     return
                 }
 
+        // TODO: title
+
         val lunchBurzaItem = LunchBurzaItem(accountId, lunchBurza)
 
 

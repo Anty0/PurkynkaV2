@@ -48,7 +48,8 @@
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@string/content_description_logo"
                 app:iiv_icon="gmd-book"
-                app:iiv_color="?attr/colorDrawable" />
+                app:iiv_color="?attr/colorDrawable"
+                app:iiv_size="72dp" />
 
             <!-- Username Label -->
             <android.support.design.widget.TextInputLayout

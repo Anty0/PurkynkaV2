@@ -199,5 +199,4 @@ class NewGradeDashboardItem(val grade: Grade, val isBad: Boolean, val changes: L
         result = 31 * result + (changes?.hashCode() ?: 0)
         return result
     }
-
 }
