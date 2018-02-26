@@ -162,15 +162,6 @@ class GradesSyncAdapter(context: Context) :
 
             data.notifyFirstSyncDone(accountId)
             data.setLastSyncResult(accountId, SUCCESS)
-
-            context.sendBroadcast(
-                    GradesWidgetProvider.getUpdateIntent(
-                            context,
-                            GradesWidgetProvider.getAllWidgetIds(context)
-                                    .filter { preferences.getAppWidgetAccountId(it) == accountId }
-                                    .toIntArray()
-                    )
-            )
         } catch (e: Exception) {
             Log.w(LOG_TAG, "Failed to refresh grades", e)
 
@@ -191,6 +182,15 @@ class GradesSyncAdapter(context: Context) :
                     }
                 })
             }
+        } finally {
+            context.sendBroadcast(
+                    GradesWidgetProvider.getUpdateIntent(
+                            context,
+                            GradesWidgetProvider.getAllWidgetIds(context)
+                                    .filter { preferences.getAppWidgetAccountId(it) == accountId }
+                                    .toIntArray()
+                    )
+            )
         }
     }
 
