@@ -27,6 +27,7 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Grade.Companion.dateStr
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
@@ -50,23 +51,26 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
 
         private const val EXTRA_GRADE =
                 "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_GRADE"
+        private const val EXTRA_GRADE_IS_BAD =
+                "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_GRADE_IS_BAD"
         private const val EXTRA_GRADE_SHOW_SUBJECT =
                 "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_GRADE_SHOW_SUBJECT"
         private const val EXTRA_GRADE_CHANGES =
                 "cz.anty.purkynka.grades.ui.$LOG_TAG.EXTRA_GRADE_CHANGES"
         private val EXTRA_GRADE_CHANGES_SERIALIZER = NullableSerializer(StringSerializer.list)
 
-        fun getStartIntent(context: Context, grade: Grade, showSubject: Boolean = true,
-                           changes: List<String>? = null) =
+        fun getStartIntent(context: Context, grade: Grade, isBad: Boolean,
+                           showSubject: Boolean = true, changes: List<String>? = null) =
                 Intent(context, GradeActivity::class.java)
                         .putKSerializableExtra(EXTRA_GRADE, grade)
+                        .putExtra(EXTRA_GRADE_IS_BAD, isBad)
                         .putExtra(EXTRA_GRADE_SHOW_SUBJECT, showSubject)
                         .putKSerializableExtra(EXTRA_GRADE_CHANGES, changes,
                                 EXTRA_GRADE_CHANGES_SERIALIZER)
 
-        fun start(context: Context, grade: Grade, showSubject: Boolean = true,
-                  changes: List<String>? = null) =
-                context.startActivity(getStartIntent(context, grade, showSubject, changes))
+        fun start(context: Context, grade: Grade, isBad: Boolean,
+                  showSubject: Boolean = true, changes: List<String>? = null) =
+                context.startActivity(getStartIntent(context, grade, isBad, showSubject, changes))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,15 +84,20 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
                     finish()
                     return
                 }
+        val gradeIsBad = intent
+                ?.getBooleanExtra(EXTRA_GRADE_IS_BAD, false)
+                ?: false
         val gradeShowSubject = intent
                 ?.getBooleanExtra(EXTRA_GRADE_SHOW_SUBJECT, true)
                 ?: true
-        val gradeChanges = intent?.getKSerializableExtra(EXTRA_GRADE_CHANGES,
-                EXTRA_GRADE_CHANGES_SERIALIZER)
+        val gradeChanges = intent?.getKSerializableExtra(
+                EXTRA_GRADE_CHANGES,
+                EXTRA_GRADE_CHANGES_SERIALIZER
+        )
 
-        //title = grade.? //TODO: maybe set title to something
+        title = getFormattedText(R.string.title_activity_grade_with_subject, grade.subjectShort)
 
-        val gradeItem = GradeItem(grade, gradeShowSubject, gradeChanges)
+        val gradeItem = GradeItem(grade, gradeIsBad, gradeShowSubject, gradeChanges)
         val itemVH = gradeItem.createViewHolder(this, boxGrade)
                 .also { boxGrade.addView(it.itemView, 0) }
         gradeItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)

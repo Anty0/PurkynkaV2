@@ -57,6 +57,7 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
@@ -161,6 +162,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                     self().accountHolder.update()
             ).forEach { it.join() }
 
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }
@@ -378,7 +380,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                 longSnackbar(viewRef(), R.string.snackbar_sync_start_fail)
             }
 
-            //delay(500) // Wait few loops to make sure, that content was updated.
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }
@@ -430,7 +432,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                 self().switchFragment(LunchesLoginFragment::class.java)
             }
 
-            //delay(500) // Wait few loops to make sure, that content was updated.
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }

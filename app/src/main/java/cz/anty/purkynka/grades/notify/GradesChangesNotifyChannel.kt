@@ -129,7 +129,7 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrid
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
-        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+        val accountId = (group as? AccountNotifyGroup)?.accountId.alsoIfNull {
             Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
                     " notifyId=$notifyId, data=$data)",
                     IllegalArgumentException("Group is not AccountNotifyGroup, " +
@@ -146,13 +146,13 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrid
                     IllegalArgumentException("Failed to read grade changes"))
         }
 
-        account?.let { ActiveAccount.set(it) }
+        accountId?.let { ActiveAccount.set(it) }
 
         if (grade != null) {
             context.startActivities(arrayOf(
                     MainActivity.getStartIntent(context, GradesFragment::class.java)
                             .addFlags(FLAG_ACTIVITY_NEW_TASK),
-                    GradeActivity.getStartIntent(context, grade, changes = changes)
+                    GradeActivity.getStartIntent(context, grade, false, changes = changes)
             ))
         } else {
             MainActivity.getStartIntent(context, GradesFragment::class.java)
@@ -161,14 +161,14 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrid
 
     override fun handleSummaryContentIntent(context: Context, group: NotifyGroup,
                                             notifyId: NotifyId, data: Map<out NotifyId, Bundle>) {
-        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+        val accountId = (group as? AccountNotifyGroup)?.accountId.alsoIfNull {
             Log.e(LOG_TAG, "handleSummaryContentIntent(id=$notifyId, group=$group," +
                     " notifyId=$notifyId, data=$data)",
                     IllegalArgumentException("Group is not AccountNotifyGroup, " +
                             "can't change ActiveAccount to correct account."))
         }
 
-        if (account != null) ActiveAccount.set(account)
+        accountId?.let { ActiveAccount.set(it) }
 
         MainActivity.start(context, GradesFragment::class.java)
     }

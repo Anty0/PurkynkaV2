@@ -45,6 +45,8 @@ import org.jetbrains.anko.ctx
  */
 class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModule()) {
 
+    // TODO: Add subject's grades sorting support
+
     companion object {
 
         private const val LOG_TAG = "SubjectActivity"
@@ -100,6 +102,7 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
                         subject.grades.map {
                             GradeItem(
                                     base = it,
+                                    isBad = false, // TODO: maybe find way to get badAverage here
                                     showSubject = false,
                                     changes = subjectChanges[it.id]
                             )

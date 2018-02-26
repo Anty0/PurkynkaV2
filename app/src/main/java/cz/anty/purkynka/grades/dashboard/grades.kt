@@ -32,6 +32,7 @@ import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Grade.Companion.valueColor
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.save.GradesLoginData
+import cz.anty.purkynka.grades.save.GradesPreferences
 import cz.anty.purkynka.grades.ui.GradeActivity
 import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_GRADES_NEW
 import eu.codetopic.java.utils.Anchor
@@ -42,6 +43,7 @@ import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_grade_new.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -69,6 +71,7 @@ class NewGradesDashboardManager(context: Context, accountHolder: ActiveAccountHo
                 receiver = updateReceiver,
                 filter = intentFilter(
                         GradesLoginData.getter,
+                        GradesPreferences.getter,
                         NotifyManager.getOnChangeBroadcastAction()
                 )
         )
@@ -97,14 +100,21 @@ class NewGradesDashboardManager(context: Context, accountHolder: ActiveAccountHo
                         val userLoggedIn = GradesLoginData.loginData.isLoggedIn(accountId)
                         if (!userLoggedIn) return@calcItems null
 
+                        val badAverage = GradesPreferences.instance.badAverage
+
                         return@calcItems NotifyManager.getAllData(
                                 groupId = AccountNotifyGroup.idFor(accountId),
                                 channelId = GradesChangesNotifyChannel.ID
                         ).mapNotNull {
                             it.value.let {
-                                NewGradeDashboardItem(
-                                        grade = GradesChangesNotifyChannel.readDataGrade(it) ?: return@let null,
-                                        changes = GradesChangesNotifyChannel.readDataChanges(it)
+                                val grade = GradesChangesNotifyChannel.readDataGrade(it)
+                                        ?: return@let null
+                                val gradeChanges = GradesChangesNotifyChannel.readDataChanges(it)
+
+                                return@let NewGradeDashboardItem(
+                                        grade = grade,
+                                        isBad = badAverage <= grade.value,
+                                        changes = gradeChanges
                                 )
                             }
                         }
@@ -114,7 +124,7 @@ class NewGradesDashboardManager(context: Context, accountHolder: ActiveAccountHo
     }
 }
 
-class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null) : DashboardItem() {
+class NewGradeDashboardItem(val grade: Grade, val isBad: Boolean, val changes: List<String>? = null) : DashboardItem() {
 
     companion object {
 
@@ -126,22 +136,20 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
     override val priority: Int
         get() = DASHBOARD_PRIORITY_GRADES_NEW
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
-        val textStyle = if (grade.weight >= 3) Typeface.BOLD else Typeface.NORMAL
-
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtSubject.apply {
             setTextColor(valueColor)
             text = grade.subjectShort.fillToLen(4, Anchor.LEFT)
         }
 
         holder.txtGrade.apply {
-            setTypeface(null, textStyle)
+            setTypeface(null, if (isBad) Typeface.BOLD else Typeface.NORMAL)
             //setTextColor(valueColor)
             text = grade.valueToShow
         }
 
         holder.txtWeight.apply {
-            setTypeface(null, textStyle)
+            setTypeface(null, if (grade.weight >= 3) Typeface.BOLD else Typeface.NORMAL)
             text = grade.weight.toString()
         }
 
@@ -165,13 +173,31 @@ class NewGradeDashboardItem(val grade: Grade, val changes: List<String>? = null)
 
                 ContextCompat.startActivity(
                         context,
-                        GradeActivity.getStartIntent(context, grade, true, changes),
+                        GradeActivity.getStartIntent(context, grade, isBad, true, changes),
                         options?.toBundle()
                 )
             }
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_grade_new
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_grade_new
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NewGradeDashboardItem
+
+        if (grade != other.grade) return false
+        if (changes != other.changes) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = grade.hashCode()
+        result = 31 * result + (changes?.hashCode() ?: 0)
+        return result
+    }
 
 }

@@ -20,10 +20,13 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
+import cz.anty.purkynka.grades.util.GradesSort
 import cz.anty.purkynka.utils.*
 
 import eu.codetopic.utils.data.preferences.PreferencesData
+import eu.codetopic.utils.data.preferences.preference.EnumPreference
 import eu.codetopic.utils.data.preferences.preference.FloatPreference
+import eu.codetopic.utils.data.preferences.preference.StringPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.*
 
@@ -54,11 +57,47 @@ class GradesPreferences private constructor(context: Context) :
         }
     }
 
-    var subjectBadAverage by FloatPreference(
-            key = GRADES_SUBJECT_BAD_AVERAGE,
+    var badAverage by FloatPreference(
+            key = GRADES_BAD_AVERAGE,
             provider = accessProvider,
             defaultValue = 4.5F
     )
+
+    private val appWidgetAccountIdPref = StringPreference(
+            key = WIDGET_ACCOUNT_ID,
+            provider = accessProvider,
+            defaultValue = "" // empty string == not set
+    )
+
+    private val appWidgetSortPref = EnumPreference(
+            key = WIDGET_SORT,
+            enumClass = GradesSort::class,
+            provider = accessProvider,
+            defaultValue = GradesSort.GRADES_DATE
+    )
+
+    fun getAppWidgetAccountId(appWidgetId: Int): String? =
+            appWidgetAccountIdPref[this, appWidgetId.toString()]
+                    .takeIf { it.isNotEmpty() }
+
+    fun setAppWidgetAccountId(appWidgetId: Int, accountId: String) {
+        appWidgetAccountIdPref[this, appWidgetId.toString()] = accountId
+    }
+
+    fun removeAppWidgetAccountId(appWidgetId: Int) {
+        appWidgetAccountIdPref.unset(this, appWidgetId.toString())
+    }
+
+    fun getAppWidgetSort(appWidgetId: Int): GradesSort? =
+            appWidgetSortPref[this, appWidgetId.toString()]
+
+    fun setAppWidgetSort(appWidgetId: Int, sort: GradesSort) {
+        appWidgetSortPref[this, appWidgetId.toString()] = sort
+    }
+
+    fun removeAppWidgetSort(appWidgetId: Int) {
+        appWidgetSortPref.unset(this, appWidgetId.toString())
+    }
 
     private class Getter : PreferencesGetterAbs<GradesPreferences>() {
 

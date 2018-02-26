@@ -80,6 +80,8 @@
     <string name="title_activity_account_properties">Account properties</string>
     <string name="title_activity_subject">Subject</string>
     <string name="title_activity_grade">Grade</string>
+    <string name="title_activity_grade_with_subject">Grade from %1$s</string>
+    <string name="title_activity_grades_widget">Setup grades widget</string>
     <string name="title_activity_lunch_options_group">Lunch order</string>
     <string name="title_activity_lunches_burza_lunch">Lunch order</string>
 
@@ -91,6 +93,9 @@
     <string name="title_fragment_lunches_burza">Lunches burza</string>
     <string name="title_fragment_lunches_burza_watcher">Lunches burza watcher</string>
     <string name="title_fragment_attendance_search">Attendance</string>
+
+    <string name="title_widget_grades">Grades</string>
+    <string name="title_widget_grades_with_user">"%1$s's Grades"</string>
 
     <string name="shortcut_grades_label_short">Grades</string>
     <string name="shortcut_grades_label_long">Show grades</string>
@@ -106,9 +111,11 @@
     <string name="shortcut_attendance_label_long">Show attendance search</string>
 
     <string name="label_receiver_wifi_changed">WiFi change receiver for WiFi auto login</string>
+    <string name="label_receiver_grades_widget">Grades</string>
 
     <string name="label_service_authenticator">Account authenticator</string>
     <string name="label_service_sync_grades">Grades sync service</string>
+    <string name="label_service_widget_grades">Grades widget items adapter service</string>
     <string name="label_service_sync_lunches">Lunches sync service</string>
     <string name="label_service_lunches_burza_watcher">Lunches burza watcher service</string>
 
@@ -122,6 +129,7 @@
     <string name="label_provider_wifi_login">WiFi auto login credentials</string>
     <string name="label_provider_lunches">Lunches</string>
     <string name="label_provider_lunches_login">Lunches credentials</string>
+    <string name="label_provider_lunches_preferences">Lunches preferences</string>
 
     <string name="action_show_dashboard">Dashboard</string>
     <string name="action_show_grades">Grades</string>
@@ -173,6 +181,8 @@
     <string name="but_stop">Stop</string>
     <string name="but_no">No</string>
     <string name="but_uninstall">Uninstall</string>
+    <string name="but_add_widget">Add widget</string>
+    <string name="but_undo">Undo</string>
 
     <string name="item_title_date">Date</string>
     <string name="item_title_type">Type</string>
@@ -206,6 +216,11 @@
     <string name="item_lunches_next_lunch_title_main">Next lunch</string>
     <string name="item_lunches_new_title_main">New lunch</string>
 
+    <string name="widget_grades_no_account_text">Account not found</string>
+    <string name="widget_grades_no_account_text_small">Did you remove that account?</string>
+    <string name="widget_grades_not_logged_in_text">You are not logged in</string>
+    <string name="widget_grades_not_logged_in_text_small">Login to your account and your grades will appear here.</string>
+
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 
     <string name="text_view_grade">Grade</string>
@@ -226,6 +241,8 @@
     <string name="text_view_lunches_burza_lunch_pieces">%1$d pcs</string>
     <string name="text_view_lunches_burza_lunch_number_unknown">"?. Lunch"</string>
     <string name="text_view_lunches_lunch_date_unknown">"??. ??. ????"</string>
+    <string name="text_view_select_account">Account</string>
+    <string name="text_view_grades_select_sort">Show</string>
 
     <string name="txt_in_date">Date</string>
     <string name="txt_in_lunches_numbers">Lunches</string>
@@ -246,8 +263,8 @@
     <string name="txt_info_result_not_success">Not success</string>
     <string name="txt_info_result_unknown">Unknown</string>
     <string name="txt_info_fails">Fails</string>
-    <string name="txt_info_fails_no">No fails yet</string>
-    <string name="txt_info_fails_some">Problem occurred</string>
+    <string name="txt_info_fails_no">Everything seems to be fine</string>
+    <string name="txt_info_fails_some">Problems occurs, something is wrong…</string>
 
     <string name="txt_day_short_sunday">SUN</string>
     <string name="txt_day_short_monday">MON</string>
@@ -276,6 +293,7 @@
     <string name="empty_view_text_small_dashboard">All important information will appear here.</string>
     <string name="empty_view_text_no_grades">No grades</string>
     <string name="empty_view_text_small_no_grades">All your grades from selected semester will appear here.</string>
+    <string name="empty_view_text_small_no_grades_widget">All your grades will appear here.</string>
     <string name="empty_view_text_no_lunches_to_order">No lunches to order</string>
     <string name="empty_view_text_small_no_lunches_to_order">All lunches to order will appear here.</string>
     <string name="empty_view_text_no_burza_lunches">No lunches in burza</string>
@@ -328,6 +346,9 @@
     <string name="snackbar_lunches_fetch_burza_fail_connect">Connection error. Failed to fetch burza lunches.</string>
     <string name="snackbar_lunches_fetch_burza_fail_login">Failed to login. Are login credentials in order?</string>
     <string name="snackbar_lunches_fetch_burza_fail_unknown">Failed to fetch burza lunches.</string>
+    <string name="snackbar_grades_widget_add_fail_no_account">"No account selected, can't add widget."</string>
+    <string name="snackbar_grades_widget_add_fail_no_grades_sort">"No sort selected, can't add widget."</string>
+    <string name="snackbar_lunches_dashboard_credit_warning_disabled">Low credit warning was disabled.</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>
@@ -343,15 +364,62 @@
     <string name="dialog_text_wifi_unknown">"You're connected to unknown WiFi. Do you want to continue?"</string>
 
     <string name="content_description_logo">Logo</string>
-    <string name="content_description_ready_image">Ready image</string>
+    <string name="content_description_image_ready">Ready image</string>
+    <string name="content_description_image_error">Error image</string>
+    <string name="content_description_widget_preview_image">Widget preview</string>
 
-    <string name="pref_header_global">Global</string>
     <string name="pref_header_system">System</string>
     <string name="pref_header_other">Other</string>
+    <string name="pref_header_grades">Grades</string>
+    <string name="pref_header_lunches">Lunches</string>
 
-    <!--<string name="pref_switch_refresh_on_WiFi">Refresh data using Wi-Fi only</string>-->
     <string name="pref_about">About</string>
     <string name="pref_update">Update check</string>
+    <string name="pref_grades_bad_average">Bad average</string>
+    <string name="pref_lunches_show_dashboard_credit_warning">Show low credit warning on dashboard</string>
+
+    <string name="pref_key_grades_bad_average" translatable="false">grades_bad_average</string>
+    <string name="pref_key_lunches_show_dashboard_credit_warning" translatable="false">lunches_show_dashboard_credit_warning</string>
+    <string name="pref_key_activity_update" translatable="false">activity_update</string>
+    <string name="pref_key_activity_about" translatable="false">activity_about</string>
+    <string name="pref_key_activity_facebook" translatable="false">activity_facebook</string>
+    <string name="pref_key_activity_web_page" translatable="false">activity_web_page</string>
+    <string name="pref_key_activity_web_page_donate" translatable="false">activity_web_page_donate</string>
+
+    <string-array name="pref_grades_bad_average_entries">
+        <item>Average 1.25 and higher</item>
+        <item>Average 1.50 and higher</item>
+        <item>Average 1.75 and higher</item>
+        <item>Average 2.00 and higher</item>
+        <item>Average 2.25 and higher</item>
+        <item>Average 2.50 and higher</item>
+        <item>Average 2.75 and higher</item>
+        <item>Average 3.00 and higher</item>
+        <item>Average 3.25 and higher</item>
+        <item>Average 3.50 and higher</item>
+        <item>Average 3.75 and higher</item>
+        <item>Average 4.00 and higher</item>
+        <item>Average 4.25 and higher</item>
+        <item>Average 4.50 and higher</item>
+        <item>Average 4.75 and higher</item>
+    </string-array>
+    <string-array name="pref_grades_bad_average_entry_values">
+        <item>1.25</item>
+        <item>1.50</item>
+        <item>1.75</item>
+        <item>2.00</item>
+        <item>2.25</item>
+        <item>2.50</item>
+        <item>2.75</item>
+        <item>3.00</item>
+        <item>3.25</item>
+        <item>3.50</item>
+        <item>3.75</item>
+        <item>4.00</item>
+        <item>4.25</item>
+        <item>4.50</item>
+        <item>4.75</item>
+    </string-array>
 
     <string name="id_transition_subject_item" translatable="false">subject_item</string>
     <string name="id_transition_grade_item" translatable="false">grade_item</string>

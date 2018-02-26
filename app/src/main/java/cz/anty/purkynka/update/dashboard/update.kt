@@ -32,6 +32,7 @@ import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_update_available.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -97,7 +98,7 @@ class UpdateAvailableDashboardItem(val versionCode: Int, val versionName: String
     override val priority: Int
         get() = DASHBOARD_PRIORITY_UPDATE_AVAILABLE
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtUpdateInfo.text = holder.context.getFormattedText(
                 R.string.item_update_available_subtitle,
                 BuildConfig.VERSION_NAME, versionName
@@ -110,5 +111,23 @@ class UpdateAvailableDashboardItem(val versionCode: Int, val versionName: String
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_update_available
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_update_available
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as UpdateAvailableDashboardItem
+
+        if (versionCode != other.versionCode) return false
+        if (versionName != other.versionName) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = versionCode
+        result = 31 * result + versionName.hashCode()
+        return result
+    }
 }

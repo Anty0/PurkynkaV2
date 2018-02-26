@@ -33,6 +33,7 @@ import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_login_wifi.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -104,7 +105,7 @@ class WifiLoginDashboardItem : DashboardItem() {
     override val priority: Int
         get() = DASHBOARD_PRIORITY_LOGIN_WIFI
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
                 holder.context.baseActivity
@@ -114,6 +115,15 @@ class WifiLoginDashboardItem : DashboardItem() {
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_login_wifi
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_login_wifi
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 }

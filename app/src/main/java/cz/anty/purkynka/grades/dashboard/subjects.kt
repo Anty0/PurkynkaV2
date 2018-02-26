@@ -19,7 +19,6 @@
 package cz.anty.purkynka.grades.dashboard
 
 import android.content.Context
-import android.graphics.Typeface
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
@@ -42,6 +41,7 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_subject_bad_average.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -97,11 +97,11 @@ class SubjectsAverageDashboardManager(context: Context, accountHolder: ActiveAcc
                         val userLoggedIn = GradesLoginData.loginData.isLoggedIn(accountId)
                         if (!userLoggedIn) return@calcItems null
 
-                        val badAverage = GradesPreferences.instance.subjectBadAverage
+                        val badAverage = GradesPreferences.instance.badAverage
                         val semester = Semester.AUTO.stableSemester
                         return@calcItems GradesData.instance
                                 .getSubjects(accountId)[semester.value]
-                                ?.filter { subject -> subject.average > badAverage }
+                                ?.filter { subject -> badAverage <= subject.average }
                                 ?.map { BadSubjectAverageDashboardItem(accountId, it) }
                     }.await() ?: emptyList()
             )
@@ -122,7 +122,7 @@ class BadSubjectAverageDashboardItem(val accountId: String, val subject: Subject
     override val priority: Int
         get() = DASHBOARD_PRIORITY_GRADES_SUBJECTS_AVERAGE_BAD
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtNameShort.apply {
             setTextColor(averageColor)
             text = subject.shortName.fillToLen(4, Anchor.LEFT)
@@ -165,5 +165,23 @@ class BadSubjectAverageDashboardItem(val accountId: String, val subject: Subject
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_subject_bad_average
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_subject_bad_average
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BadSubjectAverageDashboardItem
+
+        if (accountId != other.accountId) return false
+        if (subject != other.subject) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = accountId.hashCode()
+        result = 31 * result + subject.hashCode()
+        return result
+    }
 }

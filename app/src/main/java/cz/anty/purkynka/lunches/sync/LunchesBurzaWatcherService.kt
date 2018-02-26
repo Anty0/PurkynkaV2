@@ -232,7 +232,10 @@ class LunchesBurzaWatcherService : Service() {
 
                             LunchesData.instance.invalidateData(accountId)
 
-                            launch(UI) { LunchesSyncAdapter.requestSync(Accounts.get(ctx, accountId)) }
+                            Accounts.getOrNull(ctx, accountId)?.also {
+                                launch(UI) { LunchesSyncAdapter.requestSync(it) }
+                            }
+
                         }
 
                         status.refreshCount++

@@ -31,6 +31,7 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_lunch_burza.*
 import org.jetbrains.anko.textColorResource
 import java.util.*
@@ -45,7 +46,7 @@ class LunchBurzaItem(val accountId: String, val base: LunchBurza) : CustomItem()
         private const val LOG_TAG = "LunchBurzaItem"
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtDay.apply {
             text = Calendar.getInstance()
                     .apply { timeInMillis = base.date }
@@ -114,7 +115,7 @@ class LunchBurzaItem(val accountId: String, val base: LunchBurza) : CustomItem()
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_lunch_burza
+    override fun getLayoutResId(context: Context): Int = R.layout.item_lunch_burza
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -23,19 +23,14 @@ package cz.anty.purkynka.utils
  */
 
 // Other
-/// MainData
-const val FILE_NAME_MAIN_DATA = "MainData"
 /// UpdateData
 const val FILE_NAME_UPDATE_DATA = "UpdateData"
 const val SCHEDULE_VERSION = "SCHEDULE_VERSION"
-const val LATEST_VERSION_CODE = "LATEST_VERSION_CODE"
-const val LATEST_VERSION_NAME = "LATEST_VERSION_NAME"
+const val LATEST_VERSION = "LATEST_VERSION"
 const val LAST_KNOWN_VERSION = "LAST_KNOWN_VERSION_CODE"
 /// ActiveAccountManager
 const val FILE_NAME_ACTIVE_ACCOUNT_DATA = "ActiveAccountData"
-const val ACTIVE_ACCOUNT_NAME = "ACTIVE_ACCOUNT_NAME"
-/// SettingsData
-const val FILE_NAME_SETTINGS_DATA = "SettingsData"
+const val ACTIVE_ACCOUNT_ID = "ACTIVE_ACCOUNT_ID"
 /// FeedbackData
 const val FILE_NAME_FEEDBACK_DATA = "FeedbackData"
 const val LAST_ERROR_VERSION = "LAST_ERROR_VERSION"
@@ -54,7 +49,9 @@ const val FILE_NAME_GRADES_UI_DATA = "GradesUI"
 const val LAST_SORT_GRADES = "SORT_GRADES"
 /// GradesPreferences
 const val FILE_NAME_GRADES_PREFERENCES = "GradesPreferences"
-const val GRADES_SUBJECT_BAD_AVERAGE = "GRADES_SUBJECT_BAD_AVERAGE"
+const val GRADES_BAD_AVERAGE = "GRADES_BAD_AVERAGE"
+const val WIDGET_ACCOUNT_ID = "WIDGET_ACCOUNT_ID"
+const val WIDGET_SORT = "WIDGET_SORT"
 
 // WifiLogin
 /// WifiData
@@ -72,3 +69,6 @@ const val CREDIT = "CREDIT"
 const val INVALID = "INVALID"
 /// LunchesLoginData
 const val FILE_NAME_LUNCHES_LOGIN_DATA = "LunchesLoginData"
+/// LunchesPreferences
+const val FILE_NAME_LUNCHES_PREFERENCES = "LunchesPreferences"
+const val SHOW_DASHBOARD_CREDIT_WARNING = "SHOW_DASHBOARD_CREDIT_WARNING"

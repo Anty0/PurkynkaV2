@@ -39,6 +39,7 @@ import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.notifications.manager.data.requestCancel
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_version_changes.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -106,9 +107,9 @@ class VersionChangesDashboardItem(val versionCode: Int,
     override val priority: Int
         get() = DASHBOARD_PRIORITY_VERSION_CHANGES
 
-    override fun getSwipeDirections(holder: ViewHolder): Int = LEFT or RIGHT
+    override fun getSwipeDirections(holder: CustomItemViewHolder): Int = LEFT or RIGHT
 
-    override fun onSwiped(holder: ViewHolder, direction: Int) {
+    override fun onSwiped(holder: CustomItemViewHolder, direction: Int) {
         val contextRef = holder.context.asReference()
         launch(UI) notifyCancel@ {
             val notifyId = bg {
@@ -124,7 +125,7 @@ class VersionChangesDashboardItem(val versionCode: Int,
         }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtVersion.text = holder.context.getFormattedText(
                 R.string.item_version_name,
                 versionInfo.name
@@ -142,5 +143,23 @@ class VersionChangesDashboardItem(val versionCode: Int,
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_version_changes
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_version_changes
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as VersionChangesDashboardItem
+
+        if (versionCode != other.versionCode) return false
+        if (versionInfo != other.versionInfo) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = versionCode
+        result = 31 * result + versionInfo.hashCode()
+        return result
+    }
 }

@@ -86,14 +86,14 @@ class LunchesBurzaWatcherResultChannel : NotifyChannel(ID, true) {
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
-        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+        val accountId = (group as? AccountNotifyGroup)?.accountId.alsoIfNull {
             Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
                     " notifyId=$notifyId, data=$data)",
                     IllegalArgumentException("Group is not AccountNotifyGroup, " +
                             "can't change ActiveAccount to correct account."))
         }
 
-        if (account != null) ActiveAccount.set(account)
+        accountId?.let { ActiveAccount.set(it) }
 
         MainActivity.start(context, LunchesOrderFragment::class.java)
     }

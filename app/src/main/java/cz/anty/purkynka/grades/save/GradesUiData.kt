@@ -20,6 +20,7 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
+import cz.anty.purkynka.grades.util.GradesSort
 import cz.anty.purkynka.utils.FILE_NAME_GRADES_UI_DATA
 import cz.anty.purkynka.utils.LAST_SORT_GRADES
 import eu.codetopic.utils.data.preferences.VersionedPreferencesData
@@ -52,21 +53,16 @@ class GradesUiData private constructor(context: Context) :
 
     private var lastSort = EnumPreference(
             LAST_SORT_GRADES,
-            Sort::class,
+            GradesSort::class,
             accessProvider,
-            Sort.GRADES_DATE
+            GradesSort.GRADES_DATE
     )
 
     fun getLastSort(accountId: String) =
-            lastSort.getValue(this, accountId)
+            lastSort[this, accountId]
 
-    fun setLastSort(accountId: String, value: Sort) {
-        lastSort.setValue(this, accountId, value)
-    }
-
-    enum class Sort {
-        GRADES_DATE, GRADES_VALUE, GRADES_SUBJECT,
-        SUBJECTS_NAME, SUBJECTS_AVERAGE_BEST, SUBJECTS_AVERAGE_WORSE
+    fun setLastSort(accountId: String, value: GradesSort) {
+        lastSort[this, accountId] = value
     }
 
     private class Getter : PreferencesGetterAbs<GradesUiData>() {

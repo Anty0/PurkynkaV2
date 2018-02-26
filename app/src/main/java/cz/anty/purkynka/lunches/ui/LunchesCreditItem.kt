@@ -25,6 +25,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import cz.anty.purkynka.R
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_lunches_credit.*
 import java.text.DecimalFormat
 
@@ -40,7 +41,7 @@ class LunchesCreditItem(val credit: Float) : CustomItem() {
         private val FORMAT_CREDIT = DecimalFormat("#.##")
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtCredit.text = SpannableStringBuilder().apply {
             append(holder.context.getText(R.string.text_view_credit))
             append(
@@ -69,7 +70,7 @@ class LunchesCreditItem(val credit: Float) : CustomItem() {
         }
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_lunches_credit
+    override fun getLayoutResId(context: Context): Int = R.layout.item_lunches_credit
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

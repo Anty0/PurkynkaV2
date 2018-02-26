@@ -26,6 +26,7 @@ import cz.anty.purkynka.attendance.data.Man.Companion.lastEnterStr
 import eu.codetopic.java.utils.*
 import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_man.*
 
 /**
@@ -38,7 +39,7 @@ class ManItem(val base: Man) : CustomItem() {
         private const val LOG_TAG = "ManItem"
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtClassId.text = base.classId.fillToLen(4, Anchor.LEFT)
 
         holder.imgIsInSchoolYes.visibility = if (base.isInSchool == true) View.VISIBLE else View.GONE
@@ -50,7 +51,7 @@ class ManItem(val base: Man) : CustomItem() {
         holder.txtLastEnterDate.text = base.lastEnterStr
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_man
+    override fun getLayoutResId(context: Context): Int = R.layout.item_man
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

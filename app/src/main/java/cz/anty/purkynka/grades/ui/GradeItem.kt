@@ -31,6 +31,7 @@ import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_grade.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -38,8 +39,7 @@ import kotlinx.serialization.Transient
 /**
  * @author anty
  */
-@Serializable
-class GradeItem(val base: Grade, val showSubject: Boolean = true,
+class GradeItem(val base: Grade, val isBad: Boolean, val showSubject: Boolean = true,
                 val changes: List<String>? = null): CustomItem() { // TODO: use changes
 
     companion object {
@@ -47,24 +47,18 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
         private const val LOG_TAG = "GradeItem"
     }
 
-    @Transient
     private val valueColor: Int = base.valueColor
 
-    @Transient
     val isNew
         get() = changes?.isEmpty() == true
 
-    @Transient
     val isChanged
         get() = changes?.isNotEmpty() == true
 
-    @Transient
     val hasChnges
         get() = changes != null
 
-    override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
-        val textStyle = if (base.weight >= 3) Typeface.BOLD else Typeface.NORMAL
-
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtSubject.apply {
             setTextColor(valueColor)
             visibility = if (showSubject) View.VISIBLE else View.GONE
@@ -72,13 +66,13 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
         }
 
         holder.txtGrade.apply {
-            setTypeface(null, textStyle)
+            setTypeface(null, if (isBad) Typeface.BOLD else Typeface.NORMAL)
             if (!showSubject) setTextColor(valueColor)
             text = base.valueToShow
         }
 
         holder.txtWeight.apply {
-            setTypeface(null, textStyle)
+            setTypeface(null, if (base.weight >= 3) Typeface.BOLD else Typeface.NORMAL)
             text = base.weight.toString()
         }
 
@@ -107,16 +101,14 @@ class GradeItem(val base: Grade, val showSubject: Boolean = true,
 
                 ContextCompat.startActivity(
                         context,
-                        GradeActivity.getStartIntent(context, base, showSubject, changes),
+                        GradeActivity.getStartIntent(context, base, showSubject, isBad, changes),
                         options?.toBundle()
                 )
             }
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context) = R.layout.item_grade
-
-    //override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+    override fun getLayoutResId(context: Context) = R.layout.item_grade
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

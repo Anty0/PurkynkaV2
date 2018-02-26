@@ -19,34 +19,42 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/pref_header_global">
+    <PreferenceCategory android:title="@string/pref_header_grades">
 
-        <!--<SwitchPreference
-            android:key="REFRESH_ON_WIFI"
-            android:defaultValue="false"
-            android:title="@string/pref_switch_refresh_on_wifi"/>--> <!-- TODO: Remove (unused and not required) -->
+        <ListPreference
+            android:key="@string/pref_key_grades_bad_average"
+            android:title="@string/pref_grades_bad_average"
+            android:entries="@array/pref_grades_bad_average_entries"
+            android:entryValues="@array/pref_grades_bad_average_entry_values" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_lunches">
+
+        <SwitchPreference
+            android:key="@string/pref_key_lunches_show_dashboard_credit_warning"
+            android:title="@string/pref_lunches_show_dashboard_credit_warning" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_system">
 
         <Preference
-            android:key="activity_update"
+            android:key="@string/pref_key_activity_update"
             android:title="@string/pref_update" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_other">
 
         <Preference
-            android:key="activity_about"
+            android:key="@string/pref_key_activity_about"
             android:title="@string/pref_about" />
         <Preference
-            android:key="activity_facebook"
+            android:key="@string/pref_key_activity_facebook"
             android:title="@string/action_contact_facebook" />
         <Preference
-            android:key="activity_web_page"
+            android:key="@string/pref_key_activity_web_page"
             android:title="@string/action_contact_web_page" />
         <Preference
-            android:key="activity_web_page_donate"
+            android:key="@string/pref_key_activity_web_page_donate"
             android:title="@string/action_contact_web_page_donate" />
     </PreferenceCategory>
 </PreferenceScreen>

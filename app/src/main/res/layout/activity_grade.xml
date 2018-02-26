@@ -74,6 +74,7 @@
                         style="?attr/textAppearanceListItem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:textSize="14sp"
                         android:text="@string/item_title_date" />
 
@@ -109,6 +110,7 @@
                         style="?attr/textAppearanceListItem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:textSize="14sp"
                         android:text="@string/item_title_type" />
 
@@ -143,6 +145,7 @@
                         style="?attr/textAppearanceListItem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:textSize="14sp"
                         android:text="@string/title_activity_subject" />
 
@@ -178,6 +181,7 @@
                         style="?attr/textAppearanceListItem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:textSize="14sp"
                         android:text="@string/item_title_subject_symbol" />
 
@@ -211,6 +215,7 @@
                         style="?attr/textAppearanceListItem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:textSize="14sp"
                         android:text="@string/txt_grade_statistics_coming_soon" />
 

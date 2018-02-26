@@ -34,7 +34,6 @@ import cz.anty.purkynka.lunches.dashboard.*
 import cz.anty.purkynka.update.dashboard.UpdateCheckDashboardManager
 import cz.anty.purkynka.update.dashboard.VersionChangesDashboardItem
 import cz.anty.purkynka.update.dashboard.VersionChangesDashboardManager
-import cz.anty.purkynka.update.ui.VersionChangesItem
 import cz.anty.purkynka.utils.ICON_HOME_DASHBOARD
 import cz.anty.purkynka.wifilogin.dashboard.WifiLoginDashboardManager
 import eu.codetopic.java.utils.letIf
@@ -46,14 +45,15 @@ import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
-import eu.codetopic.utils.ui.container.adapter.UniversalAdapter
-import eu.codetopic.utils.ui.container.adapter.UniversalAdapter.RecyclerBase.UniversalViewHolder
-import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.adapter.UniversalRecyclerBase.RecyclerViewHolder
+import eu.codetopic.utils.ui.container.adapter.UniversalViewHolder
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import eu.codetopic.utils.ui.container.recycler.Recycler
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.support.v4.ctx
@@ -135,6 +135,8 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         this.adapter = adapter
 
         managers = listOf(
+                // TODO: create TrySwipeDashboardManager
+
                 // System
                 ::UpdateCheckDashboardManager,
                 ::VersionChangesDashboardManager,
@@ -167,9 +169,9 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                                     .to<SwipeableDashboardItem>()
 
                     fun getItemHolder(viewHolder: RecyclerView.ViewHolder) =
-                            viewHolder.to<UniversalViewHolder<UniversalAdapter.ViewHolder>>()
+                            viewHolder.to<RecyclerViewHolder<UniversalViewHolder>>()
                                     ?.universalHolder
-                                    ?.let { CustomItem.ViewHolder.fromUniversalHolder(it) }
+                                    ?.let { CustomItemViewHolder.fromUniversalHolder(it) }
 
                     override fun getMovementFlags(recyclerView: RecyclerView,
                                                   viewHolder: RecyclerView.ViewHolder): Int {
@@ -257,6 +259,7 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
             self().accountHolder.update().join()
             jobs?.forEach { it?.join() }
 
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }

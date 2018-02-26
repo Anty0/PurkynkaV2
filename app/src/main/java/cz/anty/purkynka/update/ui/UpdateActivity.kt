@@ -143,9 +143,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
             fetchUpdate()
 
-            // wait for ui update
-            delay(500)
-
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }
@@ -205,6 +203,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
             update().join()
 
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }
@@ -215,8 +214,9 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
             self().versionCodeCurrent = BuildConfig.VERSION_CODE
             self().versionNameCurrent = BuildConfig.VERSION_NAME
 
-            self().versionCodeAvailable = bg { UpdateData.instance.latestVersionCode }.await()
-            self().versionNameAvailable = bg { UpdateData.instance.latestVersionName }.await()
+            val (versionCode, versionName) = bg { UpdateData.instance.latestVersion }.await()
+            self().versionCodeAvailable = versionCode
+            self().versionNameAvailable = versionName
 
             self().updateUi()
         }

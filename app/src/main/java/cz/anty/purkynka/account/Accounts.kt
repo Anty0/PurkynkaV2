@@ -21,6 +21,7 @@ package cz.anty.purkynka.account
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.AccountManagerFuture
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -30,6 +31,7 @@ import android.os.Handler
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.account.save.ActiveAccount
+import eu.codetopic.java.utils.runIf
 import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.UtilsBase
 import eu.codetopic.utils.broadcast.BroadcastsConnector
@@ -62,29 +64,11 @@ object Accounts {
         private set
 
     fun initialize(context: Context, vararg notifyChannelIds: String) {
-        initBroadcastConnections()
         if (UtilsBase.Process.isPrimaryProcess(context))
             initDefaultAccount(context)
         ActiveAccount.initialize(context)
         AccountNotifyGroup.init(context, *notifyChannelIds)
         isInitialized = true
-    }
-
-    private fun initBroadcastConnections() {
-        val connection = Connection(
-                BroadcastTargetingType.GLOBAL,
-                ACTION_ACCOUNTS_CHANGED
-        )
-        arrayOf(
-                ACTION_ACCOUNT_ADDED,
-                ACTION_ACCOUNT_REMOVED,
-                ACTION_ACCOUNT_RENAMED
-        ).forEach { action ->
-            BroadcastsConnector.connect(
-                    action,
-                    connection
-            )
-        }
     }
 
     private fun initDefaultAccount(context: Context) {
@@ -97,6 +81,7 @@ object Accounts {
 
     @Suppress("NOTHING_TO_INLINE")
     private inline fun Account.checkType(): Account {
+        // FIXME: this way of checking account type can crash app, shouldn't we use more gentle way?
         if (type != ACCOUNT_TYPE) throw IllegalArgumentException("Unsupported account type: $type")
         return this
     }
@@ -130,6 +115,7 @@ object Accounts {
             context.sendBroadcast(Intent(ACTION_ACCOUNT_ADDED)
                     .putExtra(EXTRA_ACCOUNT, account)
                     .putExtra(EXTRA_ACCOUNT_ID, accountId))
+            context.sendBroadcast(Intent(ACTION_ACCOUNTS_CHANGED))
 
             return account
         }
@@ -151,6 +137,7 @@ object Accounts {
             context.sendBroadcast(Intent(ACTION_ACCOUNT_REMOVED)
                     .putExtra(EXTRA_ACCOUNT, account)
                     .putExtra(EXTRA_ACCOUNT_ID, accountId))
+            context.sendBroadcast(Intent(ACTION_ACCOUNTS_CHANGED))
 
             return true
         }
@@ -161,8 +148,40 @@ object Accounts {
             get(context.accountManager, accountId)
 
     fun get(accountManager: AccountManager, accountId: String): Account =
+            getOrNull(accountManager, accountId)
+                    ?: throw IllegalArgumentException(
+                            "Account with id '$accountId' does not exist"
+                    )
+
+    fun getOrNull(context: Context, accountId: String): Account? =
+            getOrNull(context.accountManager, accountId)
+
+    fun getOrNull(accountManager: AccountManager, accountId: String): Account? =
             getAll(accountManager).firstOrNull { getId(accountManager, it) == accountId }
-                    ?: throw IllegalArgumentException("Account '$accountId' does not exist")
+
+    fun getByName(context: Context, accountName: String): Account =
+            getByName(context.accountManager, accountName)
+
+    @SuppressLint("NewApi")
+    fun getByName(accountManager: AccountManager, accountName: String): Account =
+            getByNameOrNull(accountManager, accountName)
+                    ?: throw IllegalArgumentException(
+                            "Account with name '$accountName' does not exist"
+                    )
+
+    fun getByNameOrNull(context: Context, accountName: String): Account? =
+            getByNameOrNull(context.accountManager, accountName)
+
+    @SuppressLint("NewApi")
+    fun getByNameOrNull(accountManager: AccountManager, accountName: String): Account? =
+            getAll(accountManager).let { accounts ->
+                accounts.firstOrNull { it.name == accountName }
+                        ?: runIf({ Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP }) {
+                            accounts.firstOrNull {
+                                accountManager.getPreviousName(it) == accountName
+                            }
+                        }
+            }
 
     fun getId(context: Context, account: Account): String =
             getId(context.accountManager, account)
@@ -199,6 +218,7 @@ object Accounts {
                     .putExtra(EXTRA_OLD_ACCOUNT, account)
                     .putExtra(EXTRA_ACCOUNT, newAccount)
                     .putExtra(EXTRA_ACCOUNT_ID, accountId))
+            context.sendBroadcast(Intent(ACTION_ACCOUNTS_CHANGED))
 
             return newAccount
         }

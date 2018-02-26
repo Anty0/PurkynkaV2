@@ -61,11 +61,12 @@ class WifiData private constructor(context: Context) :
             defaultValue = 0
     )
 
-    fun getLoginCount(accountId: String) = loginCounterPref.getValue(this, accountId)
+    fun getLoginCount(accountId: String) = loginCounterPref[this, accountId]
 
     fun incrementLoginCounter(accountId: String) {
-        loginCounterPref.getValue(this, accountId)
-                .let { loginCounterPref.setValue(this, accountId, it) }
+        loginCounterPref[this, accountId].let {
+            loginCounterPref[this, accountId] = it
+        }
     }
 
     private class Getter : PreferencesGetterAbs<WifiData>() {

@@ -24,6 +24,7 @@ import cz.anty.purkynka.update.VersionInfo
 import cz.anty.purkynka.update.inflateChangesLayout
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_version_changes.*
 
 /**
@@ -32,7 +33,7 @@ import kotlinx.android.synthetic.main.item_version_changes.*
 class VersionChangesItem(val versionCode: Int, val versionInfo: VersionInfo,
                          val highlight: Boolean = false) : CustomItem() {
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtVersion.text = holder.context.getFormattedText(
                 R.string.item_version_name,
                 versionInfo.name
@@ -55,5 +56,5 @@ class VersionChangesItem(val versionCode: Int, val versionInfo: VersionInfo,
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_version_changes
+    override fun getLayoutResId(context: Context): Int = R.layout.item_version_changes
 }

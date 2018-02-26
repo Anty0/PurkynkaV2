@@ -54,7 +54,7 @@ object Updater {
         val code = UpdateFetcher.fetchVersionCode() ?: return Job.Result.FAILURE
         val name = UpdateFetcher.fetchVersionName() ?: return Job.Result.FAILURE
 
-        UpdateData.instance.setLatestVersion(code, name)
+        UpdateData.instance.latestVersion = code to name
 
         return Job.Result.SUCCESS
     }
@@ -66,29 +66,28 @@ object Updater {
         val code = BuildConfig.VERSION_CODE + 1
         val name = BuildConfig.VERSION_NAME + "-FAKE"
 
-        UpdateData.instance.setLatestVersion(code, name)
+        UpdateData.instance.latestVersion = code to name
 
         return Job.Result.SUCCESS
     }
 
     @WorkerThread
     fun notifyAboutUpdate(appContext: Context) {
-        val currentVersionCode = BuildConfig.VERSION_CODE
-        val latestVersionCode = UpdateData.instance.latestVersionCode
+        val currentCode = BuildConfig.VERSION_CODE
+        val (code, name) = UpdateData.instance.latestVersion
 
-        if (latestVersionCode == currentVersionCode) {
+        if (code == currentCode) {
             LooperUtils.postOnMainThread { appContext.cancelUpdateNotification() }
         } else {
-            val (code, name) = UpdateData.instance.latestVersion
             LooperUtils.postOnMainThread { appContext.showUpdateNotification(code, name) }
         }
     }
 
     suspend fun suspendNotifyAboutUpdate(contextRef: Ref<Context>) = launch(UI) {
-        val currentVersionCode = BuildConfig.VERSION_CODE
+        val currentCode = BuildConfig.VERSION_CODE
         val (code, name) = bg { UpdateData.instance.latestVersion }.await()
 
-        if (code == currentVersionCode) {
+        if (code == currentCode) {
             contextRef().cancelUpdateNotification()
         } else {
             contextRef().showUpdateNotification(code, name)

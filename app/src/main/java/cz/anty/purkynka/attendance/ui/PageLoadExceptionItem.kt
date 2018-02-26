@@ -21,6 +21,7 @@ package cz.anty.purkynka.attendance.ui
 import android.content.Context
 import cz.anty.purkynka.R
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_attendance_exception_page_load.*
 
 /**
@@ -28,10 +29,10 @@ import kotlinx.android.synthetic.main.item_attendance_exception_page_load.*
  */
 class PageLoadExceptionItem(val ex: Exception) : CustomItem() {
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtExceptionType.text = ex.toString()
     }
 
-    override fun getItemLayoutResId(context: Context): Int =
+    override fun getLayoutResId(context: Context): Int =
             R.layout.item_attendance_exception_page_load
 }

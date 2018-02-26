@@ -27,6 +27,7 @@ import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.java.utils.to
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
@@ -35,6 +36,7 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.Keep
@@ -52,7 +54,12 @@ class LunchesDecideFragment : NavigationFragment(), ThemeProvider, IconProvider 
 
         private const val LOG_TAG = "LunchesDecideFragment"
 
+        const val EXTRA_TARGET_CLASS = "TARGET_CLASS"
         const val EXTRA_TARGET_CLASS_NAME = "TARGET_CLASS_NAME"
+
+        fun getArguments(targetClass: Class<out Fragment>) = bundleOf(
+                EXTRA_TARGET_CLASS to targetClass
+        )
     }
 
     override val themeId: Int
@@ -65,19 +72,23 @@ class LunchesDecideFragment : NavigationFragment(), ThemeProvider, IconProvider 
 
         @Suppress("UNCHECKED_CAST")
         val targetClass = try {
-            Class.forName(
-                    arguments?.getString(EXTRA_TARGET_CLASS_NAME) ?: run {
+            arguments?.getSerializable(EXTRA_TARGET_CLASS)
+                    .to<Class<out Fragment>>()
+                    ?: Class.forName(
+                            arguments?.getString(EXTRA_TARGET_CLASS_NAME)
+                                    ?: run {
+                                        Log.e(LOG_TAG, "onCreate()" +
+                                                " -> Target class not received, switching to dashboard")
+                                        switchFragment(DashboardFragment::class.java)
+                                        return
+                                    }
+                    ).to<Class<out Fragment>>()
+                    ?: run {
                         Log.e(LOG_TAG, "onCreate()" +
-                                " -> Target class not received, switching to dashboard")
+                                " -> Target class is not fragment, switching to dashboard")
                         switchFragment(DashboardFragment::class.java)
                         return
                     }
-            ) as? Class<out Fragment> ?: run {
-                Log.e(LOG_TAG, "onCreate()" +
-                        " -> Target class is not fragment, switching to dashboard")
-                switchFragment(DashboardFragment::class.java)
-                return
-            }
         } catch (e: Exception) {
             Log.e(LOG_TAG, "onCreate()" +
                     " -> Failed to find target class, switching to dashboard")
@@ -90,7 +101,7 @@ class LunchesDecideFragment : NavigationFragment(), ThemeProvider, IconProvider 
             holder.showLoading()
 
             run switcher@ {
-                val accountId = bg { ActiveAccount.getId() }.await() ?: run {
+                val accountId = bg { ActiveAccount.getWithId().first }.await() ?: run {
                     Log.w(LOG_TAG, "onCreate()" +
                             " -> No active account, switching to login")
                     switchFragment(LunchesLoginFragment::class.java)

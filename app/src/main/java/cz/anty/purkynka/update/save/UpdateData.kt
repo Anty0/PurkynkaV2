@@ -24,10 +24,14 @@ import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.utils.*
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.IntPreference
+import eu.codetopic.utils.data.preferences.preference.KSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
+import kotlinx.serialization.internal.IntSerializer
+import kotlinx.serialization.internal.PairSerializer
+import kotlinx.serialization.internal.StringSerializer
 
 /**
  * @author anty
@@ -68,20 +72,12 @@ class UpdateData private constructor(context: Context) :
             -1
     )
 
-    val latestVersionCode: Int
-        get() = preferences.getInt(LATEST_VERSION_CODE, BuildConfig.VERSION_CODE)
-
-    val latestVersionName: String
-        get() = preferences.getString(LATEST_VERSION_NAME, BuildConfig.VERSION_NAME)
-                ?: BuildConfig.VERSION_NAME
-
-    val latestVersion: Pair<Int, String>
-        get() = latestVersionCode to latestVersionName
-
-    fun setLatestVersion(code: Int, name: String) = edit {
-        putInt(LATEST_VERSION_CODE, code)
-        putString(LATEST_VERSION_NAME, name)
-    }
+    var latestVersion by KSerializedPreference(
+            key = LATEST_VERSION,
+            serializer = PairSerializer(IntSerializer, StringSerializer),
+            provider = accessProvider,
+            defaultValue = BuildConfig.VERSION_CODE to BuildConfig.VERSION_NAME
+    )
 
     private class Getter : PreferencesGetterAbs<UpdateData>() {
 

@@ -22,9 +22,7 @@ import android.content.Context
 import android.support.multidex.MultiDexApplication
 import android.support.v4.content.ContextCompat
 import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.beta.Beta
 import com.evernote.android.job.JobManager
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.Iconics
@@ -32,21 +30,21 @@ import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.exceptions.LoggedException
 import cz.anty.purkynka.feedback.save.FeedbackData
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
-import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
+import cz.anty.purkynka.grades.widget.GradesWidgetUpdateReceiver
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesPreferences
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
+import cz.anty.purkynka.grades.widget.GradesWidgetProvider
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherResultChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusGroup
 import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
-import cz.anty.purkynka.lunches.receiver.UpdateLunchesSyncReceiver
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
-import cz.anty.purkynka.settings.SettingsData
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel
@@ -57,9 +55,6 @@ import cz.anty.purkynka.utils.EvernoteJobManagerExtension
 import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
-import eu.codetopic.utils.ui.container.adapter.dashboard.DashboardData
-import eu.codetopic.java.utils.log.base.LogLine
-import eu.codetopic.java.utils.log.LogsHandler
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.log.Logger
 import eu.codetopic.java.utils.log.base.Priority
@@ -83,6 +78,7 @@ class AppInit : MultiDexApplication() {
     companion object {
 
         const val PROCESS_NAME_SYNCS = ":syncs"
+        const val PROCESS_NAME_WIDGETS = ":widgets"
         const val PROCESS_NAME_ACCOUNTS = ":accounts"
 
         val Context.processNameSyncs: String
@@ -90,6 +86,9 @@ class AppInit : MultiDexApplication() {
 
         val Context.processNameAccounts: String
             get() = processNamePrimary + PROCESS_NAME_ACCOUNTS
+
+        val Context.processNameWidgets: String
+            get() = processNamePrimary + PROCESS_NAME_WIDGETS
      }
 
     override fun onCreate() {
@@ -110,6 +109,10 @@ class AppInit : MultiDexApplication() {
                     processNameSyncs to bundleOf(
                             PARAM_INITIALIZE_UTILS to true
                     ),
+                    // Widgets process (process where all widgets are being updated)
+                    processNameWidgets to bundleOf(
+                            PARAM_INITIALIZE_UTILS to true
+                    ),
                     // NotifyManager's process
                     processNameNotifyManager to bundleOf(
                             PARAM_INITIALIZE_UTILS to true
@@ -125,6 +128,7 @@ class AppInit : MultiDexApplication() {
                 processNamePrimary,
                 processNameProviders,
                 processNameSyncs,
+                processNameWidgets,
                 processNameNotifyManager,
                 processNameAccounts
         )
@@ -142,6 +146,7 @@ class AppInit : MultiDexApplication() {
                 processNamePrimary -> initProcessPrimary()
                 processNameProviders -> initProcessProviders()
                 processNameSyncs -> initProcessSyncs()
+                processNameWidgets -> initProcessWidgets()
                 processNameNotifyManager -> initProcessNotifyManager()
                 processNameAccounts -> initProcessAccounts()
             }
@@ -191,9 +196,6 @@ class AppInit : MultiDexApplication() {
         // Let's initialize FeedbackData first, as they plays important role in error handling.
         FeedbackData.initialize(this)
 
-        // Prepare broadcasts connections (very helpful tool)
-        initBroadcastConnections()
-
         // Initialize accounts (create default account, initialize accounts channels, etc.)
         initAccounts()
 
@@ -214,9 +216,7 @@ class AppInit : MultiDexApplication() {
 
     private fun initProcessPrimary() {
         // Initialize data providers required in this process
-        MainData.initialize(this)
         UpdateData.initialize(this)
-        SettingsData.initialize(this)
         GradesUiData.initialize(this)
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
@@ -225,9 +225,7 @@ class AppInit : MultiDexApplication() {
         WifiLoginData.initialize(this)
         LunchesData.initialize(this)
         LunchesLoginData.initialize(this)
-
-        // Initialize data provider of dashboard framework
-        DashboardData.initialize(this)
+        LunchesPreferences.initialize(this)
 
         // Init Evernote's JobManager used here for app updates checking
         initJobManager()
@@ -242,7 +240,41 @@ class AppInit : MultiDexApplication() {
 
     private fun initProcessProviders() {
         // Initialize data providers required in this process
-        //  Nothing to initialize in this process
+        GradesData.initialize(this)
+        GradesLoginData.initialize(this)
+        GradesPreferences.initialize(this)
+
+        // When notify data is updated, update widgets
+        BroadcastsConnector.connect(
+                NotifyManager.getOnChangeBroadcastAction(),
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        GradesWidgetUpdateReceiver.ACTION_WIDGET_UPDATE_ITEMS
+                )
+        )
+
+        // When grades data is updated, update grades widgets
+        BroadcastsConnector.connect(
+                GradesData.instance.broadcastActionChanged,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.ORDERED_GLOBAL,
+                        GradesWidgetUpdateReceiver.ACTION_WIDGET_UPDATE_ITEMS
+                )
+        )
+        BroadcastsConnector.connect(
+                GradesLoginData.instance.broadcastActionChanged,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        GradesWidgetProvider.getUpdateIntent(this)
+                )
+        )
+        BroadcastsConnector.connect(
+                GradesPreferences.instance.broadcastActionChanged,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        GradesWidgetProvider.getUpdateIntent(this)
+                )
+        )
     }
 
     private fun initProcessSyncs() {
@@ -256,31 +288,21 @@ class AppInit : MultiDexApplication() {
         LunchesLoginData.initialize(this)
     }
 
+    private fun initProcessWidgets() {
+        // Initialize data providers required in this process
+        GradesData.initialize(this)
+        GradesLoginData.initialize(this)
+        GradesPreferences.initialize(this)
+    }
+
     private fun initProcessNotifyManager() {
         // Initialize data providers required in this process
-        //  Nothing to initialize in this process
+        //  No data providers to initialize in this process
     }
 
     private fun initProcessAccounts() {
         // Initialize data providers required in this process
-        //  Nothing to initialize in this process
-    }
-
-    private fun initBroadcastConnections() {
-        BroadcastsConnector.connect(
-                Accounts.ACTION_ACCOUNT_ADDED,
-                BroadcastsConnector.Connection(
-                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
-                        UpdateGradesSyncReceiver.getIntent(this)
-                )
-        )
-        BroadcastsConnector.connect(
-                Accounts.ACTION_ACCOUNT_ADDED,
-                BroadcastsConnector.Connection(
-                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
-                        UpdateLunchesSyncReceiver.getIntent(this)
-                )
-        )
+        //  No data providers to initialize in this process
     }
 
     private fun initJobManager() {

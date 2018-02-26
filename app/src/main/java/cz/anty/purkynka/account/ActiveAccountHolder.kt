@@ -26,6 +26,7 @@ import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.view.holder.loading.LoadingVH
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
@@ -53,13 +54,15 @@ class ActiveAccountHolder(private val holder: LoadingVH? = null) {
         private set
 
     fun updateWithLoading(): Job {
+        val holder = holder
         val self = this.asReference()
         return launch(UI) {
-            self().holder?.showLoading()
+            holder?.showLoading()
 
             self().update().join()
 
-            self().holder?.hideLoading()
+            delay(500) // Wait few loops to make sure, that content was updated.
+            holder?.hideLoading()
         }
     }
 
@@ -67,7 +70,7 @@ class ActiveAccountHolder(private val holder: LoadingVH? = null) {
         val self = this.asReference()
 
         return launch(UI) {
-            val (nAccount, nAccountId) = bg { ActiveAccount.getWithId() }.await()
+            val (nAccountId, nAccount) = bg { ActiveAccount.getWithId() }.await()
 
             self().apply {
                 if (account == nAccount && accountId == nAccountId)

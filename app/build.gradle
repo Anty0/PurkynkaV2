@@ -124,6 +124,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$support_libs_version"
     implementation "com.android.support:recyclerview-v7:$support_libs_version"
     implementation "com.android.support:cardview-v7:$support_libs_version"
+    implementation "com.android.support:preference-v14:$support_libs_version"
     implementation "com.android.support:animated-vector-drawable:$support_libs_version"
     implementation "com.android.support:design:$support_libs_version"
     implementation "com.android.support:support-annotations:$support_libs_version"

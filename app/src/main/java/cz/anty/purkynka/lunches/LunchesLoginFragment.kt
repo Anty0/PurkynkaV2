@@ -169,6 +169,7 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                     self().accountHolder.update()
             ).forEach { it.join() }
 
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }

@@ -86,35 +86,25 @@ class LunchesData private constructor(context: Context) :
             false
     )
 
-    fun setCredit(id: String, credit: Float) =
-            creditPref.setValue(this, id, credit)
+    fun setCredit(id: String, credit: Float) { creditPref[this, id] = credit }
 
-    fun getCredit(id: String): Float =
-            creditPref.getValue(this, id)
+    fun getCredit(id: String): Float = creditPref[this, id]
 
-    fun makeDataValid(id: String) =
-            invalidityPref.setValue(this, id, false)
+    fun makeDataValid(id: String) { invalidityPref[this, id] = false }
 
-    fun invalidateData(id: String) =
-            invalidityPref.setValue(this, id, true)
+    fun invalidateData(id: String) { invalidityPref[this, id] = true }
 
-    fun isDataValid(id: String): Boolean =
-            !invalidityPref.getValue(this, id)
+    fun isDataValid(id: String): Boolean = !invalidityPref[this, id]
 
-    fun isFirstSync(id: String): Boolean =
-            firstSyncPref.getValue(this, id)
+    fun isFirstSync(id: String): Boolean = firstSyncPref[this, id]
 
-    fun resetFirstSyncState(id: String) =
-            firstSyncPref.setValue(this, id, false)
+    fun resetFirstSyncState(id: String) { firstSyncPref[this, id] = false }
 
-    fun notifyFirstSyncDone(id: String) =
-            firstSyncPref.setValue(this, id, false)
+    fun notifyFirstSyncDone(id: String) { firstSyncPref[this, id] = false }
 
-    fun getLastSyncResult(id: String): SyncResult =
-            lastSyncResultPref.getValue(this, id)
+    fun getLastSyncResult(id: String): SyncResult = lastSyncResultPref[this, id]
 
-    fun setLastSyncResult(id: String, value: SyncResult) =
-            lastSyncResultPref.setValue(this, id, value)
+    fun setLastSyncResult(id: String, value: SyncResult) { lastSyncResultPref[this, id] = value }
 
     private val lunchesPreference =
             KSerializedPreference<List<LunchOptionsGroup>>(
@@ -124,11 +114,11 @@ class LunchesData private constructor(context: Context) :
                     { emptyList() }
             )
 
-    fun getLunches(id: String): List<LunchOptionsGroup> =
-            lunchesPreference.getValue(this, id)
+    fun getLunches(id: String): List<LunchOptionsGroup> = lunchesPreference[this, id]
 
-    fun setLunches(id: String, value: List<LunchOptionsGroup>) =
-            lunchesPreference.setValue(this, id, value)
+    fun setLunches(id: String, value: List<LunchOptionsGroup>) {
+        lunchesPreference[this, id] = value
+    }
 
     enum class SyncResult {
         SUCCESS, FAIL_LOGIN, FAIL_CONNECT, FAIL_UNKNOWN

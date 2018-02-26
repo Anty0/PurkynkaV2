@@ -76,15 +76,23 @@ class GradesData private constructor(context: Context) :
             true
     )
 
-    fun isFirstSync(id: String): Boolean = firstSyncPref.getValue(this, id)
+    fun isFirstSync(id: String): Boolean =
+            firstSyncPref[this, id]
 
-    fun resetFirstSyncState(id: String) = firstSyncPref.setValue(this, id, false)
+    fun resetFirstSyncState(id: String) {
+        firstSyncPref[this, id] = false
+    }
 
-    fun notifyFirstSyncDone(id: String) = firstSyncPref.setValue(this, id, false)
+    fun notifyFirstSyncDone(id: String) {
+        firstSyncPref[this, id] = false
+    }
 
-    fun getLastSyncResult(id: String): SyncResult = lastSyncResultPref.getValue(this, id)
+    fun getLastSyncResult(id: String): SyncResult =
+            lastSyncResultPref[this, id]
 
-    fun setLastSyncResult(id: String, value: SyncResult) = lastSyncResultPref.setValue(this, id, value)
+    fun setLastSyncResult(id: String, value: SyncResult) {
+        lastSyncResultPref[this, id] = value
+    }
 
     private val gradesPreference = KSerializedPreference<GradesMap>(
             GRADES_MAP,
@@ -95,9 +103,11 @@ class GradesData private constructor(context: Context) :
                 Semester.SECOND.value to emptyList())
     }
 
-    fun getGrades(id: String): GradesMap = gradesPreference.getValue(this, id)
+    fun getGrades(id: String): GradesMap = gradesPreference[this, id]
 
-    fun setGrades(id: String, value: GradesMap) = gradesPreference.setValue(this, id, value)
+    fun setGrades(id: String, value: GradesMap) {
+        gradesPreference[this, id] = value
+    }
 
     fun getSubjects(id: String): SubjectsMap {
         return synchronized(this) {

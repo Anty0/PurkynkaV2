@@ -42,6 +42,7 @@ import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_lunches_next_lunch.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -135,7 +136,7 @@ class NextLunchDashboardItem(val accountId: String,
     override val priority: Int
         get() = DASHBOARD_PRIORITY_LUNCHES_NEXT_LUNCH
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtDay.apply {
             text = Calendar.getInstance()
                     .apply { timeInMillis = lunchOptionsGroup.date }
@@ -229,5 +230,23 @@ class NextLunchDashboardItem(val accountId: String,
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_lunches_next_lunch
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_lunches_next_lunch
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NextLunchDashboardItem
+
+        if (accountId != other.accountId) return false
+        if (lunchOptionsGroup != other.lunchOptionsGroup) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = accountId.hashCode()
+        result = 31 * result + lunchOptionsGroup.hashCode()
+        return result
+    }
 }

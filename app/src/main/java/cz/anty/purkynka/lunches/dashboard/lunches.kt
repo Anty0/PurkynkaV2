@@ -48,6 +48,7 @@ import eu.codetopic.utils.notifications.manager.data.requestCancel
 import eu.codetopic.utils.thread.LooperUtils
 import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_lunches_new.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -132,13 +133,13 @@ class NewLunchDashboardItem(val notifyId: NotifyId, val accountId: String,
     override val priority: Int
         get() = DASHBOARD_PRIORITY_LUNCHES_NEW
 
-    override fun getSwipeDirections(holder: ViewHolder): Int = LEFT or RIGHT
+    override fun getSwipeDirections(holder: CustomItemViewHolder): Int = LEFT or RIGHT
 
-    override fun onSwiped(holder: ViewHolder, direction: Int) {
+    override fun onSwiped(holder: CustomItemViewHolder, direction: Int) {
         notifyId.requestCancel(holder.context)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtDay.apply {
             text = Calendar.getInstance()
                     .apply { timeInMillis = lunchOptionsGroup.date }
@@ -234,5 +235,25 @@ class NewLunchDashboardItem(val notifyId: NotifyId, val accountId: String,
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_lunches_new
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_lunches_new
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NewLunchDashboardItem
+
+        if (notifyId != other.notifyId) return false
+        if (accountId != other.accountId) return false
+        if (lunchOptionsGroup != other.lunchOptionsGroup) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = notifyId.hashCode()
+        result = 31 * result + accountId.hashCode()
+        result = 31 * result + lunchOptionsGroup.hashCode()
+        return result
+    }
 }

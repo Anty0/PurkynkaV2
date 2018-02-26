@@ -18,7 +18,6 @@
 
 package cz.anty.purkynka.wifilogin
 
-import android.accounts.Account
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
@@ -29,7 +28,7 @@ import android.view.ViewGroup
 import cz.anty.purkynka.utils.ICON_WIFI_LOGIN
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
-import cz.anty.purkynka.account.save.ActiveAccount
+import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher.LoginResult.*
 import cz.anty.purkynka.wifilogin.save.WifiData
@@ -48,12 +47,12 @@ import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_wifi_login.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.ctx
 
 /**
@@ -69,9 +68,8 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     override val icon: Bitmap
         get() = ctx.getIconics(ICON_WIFI_LOGIN).sizeDp(48).toBitmap()
 
+    private val accountHolder = ActiveAccountHolder(holder)
 
-    private var account: Account? = null
-    private var accountId: String? = null
     private var accountPrimary: Boolean? = null
 
     private var userLoggedIn = false
@@ -79,21 +77,16 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
     private var loginCount: Int? = null
 
-    private val activeAccountChangeReceiver = receiver { _, _ ->
-        holder.showLoading()
-        val holderRef = holder.asReference()
-
-        val job = update()
-        launch(UI) {
-            job?.join()
-
-            holderRef().hideLoading()
-        }
-    }
-
     private val wifiLoginDataChangeReceiver = receiver { _, _ -> update() }
 
     private val wifiDataChangeReceiver = receiver { _, _ -> update() }
+
+    init {
+        val self = this.asReference()
+        accountHolder.addChangeListener {
+            self().update()?.join()
+        }
+    }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
                                      savedInstanceState: Bundle?): View? {
@@ -108,11 +101,22 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
         butEnable.setOnClickListener(::onEnableClick)
         butDisable.setOnClickListener(::onDisableClick)
         butLogin.setOnClickListener(::onLoginClick)
+    }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        val self = this.asReference()
         val holder = holder
         launch(UI) {
             holder.showLoading()
-            update()?.join()
+
+            arrayOf(
+                    self().update(),
+                    self().accountHolder.update()
+            ).forEach { it?.join() }
+
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }
@@ -120,10 +124,18 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     override fun onStart() {
         super.onStart()
 
-        LocalBroadcast.registerReceiver(
-                activeAccountChangeReceiver,
-                intentFilter(ActiveAccount.getter)
-        )
+        register()
+        accountHolder.register()
+    }
+
+    override fun onStop() {
+        accountHolder.unregister()
+        unregister()
+
+        super.onStop()
+    }
+
+    private fun register(): Job? {
         LocalBroadcast.registerReceiver(
                 wifiLoginDataChangeReceiver,
                 intentFilter(WifiLoginData.getter)
@@ -133,37 +145,36 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                 intentFilter(WifiLoginData.getter)
         )
 
-        update()
+        return update()
     }
 
-    override fun onStop() {
+    private fun unregister() {
         LocalBroadcast.unregisterReceiver(wifiDataChangeReceiver)
         LocalBroadcast.unregisterReceiver(wifiLoginDataChangeReceiver)
-        LocalBroadcast.unregisterReceiver(activeAccountChangeReceiver)
-
-        super.onStop()
     }
 
     private fun update(): Job? {
-        val contextRef = context?.asReference() ?: return null
-        return launch(UI) {
-            val (nAccount, nAccountId) = bg { ActiveAccount.getWithId() }.await()
-            account = nAccount
-            accountId = nAccountId
-            accountPrimary = async { Accounts.getAll(contextRef()).firstOrNull() }.await() == nAccount
+        view ?: return null
+        val appContext = act.applicationContext
+        val self = this.asReference()
 
-            userLoggedIn = nAccountId?.let {
+        return launch(UI) {
+            self().accountPrimary = bg {
+                Accounts.getAll(appContext).firstOrNull()
+            }.await() == accountHolder.account
+
+            self().userLoggedIn = self().accountHolder.accountId?.let {
                 bg { WifiLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
-            username = nAccountId?.let {
+            self().username = self().accountHolder.accountId?.let {
                 bg { WifiLoginData.loginData.getUsername(it) }.await()
             } ?: ""
 
-            loginCount = nAccountId?.let {
+            self().loginCount = self().accountHolder.accountId?.let {
                 bg { WifiData.instance.getLoginCount(it) }.await()
             }
 
-            updateUi()
+            self().updateUi()
         }
     }
 
@@ -209,7 +220,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
     @Suppress("UNUSED_PARAMETER")
     private fun onEnableClick(v: View) {
-        val accountId = accountId ?:
+        val accountId = accountHolder.accountId ?:
                 return longSnackbar(boxScrollView, R.string.snackbar_no_account_enable).show()
         val username = inUsername.text.toString()
         val password = inPassword.text.toString()
@@ -227,7 +238,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
     @Suppress("UNUSED_PARAMETER")
     private fun onDisableClick(v: View) {
-        val accountId = accountId ?:
+        val accountId = accountHolder.accountId ?:
                 return longSnackbar(boxScrollView, R.string.snackbar_no_account_disable).show()
         val holder = holder
 
@@ -242,7 +253,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     }
 
     private fun onLoginClick(v: View) {
-        val accountId = accountId ?:
+        val accountId = accountHolder.accountId ?:
                 return longSnackbar(boxScrollView, R.string.snackbar_no_account_login).show()
         val loggedIn = userLoggedIn
         val username = inUsername.text.toString()
@@ -270,6 +281,7 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                 }
             }
 
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }

@@ -48,6 +48,10 @@ class AccountEditActivity : ModularActivity(ToolbarModule(), BackButtonModule())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Set the result to CANCELED.
+        setResult(RESULT_CANCELED)
+
         setContentView(R.layout.activity_edit_account)
 
         butSave.setOnClickListener(::save)

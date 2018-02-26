@@ -33,6 +33,7 @@ import eu.codetopic.java.utils.format
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.getFormattedQuantityText
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_subject.*
 
 /**
@@ -51,7 +52,7 @@ class SubjectItem(val base: Subject, val isBad: Boolean,
 
     val isChnaged get() = changes.isNotEmpty()
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         val textStyle = if (isBad) Typeface.BOLD else Typeface.NORMAL
 
         holder.txtNameShort.apply {
@@ -102,9 +103,7 @@ class SubjectItem(val base: Subject, val isBad: Boolean,
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_subject
-
-    //override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+    override fun getLayoutResId(context: Context): Int = R.layout.item_subject
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

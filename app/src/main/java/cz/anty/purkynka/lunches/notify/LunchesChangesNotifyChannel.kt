@@ -90,15 +90,12 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverri
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
-        val (account, accountId) = (group as? AccountNotifyGroup)
-                ?.let { it.account to it.accountId }
-                .alsoIfNull {
-                    Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
-                            " notifyId=$notifyId, data=$data)",
-                            IllegalArgumentException("Group is not AccountNotifyGroup, " +
-                                    "can't change ActiveAccount to correct account."))
-                }
-                ?: null to null
+        val accountId = (group as? AccountNotifyGroup)?.accountId.alsoIfNull {
+            Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
+                    " notifyId=$notifyId, data=$data)",
+                    IllegalArgumentException("Group is not AccountNotifyGroup, " +
+                            "can't change ActiveAccount to correct account."))
+        }
 
         val lunchGroup = readData(data).alsoIfNull {
             Log.e(LOG_TAG, "handleContentIntent(id=$notifyId, group=$group," +
@@ -106,7 +103,7 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverri
                     IllegalArgumentException("Data doesn't contains lunchOptionsGroup"))
         }
 
-        account?.let { ActiveAccount.set(it) }
+        accountId?.let { ActiveAccount.set(it) }
 
         if (accountId != null && lunchGroup != null) {
             context.startActivities(arrayOf(
@@ -121,14 +118,14 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverri
 
     override fun handleSummaryContentIntent(context: Context, group: NotifyGroup,
                                             notifyId: NotifyId, data: Map<out NotifyId, Bundle>) {
-        val account = (group as? AccountNotifyGroup)?.account.alsoIfNull {
+        val accountId = (group as? AccountNotifyGroup)?.accountId.alsoIfNull {
             Log.e(LOG_TAG, "handleSummaryContentIntent(id=$notifyId, group=$group," +
                     " notifyId=$notifyId, data=$data)",
                     IllegalArgumentException("Group is not AccountNotifyGroup, " +
                             "can't change ActiveAccount to correct account."))
         }
 
-        account?.let { ActiveAccount.set(it) }
+        accountId?.let { ActiveAccount.set(it) }
 
         MainActivity.start(context, LunchesOrderFragment::class.java)
     }

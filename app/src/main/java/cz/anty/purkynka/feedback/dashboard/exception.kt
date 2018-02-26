@@ -32,6 +32,7 @@ import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_error_feedback.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -98,13 +99,13 @@ class ErrorFeedbackDashboardItem : SwipeableDashboardItem() {
     override val priority: Int
         get() = DASHBOARD_PRIORITY_ERROR_FEEDBACK
 
-    override fun getSwipeDirections(holder: ViewHolder): Int = LEFT or RIGHT
+    override fun getSwipeDirections(holder: CustomItemViewHolder): Int = LEFT or RIGHT
 
-    override fun onSwiped(holder: ViewHolder, direction: Int) {
+    override fun onSwiped(holder: CustomItemViewHolder, direction: Int) {
         bg { FeedbackData.instance.notifyFeedbackDone() }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
                 val success = AndroidUtils.openUri(
@@ -121,6 +122,16 @@ class ErrorFeedbackDashboardItem : SwipeableDashboardItem() {
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_error_feedback
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_error_feedback
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 
 }

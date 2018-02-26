@@ -27,10 +27,6 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
-
-    <!--<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />-->
-
     <uses-permission
         android:name="android.permission.GET_ACCOUNTS"
         android:maxSdkVersion="22" />
@@ -44,7 +40,7 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
-    <!--TODO: widgets-->
+    <!-- TODO: widgets -->
 
     <application
         android:name=".AppInit"
@@ -56,7 +52,8 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.Launch">
@@ -67,6 +64,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
@@ -90,31 +88,40 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".account.ui.AccountCreateActivity"
             android:label="@string/title_activity_create_account"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".account.ui.AccountEditActivity"
             android:label="@string/title_activity_edit_account"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".grades.ui.SubjectActivity"
             android:label="@string/title_activity_subject"
-            android:theme="@style/AppTheme.NoActionBar.Grades"/>
+            android:theme="@style/AppTheme.NoActionBar.Grades" />
         <activity
             android:name=".grades.ui.GradeActivity"
             android:label="@string/title_activity_grade"
-            android:theme="@style/AppTheme.NoActionBar.Grades"/>
+            android:theme="@style/AppTheme.NoActionBar.Grades" />
+        <activity
+            android:name=".grades.widget.GradesWidgetConfigureActivity"
+            android:label="@string/title_activity_grades_widget"
+            android:theme="@style/AppTheme.NoActionBar.Grades">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".lunches.ui.LunchOptionsGroupActivity"
             android:label="@string/title_activity_lunch_options_group"
-            android:theme="@style/AppTheme.NoActionBar.Lunches"/>
+            android:theme="@style/AppTheme.NoActionBar.Lunches" />
         <activity
             android:name=".lunches.ui.LunchBurzaActivity"
             android:label="@string/title_activity_lunches_burza_lunch"
-            android:theme="@style/AppTheme.NoActionBar.Lunches"/>
+            android:theme="@style/AppTheme.NoActionBar.Lunches" />
 
         <receiver
             android:name=".update.receiver.AppUpdatedReceiver"
@@ -129,9 +136,10 @@
         </receiver>
         <receiver
             android:name=".wifilogin.receiver.WifiChangedReceiver"
-            android:label="@string/label_receiver_wifi_changed"
             android:enabled="true"
             android:exported="false"
+            android:theme="@style/AppTheme.WifiLogin"
+            android:label="@string/label_receiver_wifi_changed"
             android:process=":syncs">
 
             <intent-filter>
@@ -145,11 +153,18 @@
             android:name=".grades.receiver.UpdateGradesSyncReceiver"
             android:enabled="true"
             android:exported="false"
-            android:process=":syncs" />
+            android:theme="@style/AppTheme.Grades"
+            android:process=":syncs">
+
+            <intent-filter>
+                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".grades.receiver.NewGradesChangesReceiver"
-            android:enabled="false"
+            android:enabled="true"
             android:exported="false"
+            android:theme="@style/AppTheme.Grades"
             android:process=":syncs">
 
             <intent-filter android:priority="-1">
@@ -157,119 +172,197 @@
             </intent-filter>
         </receiver>
         <receiver
+            android:name=".grades.widget.GradesWidgetProvider"
+            android:enabled="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Grades"
+            android:label="@string/label_receiver_grades_widget"
+            android:process=":widgets">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_grades_info" />
+        </receiver>
+        <receiver
+            android:name=".grades.widget.GradesWidgetLaunchReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Grades"
+            android:process=":widgets" />
+        <receiver
+            android:name=".grades.widget.GradesWidgetUpdateReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Grades"
+            android:process=":widgets">
+
+            <intent-filter android:priority="-1">
+                <action android:name="cz.anty.purkynka.grades.widget.UPDATE_ITEMS" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".grades.widget.GradesWidgetResetReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Grades"
+            android:process=":widgets">
+
+            <intent-filter>
+                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNTS_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
             android:name=".lunches.receiver.UpdateLunchesSyncReceiver"
             android:enabled="true"
             android:exported="false"
-            android:process=":syncs" />
+            android:theme="@style/AppTheme.Lunches"
+            android:process=":syncs">
+
+            <intent-filter>
+                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".account.service.AuthenticatorService"
-            android:label="@string/label_service_authenticator"
             android:enabled="true"
             android:exported="false"
+            android:label="@string/label_service_authenticator"
             android:process=":accounts">
 
             <intent-filter android:label="@string/label_service_authenticator">
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
 
-            <meta-data android:name="android.accounts.AccountAuthenticator"
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
         <service
             android:name=".grades.sync.GradesSyncService"
-            android:label="@string/label_service_sync_grades"
             android:enabled="true"
             android:exported="true"
+            android:theme="@style/AppTheme.Grades"
+            android:label="@string/label_service_sync_grades"
             android:process=":syncs">
 
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
 
-            <meta-data android:name="android.content.SyncAdapter"
+            <meta-data
+                android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_grades" />
         </service>
         <service
+            android:name=".grades.widget.GradesWidgetAdapterService"
+            android:enabled="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Grades"
+            android:label="@string/label_service_widget_grades"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:process=":widgets" />
+        <service
             android:name=".lunches.sync.LunchesSyncService"
-            android:label="@string/label_service_sync_lunches"
             android:enabled="true"
             android:exported="true"
+            android:theme="@style/AppTheme.Lunches"
+            android:label="@string/label_service_sync_lunches"
             android:process=":syncs">
 
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
 
-            <meta-data android:name="android.content.SyncAdapter"
+            <meta-data
+                android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_lunches" />
         </service>
         <service
             android:name=".lunches.sync.LunchesBurzaWatcherService"
-            android:label="@string/label_service_lunches_burza_watcher"
             android:enabled="true"
             android:exported="false"
+            android:theme="@style/AppTheme.Lunches"
+            android:label="@string/label_service_lunches_burza_watcher"
             android:process=":syncs" />
 
         <provider
             android:name=".account.save.ActiveAccountProvider"
             android:authorities="cz.anty.purkynka.account.active"
-            android:label="@string/label_provider_account_active"
             android:exported="false"
+            android:label="@string/label_provider_account_active"
             android:process=":providers" />
         <provider
             android:name=".update.save.UpdateDataProvider"
             android:authorities="cz.anty.purkynka.update.data"
-            android:label="@string/label_provider_update"
             android:exported="false"
+            android:label="@string/label_provider_update"
             android:process=":providers" />
         <provider
             android:name=".feedback.save.FeedbackDataProvider"
             android:authorities="cz.anty.purkynka.feedback.data"
-            android:label="@string/label_provider_feedback"
             android:exported="false"
+            android:label="@string/label_provider_feedback"
             android:process=":providers" />
         <provider
             android:name=".grades.save.GradesDataProvider"
             android:authorities="cz.anty.purkynka.grades.data"
-            android:label="@string/label_provider_grades"
             android:exported="false"
+            android:theme="@style/AppTheme.Grades"
+            android:label="@string/label_provider_grades"
             android:process=":providers" />
         <provider
             android:name=".grades.save.GradesLoginDataProvider"
             android:authorities="cz.anty.purkynka.grades.login"
-            android:label="@string/label_provider_grades_login"
             android:exported="false"
+            android:theme="@style/AppTheme.Grades"
+            android:label="@string/label_provider_grades_login"
             android:process=":providers" />
         <provider
             android:name=".grades.save.GradesPreferencesProvider"
             android:authorities="cz.anty.purkynka.grades.preferences"
-            android:label="@string/label_provider_grades_preferences"
             android:exported="false"
+            android:theme="@style/AppTheme.Grades"
+            android:label="@string/label_provider_grades_preferences"
             android:process=":providers" />
         <provider
             android:name=".wifilogin.save.WifiDataProvider"
             android:authorities="cz.anty.purkynka.wifilogin.data"
-            android:label="@string/label_provider_wifi"
             android:exported="false"
+            android:theme="@style/AppTheme.WifiLogin"
+            android:label="@string/label_provider_wifi"
             android:process=":providers" />
         <provider
             android:name=".wifilogin.save.WifiLoginDataProvider"
             android:authorities="cz.anty.purkynka.wifilogin.login"
-            android:label="@string/label_provider_wifi_login"
             android:exported="false"
+            android:theme="@style/AppTheme.WifiLogin"
+            android:label="@string/label_provider_wifi_login"
             android:process=":providers" />
         <provider
             android:name=".lunches.save.LunchesDataProvider"
             android:authorities="cz.anty.purkynka.lunches.data"
-            android:label="@string/label_provider_lunches"
             android:exported="false"
+            android:theme="@style/AppTheme.Lunches"
+            android:label="@string/label_provider_lunches"
             android:process=":providers" />
         <provider
             android:name=".lunches.save.LunchesLoginDataProvider"
             android:authorities="cz.anty.purkynka.lunches.login"
-            android:label="@string/label_provider_lunches_login"
             android:exported="false"
+            android:theme="@style/AppTheme.Lunches"
+            android:label="@string/label_provider_lunches_login"
+            android:process=":providers" />
+        <provider
+            android:name=".lunches.save.LunchesPreferencesProvider"
+            android:authorities="cz.anty.purkynka.lunches.preferences"
+            android:exported="false"
+            android:theme="@style/AppTheme.Lunches"
+            android:label="@string/label_provider_lunches_preferences"
             android:process=":providers" />
 
         <meta-data
@@ -277,7 +370,7 @@
             android:value="false" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/ic_launcher_foreground" /> <!--TODO: better image-->
+            android:resource="@mipmap/ic_launcher_foreground" /> <!-- TODO: better image -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimary" />

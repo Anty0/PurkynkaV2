@@ -27,9 +27,11 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
+import cz.anty.purkynka.dashboard.SwipeableDashboardItem
 import cz.anty.purkynka.lunches.LunchesOrderFragment
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_LUNCHES_CREDIT
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.baseActivity
@@ -38,12 +40,14 @@ import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_lunches_credit.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.design.longSnackbar
 import java.text.DecimalFormat
 
 /**
@@ -65,6 +69,7 @@ class LunchesCreditDashboardManager(context: Context, accountHolder: ActiveAccou
         LocalBroadcast.registerReceiver(
                 receiver = updateReceiver,
                 filter = intentFilter(
+                        LunchesPreferences.getter,
                         LunchesLoginData.getter,
                         LunchesData.getter
                 )
@@ -91,11 +96,12 @@ class LunchesCreditDashboardManager(context: Context, accountHolder: ActiveAccou
             adapterRef().mapReplaceAll(
                     id = ID,
                     items = bg calcItems@ {
-                        // TODO: create LunchesPreferences and add there option to disable this item
-                        // TODO: add swipe support (to disable item) and show snackbar with option to revert that
-
                         val userLoggedIn = LunchesLoginData.loginData.isLoggedIn(accountId)
                         if (!userLoggedIn) return@calcItems null
+
+                        val showCreditWarning = LunchesPreferences
+                                .instance.showDashboardCreditWarning
+                        if (!showCreditWarning) return@calcItems null
 
                         return@calcItems LunchesData.instance.getCredit(accountId)
                                 .takeIf { it < 90 }
@@ -107,7 +113,7 @@ class LunchesCreditDashboardManager(context: Context, accountHolder: ActiveAccou
     }
 }
 
-class LunchesCreditDashboardItem(val credit: Float) : DashboardItem() {
+class LunchesCreditDashboardItem(val credit: Float) : SwipeableDashboardItem() {
 
     companion object {
 
@@ -119,7 +125,21 @@ class LunchesCreditDashboardItem(val credit: Float) : DashboardItem() {
     override val priority: Int
         get() = DASHBOARD_PRIORITY_LUNCHES_CREDIT
 
-    override fun onBindViewHolder(holder: ViewHolder, itemPosition: Int) {
+    override fun getSwipeDirections(holder: CustomItemViewHolder): Int = LEFT or RIGHT
+
+    override fun onSwiped(holder: CustomItemViewHolder, direction: Int) {
+        bg { LunchesPreferences.instance.showDashboardCreditWarning = false }
+        longSnackbar(
+                view = holder.itemView,
+                message = R.string.snackbar_lunches_dashboard_credit_warning_disabled,
+                actionText = R.string.but_undo,
+                action = {
+                    bg { LunchesPreferences.instance.showDashboardCreditWarning = true }
+                }
+        )
+    }
+
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtCredit.text = SpannableStringBuilder().apply {
             append(holder.context.getText(R.string.text_view_credit))
             append(
@@ -156,6 +176,21 @@ class LunchesCreditDashboardItem(val credit: Float) : DashboardItem() {
         } else holder.boxClickTarget.setOnClickListener(null)
     }
 
-    override fun getItemLayoutResId(context: Context): Int = R.layout.item_dashboard_lunches_credit
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_lunches_credit
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as LunchesCreditDashboardItem
+
+        if (credit != other.credit) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return credit.hashCode()
+    }
 
 }

@@ -61,6 +61,7 @@ import cz.anty.purkynka.settings.SettingsActivity
 import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.wifilogin.WifiLoginFragment
 import eu.codetopic.java.utils.debug.DebugMode
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
@@ -114,13 +115,7 @@ class MainActivity : NavigationActivity() {
     override val mainFragmentClass: Class<out Fragment>?
         get() = DashboardFragment::class.java
 
-    private val activeAccountChangeReceiver: BroadcastReceiver =
-            receiver { _, _ -> invalidateNavigationMenu() }
-
-    private val accountsChangeReceiver: BroadcastReceiver =
-            receiver { _, _ -> invalidateNavigationMenu() }
-
-    private val lunchesLoginDataChangeReceiver: BroadcastReceiver =
+    private val invalidateReceiver: BroadcastReceiver =
             receiver { _, _ -> invalidateNavigationMenu() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -203,41 +198,44 @@ class MainActivity : NavigationActivity() {
         clazz?.let { replaceFragment(clazz, extras) }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
 
+        register()
+    }
+
+    override fun onStop() {
+        unregister()
+
+        super.onStop()
+    }
+
+    private fun register() {
         registerReceiver(
-                accountsChangeReceiver,
+                invalidateReceiver,
+                intentFilter(Accounts.ACTION_ACCOUNTS_CHANGED)
+        )
+        LocalBroadcast.registerReceiver(
+                invalidateReceiver,
                 intentFilter(
-                        Accounts.ACTION_ACCOUNTS_CHANGED,
-                        ActiveAccount.getter
+                        ActiveAccount.getter,
+                        LunchesLoginData.getter
                 )
-        )
-        LocalBroadcast.registerReceiver(
-                activeAccountChangeReceiver,
-                intentFilter(ActiveAccount.getter)
-        )
-        LocalBroadcast.registerReceiver(
-                lunchesLoginDataChangeReceiver,
-                intentFilter(LunchesLoginData.getter)
         )
 
         invalidateNavigationMenu()
     }
 
-    override fun onPause() {
-        LocalBroadcast.unregisterReceiver(lunchesLoginDataChangeReceiver)
-        LocalBroadcast.unregisterReceiver(activeAccountChangeReceiver)
-        unregisterReceiver(accountsChangeReceiver)
-
-        super.onPause()
+    private fun unregister() {
+        LocalBroadcast.unregisterReceiver(invalidateReceiver)
+        unregisterReceiver(invalidateReceiver)
     }
 
     override fun onCreateAccountNavigationMenu(menu: Menu): Boolean {
         super.onCreateAccountNavigationMenu(menu)
         menuInflater.inflate(R.menu.activity_main_accounts, menu)
         val accounts = Accounts.getAll(this)
-        val activeAccount = ActiveAccount.get()
+        val (_, activeAccount) = ActiveAccount.getWithId()
         accounts.forEach {
             if (it == activeAccount) return@forEach
             menu.add(R.id.menu_group_main, R.id.menu_item_account, Menu.NONE, it.name)
@@ -262,21 +260,32 @@ class MainActivity : NavigationActivity() {
     override fun onAccountNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_item_add_account -> Accounts.requestAdd(this)
-            R.id.menu_item_account -> ActiveAccount.set(item.title.toString())
+            R.id.menu_item_account -> run setAccount@ {
+                val accountManager = accountManager
+                val name = item.title.toString()
+                val account = Accounts.getByNameOrNull(accountManager, name) ?: run {
+                    Log.e(LOG_TAG, "onAccountNavigationItemSelected(item=$item)" +
+                            " -> Failed to switch active account" +
+                            " -> Account with name '$name' not found")
+                    return@setAccount
+                }
+                val accountId = Accounts.getId(accountManager, account)
+                ActiveAccount.set(accountId)
+            }
             else -> return super.onAccountNavigationItemSelected(item)
         }
         return true
     }
 
     override fun onUpdateActiveAccountName(): CharSequence {
-        return ActiveAccount.get()?.name ?: ""
+        return ActiveAccount.getWithId().second?.name ?: ""
     }
 
     override fun onEditAccountButtonClick(v: View): Boolean {
         startActivityForResult(
                 Intent(this, AccountEditActivity::class.java)
                         .putExtra(AccountEditActivity.KEY_ACCOUNT,
-                                ActiveAccount.get() ?: return false),
+                                ActiveAccount.getWithId().second ?: return false),
                 REQUEST_CODE_EDIT_ACCOUNT)
         return true
     }
@@ -284,7 +293,18 @@ class MainActivity : NavigationActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_EDIT_ACCOUNT) {
             if (resultCode != Activity.RESULT_OK || data == null) return
-            ActiveAccount.set(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
+
+            val accountManager = accountManager
+            val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+            val account = Accounts.getByNameOrNull(accountManager, accountName) ?: run {
+                Log.e(LOG_TAG, "onActivityResult()" +
+                        " -> Failed to switch active account" +
+                        " -> Account with name '$accountName' not found")
+                return
+            }
+            val accountId = Accounts.getId(accountManager, account)
+            ActiveAccount.set(accountId)
+            return
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -303,7 +323,7 @@ class MainActivity : NavigationActivity() {
         menu.findItem(R.id.nav_attendance).icon =
                 getIconics(ICON_ATTENDANCE).actionBar()
 
-        val loggedInLunches = ActiveAccount.getId()
+        val loggedInLunches = ActiveAccount.getWithId().first
                 ?.let { LunchesLoginData.loginData.isLoggedIn(it) } ?: false
         menu.findItem(R.id.nav_lunches_login).apply {
             icon = getIconics(ICON_LUNCHES).actionBar()

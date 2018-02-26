@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:lines="1"
             android:text="@string/item_man_is_in_school"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
 
         <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/imgIsInSchoolYes"
@@ -102,6 +102,7 @@
             android:id="@+id/txtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
             android:lines="1"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -113,6 +114,6 @@
             android:layout_height="wrap_content"
             android:lines="1"
             android:gravity="end"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 </LinearLayout>

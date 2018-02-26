@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:lines="1"
                 android:text="@string/text_view_grade"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
 
             <TextView
                 style="?attr/textAppearanceListItemSecondary"
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:lines="1"
                 android:text="@string/text_view_weight"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
 
             <TextView
                 style="?attr/textAppearanceListItemSecondary"
@@ -114,6 +114,7 @@
                 android:id="@+id/txtNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:lines="1"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -125,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:lines="1"
                 android:gravity="end"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

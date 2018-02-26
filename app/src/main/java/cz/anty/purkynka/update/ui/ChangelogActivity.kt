@@ -40,6 +40,7 @@ import eu.codetopic.utils.ui.container.recycler.Recycler
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
@@ -121,6 +122,7 @@ class ChangelogActivity : LoadingModularActivity(ToolbarModule(), BackButtonModu
 
             self().update().join()
 
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }

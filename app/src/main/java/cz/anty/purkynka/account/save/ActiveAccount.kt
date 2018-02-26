@@ -25,6 +25,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.Accounts
+import eu.codetopic.java.utils.asPair
 import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
@@ -59,64 +60,48 @@ class ActiveAccount private constructor(context: Context) :
             } // No more versions yet
         }
 
-        fun get(): Account? =
-                instance.activeAccount
+        fun getWithId(): Pair<String?, Account?> =
+                instance.accountWithId
 
-        fun getWithId(): Pair<Account?, String?> =
-                instance.activeAccountWithId
-
-        fun getId(): String? =
-                instance.activeAccountId
-
-        fun set(account: Account?) {
-            instance.activeAccount = account
-        }
-
-        fun set(accountName: String?) {
-            instance.setActiveAccount(accountName)
+        fun set(accountId: String?) {
+            instance.accountId = accountId
         }
     }
 
     private val accountManager: AccountManager = context.accountManager
 
-    var activeAccount: Account? // TODO: Maybe use account id for saving which account is active
-        get() {
-            val avAccounts = Accounts.getAll(accountManager)
-            val useFirstAccount: () -> Account? = {
-                if (avAccounts.isNotEmpty()) {
-                    activeAccount = avAccounts[0]
-                    avAccounts[0]
-                } else null
-            }
-            val name = preferences.getString(ACTIVE_ACCOUNT_NAME, null)
-                    ?: return run(useFirstAccount)
+    private fun getActiveAccountWithId(accounts: Map<String, Account>): Pair<String, Account>? {
+        val id = preferences.getString(ACTIVE_ACCOUNT_ID, null) ?: return null
 
-            avAccounts.firstOrNull { name == it.name }
-                    ?.also { return it }
-                    ?:
-                    run {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            avAccounts.firstOrNull { name == accountManager.getPreviousName(it) }
-                                    ?.also {
-                                        setActiveAccount(it.name)
-                                        return it
-                                    }
-                        }
-                    }
-
-            return run(useFirstAccount)
-        }
-        set(account) = setActiveAccount(account?.name)
-
-    val activeAccountId: String?
-        get() = activeAccount?.let { Accounts.getId(accountManager, it) }
-
-    val activeAccountWithId : Pair<Account?, String?>
-        get() = activeAccount.let { it to it?.let { Accounts.getId(accountManager, it) } }
-
-    fun setActiveAccount(accountName: String?) {
-        edit { putString(ACTIVE_ACCOUNT_NAME, accountName) }
+        return accounts.entries
+                .firstOrNull { it.key == id }
+                ?.asPair()
     }
+
+    var accountWithId: Pair<String?, Account?>
+        get() = Accounts.getAllWIthIds(accountManager)
+                .let { accounts ->
+                    getActiveAccountWithId(accounts)
+                            ?: accounts.entries.let {
+                                it.firstOrNull()?.asPair()?.also {
+                                    accountId = it.first
+                                }
+                            }
+                            ?: null to null
+                }
+        @Deprecated("Use accountId instead", ReplaceWith("accountId"))
+        set(value) { accountId = value.first }
+
+    val account: Account?
+        @Deprecated("Use accountWithId instead", ReplaceWith("accountWithId"))
+        get() = accountWithId.second
+
+    var accountId: String?
+        @Deprecated("Use accountWithId instead", ReplaceWith("accountWithId"))
+        get() = accountWithId.first
+        set(value) = edit {
+            putString(ACTIVE_ACCOUNT_ID, value)
+        }
 
     private class Getter : PreferencesGetterAbs<ActiveAccount>() {
 

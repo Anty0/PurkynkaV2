@@ -44,12 +44,13 @@ import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataChanges
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataGrade
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
-import cz.anty.purkynka.grades.save.GradesUiData.Sort.*
+import cz.anty.purkynka.grades.util.GradesSort.*
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.save.*
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
+import cz.anty.purkynka.grades.util.GradesSort
 import eu.codetopic.java.utils.ifFalse
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.receiver
@@ -151,6 +152,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                     accountHolder.update()
             ).forEach { it.join() }
 
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }
@@ -397,7 +399,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
         private var recyclerManager: Recycler.RecyclerManagerImpl? = null
         private var adapter: CustomItemAdapter<CustomItem>? = null
 
-        var sort: GradesUiData.Sort? = null
+        var sort: GradesSort? = null
         var semester: Semester = Semester.AUTO.stableSemester
             set(value) {
                 field = value
@@ -594,7 +596,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             userLoggedIn = accountHolder.accountId?.let {
                 bg { GradesLoginData.loginData.isLoggedIn(it) }.await()
             } ?: false
-            badAverage = bg { GradesPreferences.instance.subjectBadAverage }.await()
+            badAverage = bg { GradesPreferences.instance.badAverage }.await()
             gradesMap = accountHolder.accountId?.let {
                 bg { GradesData.instance.getGrades(it) }.await()
             }
@@ -622,18 +624,25 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                     accountHolder.accountId?.let { accountId ->
                         gradesMap?.let { it[semester.value] }?.let {
                             val grades = {
+                                val gradesChanges = gradesChangesMap[accountId]
                                 it.map {
-                                    GradeItem(it, changes = gradesChangesMap[accountId]?.get(it.id))
+                                    GradeItem(
+                                            base = it,
+                                            isBad = badAverage?.let { av -> av <= it.value }
+                                                    ?: false,
+                                            changes = gradesChanges?.get(it.id)
+                                    )
                                 }
                             }
                             val subjects = {
+                                val gradesChanges = gradesChangesMap[accountId]
                                 it.toSubjects().map {
                                     SubjectItem(
                                             base = it,
-                                            isBad = badAverage?.let { av -> av < it.average }
+                                            isBad = badAverage?.let { av -> av <= it.average }
                                                     ?: false,
                                             changes = it.grades.mapNotNull { grade ->
-                                                gradesChangesMap[accountId]?.get(grade.id)
+                                                gradesChanges?.get(grade.id)
                                                         ?.let { grade.id to it }
                                             }.toMap()
                                     )

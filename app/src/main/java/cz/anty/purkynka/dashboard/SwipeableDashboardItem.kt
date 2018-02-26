@@ -19,6 +19,7 @@
 package cz.anty.purkynka.dashboard
 
 import android.support.v7.widget.helper.ItemTouchHelper
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 
 /**
  * @author anty
@@ -35,7 +36,7 @@ abstract class SwipeableDashboardItem : DashboardItem() {
         const val END = ItemTouchHelper.END
     }
 
-    abstract fun getSwipeDirections(holder: ViewHolder): Int
+    abstract fun getSwipeDirections(holder: CustomItemViewHolder): Int
 
-    abstract fun onSwiped(holder: ViewHolder, direction: Int)
+    abstract fun onSwiped(holder: CustomItemViewHolder, direction: Int)
 }

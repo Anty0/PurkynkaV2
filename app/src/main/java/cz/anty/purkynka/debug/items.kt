@@ -29,9 +29,8 @@ import cz.anty.purkynka.update.sync.Updater
 import eu.codetopic.java.utils.letIfNull
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.sendSuspendOrderedBroadcast
-import eu.codetopic.utils.ui.container.items.custom.CardViewWrapper
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import eu.codetopic.utils.ui.container.items.custom.CustomItemWrapper
+import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_debug_app.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -50,7 +49,7 @@ class AppDebugItem : CustomItem() {
         private const val LOG_TAG = "IssuesDebugItem"
     }
 
-    override fun onBindViewHolder(holder: CustomItem.ViewHolder, itemPosition: Int) {
+    override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.butFakeUpdateFetch.onClick {
             val contextRef = holder.context.asReference()
             launch(UI) {
@@ -90,7 +89,5 @@ class AppDebugItem : CustomItem() {
         }
     }
 
-    override fun getItemLayoutResId(context: Context) = R.layout.item_debug_app
-
-    override fun getWrappers(context: Context): Array<CustomItemWrapper> = CardViewWrapper.WRAPPER
+    override fun getLayoutResId(context: Context) = R.layout.item_debug_app
 }

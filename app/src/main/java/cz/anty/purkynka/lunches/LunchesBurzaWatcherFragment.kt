@@ -37,6 +37,7 @@ import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesBurzaWatcherService
+import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.to
 import eu.codetopic.java.utils.letIf
 import eu.codetopic.java.utils.log.Log
@@ -55,6 +56,7 @@ import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_lunches_burza_watcher.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.appcompat.v7.tintedCheckBox
 import org.jetbrains.anko.childrenSequence
@@ -98,9 +100,8 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
     private val watcherServiceStatusChangedReceiver = receiver { _, intent ->
         Log.d(LOG_TAG, "dataChangedReceiver.onReceive()")
 
-        if (serviceLoading) {
+        val hideLoading = serviceLoading ifTrue {
             serviceLoading = false
-            holder.hideLoading()
         }
 
         serviceStatus = intent?.getKSerializableExtra(
@@ -108,7 +109,16 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
                 loader = LunchesBurzaWatcherService.EXTRA_STATUS_MAP_SERIALIZER
         ) ?: return@receiver
 
-        update()
+        val job = update()
+        if (hideLoading) {
+            val holder = holder
+            launch(UI) {
+                job.join()
+
+                delay(500) // Wait few loops to make sure, that content was updated.
+                if (hideLoading) holder.hideLoading()
+            }
+        }
     }
 
     private var userLoggedIn: Boolean = false
@@ -205,6 +215,7 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
                     self().accountHolder.update()
             ).forEach { it.join() }
 
+            delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
         }
     }
@@ -400,7 +411,9 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
                         }
                     }
                     isChecked = oldChecked.getOrElse(index) { true }
-                    visibility = if (options == null || lunchOption != null) View.VISIBLE else View.GONE
+                    visibility = if (options == null || lunchOption != null || index < 3)
+                        View.VISIBLE
+                    else View.GONE
                 }
             }
         }

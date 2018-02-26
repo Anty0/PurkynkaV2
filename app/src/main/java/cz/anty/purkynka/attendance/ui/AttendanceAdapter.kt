@@ -24,6 +24,7 @@ import cz.anty.purkynka.attendance.load.AttendanceParser
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.ui.container.adapter.AutoLoadAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.LoadingItem
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.Job
 import org.jetbrains.anko.coroutines.experimental.bg
@@ -45,7 +46,7 @@ class AttendanceAdapter(context: Context) : AutoLoadAdapter(context) {
         private set
 
     init {
-        useCardView = false
+        loadingItem = LoadingItem("...") // TODO: item title and text
     }
 
     fun setQuery(value: String): Job? {
