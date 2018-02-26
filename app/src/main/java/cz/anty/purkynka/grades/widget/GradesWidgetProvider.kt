@@ -44,9 +44,6 @@ import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 
 /**
  * Implementation of App Widget functionality.
@@ -102,11 +99,11 @@ class GradesWidgetProvider : AppWidgetProvider() {
     private var intent: Intent? = null
 
     private fun doBasicSetup(context: Context, views: RemoteViews,
-                             accountName: String?, accountId: String?,
+                             account: Account?, accountId: String?,
                              appWidgetId: Int) = views.apply {
         setTextViewText(
                 R.id.txtTitle,
-                accountName?.let {
+                account?.name?.let {
                     context.getFormattedText(
                             R.string.title_widget_grades_with_user,
                             it
@@ -141,13 +138,43 @@ class GradesWidgetProvider : AppWidgetProvider() {
         ))
     }
 
-    private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
-                                account: Account?, accountId: String?,
-                                appWidgetId: Int): Job = launch {
-        // launch in background
+    private fun showLoading(context: Context, appWidgetManager: AppWidgetManager,
+                            appWidgetId: Int, accountId: String?, account: Account?) {
+        val loadingViews = RemoteViews(
+                context.packageName,
+                R.layout.widget_grades
+        )
+        doBasicSetup(context, loadingViews,
+                account, accountId, appWidgetId)
+
+        // Setup widget content
+        loadingViews.removeAllViews(R.id.boxContent)
+        loadingViews.addView(
+                R.id.boxContent,
+                RemoteViews(
+                        context.packageName,
+                        R.layout.widget_grades_content_loading
+                )
+        )
+
+        Log.d(LOG_TAG, "onUpdate()" +
+                " -> (appWidgetId=$appWidgetId)" +
+                " -> Applying loading views")
+        appWidgetManager.updateAppWidget(appWidgetId, loadingViews)
+    }
+
+    private fun requestSync(accountId: String, account: Account) {
+        Log.d(LOG_TAG, "onUpdate()" +
+                " -> (accountId=$accountId, account=$account)" +
+                " -> Requesting sync")
+        GradesSyncAdapter.requestSync(account)
+    }
+
+    private fun showContent(context: Context, appWidgetManager: AppWidgetManager,
+                            appWidgetId: Int, accountId: String?, account: Account?) {
         // Construct the RemoteViews object
         val views = RemoteViews(context.packageName, R.layout.widget_grades)
-        doBasicSetup(context, views, account?.name, accountId, appWidgetId)
+        doBasicSetup(context, views, account, accountId, appWidgetId)
 
         // Setup widget content
         views.removeAllViews(R.id.boxContent)
@@ -164,7 +191,8 @@ class GradesWidgetProvider : AppWidgetProvider() {
                                     context.getIconics(
                                             CommunityMaterial.Icon
                                                     .cmd_alert_circle_outline
-                                    ).colorRes(R.color.materialLightRed).sizeDp(72).toBitmap()
+                                    ).colorRes(R.color.materialLightRed)
+                                            .sizeDp(72).toBitmap()
                             )
                         }
                 )
@@ -178,13 +206,16 @@ class GradesWidgetProvider : AppWidgetProvider() {
                             it.setImageViewBitmap(
                                     R.id.imgError,
                                     context.getIconics(
-                                            CommunityMaterial.Icon.cmd_alert_circle_outline
-                                    ).colorRes(R.color.materialLightRed).sizeDp(72).toBitmap()
+                                            CommunityMaterial.Icon
+                                                    .cmd_alert_circle_outline
+                                    ).colorRes(R.color.materialLightRed)
+                                            .sizeDp(72).toBitmap()
                             )
                         }
                 )
             else -> {
-                val gradesSort = GradesPreferences.instance.getAppWidgetSort(appWidgetId)
+                val gradesSort = GradesPreferences.instance
+                        .getAppWidgetSort(appWidgetId)
                         ?: GradesSort.GRADES_DATE
                 val badAverage = GradesPreferences.instance.badAverage
 
@@ -218,12 +249,10 @@ class GradesWidgetProvider : AppWidgetProvider() {
         }
 
         // Instruct the widget manager to update the widget
-        launch(UI) {
-            Log.d(LOG_TAG, "updateAppWidget()" +
-                    " -> (appWidgetId=$appWidgetId, accountId=$accountId, account=$account)" +
-                    " -> Applying views")
-            appWidgetManager.updateAppWidget(appWidgetId, views)
-        }.join()
+        Log.d(LOG_TAG, "updateAppWidget()" +
+                " -> (appWidgetId=$appWidgetId, accountId=$accountId, account=$account)" +
+                " -> Applying views")
+        appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -246,103 +275,80 @@ class GradesWidgetProvider : AppWidgetProvider() {
                 false
         ) ?: false
 
-        // Wait for all jobs end and finish broadcast
-        val pResult = goAsync()
-        launch {
-            // Extract ids AccountIds of widgets
-            val availableAccounts = Accounts.getAllWIthIds(context)
-            val appWidgetIdsMap = GradesPreferences.instance.let createMap@ { prefs ->
-                appWidgetIds.map {
-                    it to prefs.getAppWidgetAccountId(it)
-                            ?.let { it to (availableAccounts[it] ?: return@let null) }
-                }
-            }.toMap()
+        // Extract ids AccountIds of widgets
+        val availableAccounts = Accounts.getAllWIthIds(context)
+        val appWidgetIdsMap = GradesPreferences.instance.let createMap@ { prefs ->
+            return@createMap appWidgetIds.map {
+                it to prefs.getAppWidgetAccountId(it)
+                        ?.takeIf { it in availableAccounts }
+            }
+        }.toMap()
 
-            if (isRefreshRequest) {
-                // Show loading view in all widgets
-                val showLoadingJob = launch {
-                    appWidgetIdsMap.map {
-                        val (appWidgetId, accountInfo) = it
-                        val (accountId, account) = accountInfo ?: null to null
-                        return@map launch {
-                            val loadingViews = RemoteViews(
-                                    context.packageName,
-                                    R.layout.widget_grades
-                            )
-                            doBasicSetup(context, loadingViews,
-                                    account?.name, accountId, appWidgetId)
-                            launch(UI) {
-                                Log.d(LOG_TAG, "onUpdate()" +
-                                        " -> (appWidgetId=$appWidgetId)" +
-                                        " -> Applying loading views")
-                                appWidgetManager.updateAppWidget(appWidgetId, loadingViews)
-                            }.join()
-                        }
-                    }.forEach { it.join() }
-                }
+        if (isRefreshRequest) {
+            // Show loading view in all widgets
+            appWidgetIdsMap.forEach {
+                val (appWidgetId, accountId) = it
+                val account = accountId?.let { availableAccounts[it] }
 
-                // Request refresh of all accounts associated with widgets
-                val requestRefreshJob = launch {
-                    appWidgetIdsMap.values
-                            .mapNotNull { it?.first }
-                            .distinct()
-                            .map { accountId ->
-                                launch requestSync@ {
-                                    val account = Accounts.getOrNull(context, accountId) ?: run {
-                                        Log.w(LOG_TAG, "onUpdate()" +
-                                                " -> Failed to request sync of '$accountId'" +
-                                                " -> Account not found")
-                                        return@requestSync
-                                    }
-                                    launch(UI) {
-                                        Log.d(LOG_TAG, "onUpdate()" +
-                                                " -> (accountID=-$accountId, account=$account)" +
-                                                " -> Requesting sync")
-                                        GradesSyncAdapter.requestSync(account)
-                                    }.join()
-                                }
-                            }
-                            .forEach { it.join() }
-                }
-
-                showLoadingJob.join()
-                requestRefreshJob.join()
-            } else {
-                // Update all widgets
-                appWidgetIdsMap
-                        .map {
-                            val (appWidgetId, accountInfo) = it
-                            val (accountId, account) = accountInfo ?: null to null
-                            Log.d(LOG_TAG, "onUpdate()" +
-                                    " -> (appWidgetId=$appWidgetId, accountId=$accountId," +
-                                    " account=$account" +
-                                    " -> Updating widget")
-                            return@map updateAppWidget(
-                                    context,
-                                    appWidgetManager,
-                                    account,
-                                    accountId,
-                                    appWidgetId
-                            )
-                        }
-                        .forEach { it.join() }
+                showLoading(context, appWidgetManager, appWidgetId, accountId, account)
             }
 
-            pResult.finish()
+            // Request refresh of all accounts associated with widgets
+            appWidgetIdsMap
+                    .let {
+                        val accountIdsMap = mutableMapOf<String?, MutableList<Int>>()
+                        it.forEach {
+                            val (appWidgetId, accountId) = it
+                            accountIdsMap.getOrPut(accountId, ::mutableListOf).add(appWidgetId)
+                            return@forEach
+                        }
+                        return@let accountIdsMap as Map<String?, List<Int>>
+                    }
+                    .forEach {
+                        val (accountId, accountAppWidgetIds) = it
+                        val account = accountId?.let { availableAccounts[it] }
+
+                        val requestDone = run requestSync@ {
+                            account ?: run {
+                                Log.w(LOG_TAG, "onUpdate()" +
+                                        " -> Failed to request sync of '$accountId'" +
+                                        " -> Account not found")
+                                return@requestSync false
+                            }
+
+                            if (!GradesLoginData.loginData.isLoggedIn(accountId)) {
+                                Log.w(LOG_TAG, "onUpdate()" +
+                                        " -> Failed to request sync of '$account'" +
+                                        " with id '$accountId'" +
+                                        " -> Account is not logged in")
+                                return@requestSync false
+                            }
+
+                            requestSync(accountId, account)
+                            return@requestSync true
+                        }
+
+                        if (!requestDone) accountAppWidgetIds.forEach {
+                            showContent(context, appWidgetManager, it, accountId, account)
+                        }
+                    }
+        } else {
+            // Update all widgets
+            appWidgetIdsMap.forEach {
+                val (appWidgetId, accountId) = it
+                val account = accountId?.let { availableAccounts[it] }
+
+                showContent(context, appWidgetManager, appWidgetId, accountId, account)
+            }
         }
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
-        val pResult = goAsync()
-        launch {
-            // When the user deletes the widget, delete the preferences associated with it.
-            val prefs = GradesPreferences.instance
-            appWidgetIds.forEach {
-                prefs.removeAppWidgetAccountId(it)
-                prefs.removeAppWidgetSort(it)
-            }
-
-            pResult.finish()
+        // When the user deletes the widget, delete the preferences associated with it.
+        val prefs = GradesPreferences.instance
+        appWidgetIds.forEach {
+            prefs.removeAppWidgetAccountId(it)
+            prefs.removeAppWidgetSort(it)
         }
     }
 }

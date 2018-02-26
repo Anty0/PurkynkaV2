@@ -20,6 +20,7 @@ package cz.anty.purkynka.grades.widget
 
 import android.content.Context
 import android.widget.RemoteViews
+import cz.anty.purkynka.R
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.data.Semester
@@ -32,7 +33,6 @@ import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
 import cz.anty.purkynka.grades.util.GradesSort
 import cz.anty.purkynka.grades.util.GradesSort.*
-import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.edit
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.notifications.manager.NotifyManager
@@ -54,7 +54,11 @@ class GradesWidgetAdapter(
     companion object {
 
         fun generateLoadingView(context: Context): RemoteViews {
-            val loadingItem = LoadingItem("...") // TODO: item title and text
+            val loadingItem = LoadingItem(
+                    context = context,
+                    titleId = R.string.item_loading_title,
+                    subtitleId = R.string.item_loading_subtitle
+            )
             val holder = loadingItem.createRemoteViewHolder(context)
             loadingItem.bindRemoteViewHolder(holder, CustomItem.NO_POSITION)
             return holder.itemView

@@ -19,6 +19,7 @@
 package cz.anty.purkynka.attendance.ui
 
 import android.content.Context
+import cz.anty.purkynka.R
 import cz.anty.purkynka.attendance.load.AttendanceFetcher
 import cz.anty.purkynka.attendance.load.AttendanceParser
 import eu.codetopic.java.utils.log.Log
@@ -46,7 +47,11 @@ class AttendanceAdapter(context: Context) : AutoLoadAdapter(context) {
         private set
 
     init {
-        loadingItem = LoadingItem("...") // TODO: item title and text
+        loadingItem = LoadingItem(
+                context = context,
+                titleId = R.string.item_loading_title,
+                subtitleId = R.string.item_loading_subtitle
+        )
     }
 
     fun setQuery(value: String): Job? {

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ app
+  ~ Copyright (C)   2018  anty
+  ~
+  ~ This program is free  software: you can redistribute it and/or modify
+  ~ it under the terms  of the GNU General Public License as published by
+  ~ the Free Software  Foundation, either version 3 of the License, or
+  ~ (at your option) any  later version.
+  ~
+  ~ This program is distributed in the hope that it  will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied  warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You  should have received a copy of the GNU General Public License
+  ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".grades.ui.SubjectItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="40dp"
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <TextView
+        android:id="@+id/txtNameShort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:lines="1"
+        android:textSize="24sp"
+        android:fontFamily="monospace"
+        android:typeface="monospace"
+        android:textColor="@color/materialWhite" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:text="@string/text_view_average"
+                android:textSize="12sp"
+                android:textColor="@color/materialWhite" />
+
+            <TextView
+                android:id="@+id/txtAverageBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/materialWhite"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/txtAverageNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                android:textColor="@color/materialWhite"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

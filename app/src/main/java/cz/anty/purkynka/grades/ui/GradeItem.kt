@@ -31,6 +31,7 @@ import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemRemoteViewHolder
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_grade.*
 import kotlinx.serialization.Serializable
@@ -67,7 +68,10 @@ class GradeItem(val base: Grade, val isBad: Boolean, val showSubject: Boolean = 
 
         holder.txtGrade.apply {
             setTypeface(null, if (isBad) Typeface.BOLD else Typeface.NORMAL)
-            if (!showSubject) setTextColor(valueColor)
+            setTextColor(
+                    if (!showSubject) valueColor
+                    else ContextCompat.getColor(holder.context, R.color.materialWhite)
+            )
             text = base.valueToShow
         }
 
@@ -109,6 +113,47 @@ class GradeItem(val base: Grade, val isBad: Boolean, val showSubject: Boolean = 
     }
 
     override fun getLayoutResId(context: Context) = R.layout.item_grade
+
+    override fun onBindRemoteViewHolder(holder: CustomItemRemoteViewHolder, itemPosition: Int) {
+        holder.itemView.setTextColor(R.id.txtSubject, valueColor)
+        holder.itemView.setViewVisibility(
+                R.id.txtSubject,
+                if (showSubject) View.VISIBLE else View.GONE
+        )
+        holder.itemView.setTextViewText(
+                R.id.txtSubject,
+                base.subjectShort.fillToLen(4, Anchor.LEFT)
+        )
+
+        holder.itemView.setViewVisibility(
+                R.id.txtGradeBold,
+                if (isBad) View.VISIBLE else View.GONE
+        )
+        holder.itemView.setViewVisibility(
+                R.id.txtGradeNormal,
+                if (!isBad) View.VISIBLE else View.GONE
+        )
+        val txtGradeColor =
+                if (!showSubject) valueColor
+                else ContextCompat.getColor(holder.context, R.color.materialWhite)
+        holder.itemView.setTextColor(R.id.txtGradeBold, txtGradeColor)
+        holder.itemView.setTextColor(R.id.txtGradeNormal, txtGradeColor)
+        holder.itemView.setTextViewText(R.id.txtGradeBold, base.valueToShow)
+        holder.itemView.setTextViewText(R.id.txtGradeNormal, base.valueToShow)
+
+        holder.itemView.setViewVisibility(
+                R.id.txtWeightBold,
+                if (base.weight >= 3) View.VISIBLE else View.GONE
+        )
+        holder.itemView.setViewVisibility(
+                R.id.txtWeightNormal,
+                if (base.weight < 3) View.VISIBLE else View.GONE
+        )
+        holder.itemView.setTextViewText(R.id.txtWeightBold, base.weight.toString())
+        holder.itemView.setTextViewText(R.id.txtWeightNormal, base.weight.toString())
+    }
+
+    override fun getRemoteLayoutResId(context: Context): Int = R.layout.item_grade_widget
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

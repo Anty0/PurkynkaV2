@@ -76,11 +76,7 @@
         android:paddingLeft="2dp"
         android:paddingRight="2dp">
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"/>
+        <include layout="@layout/widget_grades_content_loading" />
     </FrameLayout>
 
 </LinearLayout>

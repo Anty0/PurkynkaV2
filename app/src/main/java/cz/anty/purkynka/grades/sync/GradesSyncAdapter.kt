@@ -33,6 +33,7 @@ import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.*
 import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
+import cz.anty.purkynka.grades.widget.GradesWidgetProvider
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.broadcast.BroadcastsConnector
@@ -115,6 +116,7 @@ class GradesSyncAdapter(context: Context) :
 
         val data = GradesData.instance
         val loginData = GradesLoginData.loginData
+        val preferences = GradesPreferences.instance
 
         val accountId = Accounts.getId(context, account)
 
@@ -160,6 +162,15 @@ class GradesSyncAdapter(context: Context) :
 
             data.notifyFirstSyncDone(accountId)
             data.setLastSyncResult(accountId, SUCCESS)
+
+            context.sendBroadcast(
+                    GradesWidgetProvider.getUpdateIntent(
+                            context,
+                            GradesWidgetProvider.getAllWidgetIds(context)
+                                    .filter { preferences.getAppWidgetAccountId(it) == accountId }
+                                    .toIntArray()
+                    )
+            )
         } catch (e: Exception) {
             Log.w(LOG_TAG, "Failed to refresh grades", e)
 

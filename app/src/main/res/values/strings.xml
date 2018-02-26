@@ -215,6 +215,8 @@
     <string name="item_credit_title_main">Low lunches credit</string>
     <string name="item_lunches_next_lunch_title_main">Next lunch</string>
     <string name="item_lunches_new_title_main">New lunch</string>
+    <string name="item_loading_title">Loading…</string>
+    <string name="item_loading_subtitle">Please wait…</string>
 
     <string name="widget_grades_no_account_text">Account not found</string>
     <string name="widget_grades_no_account_text_small">Did you remove that account?</string>

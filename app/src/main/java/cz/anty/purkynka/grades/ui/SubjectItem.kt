@@ -22,6 +22,7 @@ import android.content.Context
 import android.graphics.Typeface
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
+import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.data.Subject
 import cz.anty.purkynka.grades.data.Subject.Companion.average
@@ -33,6 +34,7 @@ import eu.codetopic.java.utils.format
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.getFormattedQuantityText
+import eu.codetopic.utils.ui.container.items.custom.CustomItemRemoteViewHolder
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_subject.*
 
@@ -53,15 +55,13 @@ class SubjectItem(val base: Subject, val isBad: Boolean,
     val isChnaged get() = changes.isNotEmpty()
 
     override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
-        val textStyle = if (isBad) Typeface.BOLD else Typeface.NORMAL
-
         holder.txtNameShort.apply {
             setTextColor(averageColor)
             text = base.shortName.fillToLen(4, Anchor.LEFT)
         }
 
         holder.txtAverage.apply {
-            setTypeface(null, textStyle)
+            setTypeface(null, if (isBad) Typeface.BOLD else Typeface.NORMAL)
             //setTextColor(averageColor)
             text = average.format(2)
         }
@@ -104,6 +104,28 @@ class SubjectItem(val base: Subject, val isBad: Boolean,
     }
 
     override fun getLayoutResId(context: Context): Int = R.layout.item_subject
+
+    override fun onBindRemoteViewHolder(holder: CustomItemRemoteViewHolder, itemPosition: Int) {
+        holder.itemView.setTextColor(R.id.txtNameShort, averageColor)
+        holder.itemView.setTextViewText(
+                R.id.txtNameShort,
+                base.shortName.fillToLen(4, Anchor.LEFT)
+        )
+
+        holder.itemView.setViewVisibility(
+                R.id.txtAverageBold,
+                if (isBad) View.VISIBLE else View.GONE
+        )
+        holder.itemView.setViewVisibility(
+                R.id.txtAverageNormal,
+                if (!isBad) View.VISIBLE else View.GONE
+        )
+        val averageText = average.format(2)
+        holder.itemView.setTextViewText(R.id.txtAverageBold, averageText)
+        holder.itemView.setTextViewText(R.id.txtAverageNormal, averageText)
+    }
+
+    override fun getRemoteLayoutResId(context: Context): Int = R.layout.item_subject_widget
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

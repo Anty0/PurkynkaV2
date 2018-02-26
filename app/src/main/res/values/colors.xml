@@ -51,5 +51,6 @@
     <color name="colorPrimaryDarkWifiLogin">#455A64</color>
     <color name="colorPrimaryExtraDarkWifiLogin">#37474F</color>
     <color name="navigationBarColorWifiLogin">#263238</color>
+    <!--<color name="colorAccentWifiLogin">@color/materialDarkWhite</color>-->
     <color name="colorAccentWifiLogin">#00BFA5</color>
 </resources>

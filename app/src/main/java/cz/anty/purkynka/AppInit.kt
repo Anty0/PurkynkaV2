@@ -282,6 +282,7 @@ class AppInit : MultiDexApplication() {
         UpdateData.initialize(this)
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
+        GradesPreferences.initialize(this)
         WifiData.initialize(this)
         WifiLoginData.initialize(this)
         LunchesData.initialize(this)
