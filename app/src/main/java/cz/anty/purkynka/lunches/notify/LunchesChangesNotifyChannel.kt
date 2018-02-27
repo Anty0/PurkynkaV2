@@ -111,7 +111,7 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(
             context.startActivities(arrayOf(
                     MainActivity.getStartIntent(context, LunchesOrderFragment::class.java)
                             .addFlags(FLAG_ACTIVITY_NEW_TASK),
-                    LunchOptionsGroupActivity.getStartIntent(context, accountId, lunchGroup)
+                    LunchOptionsGroupActivity.getIntent(context, accountId, lunchGroup)
             ))
         } else {
             MainActivity.start(context, LunchesOrderFragment::class.java)

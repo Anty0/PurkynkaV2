@@ -118,7 +118,7 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
 
                 ContextCompat.startActivity(
                         context,
-                        LunchOptionsGroupActivity.getStartIntent(context, accountId, base),
+                        LunchOptionsGroupActivity.getIntent(context, accountId, base),
                         options?.toBundle()
                 )
             }

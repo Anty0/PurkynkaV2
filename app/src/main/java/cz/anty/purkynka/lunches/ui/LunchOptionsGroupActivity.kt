@@ -80,13 +80,13 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
 
         private val REGEX_BRACKETS = Regex("\\(.*?\\)")
 
-        fun getStartIntent(context: Context, accountId: String, lunchOptionsGroup: LunchOptionsGroup) =
+        fun getIntent(context: Context, accountId: String, lunchOptionsGroup: LunchOptionsGroup) =
                 Intent(context, LunchOptionsGroupActivity::class.java)
                         .putExtra(EXTRA_ACCOUNT_ID, accountId)
                         .putKSerializableExtra(EXTRA_LUNCH_OPTIONS_GROUP, lunchOptionsGroup)
 
         fun start(context: Context, accountId: String, lunchOptionsGroup: LunchOptionsGroup) =
-                context.startActivity(getStartIntent(context, accountId, lunchOptionsGroup))
+                context.startActivity(getIntent(context, accountId, lunchOptionsGroup))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,8 +114,6 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                 lunchOptionsGroup.dateStrShort
         )
 
-        // TODO: title
-
         val lunchOptionsGroupItem = LunchOptionsGroupItem(accountId, lunchOptionsGroup)
 
         val itemVH = lunchOptionsGroupItem.createViewHolder(this, boxLunchOptionsGroup)
@@ -133,8 +131,6 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                     if (isChecked) butLunchOrder.isEnabled = this@button.tag != null
                 }
             }
-
-            // TODO: title
 
             var toCheck = butNoLunch.id
 
@@ -396,6 +392,56 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                         }
                     }
                 }
+
+        butPrevious.onClick {
+            holder.showLoading()
+
+            run switch@ {
+                val targetLunch = bg target@ {
+                    val lunchesList = LunchesData.instance
+                            .getLunches(accountId)
+                            .sortedBy { it.date }
+                    val selfIndex = lunchesList.indexOf(lunchOptionsGroup)
+                    val targetIndex = (selfIndex - 1).takeIf { it in lunchesList.indices }
+                    return@target targetIndex?.let { lunchesList[it] }
+                }.await() ?: run {
+                    longSnackbar(self().butPrevious, R.string.snackbar_lunches_no_previous_lunch)
+                    return@switch
+                }
+
+                self().apply {
+                    startActivity(getIntent(this, accountId, targetLunch))
+                    finish()
+                }
+            }
+
+            holder.hideLoading()
+        }
+
+        butNext.onClick {
+            holder.showLoading()
+
+            run switch@ {
+                val targetLunch = bg target@ {
+                    val lunchesList = LunchesData.instance
+                            .getLunches(accountId)
+                            .sortedBy { it.date }
+                    val selfIndex = lunchesList.indexOf(lunchOptionsGroup)
+                    val targetIndex = (selfIndex + 1).takeIf { it in lunchesList.indices }
+                    return@target targetIndex?.let { lunchesList[it] }
+                }.await() ?: run {
+                    longSnackbar(self().butPrevious, R.string.snackbar_lunches_no_next_lunch)
+                    return@switch
+                }
+
+                self().apply {
+                    startActivity(getIntent(this, accountId, targetLunch))
+                    finish()
+                }
+            }
+
+            holder.hideLoading()
+        }
     }
 
     override fun onResume() {

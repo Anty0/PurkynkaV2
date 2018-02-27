@@ -85,6 +85,7 @@
     <string name="title_activity_lunch_options_group">Order lunch</string>
     <string name="title_activity_lunch_options_group_with_date">Order lunch on %1$s</string>
     <string name="title_activity_lunches_burza_lunch">Order lunch</string>
+    <string name="title_activity_lunches_burza_lunch_with_date">Order lunch on $1$s</string>
 
     <string name="title_fragment_dashboard">Dashboard</string>
     <string name="title_fragment_grades">Grades</string>
@@ -185,6 +186,8 @@
     <string name="but_uninstall">Uninstall</string>
     <string name="but_add_widget">Add widget</string>
     <string name="but_undo">Undo</string>
+    <string name="but_previous">Previous</string>
+    <string name="but_next">Next</string>
 
     <string name="item_title_date">Date</string>
     <string name="item_title_type">Type</string>
@@ -219,6 +222,9 @@
     <string name="item_lunches_new_title_main">New lunch</string>
     <string name="item_loading_title">Loading…</string>
     <string name="item_loading_subtitle">Please wait…</string>
+    <string name="item_dashboard_try_swipe_title">Welcome to Application Purkynka</string>
+    <string name="item_dashboard_try_swipe_subtitle">This is your dashboard. Everything important will appear here.</string>
+    <string name="item_dashboard_try_swipe_txt_how_to_dismiss">Swipe to dismiss</string>
 
     <string name="widget_grades_no_account_text">Account not found</string>
     <string name="widget_grades_no_account_text_small">Did you remove that account?</string>
@@ -354,6 +360,8 @@
     <string name="snackbar_grades_widget_add_fail_no_grades_sort">"No sort selected, can't add widget."</string>
     <string name="snackbar_lunches_dashboard_credit_warning_disabled">Low credit warning was disabled.</string>
     <string name="snackbar_updates_download_update_failed">Failed to download update.</string>
+    <string name="snackbar_lunches_no_previous_lunch">No previous lunch.</string>
+    <string name="snackbar_lunches_no_next_lunch">No next lunch.</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>

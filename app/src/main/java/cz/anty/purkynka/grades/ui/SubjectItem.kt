@@ -123,6 +123,17 @@ class SubjectItem(val base: Subject, val isBad: Boolean,
         val averageText = average.format(2)
         holder.itemView.setTextViewText(R.id.txtAverageBold, averageText)
         holder.itemView.setTextViewText(R.id.txtAverageNormal, averageText)
+
+
+        holder.itemView.setInt(
+                R.id.boxColoredBackground,
+                "setBackgroundColor",
+                ContextCompat.getColor(
+                        holder.context,
+                        if (!isChnaged) android.R.color.transparent
+                        else R.color.navigationBarColorGrades
+                )
+        )
     }
 
     override fun getRemoteLayoutResId(context: Context): Int = R.layout.item_subject_widget

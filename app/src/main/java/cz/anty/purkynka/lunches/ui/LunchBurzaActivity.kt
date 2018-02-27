@@ -26,11 +26,13 @@ import android.view.animation.AnimationUtils
 import cz.anty.purkynka.R
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.data.LunchBurza
+import cz.anty.purkynka.lunches.data.LunchBurza.Companion.dateStrShort
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
@@ -90,7 +92,10 @@ class LunchBurzaActivity : LoadingModularActivity(ToolbarModule(), TransitionBac
                     return
                 }
 
-        // TODO: title
+        title = getFormattedText(
+                R.string.title_activity_lunches_burza_lunch_with_date,
+                lunchBurza.dateStrShort
+        )
 
         val lunchBurzaItem = LunchBurzaItem(accountId, lunchBurza)
 

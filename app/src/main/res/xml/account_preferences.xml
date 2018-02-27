@@ -18,7 +18,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Test category" />
+    <!--<PreferenceCategory android:title="Test category" />
     <PreferenceScreen
         android:key="key0"
         android:title="Test title"
@@ -27,5 +27,7 @@
             android:action="cz.anty.purkynka.accounts.PreferencesChangeReceiver.key0.ACTION"
             android:targetPackage="cz.anty.purkynka"
             android:targetClass="cz.anty.purkynka.accounts.PreferencesChangeReceiver" />
-    </PreferenceScreen>
+    </PreferenceScreen>-->
+
+    <!-- TODO: implement -->
 </PreferenceScreen>

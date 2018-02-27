@@ -20,12 +20,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".grades.ui.GradeItem"
+    android:id="@+id/boxColoredBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="40dp"
-    android:orientation="horizontal"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingRight="16dp"
+    android:orientation="horizontal"
+    android:background="@android:color/transparent">
 
     <TextView
         android:id="@+id/txtSubject"

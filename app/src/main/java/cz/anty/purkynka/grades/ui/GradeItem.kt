@@ -151,6 +151,16 @@ class GradeItem(val base: Grade, val isBad: Boolean, val showSubject: Boolean = 
         )
         holder.itemView.setTextViewText(R.id.txtWeightBold, base.weight.toString())
         holder.itemView.setTextViewText(R.id.txtWeightNormal, base.weight.toString())
+
+        holder.itemView.setInt(
+                R.id.boxColoredBackground,
+                "setBackgroundColor",
+                ContextCompat.getColor(
+                        holder.context,
+                        if (!hasChnges) android.R.color.transparent
+                        else R.color.navigationBarColorGrades
+                )
+        )
     }
 
     override fun getRemoteLayoutResId(context: Context): Int = R.layout.item_grade_widget

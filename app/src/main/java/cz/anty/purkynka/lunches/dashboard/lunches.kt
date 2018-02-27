@@ -19,7 +19,6 @@
 package cz.anty.purkynka.lunches.dashboard
 
 import android.content.Context
-import android.content.Intent
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.R
@@ -28,7 +27,6 @@ import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
 import cz.anty.purkynka.dashboard.SwipeableDashboardItem
-import cz.anty.purkynka.lunches.LunchesOrderFragment
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
 import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
@@ -39,20 +37,16 @@ import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.letIfNull
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.to
 import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import eu.codetopic.utils.notifications.manager.data.requestCancel
-import eu.codetopic.utils.thread.LooperUtils
-import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_lunches_new.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
@@ -226,7 +220,7 @@ class NewLunchDashboardItem(val notifyId: NotifyId, val accountId: String,
 
                     ContextCompat.startActivity(
                             context,
-                            LunchOptionsGroupActivity.getStartIntent(
+                            LunchOptionsGroupActivity.getIntent(
                                     context, accountId, lunchOptionsGroup),
                             options?.toBundle()
                     )
