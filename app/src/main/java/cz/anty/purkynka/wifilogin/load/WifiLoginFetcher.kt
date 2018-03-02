@@ -148,6 +148,7 @@ object WifiLoginFetcher {
                     .let { (it == WIFI_NAME) to it }
 
     private fun checkForLoginUrl(): String? = try {
+        @Suppress("DEPRECATION")
         Jsoup.connect(TEST_URL)
                 .followRedirects(true)
                 .validateTLSCertificates(false) // FIXME: use ThrustManager to allow only one certificate
@@ -160,6 +161,7 @@ object WifiLoginFetcher {
         Log.w(LOG_TAG, "checkForLoginUrl()", e); null
     }
 
+    @Suppress("DEPRECATION")
     private fun requestLogin(loginUrl: String, username: String, password: String) =
             Jsoup.connect(loginUrl)
                     .data(

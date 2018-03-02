@@ -113,6 +113,7 @@ class UpdateNotifyChannel : NotifyChannel(ID, checkForIdOverrides = false) {
                 setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_ALL)
                 setDefaults(NotificationCompat.DEFAULT_ALL)
                 priority = NotificationCompat.PRIORITY_HIGH
+                setOnlyAlertOnce(true)
 
                 //setAutoCancel(true)
                 setCategory(NotificationCompat.CATEGORY_EVENT)

@@ -63,7 +63,7 @@
             android:background="@android:color/transparent"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="@string/but_refresh" /> <!--Icon will be added after inflating-->
+            android:contentDescription="@string/menu_item_text_refresh" /> <!--Icon will be added after inflating-->
     </RelativeLayout>
 
     <FrameLayout

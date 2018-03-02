@@ -40,7 +40,11 @@ class ManItem(val base: Man) : CustomItem() {
     }
 
     override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
-        holder.txtClassId.text = base.classId.fillToLen(4, Anchor.LEFT)
+        holder.txtClassId.apply {
+            val classId = base.classId
+            textSize = if (classId.length <= 4) 28F else 18F
+            text = classId.fillToLen(4, Anchor.LEFT)
+        }
 
         holder.imgIsInSchoolYes.visibility = if (base.isInSchool == true) View.VISIBLE else View.GONE
         holder.imgIsInSchoolNo.visibility = if (base.isInSchool == false) View.VISIBLE else View.GONE

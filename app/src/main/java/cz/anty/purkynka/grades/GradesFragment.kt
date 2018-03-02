@@ -38,6 +38,7 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
+import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
@@ -48,17 +49,14 @@ import cz.anty.purkynka.grades.util.GradesSort.*
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.save.*
+import cz.anty.purkynka.grades.sync.GradesSyncer
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
 import cz.anty.purkynka.grades.util.GradesSort
 import eu.codetopic.java.utils.ifFalse
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.receiver
+import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
-import eu.codetopic.utils.edit
-import eu.codetopic.utils.getIconics
-import eu.codetopic.utils.getKSerializableExtra
-import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
@@ -68,6 +66,7 @@ import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import eu.codetopic.utils.ui.container.adapter.CustomItemAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.recycler.Recycler
+import eu.codetopic.utils.ui.view.hideKeyboard
 import eu.codetopic.utils.ui.view.holder.loading.LoadingVH
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
@@ -88,6 +87,7 @@ import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
+import java.io.IOException
 
 /**
  * @author anty
@@ -222,7 +222,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
 
         fun bindView(view: View) {
             containerView = view.boxLogin
-            butLogin.setOnClickListener { login() }
+            butLogin.setOnClickListener {
+                boxLogin.context.baseActivity?.currentFocus?.hideKeyboard()
+                login()
+            }
         }
 
         fun unbindView() {
@@ -284,25 +287,44 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             val username = inUsername.text.toString()
             val password = inPassword.text.toString()
 
+            val appContext = boxLogin.context.applicationContext
             val boxLoginRef = boxLogin.asReference()
             launch(UI) {
                 holder.showLoading()
 
-                bg {
-                    GradesData.instance.resetFirstSyncState(accountId)
-                    GradesLoginData.loginData.login(accountId, username, password)
-                }.await()
-
-                // Sync will be triggered later by login change broadcast
-                if (awaitForSyncCompleted(account, GradesSyncAdapter.CONTENT_AUTHORITY)) {
-                    val syncResult = bg { GradesData.instance.getLastSyncResult(accountId) }.await()
-                    if (syncResult == FAIL_LOGIN) {
-                        longSnackbar(boxLoginRef(), R.string.snackbar_grades_login_fail)
-                        bg { GradesLoginData.loginData.logout(accountId) }.await()
+                val syncResult = run sync@ {
+                    try {
+                        bg {
+                            GradesSyncer.performSync(
+                                    context = appContext,
+                                    account = account,
+                                    credentials = username to password,
+                                    firstSync = true
+                            )
+                        }.await()
+                        return@sync SUCCESS
+                    } catch (e: Exception) {
+                        return@sync when (e) {
+                            is WrongLoginDataException -> FAIL_LOGIN
+                            is IOException -> FAIL_CONNECT
+                            else -> FAIL_UNKNOWN
+                        }
                     }
-                } else {
-                    longSnackbar(boxLoginRef(), R.string.snackbar_sync_start_fail)
-                    bg { GradesLoginData.loginData.logout(accountId) }.await()
+                }
+
+                when (syncResult) {
+                    SUCCESS -> bg {
+                        GradesLoginData.loginData
+                                .login(accountId, username, password)
+                    }.await()
+                    FAIL_LOGIN -> longSnackbar(
+                            boxLoginRef(),
+                            R.string.snackbar_grades_login_fail
+                    )
+                    FAIL_CONNECT, FAIL_UNKNOWN -> longSnackbar(
+                            boxLoginRef(),
+                            R.string.snackbar_sync_start_fail
+                    )
                 }
 
                 delay(500) // Wait few loops to make sure, that content was updated.
@@ -320,10 +342,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             launch(UI) {
                 holder.showLoading()
 
-                bg {
-                    GradesLoginData.loginData.logout(accountId)
-                    GradesData.instance.resetFirstSyncState(accountId)
-                }.await()
+                bg { GradesLoginData.loginData.logout(accountId) }.await()
 
                 NotifyManager.requestCancelAll(
                         context = appContext,
@@ -375,11 +394,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             Log.d(LOG_TAG, "newGradesChangesReceiver.onReceive()")
 
             val accountId = intent
-                    ?.getStringExtra(GradesSyncAdapter.EXTRA_ACCOUNT_ID)
+                    ?.getStringExtra(GradesSyncer.EXTRA_ACCOUNT_ID)
                     ?: return@receiver
             val gradesChanges = intent
                     .getKSerializableExtra(
-                            GradesSyncAdapter.EXTRA_GRADES_CHANGES,
+                            GradesSyncer.EXTRA_GRADES_CHANGES,
                             BundleSerializer.list
                     ) ?: return@receiver
 
@@ -477,7 +496,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             LocalBroadcast.registerReceiver(preferencesDataChangedReceiver,
                     intentFilter(GradesPreferences.getter))
             boxRecycler.context.registerReceiver(newGradesChangesReceiver,
-                    intentFilter(GradesSyncAdapter.ACTION_NEW_GRADES_CHANGES))
+                    intentFilter(GradesSyncer.ACTION_NEW_GRADES_CHANGES))
 
             return update()
         }

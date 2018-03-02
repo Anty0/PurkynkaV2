@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ app
-  ~ Copyright (C)   2017  anty
+  ~ Copyright (C)   2018  anty
   ~
   ~ This program is free  software: you can redistribute it and/or modify
   ~ it under the terms  of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 
             <intent
                 android:action="android.intent.action.VIEW"
-                android:targetPackage="cz.anty.purkynka"
+                android:targetPackage="cz.anty.purkynka.debug"
                 android:targetClass="cz.anty.purkynka.settings.SettingsActivity" />
         </PreferenceScreen>
     </PreferenceCategory>

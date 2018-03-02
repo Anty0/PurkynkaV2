@@ -63,6 +63,8 @@ class LunchesBurzaWatcherService : Service() {
                 "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_START_WATCHER"
         private const val ACTION_STOP_WATCHER =
                 "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_STOP_WATCHER"
+        private const val ACTION_STOP_ALL_WATCHERS =
+                "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_STOP_ALL_WATCHERS"
         private const val ACTION_REQUEST_STATUS_UPDATE =
                 "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_REQUEST_STATUS_UPDATE"
         private const val EXTRA_ACCOUNT_ID = "$LOG_TAG.EXTRA_ACCOUNT_ID"
@@ -85,6 +87,10 @@ class LunchesBurzaWatcherService : Service() {
                 Intent(context, LunchesBurzaWatcherService::class.java)
                         .setAction(ACTION_STOP_WATCHER)
                         .putExtra(EXTRA_ACCOUNT_ID, accountId)
+
+        fun getStopAllWatchersIntent(context: Context): Intent =
+            Intent(context, LunchesBurzaWatcherService::class.java)
+                    .setAction(ACTION_STOP_ALL_WATCHERS)
 
         fun getRequestStatusUpdateIntent(context: Context): Intent =
                 Intent(context, LunchesBurzaWatcherService::class.java)
@@ -329,11 +335,22 @@ class LunchesBurzaWatcherService : Service() {
 
                     val accountStatus = status.getOrPut(accountId) { BurzaWatcherStatus() }
 
-                    if (!accountStatus.running || accountStatus.stopping) return@processIntent
+                    if (!accountStatus.running || accountStatus.stopping) {
+                        if (!isForeground) stopSelf(startId)
+                        return@processIntent
+                    }
                     lastStopRequest = accountId to startId
                     accountStatus.stopping = true
 
                     broadcastStatusUpdate()
+                }
+                ACTION_STOP_ALL_WATCHERS -> {
+                    status.filter { it.value.running }
+                            .takeIf { it.isNotEmpty() }
+                            ?.onEach { it.value.stopping = true }
+                            ?.also { broadcastStatusUpdate() }
+                            ?: run { if (!isForeground) stopSelf(startId) }
+
                 }
                 ACTION_REQUEST_STATUS_UPDATE -> {
                     broadcastStatusUpdate()

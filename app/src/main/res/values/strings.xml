@@ -70,6 +70,7 @@
         <item quantity="other">%1$d Lunch options on %1$s</item>
     </plurals>
 
+    <string name="title_activity_easter_egg">Application Purkynka</string>
     <string name="title_activity_update">Update check</string>
     <string name="title_activity_version_changes">News in %1$s</string>
     <string name="title_activity_changelog">Changelog</string>
@@ -147,7 +148,7 @@
     <string name="action_show_debug">Debug</string>
     <string name="action_contact_facebook">Facebook page</string>
     <string name="action_contact_web_page">Web page</string>
-    <string name="action_contact_web_page_donate">Donate developer</string>
+    <!--<string name="action_contact_web_page_donate">Donate developer</string>-->
     <string name="action_add_user">Add user</string>
 
     <string name="menu_item_text_show">Show</string>
@@ -182,6 +183,7 @@
     <string name="but_no_lunch">No lunch</string>
     <string name="but_start">Start</string>
     <string name="but_stop">Stop</string>
+    <string name="but_stop_all">Stop all</string>
     <string name="but_no">No</string>
     <string name="but_uninstall">Uninstall</string>
     <string name="but_add_widget">Add widget</string>
@@ -275,6 +277,7 @@
     <string name="txt_info_fails">Fails</string>
     <string name="txt_info_fails_no">Everything seems to be fine</string>
     <string name="txt_info_fails_some">Problems occurs, something is wrong…</string>
+    <string name="txt_title_release_notes">Release notes:</string>
 
     <string name="txt_day_short_sunday">SUN</string>
     <string name="txt_day_short_monday">MON</string>
@@ -360,6 +363,7 @@
     <string name="snackbar_grades_widget_add_fail_no_grades_sort">"No sort selected, can't add widget."</string>
     <string name="snackbar_lunches_dashboard_credit_warning_disabled">Low credit warning was disabled.</string>
     <string name="snackbar_updates_download_update_failed">Failed to download update.</string>
+    <string name="snackbar_updates_download_update_invalid">Downloaded file is corrupted.</string>
     <string name="snackbar_lunches_no_previous_lunch">No previous lunch.</string>
     <string name="snackbar_lunches_no_next_lunch">No next lunch.</string>
 
@@ -381,6 +385,7 @@
     <string name="content_description_image_error">Error image</string>
     <string name="content_description_widget_preview_image">Widget preview</string>
 
+    <string name="pref_header_preferences">Preferences</string>
     <string name="pref_header_system">System</string>
     <string name="pref_header_other">Other</string>
     <string name="pref_header_grades">Grades</string>
@@ -391,6 +396,7 @@
     <string name="pref_grades_bad_average">Bad average</string>
     <string name="pref_lunches_show_dashboard_credit_warning">Low credit warning on dashboard</string>
     <string name="pref_lunches_notify_lunches_new">Notify about new lunches</string>
+    <string name="pref_show_app_settings">Settings</string>
 
     <string name="pref_key_grades_bad_average" translatable="false">grades_bad_average</string>
     <string name="pref_key_lunches_show_dashboard_credit_warning" translatable="false">lunches_show_dashboard_credit_warning</string>
@@ -399,7 +405,8 @@
     <string name="pref_key_activity_about" translatable="false">activity_about</string>
     <string name="pref_key_activity_facebook" translatable="false">activity_facebook</string>
     <string name="pref_key_activity_web_page" translatable="false">activity_web_page</string>
-    <string name="pref_key_activity_web_page_donate" translatable="false">activity_web_page_donate</string>
+    <!--<string name="pref_key_activity_web_page_donate" translatable="false">activity_web_page_donate</string>-->
+    <string name="pref_key_show_app_settings" translatable="false">show_app_settings</string>
 
     <string-array name="pref_grades_bad_average_entries">
         <item>Average 1.25 and higher</item>
@@ -436,6 +443,7 @@
         <item>4.75</item>
     </string-array>
 
+    <string name="id_transition_easter_egg_img" translatable="false">easter_egg_img</string>
     <string name="id_transition_subject_item" translatable="false">subject_item</string>
     <string name="id_transition_grade_item" translatable="false">grade_item</string>
     <string name="id_transition_lunch_options_group_item" translatable="false">lunch_options_group_item</string>

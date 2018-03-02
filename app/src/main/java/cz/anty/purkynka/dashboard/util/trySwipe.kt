@@ -39,14 +39,17 @@ import org.jetbrains.anko.coroutines.experimental.bg
 import android.animation.ObjectAnimator
 import android.view.View
 import android.widget.TextView
-import eu.codetopic.utils.ui.view.ViewUtils
 import eu.codetopic.utils.ui.view.getTag
 import eu.codetopic.utils.ui.view.setTag
 import kotlinx.android.synthetic.main.item_dashboard_try_swipe.view.*
 import android.animation.Animator
+import android.widget.FrameLayout
 import android.widget.ImageView
+import eu.codetopic.java.utils.letIfNull
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.simple.SimpleAnimatorListener
+import org.jetbrains.anko.dip
+import kotlin.math.min
 
 
 /**
@@ -100,7 +103,7 @@ class TrySwipeDashboardManager(context: Context, accountHolder: ActiveAccountHol
     }
 }
 
-class TrySwipeDashboardItem() : SwipeableDashboardItem() {
+class TrySwipeDashboardItem : SwipeableDashboardItem() {
 
     companion object {
 
@@ -122,18 +125,11 @@ class TrySwipeDashboardItem() : SwipeableDashboardItem() {
         if (tag == null || tag !is Boolean || !tag) {
             holder.itemView.setTag(TAG_ITEM_READY, true)
 
-            val img = holder.itemView.imgTrySwipe
-            val txt = holder.itemView.txtTrySwipe.apply { alpha = 0f }
-
-            ObjectAnimator
-                    .ofFloat(img, View.TRANSLATION_X,
-                            ViewUtils.convertDpToPx(holder.context, 200))
-                    .apply {
-                        repeatMode = ObjectAnimator.RESTART
-                        repeatCount = ObjectAnimator.INFINITE
-                        duration = 2000
-                        addListener(CustomAnimatorListener(img, txt, this))
-                    }.start()
+            CustomAnimatorListener.createAnimation(
+                    holder.itemView.boxTrySwipe,
+                    holder.itemView.imgTrySwipe,
+                    holder.itemView.txtTrySwipe.apply { alpha = 0f }
+            ).start()
         }
     }
 
@@ -151,61 +147,93 @@ class TrySwipeDashboardItem() : SwipeableDashboardItem() {
 }
 
 private class CustomAnimatorListener(
-        private val imageView: ImageView,
-        private val textView: TextView,
+        private val box: FrameLayout,
+        private val img: ImageView,
+        private val txt: TextView,
         private val animator: ObjectAnimator
 ) : SimpleAnimatorListener() {
 
-    override fun onAnimationStart(animation: Animator) {
-        super.onAnimationStart(animation)
+    companion object {
+
+        private const val WIDTH_DP_DEFAULT = 200
+        private const val DURATION_TOTAL = 2000L
+        private const val DURATION_VISIBILITY_IMG = 800L
+        private const val DURATION_VISIBILITY_TXT = 250L
+
+        fun createAnimation(box: FrameLayout, img: ImageView, txt: TextView): ObjectAnimator =
+                ObjectAnimator.ofFloat(img, View.TRANSLATION_X, 0F).apply {
+                    repeatMode = ObjectAnimator.RESTART
+                    repeatCount = ObjectAnimator.INFINITE
+                    duration = DURATION_TOTAL
+                    addListener(CustomAnimatorListener(box, img, txt, this))
+                }
+    }
+
+    private fun runSelf() {
+        val moveX = (box.width - img.width).takeIf { it != 0 }?.toFloat()
+                .letIfNull { box.context.dip(WIDTH_DP_DEFAULT).toFloat() }
+        animator.setFloatValues(moveX)
+
         animateFadeIn()
         animateFadeOut()
         textViewAnimateFadeIn()
         textViewAnimateFadeOut()
     }
 
+    override fun onAnimationStart(animation: Animator) {
+        super.onAnimationStart(animation)
+
+        runSelf()
+    }
+
     override fun onAnimationRepeat(animation: Animator) {
         super.onAnimationRepeat(animation)
-        val activity = textView.context.baseActivity
+        val activity = txt.context.baseActivity
         if (activity == null || activity.isChangingConfigurations || activity.isFinishing) {
             animator.end()
             return
         }
 
-        animateFadeIn()
-        animateFadeOut()
-        textViewAnimateFadeIn()
-        textViewAnimateFadeOut()
+        runSelf()
     }
 
     private fun animateFadeIn() {
-        ObjectAnimator.ofFloat(imageView, View.ALPHA, 0F, 1F)
-                .apply { duration = 800 }.start()
+        ObjectAnimator.ofFloat(img, View.ALPHA, 0F, 1F)
+                .apply { duration = DURATION_VISIBILITY_IMG }.start()
     }
 
     private fun animateFadeOut() {
-        ObjectAnimator.ofFloat(imageView, View.ALPHA, 1F, 0F)
+        ObjectAnimator.ofFloat(img, View.ALPHA, 1F, 0F)
                 .apply {
-                    duration = 800
-                    startDelay = 1200
+                    duration = DURATION_VISIBILITY_IMG
+                    startDelay = DURATION_TOTAL - DURATION_VISIBILITY_IMG
                 }
                 .start()
     }
 
     private fun textViewAnimateFadeIn() {
-        ObjectAnimator.ofFloat(textView, View.ALPHA, 0F, 1F)
+        val sizeDiff = box.width
+                .takeIf { it != 0 }?.toFloat()
+                ?.let { (it - txt.width - img.width) / it }
+                ?: 0.5F
+
+        ObjectAnimator.ofFloat(txt, View.ALPHA, 0F, 1F)
                 .apply {
-                    duration = 500
-                    startDelay = 800
+                    duration = DURATION_VISIBILITY_TXT
+                    startDelay = min(
+                            DURATION_TOTAL - (DURATION_TOTAL * sizeDiff).toLong(),
+                            DURATION_TOTAL - (2* DURATION_VISIBILITY_TXT)
+                    )
+
                 }
                 .start()
     }
 
     private fun textViewAnimateFadeOut() {
-        ObjectAnimator.ofFloat(textView, View.ALPHA, 1F, 0F)
+        ObjectAnimator.ofFloat(txt, View.ALPHA, 1F, 0F)
                 .apply {
-                    duration = 500
-                    startDelay = 1500
+                    duration = DURATION_VISIBILITY_TXT
+                    startDelay = DURATION_TOTAL - DURATION_VISIBILITY_TXT
 
                 }
                 .start()

@@ -29,6 +29,10 @@ const val APP_OLD_PACKAGE_NAME = "cz.anty.purkynkamanager"
 
 //---------------------------------------------------------------------
 
+const val AUTHORITY_PROVIDER_FILES = "cz.anty.purkynka.files"
+
+//---------------------------------------------------------------------
+
 val ICON_HOME_DASHBOARD = GoogleMaterial.Icon.gmd_home
 val ICON_GRADES = GoogleMaterial.Icon.gmd_book
 val ICON_WIFI_LOGIN = GoogleMaterial.Icon.gmd_wifi_lock
@@ -49,7 +53,7 @@ val ICON_UPDATE = GoogleMaterial.Icon.gmd_system_update
 
 const val URL_FACEBOOK_PAGE = "https://www.facebook.com/aplikacepurkynka/" // TODO: 6/16/17 add url; use firebase remote config
 const val URL_WEB_PAGE = "https://anty.codetopic.eu/purkynka/" // TODO: 6/16/17 add url; use firebase remote config
-const val URL_WEB_DONATE_PAGE = "https://anty.codetopic.eu/purkynka/" // TODO: 6/16/17 add url; use firebase remote config
+//const val URL_WEB_DONATE_PAGE = "https://anty.codetopic.eu/purkynka/" // TODO: 6/16/17 add url; use firebase remote config
 
 //---------------------------------------------------------------------
 

@@ -95,9 +95,9 @@
         <item
             android:id="@+id/nav_contact_web_page"
             android:title="@string/action_contact_web_page" /> <!--Icon will be added after inflating-->
-        <item
+        <!--<item
             android:id="@+id/nav_contact_web_page_donate"
-            android:title="@string/action_contact_web_page_donate" /> <!--Icon will be added after inflating-->
+            android:title="@string/action_contact_web_page_donate" />--> <!--Icon will be added after inflating-->
     </group>
 
 </menu>

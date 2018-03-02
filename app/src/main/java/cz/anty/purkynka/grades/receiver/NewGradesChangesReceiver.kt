@@ -23,9 +23,7 @@ import android.content.Context
 import android.content.Intent
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
-import cz.anty.purkynka.grades.sync.GradesSyncAdapter
-import cz.anty.purkynka.grades.sync.GradesSyncAdapter.Companion.EXTRA_ACCOUNT_ID
-import cz.anty.purkynka.grades.sync.GradesSyncAdapter.Companion.EXTRA_GRADES_CHANGES
+import cz.anty.purkynka.grades.sync.GradesSyncer
 import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.bundle.BundleSerializer
@@ -44,13 +42,13 @@ class NewGradesChangesReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != GradesSyncAdapter.ACTION_NEW_GRADES_CHANGES) return
+        if (intent.action != GradesSyncer.ACTION_NEW_GRADES_CHANGES) return
 
-        val accountId = intent.getStringExtra(EXTRA_ACCOUNT_ID)
+        val accountId = intent.getStringExtra(GradesSyncer.EXTRA_ACCOUNT_ID)
                 ?: return Log.e(LOG_TAG, "onReceive",
                         IllegalArgumentException("AccountId was not received"))
         val gradesChanges = intent
-                .getKSerializableExtra(EXTRA_GRADES_CHANGES, BundleSerializer.list)
+                .getKSerializableExtra(GradesSyncer.EXTRA_GRADES_CHANGES, BundleSerializer.list)
                 ?: return Log.e(LOG_TAG, "onReceive",
                         IllegalArgumentException("Grades changes was not received"))
 

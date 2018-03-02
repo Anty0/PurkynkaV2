@@ -60,36 +60,29 @@ class GradesWidgetProvider : AppWidgetProvider() {
         private val ID_TYPE_REFRESH =
                 Identifiers.Type("cz.anty.purkynka.grades.widget.$LOG_TAG.ID_REFRESH")
 
-        @MainThread
         private fun getUpdateIntent(context: Context, appWidgetIds: IntArray, requestRefresh: Boolean): Intent =
                 Intent(context.applicationContext, GradesWidgetProvider::class.java)
                         .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
                         .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
                         .putExtra(EXTRA_REQUEST_REFRESH, requestRefresh)
 
-        @MainThread
         private fun getUpdateIntent(context: Context, requestRefresh: Boolean): Intent =
                 getUpdateIntent(context, getAllWidgetIds(context), requestRefresh)
 
-        @MainThread
         fun getUpdateIntent(context: Context, appWidgetIds: IntArray): Intent =
                 getUpdateIntent(context, appWidgetIds, false)
 
-        @MainThread
         fun getUpdateIntent(context: Context): Intent =
                 getUpdateIntent(context, false)
 
-        @MainThread
         fun getAllWidgetIds(context: Context): IntArray =
                 AppWidgetManager.getInstance(context)
                         .getAppWidgetIds(ComponentName(context, GradesWidgetProvider::class.java))
 
-        @MainThread
         fun notifyItemsChanged(context: Context) {
             notifyItemsChanged(context, getAllWidgetIds(context))
         }
 
-        @MainThread
         fun notifyItemsChanged(context: Context, appWidgetIds: IntArray) {
             AppWidgetManager.getInstance(context)
                     .notifyAppWidgetViewDataChanged(appWidgetIds, R.id.boxList)

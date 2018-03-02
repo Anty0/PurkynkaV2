@@ -21,6 +21,7 @@ package cz.anty.purkynka.grades.sync
 import android.accounts.Account
 import android.content.*
 import android.os.Bundle
+import android.support.annotation.WorkerThread
 import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
@@ -52,19 +53,12 @@ class GradesSyncAdapter(context: Context) :
 
         private const val LOG_TAG = "GradesSyncAdapter"
 
-        const val ACTION_NEW_GRADES_CHANGES =
-                "cz.anty.purkynka.grades.sync.$LOG_TAG.NEW_GRADES_CHANGES"
-        const val EXTRA_ACCOUNT_ID =
-                "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_ACCOUNT_ID"
-        const val EXTRA_GRADES_CHANGES =
-                "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_GRADES_CHANGES"
-
         const val CONTENT_AUTHORITY = GradesDataProvider.AUTHORITY
         const val SYNC_FREQUENCY = SYNC_FREQUENCY_GRADES
 
         const val EXTRA_SEMESTER = "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_SEMESTER"
 
-        fun init(context: Context) {
+        fun listenForChanges(context: Context) {
             BroadcastsConnector.connect(
                     GradesLoginData.instance.broadcastActionChanged,
                     BroadcastsConnector.Connection(
@@ -114,12 +108,6 @@ class GradesSyncAdapter(context: Context) :
 
         if (authority != CONTENT_AUTHORITY) return
 
-        val data = GradesData.instance
-        val loginData = GradesLoginData.loginData
-        val preferences = GradesPreferences.instance
-
-        val accountId = Accounts.getId(context, account)
-
         try {
             val semester = if (extras.containsKey(EXTRA_SEMESTER)) {
                 try {
@@ -131,127 +119,21 @@ class GradesSyncAdapter(context: Context) :
                 }
             } else Semester.AUTO.stableSemester
 
-            val firstSync = data.isFirstSync(accountId)
-
-            val semestersToFetch =
-                    if (firstSync) arrayOf(Semester.FIRST, Semester.SECOND)
-                    else arrayOf(semester)
-
-            if (!loginData.isLoggedIn(accountId))
-                throw IllegalStateException("User is not logged in")
-
-            val (username, password) = loginData.getCredentials(accountId)
-
-            if (username == null || password == null)
-                throw IllegalStateException("Username or password is null")
-
-            val cookies = GradesFetcher.login(username, password)
-
-            if (!GradesFetcher.isLoggedIn(cookies))
-                throw WrongLoginDataException("Failed to login user with provided credentials")
-
-            val gradesMap = data.getGrades(accountId).toMutableMap()
-
-            semestersToFetch.forEach {
-                fetchGradesToMap(accountId, cookies, it, !firstSync, gradesMap, syncResult)
-            }
-
-            GradesFetcher.logout(cookies)
-
-            data.setGrades(accountId, gradesMap)
-
-            data.notifyFirstSyncDone(accountId)
-            data.setLastSyncResult(accountId, SUCCESS)
-        } catch (e: Exception) {
-            Log.w(LOG_TAG, "Failed to refresh grades", e)
-
-            run setResult@ {
-                data.setLastSyncResult(accountId, when (e) {
-                    is WrongLoginDataException -> {
-                        syncResult.stats.numAuthExceptions++
-                        FAIL_LOGIN
-                    }
-                    is IOException -> {
-                        syncResult.stats.numIoExceptions++
-                        FAIL_CONNECT
-                    }
-                    is InterruptedException -> return@setResult
-                    else -> {
-                        syncResult.stats.numIoExceptions++
-                        FAIL_UNKNOWN
-                    }
-                })
-            }
-        } finally {
             try {
-                context.sendBroadcast(
-                        GradesWidgetProvider.getUpdateIntent(
-                                context,
-                                GradesWidgetProvider.getAllWidgetIds(context)
-                                        .filter { preferences.getAppWidgetAccountId(it) == accountId }
-                                        .toIntArray()
-                        )
+                GradesSyncer.performSync(
+                        context = context,
+                        account = account,
+                        semester = semester,
+                        firstSync = false,
+                        syncResult = syncResult
                 )
-            } catch (e: Exception) {
-                Log.e(LOG_TAG, "Failed to refresh grades widgets", e)
+            } catch (_: Exception) {
+                // Exception handling is done in GradesSyncer
             }
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "Failed to start sync of grades", e)
+
+            syncResult.stats.numIoExceptions++
         }
-    }
-
-    private fun fetchGradesToMap(accountId: String, cookies: Map<String, String>,
-                                 semester: Semester, checkForChanges: Boolean,
-                                 gradesMap: MutableGradesMap, syncResult: SyncResult) {
-        val gradesHtml = GradesFetcher.getGradesElements(cookies, semester)
-        val grades = GradesParser.parseGrades(gradesHtml, syncResult)
-
-        gradesMap.takeIf { checkForChanges }
-                ?.getOrElse(semester.value) { emptyList() }
-                ?.let {
-                    checkForDiffs(accountId, it, grades, syncResult)
-                }
-        gradesMap[semester.value] = grades
-    }
-
-    private fun checkForDiffs(accountId: String, oldGrades: List<Grade>, newGrades: List<Grade>,
-                              syncResult: SyncResult) {
-        val inserted = mutableListOf<Grade>()
-        val updated = mutableListOf<Pair<Grade, Grade>>()
-        val deleted = mutableListOf<Grade>()
-
-        newGrades.forEach {
-            val index = oldGrades.indexOf(it)
-            if (index == -1) {
-                inserted.add(it)
-                return@forEach
-            }
-
-            val oldGrade = oldGrades[index]
-            if (it differentTo oldGrade) updated.add(oldGrade to it)
-        }
-
-        deleted.addAll(oldGrades.filter { !newGrades.contains(it) })
-
-        syncResult.stats.numInserts += inserted.size
-        syncResult.stats.numUpdates += updated.size
-        syncResult.stats.numDeletes += deleted.size
-
-        val allChanges = inserted.map {
-            GradesChangesNotifyChannel.dataForNewGrade(it)
-        } + updated.map {
-            GradesChangesNotifyChannel.dataForModifiedGrade(it.first, it.second)
-        }
-
-        if (allChanges.isEmpty()) return
-
-        context.sendOrderedBroadcast(
-                Intent(ACTION_NEW_GRADES_CHANGES)
-                        .putExtra(EXTRA_ACCOUNT_ID, accountId)
-                        .putKSerializableExtra(
-                                name = EXTRA_GRADES_CHANGES,
-                                value = allChanges,
-                                saver = BundleSerializer.list
-                        ),
-                null
-        )
     }
 }

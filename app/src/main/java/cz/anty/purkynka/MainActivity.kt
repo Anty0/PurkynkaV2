@@ -54,6 +54,7 @@ import cz.anty.purkynka.account.ui.AccountEditActivity
 import cz.anty.purkynka.attendance.AttendanceSearchFragment
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.debug.DebugActivity
+import cz.anty.purkynka.easter.EasterEggAnimation
 import cz.anty.purkynka.grades.GradesFragment
 import cz.anty.purkynka.lunches.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
@@ -118,6 +119,8 @@ class MainActivity : NavigationActivity() {
     private val invalidateReceiver: BroadcastReceiver =
             receiver { _, _ -> invalidateNavigationMenu() }
 
+    private val invalidateListener: () -> Unit = { invalidateNavigationMenu() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar) // TODO: Animated app splash screen
         super.onCreate(savedInstanceState)
@@ -143,6 +146,12 @@ class MainActivity : NavigationActivity() {
             itemTextColor = white
             itemIconTintList = white
         }
+
+        EasterEggAnimation.applyOn(
+                findViewById<NavigationView>(R.id.navigationView)
+                        .getHeaderView(0)
+                        .findViewById(R.id.imgAppIcon)
+        )
 
         if (savedInstanceState == null && !DebugMode.isEnabled) {
             val appCtx = applicationContext
@@ -210,6 +219,16 @@ class MainActivity : NavigationActivity() {
         super.onStop()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        /*EasterEggAnimation.resetOn(
+                findViewById<NavigationView>(R.id.navigationView)
+                        .getHeaderView(0)
+                        .findViewById(R.id.imgAppIcon)
+        )*/
+    }
+
     private fun register() {
         registerReceiver(
                 invalidateReceiver,
@@ -222,11 +241,13 @@ class MainActivity : NavigationActivity() {
                         LunchesLoginData.getter
                 )
         )
+        DebugMode.addChangeListener(invalidateListener)
 
         invalidateNavigationMenu()
     }
 
     private fun unregister() {
+        DebugMode.removeChangeListener(invalidateListener)
         LocalBroadcast.unregisterReceiver(invalidateReceiver)
         unregisterReceiver(invalidateReceiver)
     }
@@ -344,15 +365,15 @@ class MainActivity : NavigationActivity() {
                 getIconics(ICON_SETTINGS).actionBar()
         menu.findItem(R.id.nav_debug).apply {
             icon = getIconics(ICON_DEBUG).actionBar()
-            isVisible = BuildConfig.DEBUG
+            isVisible = DebugMode.isEnabled
         }
 
         menu.findItem(R.id.nav_contact_facebook).icon =
                 getIconics(ICON_FACEBOOK).actionBar()
         menu.findItem(R.id.nav_contact_web_page).icon =
                 getIconics(ICON_WEB).actionBar()
-        menu.findItem(R.id.nav_contact_web_page_donate).icon =
-                getIconics(ICON_DONATE).actionBar()
+        /*menu.findItem(R.id.nav_contact_web_page_donate).icon =
+                getIconics(ICON_DONATE).actionBar()*/
 
         return true
     }
@@ -376,7 +397,7 @@ class MainActivity : NavigationActivity() {
                         R.id.nav_debug -> startActivity(Intent(this, DebugActivity::class.java))
                         R.id.nav_contact_facebook -> AndroidUtils.openUri(this, URL_FACEBOOK_PAGE, R.string.toast_browser_failed)
                         R.id.nav_contact_web_page -> AndroidUtils.openUri(this, URL_WEB_PAGE, R.string.toast_browser_failed)
-                        R.id.nav_contact_web_page_donate -> AndroidUtils.openUri(this, URL_WEB_DONATE_PAGE, R.string.toast_browser_failed)
+                        //R.id.nav_contact_web_page_donate -> AndroidUtils.openUri(this, URL_WEB_DONATE_PAGE, R.string.toast_browser_failed)
                         else -> return super.onNavigationItemSelected(item)
                     }
                     return true

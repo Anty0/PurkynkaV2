@@ -42,6 +42,7 @@ import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
+import eu.codetopic.utils.ui.view.hideKeyboard
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_wifi_login.*
@@ -253,6 +254,8 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     }
 
     private fun onLoginClick(v: View) {
+        act.currentFocus?.hideKeyboard()
+
         val accountId = accountHolder.accountId ?:
                 return longSnackbar(boxScrollView, R.string.snackbar_no_account_login).show()
         val loggedIn = userLoggedIn

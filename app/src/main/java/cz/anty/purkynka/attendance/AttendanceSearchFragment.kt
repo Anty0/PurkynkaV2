@@ -38,6 +38,7 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.appcompat.v7.coroutines.onClose
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextListener
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.support.v4.ctx
@@ -133,7 +134,8 @@ class AttendanceSearchFragment : NavigationFragment(SoftKeyboardSupportLoadingVH
                     ?.actionBar()
             actionView.to<SearchView>()
                     ?.apply {
-                        setIconifiedByDefault(true)
+                        setIconifiedByDefault(false)
+                        setQuery(adapter?.query, false)
                         onQueryTextListener {
                             val holder = holder
                             val self = this@AttendanceSearchFragment.asReference()

@@ -27,7 +27,6 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.Iconics
 import cz.anty.purkynka.account.Accounts
-import cz.anty.purkynka.exceptions.LoggedException
 import cz.anty.purkynka.feedback.save.FeedbackData
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.widget.GradesWidgetUpdateReceiver
@@ -53,12 +52,10 @@ import cz.anty.purkynka.update.sync.UpdateCheckJob
 import cz.anty.purkynka.update.sync.UpdateCheckJobCreator
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.utils.EvernoteJobManagerExtension
+import cz.anty.purkynka.utils.ExceptionHandlingExtension
 import cz.anty.purkynka.wifilogin.save.WifiData
 import cz.anty.purkynka.wifilogin.save.WifiLoginData
 import eu.codetopic.utils.ui.container.recycler.RecyclerInflater
-import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.log.Logger
-import eu.codetopic.java.utils.log.base.Priority
 import eu.codetopic.utils.UtilsBase
 import eu.codetopic.utils.UtilsBase.PARAM_INITIALIZE_UTILS
 import eu.codetopic.utils.UtilsBase.processNamePrimary
@@ -161,31 +158,8 @@ class AppInit : MultiDexApplication() {
         // Setup crashlytics
         Fabric.with(this, Crashlytics())
 
-        // Setup uncaught exception handler
-        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { thread, ex ->
-            Log.d("UExHandler", "Oh no, something went wrong (uncaught exception). " +
-                    "Ok, let's enable Feedback module...")
-
-            FeedbackData.takeIf { it.isInitialized() }
-                    ?.instance?.notifyErrorReceived()
-
-            defaultHandler.uncaughtException(thread, ex)
-        }
-
-        // Setup error logged listener
-        Logger.logsHandler.addOnLoggedListener onLogged@ {
-            if (it.priority != Priority.ERROR) return@onLogged
-
-            Log.d("UExHandler", "Oh no, something went wrong (error logged). " +
-                    "Ok, let's enable Feedback module...")
-
-            Crashlytics.getInstance()?.core
-                    ?.logException(LoggedException(it))
-
-            FeedbackData.takeIf { it.isInitialized() }
-                    ?.instance?.notifyErrorReceived()
-        }
+        // Setup uncaught exception handling
+        ExceptionHandlingExtension.install(this)
 
         // Setup Iconics
         Iconics.registerFont(GoogleMaterial())
@@ -196,6 +170,10 @@ class AppInit : MultiDexApplication() {
     private fun initAllProcesses() {
         // Let's initialize FeedbackData first, as they plays important role in error handling.
         FeedbackData.initialize(this)
+
+        // Let's initialize AppPreferences, as they hold some important
+        //  preferences required for initialization.
+        AppPreferences.initialize(this)
 
         // Initialize accounts (create default account, initialize accounts channels, etc.)
         initAccounts()
@@ -217,7 +195,6 @@ class AppInit : MultiDexApplication() {
 
     private fun initProcessPrimary() {
         // Initialize data providers required in this process
-        AppPreferences.initialize(this)
         UpdateData.initialize(this)
         GradesUiData.initialize(this)
         GradesData.initialize(this)
@@ -231,13 +208,6 @@ class AppInit : MultiDexApplication() {
 
         // Init Evernote's JobManager used here for app updates checking
         initJobManager()
-
-        // Request init of Evernote's JobManager used here for app updates checking
-        //requestInitJobManager()
-
-        // Initialize sync adapters
-        GradesSyncAdapter.init(this)
-        LunchesSyncAdapter.init(this)
     }
 
     private fun initProcessProviders() {
@@ -245,6 +215,11 @@ class AppInit : MultiDexApplication() {
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
         GradesPreferences.initialize(this)
+        LunchesLoginData.initialize(this)
+
+        // Initialize sync adapters login listening
+        GradesSyncAdapter.listenForChanges(this)
+        LunchesSyncAdapter.listenForChanges(this)
 
         // When notify data is updated, update widgets
         BroadcastsConnector.connect(

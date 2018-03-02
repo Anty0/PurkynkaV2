@@ -69,7 +69,9 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textNoSuggestions"
-                android:hint="@string/insert_username" />
+                android:hint="@string/insert_username"
+                android:importantForAutofill="yes"
+                android:autofillHints="username" />
         </android.support.design.widget.TextInputLayout>
 
         <!-- Password Label -->
@@ -86,7 +88,9 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPassword"
-                android:hint="@string/insert_password" />
+                android:hint="@string/insert_password"
+                android:importantForAutofill="yes"
+                android:autofillHints="password" />
         </android.support.design.widget.TextInputLayout>
 
         <TextView

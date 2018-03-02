@@ -74,9 +74,7 @@ object Accounts {
     private fun initDefaultAccount(context: Context) {
         context.accountManager
                 .takeIf { getAll(it).isEmpty() }
-                ?.let {
-                    add(context, it, context.getString(R.string.account_default_name))
-                }
+                ?.let { add(context, it, context.getString(R.string.account_default_name)) }
     }
 
     @Suppress("NOTHING_TO_INLINE")

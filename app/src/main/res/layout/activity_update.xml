@@ -63,6 +63,8 @@
                     android:id="@+id/txtUpToDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="16dp"
                     android:gravity="center_horizontal"
@@ -93,6 +95,8 @@
                     android:id="@+id/txtUpdateAvailable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="16dp"
                     android:gravity="center_horizontal"
@@ -133,6 +137,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:indeterminate="true" />
 
                 <TextView
@@ -140,13 +146,21 @@
                     android:id="@+id/txtDownloadProgress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end" />
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_gravity="end"
+                    android:gravity="end"
+                    android:lines="2"
+                    android:fontFamily="monospace"
+                    android:typeface="monospace" />
 
                 <TextView
                     style="?attr/textAppearanceListItem"
                     android:id="@+id/txtUpdateDownloading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="16dp"
                     android:gravity="center_horizontal"
@@ -177,11 +191,38 @@
                     android:id="@+id/txtUpdateDownloaded"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="16dp"
                     android:gravity="center_horizontal"
                     android:textSize="18sp"
                     android:text="@string/updates_text_update_downloaded" />
+
+                <LinearLayout
+                    android:id="@+id/boxUpdateDownloadedNotes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/materialYellow"
+                        android:text="@string/txt_title_release_notes" />
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:id="@+id/txtUpdateDownloadedNotes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"

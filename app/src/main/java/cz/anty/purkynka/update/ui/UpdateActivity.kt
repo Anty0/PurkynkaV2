@@ -21,6 +21,7 @@ package cz.anty.purkynka.update.ui
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.Menu
@@ -50,6 +51,7 @@ import eu.codetopic.utils.thread.progress.ProgressBarReporter
 import eu.codetopic.utils.thread.progress.ProgressInfo
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
+import eu.codetopic.utils.ui.view.asViewVisibility
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
@@ -110,6 +112,8 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         butDownloadUpdate.onClick { downloadUpdate() }
         butInstallUpdate.onClick { installUpdate() }
         butShowChangelog.onClick { showChangelog() }
+
+        if (savedInstanceState == null) refreshWithLoading()
 
         updateWithLoading()
     }
@@ -216,16 +220,29 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         val appContext = applicationContext
         val self = this.asReference()
         return launch(UI) {
+            delay(500) // Wait few loops to make sure, that content was updated.
+
             reporter.startShowingProgress()
 
-            bg { UpdateFetcher.fetchApk(appContext, versionInfo, reporter) }.await() ifFalse {
+            val success = bg { UpdateFetcher.fetchApk(appContext, versionInfo, reporter) }.await()
+
+            reporter.stopShowingProgress()
+
+            val valid = success && bg { UpdateFetcher.checkApk(appContext, versionInfo) }.await()
+
+            delay(500) // Wait few loops to make sure, that content was updated.
+
+            if (!success) {
                 longSnackbar(
                         view = self().progressDownload,
                         message = R.string.snackbar_updates_download_update_failed
                 )
+            } else if (!valid) {
+                longSnackbar(
+                        view = self().progressDownload,
+                        message = R.string.snackbar_updates_download_update_invalid
+                )
             }
-
-            reporter.stopShowingProgress()
 
             self().isDownloading = false
             self().update().join()
@@ -235,14 +252,23 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     private fun installUpdate() {
         if (!isDownloaded || !updateAvailable || isDownloading) return
 
-        val apkFile = UpdateFetcher.getApkFileFor(this, versionAvailable)
+        val apkUri = UpdateFetcher.getApkUriFor(this, versionAvailable)
         startActivity(
-                Intent(Intent.ACTION_VIEW)
-                        .setDataAndType(
-                                Uri.fromFile(apkFile),
-                                "application/vnd.android.package-archive"
-                        )
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                Intent(Intent.ACTION_INSTALL_PACKAGE)
+                        .setData(apkUri)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .putExtra(Intent.EXTRA_RETURN_RESULT, false)
+                        .also {
+                            @Suppress("DEPRECATION")
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                                it.putExtra(Intent.EXTRA_ALLOW_REPLACE, true)
+                        }
+
+                /*Intent(Intent.ACTION_VIEW)
+                        .setDataAndType(apkUri, "application/vnd.android.package-archive")
+                        .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)*/
         )
     }
 
@@ -292,6 +318,10 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
                         R.string.updates_text_update_downloaded,
                         versionCurrent.name, versionAvailable.name
                 )
+
+                val notes = versionAvailable.notes
+                boxUpdateDownloadedNotes.visibility = (notes != null).asViewVisibility()
+                txtUpdateDownloadedNotes.text = notes
             }
             updateAvailable -> {
                 boxUpdateAvailable.visibility = View.VISIBLE
@@ -318,20 +348,20 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         private val progressTextViewRef = WeakReference(progressTextView)
 
         override fun onChange(info: ProgressInfo) {
+            super.onChange(info)
             LooperUtils.postOnViewThread(progressTextViewRef.get()) {
-                progressTextViewRef.get()?.apply {
-                    text = SpannableStringBuilder().apply {
-                        val progressRatio = info.progress.toFloat() / info.maxProgress.toFloat()
-                        val progressPercent = (progressRatio * 100F).toInt()
+                progressTextViewRef.get()?.text = SpannableStringBuilder().apply str@ {
+                    if (info.isIntermediate) return@str
 
-                        val maxLen = info.maxProgress.toString().length
+                    val progressRatio = info.progress.toFloat() / info.maxProgress.toFloat()
+                    val progressPercent = (progressRatio * 100F).toInt()
 
-                        append(progressPercent.toString())
-                        append("%    ")
-                        append(info.progress.toString().fillToLen(maxLen, Anchor.RIGHT))
-                        append("/")
-                        append(info.maxProgress.toString())
-                    }
+                    append(info.progress.toString())
+                    append("/")
+                    append(info.maxProgress.toString())
+                    append("\n")
+                    append(progressPercent.toString())
+                    append("%")
                 }
             }
         }

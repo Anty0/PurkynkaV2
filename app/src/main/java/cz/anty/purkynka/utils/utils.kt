@@ -28,6 +28,8 @@ import android.widget.ImageView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.RequestCreator
 import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.account.Syncs
+import eu.codetopic.java.utils.alsoIfTrue
 import eu.codetopic.java.utils.ifNull
 import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.join
@@ -37,6 +39,7 @@ import io.michaelrocks.bimap.HashBiMap
 import io.michaelrocks.bimap.MutableBiMap
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.suspendCancellableCoroutine
 import kotlinx.coroutines.experimental.withTimeoutOrNull
 import kotlin.coroutines.experimental.suspendCoroutine
 import kotlin.math.max
@@ -86,27 +89,38 @@ val userAgent: String
     get() = "Purkynka/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; " +
             "Linux; rv:${BuildConfig.VERSION_CODE}; cz-cs) Mozilla/5.0 Gecko/20100101 Firefox/58.0"
 
-private const val TIMEOUT_SYNC_ACTIVE_MILIS = 30L * 1_000L
+//////////////////////////////////////
+//////REGION - SYNCS//////////////////
+//////////////////////////////////////
 
-suspend fun awaitForSyncCompleted(account: Account, contentAuthority: String): Boolean {
+private const val TIMEOUT_SYNC_ADD_MILIS = 10L * 1_000L
+private const val TIMEOUT_SYNC_ACTIVE_MILIS = 25L * 1_000L
+
+suspend fun awaitForSyncCompleted(account: Account, contentAuthority: String): Boolean? {
     // Sync sometimes reports, that is not started, at the beginning,
     // so we must wait for sync start before we can wait for sync end.
-    awaitForSyncAdd(account, contentAuthority)
+    if (!awaitForSyncAdd(account, contentAuthority)) return null
 
     return awaitForSyncActiveOrEnd(account, contentAuthority) ifTrue {
         awaitForSyncEnd(account, contentAuthority)
     }
 }
 
-suspend fun awaitForSyncAdd(account: Account, contentAuthority: String) = awaitForSyncState {
-    (ContentResolver.isSyncActive(account, contentAuthority) ||
-            ContentResolver.isSyncPending(account, contentAuthority))
-            .also {
-                Log.d(LOG_TAG, "awaitForSyncAdd(account=$account," +
-                        " contentAuthority=$contentAuthority)" +
-                        " -> (conditionResult=$it)")
+suspend fun awaitForSyncAdd(account: Account, contentAuthority: String) =
+        withTimeoutOrNull(TIMEOUT_SYNC_ADD_MILIS) {
+            awaitForSyncState {
+                (ContentResolver.isSyncActive(account, contentAuthority) ||
+                        ContentResolver.isSyncPending(account, contentAuthority))
+                        .also {
+                            Log.d(LOG_TAG, "awaitForSyncAdd(account=$account," +
+                                    " contentAuthority=$contentAuthority)" +
+                                    " -> (conditionResult=$it)")
+                        }
             }
-}
+        } ifNull {
+            Log.w(LOG_TAG, "awaitForSyncAdd(account=$account," +
+                    " contentAuthority=$contentAuthority) -> Timeout reached")
+        } != null
 
 suspend fun awaitForSyncActiveOrEnd(account: Account, contentAuthority: String) =
         withTimeoutOrNull(TIMEOUT_SYNC_ACTIVE_MILIS) {
@@ -135,19 +149,19 @@ suspend fun awaitForSyncEnd(account: Account, contentAuthority: String) = awaitF
 }
 
 private suspend inline fun awaitForSyncState(crossinline condition: () -> Boolean) =
-        suspendCoroutine<Unit> { cont ->
+        suspendCancellableCoroutine<Unit>(holdCancellability = true) coroutine@ { cont ->
             if (run(condition)) {
                 cont.resume(Unit)
-                return@suspendCoroutine
+                return@coroutine
             }
 
             var observerHandle: Any? = null
-            val observer = SyncStatusObserver {
-                if (!run(condition)) return@SyncStatusObserver
+            val observer = SyncStatusObserver observer@ {
+                if (!run(condition)) return@observer
 
                 observerHandle?.let {
                     synchronized(it) {
-                        if (observerHandle == null) return@SyncStatusObserver
+                        if (observerHandle == null) return@observer
                         observerHandle = null
                         ContentResolver.removeStatusChangeListener(it)
                         cont.resume(Unit)
@@ -162,7 +176,14 @@ private suspend inline fun awaitForSyncState(crossinline condition: () -> Boolea
             // WTF is 'which' argument of SyncStatusObserver?!
             // There is nothing in android documentation...
             observer.onStatusChanged(0)
+
+            cont.initCancellability()
+
         }
+
+//////////////////////////////////////
+//////REGION - BiMap//////////////////
+//////////////////////////////////////
 
 fun <K : Any, V : Any> biMapOf(vararg pairs: Pair<K, V>): BiMap<K, V> =
         mutableBiMapOf(*pairs)

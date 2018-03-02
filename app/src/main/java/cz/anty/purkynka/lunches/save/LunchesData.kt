@@ -74,12 +74,6 @@ class LunchesData private constructor(context: Context) :
             Float.NaN
     )
 
-    private val firstSyncPref = BooleanPreference(
-            FIRST_SYNC,
-            accessProvider,
-            true
-    )
-
     private val invalidityPref = BooleanPreference(
             INVALID,
             accessProvider,
@@ -95,12 +89,6 @@ class LunchesData private constructor(context: Context) :
     fun invalidateData(id: String) { invalidityPref[this, id] = true }
 
     fun isDataValid(id: String): Boolean = !invalidityPref[this, id]
-
-    fun isFirstSync(id: String): Boolean = firstSyncPref[this, id]
-
-    fun resetFirstSyncState(id: String) { firstSyncPref[this, id] = false }
-
-    fun notifyFirstSyncDone(id: String) { firstSyncPref[this, id] = false }
 
     fun getLastSyncResult(id: String): SyncResult = lastSyncResultPref[this, id]
 

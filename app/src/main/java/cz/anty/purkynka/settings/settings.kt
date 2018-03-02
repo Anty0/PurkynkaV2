@@ -32,10 +32,8 @@ import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.update.ui.UpdateActivity
 import cz.anty.purkynka.utils.URL_FACEBOOK_PAGE
-import cz.anty.purkynka.utils.URL_WEB_DONATE_PAGE
 import cz.anty.purkynka.utils.URL_WEB_PAGE
 import eu.codetopic.java.utils.format
-import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.AndroidUtils
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
@@ -131,10 +129,10 @@ class CustomPreferenceFragment : PreferenceFragment() {
             AndroidUtils.openUri(ctx, URL_WEB_PAGE, R.string.toast_browser_failed)
             return@listener true
         }
-        findPreference(getString(R.string.pref_key_activity_web_page_donate)).setOnPreferenceClickListener listener@ {
+        /*findPreference(getString(R.string.pref_key_activity_web_page_donate)).setOnPreferenceClickListener listener@ {
             AndroidUtils.openUri(ctx, URL_WEB_DONATE_PAGE, R.string.toast_browser_failed)
             return@listener true
-        }
+        }*/
     }
 }
 

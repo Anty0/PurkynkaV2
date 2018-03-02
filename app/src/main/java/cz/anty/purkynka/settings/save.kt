@@ -20,8 +20,11 @@ package cz.anty.purkynka.settings
 
 import android.content.Context
 import android.content.SharedPreferences
+import cz.anty.purkynka.BuildConfig
+import cz.anty.purkynka.utils.ENABLE_DEBUG_MODE
 import cz.anty.purkynka.utils.FILE_NAME_APP_PREFERENCES
 import cz.anty.purkynka.utils.SHOW_TRY_SWIPE_ITEM
+import eu.codetopic.java.utils.debug.DebugMode
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.BooleanPreference
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
@@ -58,6 +61,25 @@ class AppPreferences private constructor(context: Context) :
             } // No more versions yet
         }
     }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        DebugMode.isEnabled = isDebugModeEnabled
+    }
+
+    override fun onChanged(key: String?) {
+        super.onChanged(key)
+
+        if (key == null || key == ENABLE_DEBUG_MODE)
+            DebugMode.isEnabled = isDebugModeEnabled
+    }
+
+    var isDebugModeEnabled by BooleanPreference(
+            key = ENABLE_DEBUG_MODE,
+            provider = accessProvider,
+            defaultValue = BuildConfig.DEBUG
+    )
 
     var showTrySwipeItem by BooleanPreference(
             key = SHOW_TRY_SWIPE_ITEM,

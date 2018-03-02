@@ -227,10 +227,10 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrid
                     ))
                 }
                 PARAM_TYPE_VAL_MODIFIED -> {
-                    val changes = data.getString(PARAM_CHANGES_LIST)
+                    /*val changes = data.getString(PARAM_CHANGES_LIST)
                             ?.let { JSON.parse(StringSerializer.list, it) }
                             ?: throw IllegalArgumentException(
-                                    "Data doesn't contains grade's changes list")
+                                    "Data doesn't contains grade's changes list")*/
 
                     // TODO: show changes
 

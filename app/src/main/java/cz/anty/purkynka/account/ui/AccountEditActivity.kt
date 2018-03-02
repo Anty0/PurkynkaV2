@@ -31,6 +31,7 @@ import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
+import eu.codetopic.utils.ui.view.hideKeyboard
 import kotlinx.android.synthetic.main.activity_edit_account.*
 
 /**
@@ -63,6 +64,8 @@ class AccountEditActivity : ModularActivity(ToolbarModule(), BackButtonModule())
     }
 
     fun save(v: View) {
+        currentFocus?.hideKeyboard()
+
         val userName = inAccountName.text.toString()
                 .trim().takeIf { it.isNotEmpty() } ?:
                 run {

@@ -19,14 +19,14 @@
 package cz.anty.purkynka.update.load
 
 import android.content.Context
+import android.net.Uri
+import android.os.Build
 import android.support.annotation.WorkerThread
 import cz.anty.purkynka.utils.*
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.debug.DebugMode
 import org.jsoup.Jsoup
-import android.os.Environment
-import android.support.annotation.MainThread
-import cz.anty.purkynka.BuildConfig
+import android.support.v4.content.FileProvider
 import cz.anty.purkynka.update.data.AvailableVersionInfo
 import eu.codetopic.java.utils.letIfNull
 import eu.codetopic.java.utils.to
@@ -48,40 +48,46 @@ object UpdateFetcher {
     private const val LOG_TAG = "UpdateFetcher"
 
     private val API_VERSION = if (DebugMode.isEnabled) "dev" else "v1"
-    private val URL_BASE = "https://anty.codetopic.eu/purkynka/api/$API_VERSION" // TODO: implement on server side
+    private val URL_BASE = "https://anty.codetopic.eu/purkynka/api/$API_VERSION"
     private val URL_VERSION = "$URL_BASE/getAvailableVersionInfo.php"
 
     private const val DIR_UPDATES = "updates"
 
-    private fun getApkPathFor(versionInfo: AvailableVersionInfo): String =
-            "$DIR_UPDATES/app-v${versionInfo.code}.apk"
+    private fun getApkNameFor(versionInfo: AvailableVersionInfo): String =
+            "app-v${versionInfo.code}.apk"
 
     private fun getApksDir(context: Context): File =
-            File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), DIR_UPDATES)
+            File(context.externalCacheDir, DIR_UPDATES)
 
     fun getApkFileFor(context: Context, versionInfo: AvailableVersionInfo): File =
-            File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-                    getApkPathFor(versionInfo))
+            File(context.externalCacheDir, "$DIR_UPDATES/${getApkNameFor(versionInfo)}")
+
+    fun getApkUriFor(context: Context, versionInfo: AvailableVersionInfo): Uri =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                FileProvider.getUriForFile(
+                        context,
+                        AUTHORITY_PROVIDER_FILES,
+                        getApkFileFor(context, versionInfo)
+                )
+            } else {
+                Uri.fromFile(getApkFileFor(context, versionInfo))
+            }
 
     @WorkerThread
     fun fetchVersionInfo(): AvailableVersionInfo? = try {
-        /*val json = Jsoup.connect(URL_VERSION)
+        val json = Jsoup.connect(URL_VERSION)
                 .userAgent(userAgent)
                 .ignoreContentType(true)
                 .followRedirects(false) // basic protection against login pages
                 .execute().body()
-        JSON.parse<AvailableVersionInfo>(json)*/ // TODO: uncomment after implementation on server
-        AvailableVersionInfo(
-                code =  BuildConfig.VERSION_CODE,
-                name = BuildConfig.VERSION_NAME
-        )
+        JSON.parse<AvailableVersionInfo>(json)
     } catch (e: Exception) {
         Log.w(LOG_TAG, "fetchVersionInfo()", e); null
     }.also {
         Log.d(LOG_TAG, "fetchVersionInfo() -> (versionInfo=$it)")
     }
 
-    @MainThread
+    @WorkerThread
     fun checkApk(appContext: Context, versionInfo: AvailableVersionInfo): Boolean {
         val sha512sum = versionInfo.sha512sum
         val apkFile = getApkFileFor(appContext, versionInfo)
@@ -160,7 +166,7 @@ object UpdateFetcher {
     fun fetchApk(appContext: Context, versionInfo: AvailableVersionInfo,
                  reporter: ProgressReporter): Boolean {
         try {
-            val url = versionInfo.url ?: run {
+            val url = versionInfo.url?.let { "$URL_BASE/$it" } ?: run {
                 Log.w(LOG_TAG, "Can't fetch apk -> No download url available")
                 return false
             }
@@ -178,7 +184,10 @@ object UpdateFetcher {
                     .apply {
                         requestMethod = "GET"
                         instanceFollowRedirects = false // basic protection against login pages
-                        doOutput = true
+
+                        setRequestProperty("User-Agent", userAgent)
+                        setRequestProperty("Accept", "*/*")
+
                         connect()
                     }
 

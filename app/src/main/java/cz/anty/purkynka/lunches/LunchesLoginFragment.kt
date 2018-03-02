@@ -28,14 +28,13 @@ import android.view.View
 import android.view.ViewGroup
 import cz.anty.purkynka.utils.ICON_LUNCHES
 import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
+import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
-import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
-import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
+import cz.anty.purkynka.lunches.sync.LunchesSyncer
 import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.*
@@ -47,6 +46,7 @@ import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
+import eu.codetopic.utils.ui.view.hideKeyboard
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_lunches_login.*
@@ -54,10 +54,12 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import kotlinx.io.IOException
 import org.jetbrains.anko.coroutines.experimental.Ref
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
 
@@ -72,37 +74,53 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
         private const val LOG_TAG = "LunchesLoginFragment"
 
-        suspend fun doLogin(viewRef: Ref<View>,
+        suspend fun doLogin(appContext: Context, viewRef: Ref<View>,
                           account: Account, accountId: String,
                           username: String, password: String): Boolean {
-            bg {
-                LunchesData.instance.resetFirstSyncState(accountId)
-                LunchesLoginData.loginData.login(accountId, username, password)
-            }.await()
+            val syncResult = run sync@ {
+                try {
+                    bg {
+                        LunchesSyncer.performSync(
+                                context = appContext,
+                                account = account,
+                                credentials = username to password,
+                                firstSync = true
+                        )
+                    }.await()
+                    return@sync SUCCESS
+                } catch (e: Exception) {
+                    return@sync when (e) {
+                        is WrongLoginDataException -> FAIL_LOGIN
+                        is IOException -> FAIL_CONNECT
+                        else -> FAIL_UNKNOWN
+                    }
+                }
+            }
 
-            // Sync will be triggered later by login change broadcast
-            return if (awaitForSyncCompleted(account, LunchesSyncAdapter.CONTENT_AUTHORITY)) {
-                val syncResult = bg { LunchesData.instance.getLastSyncResult(accountId) }.await()
-                if (syncResult == FAIL_LOGIN) {
-                    longSnackbar(viewRef(), R.string.snackbar_lunches_login_fail)
-                    bg { LunchesLoginData.loginData.logout(accountId) }.await()
-
-                    false
-                } else true
-            } else {
-                longSnackbar(viewRef(), R.string.snackbar_sync_start_fail)
-                bg { LunchesLoginData.loginData.logout(accountId) }.await()
-
-                false
+            return run process@ {
+                when (syncResult) {
+                    SUCCESS -> {
+                        bg {
+                            LunchesLoginData.loginData
+                                    .login(accountId, username, password)
+                        }.await()
+                        return@process true
+                    }
+                    FAIL_LOGIN -> {
+                        longSnackbar(viewRef(), R.string.snackbar_lunches_login_fail)
+                        return@process false
+                    }
+                    FAIL_CONNECT, FAIL_UNKNOWN -> {
+                        longSnackbar(viewRef(), R.string.snackbar_sync_start_fail)
+                        return@process false
+                    }
+                }
             }
         }
 
         suspend fun doLogout(appContext: Context,
                              accountId: String): Boolean {
-            bg {
-                LunchesLoginData.loginData.logout(accountId)
-                LunchesData.instance.resetFirstSyncState(accountId)
-            }.await()
+            bg { LunchesLoginData.loginData.logout(accountId) }.await()
 
             NotifyManager.requestCancelAll(
                     context = appContext,
@@ -153,7 +171,10 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        butLogin.setOnClickListener { login() }
+        butLogin.setOnClickListener {
+            act.currentFocus?.hideKeyboard()
+            login()
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -250,13 +271,14 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         val username = inUsername.text.toString()
         val password = inPassword.text.toString()
 
+        val appContext = view.context.applicationContext
         val self = this.asReference()
         val viewRef = view.asReference()
         val holder = holder
         launch(UI) {
             holder.showLoading()
 
-            doLogin(viewRef, account, accountId, username, password) ifTrue {
+            doLogin(appContext, viewRef, account, accountId, username, password) ifTrue {
                 // Success :D
                 // Let's switch fragment
                 self().switchFragment(LunchesOrderFragment::class.java)

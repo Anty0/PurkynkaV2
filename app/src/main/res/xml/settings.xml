@@ -57,8 +57,8 @@
         <Preference
             android:key="@string/pref_key_activity_web_page"
             android:title="@string/action_contact_web_page" />
-        <Preference
+        <!--<Preference
             android:key="@string/pref_key_activity_web_page_donate"
-            android:title="@string/action_contact_web_page_donate" />
+            android:title="@string/action_contact_web_page_donate" />-->
     </PreferenceCategory>
 </PreferenceScreen>

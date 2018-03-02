@@ -20,6 +20,7 @@ package cz.anty.purkynka.lunches.notify
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -29,6 +30,7 @@ import android.support.v4.content.ContextCompat
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
 import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
+import cz.anty.purkynka.lunches.sync.LunchesBurzaWatcherService
 import eu.codetopic.utils.notifications.manager.combinedIdFor
 import eu.codetopic.utils.notifications.manager.data.NotifyId
 import eu.codetopic.utils.notifications.manager.util.NotifyChannel
@@ -107,6 +109,16 @@ class LunchesBurzaWatcherStatusChannel : NotifyChannel(ID, false) {
         return buildNotificationBase(context, group).apply {
             setContentTitle(context.getText(R.string.notify_lunches_watcher_status_title))
             setContentText(context.getText(R.string.notify_lunches_watcher_status_text))
+            addAction(
+                    R.drawable.ic_notify_action_stop,
+                    context.getText(R.string.but_stop_all),
+                    PendingIntent.getService(
+                            context,
+                            0,
+                            LunchesBurzaWatcherService.getStopAllWatchersIntent(context),
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+            )
         }
     }
 }

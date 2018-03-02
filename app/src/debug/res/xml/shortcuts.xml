@@ -43,7 +43,6 @@
             android:targetPackage="cz.anty.purkynka.debug"
             android:targetClass="cz.anty.purkynka.MainActivity"
             android:data="shortcut://cz.anty.purkynka.wifilogin.WifiLoginFragment" />
-        <!-- TODO: try use ${applicationId}-->
     </shortcut>
     <shortcut
         android:shortcutId="lunches_order"

@@ -27,7 +27,7 @@
         android:id="@+id/action_search"
         android:title="@string/menu_item_text_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="collapseActionView|ifRoom" /> <!--Icon will be added after inflating-->
+        app:showAsAction="ifRoom" /> <!--Icon will be added after inflating-->
 
     <item
         android:id="@+id/action_refresh"

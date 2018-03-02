@@ -70,23 +70,6 @@ class GradesData private constructor(context: Context) :
             SyncResult.SUCCESS
     )
 
-    private val firstSyncPref = BooleanPreference(
-            FIRST_SYNC,
-            accessProvider,
-            true
-    )
-
-    fun isFirstSync(id: String): Boolean =
-            firstSyncPref[this, id]
-
-    fun resetFirstSyncState(id: String) {
-        firstSyncPref[this, id] = false
-    }
-
-    fun notifyFirstSyncDone(id: String) {
-        firstSyncPref[this, id] = false
-    }
-
     fun getLastSyncResult(id: String): SyncResult =
             lastSyncResultPref[this, id]
 

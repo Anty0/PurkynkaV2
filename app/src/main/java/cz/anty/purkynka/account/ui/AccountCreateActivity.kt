@@ -31,6 +31,7 @@ import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
+import eu.codetopic.utils.ui.view.hideKeyboard
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.activity_create_account.*
@@ -65,6 +66,8 @@ class AccountCreateActivity : ModularActivity(ToolbarModule(), BackButtonModule(
     }
 
     fun login(v: View) {
+        currentFocus?.hideKeyboard()
+
         val userName = inAccountName.text.toString()
                 .trim().takeIf { it.isNotEmpty() } ?:
                 run {

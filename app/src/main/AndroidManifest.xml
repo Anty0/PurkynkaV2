@@ -27,6 +27,9 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <uses-permission
         android:name="android.permission.GET_ACCOUNTS"
         android:maxSdkVersion="22" />
@@ -70,6 +73,10 @@
         <activity
             android:name=".debug.DebugActivity"
             android:label="@string/title_activity_debug_info"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".easter.EasterEggActivity"
+            android:label="@string/title_activity_easter_egg"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".update.ui.UpdateActivity"
@@ -156,6 +163,7 @@
 
             <intent-filter>
                 <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED" />
+                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_RENAMED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -166,7 +174,7 @@
             android:process=":syncs">
 
             <intent-filter android:priority="-1">
-                <action android:name="cz.anty.purkynka.grades.sync.GradesSyncAdapter.NEW_GRADES_CHANGES" />
+                <action android:name="cz.anty.purkynka.grades.sync.GradesSyncer.NEW_GRADES_CHANGES" />
             </intent-filter>
         </receiver>
         <receiver
@@ -222,6 +230,7 @@
 
             <intent-filter>
                 <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED" />
+                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_RENAMED" />
             </intent-filter>
         </receiver>
         <!-- TODO: next lunch widget -->
@@ -289,6 +298,17 @@
             android:label="@string/label_service_lunches_burza_watcher"
             android:process=":syncs" />
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="cz.anty.purkynka.files"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:process=":providers">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_files_paths" />
+        </provider>
         <provider
             android:name=".settings.AppPreferencesProvider"
             android:authorities="cz.anty.purkynka.preferences"
