@@ -35,11 +35,11 @@
     <string name="notify_update_available_text">New version: %1$s</string>
     <string name="notify_update_available_version_unknown">Unknown</string>
     <string name="notify_version_changes_title">Something was changed</string>
-    <string name="notify_version_changes_text">"Find out what's new in %1$s"</string>
-    <string name="notify_version_changes_big_title">Something was changed in %1$s</string>
+    <string name="notify_version_changes_text">"Find out what's new in version %1$s"</string>
+    <string name="notify_version_changes_big_title">Something was changed in version %1$s</string>
     <string name="notify_version_changes_summary_title">Something was changed</string>
     <string name="notify_version_changes_summary_text">"Find out what's new in versions: %1$s"</string>
-    <string name="notify_version_changes_summary_line">"Something was changed in %1$s"</string>
+    <string name="notify_version_changes_summary_line">"Something was changed in version %1$s"</string>
     <string name="notify_grade_new_title">New grade %1$s from %2$s</string>
     <string name="notify_grade_new_text_note">%1$s by %2$s</string>
     <string name="notify_grade_new_text">By %2$s</string>
@@ -72,13 +72,12 @@
 
     <string name="title_activity_easter_egg">Application Purkynka</string>
     <string name="title_activity_update">Update check</string>
-    <string name="title_activity_version_changes">News in %1$s</string>
+    <string name="title_activity_version_changes">News in version %1$s</string>
     <string name="title_activity_changelog">Changelog</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="title_activity_debug_info">Debug info</string>
+    <string name="title_activity_debug_tools">Debug tools</string>
     <string name="title_activity_create_account">Create account</string>
     <string name="title_activity_edit_account">Edit account</string>
-    <string name="title_activity_account_properties">Account properties</string>
     <string name="title_activity_subject">Subject</string>
     <string name="title_activity_grade">Grade</string>
     <string name="title_activity_grade_with_subject">Grade from %1$s</string>
@@ -146,7 +145,6 @@
     <string name="action_show_lunches_order">Order</string>
     <string name="action_show_lunches_burza">Burza</string>
     <string name="action_show_lunches_burza_watcher">Burza watcher</string>
-    <string name="action_show_timetables">Timetables</string>
     <string name="action_show_attendance">Attendance</string>
     <string name="action_show_settings">Settings</string>
     <string name="action_show_debug">Debug</string>
@@ -179,6 +177,7 @@
     <string name="but_save">Save</string>
     <string name="but_save_and_enable">Save &amp; Enable</string>
     <string name="but_disable">Disable</string>
+    <string name="but_disable_forget">Disable &amp; Forget</string>
     <string name="but_continue">Continue</string>
     <string name="but_cancel">Cancel</string>
     <string name="but_lunch_to_burza">Put to burza</string>
@@ -218,7 +217,7 @@
     <string name="item_debug_toast_fake_update_fetch_result">Fake fetch done! Result: %1$s</string>
     <string name="item_debug_toast_fake_version_changes_result">Fake application upgrade done!</string>
     <string name="item_login_grades_title">Login to grades</string>
-    <string name="item_login_grades_subtitle">And browse your grades right on your device!</string>
+    <string name="item_login_grades_subtitle">And browse grades right on your device!</string>
     <string name="item_login_lunches_title">Login to lunches</string>
     <string name="item_login_lunches_subtitle">And order lunches right on your device!</string>
     <string name="item_login_wifi_title">Login to WiFi auto login</string>
@@ -228,8 +227,8 @@
     <string name="item_lunches_new_title_main">New lunch</string>
     <string name="item_loading_title">Loading…</string>
     <string name="item_loading_subtitle">Please wait…</string>
-    <string name="item_dashboard_try_swipe_title">Welcome to Application Purkynka</string>
-    <string name="item_dashboard_try_swipe_subtitle">This is your dashboard. Everything important will appear here.</string>
+    <string name="item_dashboard_try_swipe_title">Welcome to application Purkynka</string>
+    <string name="item_dashboard_try_swipe_subtitle">This is your dashboard. Everything important will automatically appear here.</string>
     <string name="item_dashboard_try_swipe_txt_how_to_dismiss">Swipe to dismiss</string>
 
     <string name="widget_grades_no_account_text">Account not found</string>
@@ -269,11 +268,11 @@
     <string name="txt_info_warning">Warning</string>
     <string name="txt_info_warning_lunch_ordered">You have got lunch for this day</string>
     <string name="txt_info_warning_lunch_no_options">No lunches for this day</string>
-    <string name="txt_info_status">Status</string>
-    <string name="txt_info_status_running">Running</string>
-    <string name="txt_info_status_stopping">Stopping</string>
-    <string name="txt_info_status_ready">Ready</string>
-    <string name="txt_info_status_not_ready">Preparing</string>
+    <string name="txt_info_state">State</string>
+    <string name="txt_info_state_running">Running</string>
+    <string name="txt_info_state_stopping">Stopping</string>
+    <string name="txt_info_state_ready">Ready</string>
+    <string name="txt_info_state_not_ready">Preparing</string>
     <string name="txt_info_refresh_count">Count of refreshes</string>
     <string name="txt_info_order_count">Count of order attempts</string>
     <string name="txt_info_date">Date</string>
@@ -311,7 +310,7 @@
     <string name="empty_view_text_changelog">No changelog</string>
     <string name="empty_view_text_small_changelog">All important changes and improvements in application will appear here.</string>
     <string name="empty_view_text_dashboard">No items on dashboard</string>
-    <string name="empty_view_text_small_dashboard">All important information will appear here.</string>
+    <string name="empty_view_text_small_dashboard">Everything important will appear here.</string>
     <string name="empty_view_text_no_grades">No grades</string>
     <string name="empty_view_text_small_no_grades">All your grades from selected semester will appear here.</string>
     <string name="empty_view_text_small_no_grades_widget">All your grades will appear here.</string>
@@ -328,7 +327,7 @@
     <string name="dialog_uninstall_old_app_message">We found old version of application Purkynka installed on your phone. Should we remove it?</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
-    <string name="toast_wifi_logging_start">Sending login request to WiFi <i>%1$s</i></string>
+    <string name="toast_wifi_logging_start">Sending login request to WiFi &lt;i&gt;%1$s&lt;/i&gt;</string>
     <string name="toast_wifi_logging_start_unknown">Sending login request to unknown WiFi</string>
     <string name="toast_wifi_logging_fail">Failed to sent login request to WiFi</string>
     <string name="toast_wifi_logging_success">Successfully sent login request to WiFi</string>

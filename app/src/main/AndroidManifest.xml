@@ -72,7 +72,7 @@
         </activity>
         <activity
             android:name=".debug.DebugActivity"
-            android:label="@string/title_activity_debug_info"
+            android:label="@string/title_activity_debug_tools"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".easter.EasterEggActivity"

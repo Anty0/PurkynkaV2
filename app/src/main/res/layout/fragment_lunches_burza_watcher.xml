@@ -214,7 +214,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:textSize="14sp"
-                        android:text="@string/txt_info_status" />
+                        android:text="@string/txt_info_state" />
 
                     <LinearLayout
                         android:id="@+id/boxStatusLineRunning"
@@ -236,7 +236,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="24sp"
-                            android:text="@string/txt_info_status_running" />
+                            android:text="@string/txt_info_state_running" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -259,7 +259,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="24sp"
-                            android:text="@string/txt_info_status_stopping" />
+                            android:text="@string/txt_info_state_stopping" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -285,7 +285,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="24sp"
-                            android:text="@string/txt_info_status_ready" />
+                            android:text="@string/txt_info_state_ready" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -311,7 +311,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="24sp"
-                            android:text="@string/txt_info_status_not_ready" />
+                            android:text="@string/txt_info_state_not_ready" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>

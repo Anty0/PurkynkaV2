@@ -41,10 +41,7 @@ import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.alsoIf
 import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.ifFalse
-import eu.codetopic.utils.receiver
-import eu.codetopic.utils.getFormattedText
-import eu.codetopic.utils.getIconics
-import eu.codetopic.utils.intentFilter
+import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.thread.LooperUtils
 import eu.codetopic.utils.thread.progress.ProgressBarReporter
@@ -56,7 +53,9 @@ import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.activity_update.*
+import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.Job as KJob
@@ -164,7 +163,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         launch(UI) {
             holder.showLoading()
 
-            fetchUpdate()
+            fetchUpdate().join()
 
             delay(500) // Wait few loops to make sure, that content was updated.
             holder.hideLoading()
@@ -180,7 +179,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
         val boxRefreshLayoutRef = boxRefreshLayout.asReference()
         launch(UI) {
-            fetchUpdate()
+            fetchUpdate().join()
 
             // wait for ui update
             delay(500)
@@ -189,13 +188,15 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         }
     }
 
-    private suspend fun fetchUpdate(): Job.Result {
+    private fun fetchUpdate(): Deferred<Job.Result> {
         val self = this.asReference()
-        return bg { Updater.fetchUpdates() }.await()
-                .also { Updater.suspendNotifyAboutUpdate(self) }
-                .alsoIf({ it == Job.Result.FAILURE }) {
-                    snackbarUpdateFetchFailed()
-                }
+        return async(UI) {
+            bg { Updater.fetchUpdates() }.await()
+                    //.also { Updater.suspendNotifyAboutUpdate(self) }
+                    .alsoIf({ it == Job.Result.FAILURE }) {
+                        self().snackbarUpdateFetchFailed()
+                    }
+        }
     }
 
     private fun snackbarUpdateFetchFailed() = longSnackbar(
@@ -321,7 +322,9 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
                 val notes = versionAvailable.notes
                 boxUpdateDownloadedNotes.visibility = (notes != null).asViewVisibility()
-                txtUpdateDownloadedNotes.text = notes
+                txtUpdateDownloadedNotes.text = notes?.let {
+                    return@let AndroidUtils.fromHtml(it)
+                }
             }
             updateAvailable -> {
                 boxUpdateAvailable.visibility = View.VISIBLE
