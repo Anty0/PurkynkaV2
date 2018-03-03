@@ -84,6 +84,6 @@ class AccountEditActivity : ModularActivity(ToolbarModule(), BackButtonModule())
             return
         }
 
-        Snackbar.make(v, R.string.snackbar_edit_failed, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(v, R.string.snackbar_account_edit_failed, Snackbar.LENGTH_LONG).show()
     }
 }

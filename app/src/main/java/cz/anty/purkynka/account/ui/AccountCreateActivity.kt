@@ -87,7 +87,7 @@ class AccountCreateActivity : ModularActivity(ToolbarModule(), BackButtonModule(
             return
         }
 
-        Snackbar.make(v, R.string.snackbar_login_failed, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(v, R.string.snackbar_account_create_failed, Snackbar.LENGTH_LONG).show()
     }
 
     override fun finish() {

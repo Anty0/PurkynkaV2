@@ -52,8 +52,6 @@ android {
         versionName "v5.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        //vectorDrawables.useSupportLibrary = true
-        // TODO: instead of this line build different apk for different api
     }
     buildTypes {
         def proguardList = [getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro']

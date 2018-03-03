@@ -288,4 +288,94 @@
     <string name="toast_wifi_logging_start_unknown">Odesílám požadavek na přihlášení k neznámé WiFi</string>
     <string name="toast_wifi_logging_fail">Nepodařilo se odeslat požadavek na přihlášení k WiFi</string>
     <string name="toast_wifi_logging_success">Úspěšně odeslán požadavek na přihlášení k WiFi</string>
+    <string name="but_disable_forget">Vypnout &amp; Zapomenout</string>
+    <string name="snackbar_no_account_sync">Žádný účet není k dispozici, synchronizace selhala.</string>
+    <string name="snackbar_no_account_login">Žádný účet není k dispozici, přihlášení selhalo.</string>
+    <string name="snackbar_no_account_logout">Žádný účet není k dispozici, odhlášení selhalo.</string>
+    <string name="snackbar_no_account_enable">Žádný účet není k dispozici, zapnutí selhalo.</string>
+    <string name="snackbar_no_account_disable">Žádný účet není k dispozici, vypnutí selhalo.</string>
+    <string name="snackbar_sync_start_fail">Nepodařilo se spustit synchronizaci, jsi připojen k internetu?</string>
+    <string name="snackbar_grades_refresh_fail_unknown">Poslední pokus o obnovení známek selhal.</string>
+    <string name="snackbar_grades_refresh_fail_connect">Chyba připojení. Obnovení známek selhalo.</string>
+    <string name="snackbar_grades_refresh_fail_login">Přihlášení selhalo. Jsou přihlašovací údaje vpořádku?</string>
+    <string name="snackbar_grades_fail_no_account">Žádný účet není k dispozici, nepodařilo se načíst známky.</string>
+    <string name="snackbar_grades_login_fail">Přihlášení selhalo. Jsou přihlašovací údaje vpořádku?</string>
+    <string name="snackbar_failed_to_retrieve_login_data">Nepodařilo se získat přihlašovací údaje, přihlášení selhalo.</string>
+    <string name="snackbar_wifi_logging_fail">Nepodařilo se odeslat požadavek na přihlášení k WiFi.</string>
+    <string name="snackbar_wifi_logging_success">Úspěšně odeslán požadavek na přihlášení k WiFi.</string>
+    <string name="snackbar_wifi_logging_fail_no_page">Nepodařilo se odeslat požadavek na přihlášení k WiFi, pravděpodobně jsi již přihlášen.</string>
+    <string name="snackbar_updates_fetch_fail">Nepodařilo se zkontrolovat aktualizace.</string>
+    <string name="snackbar_lunches_login_fail">Přihlášení selhalo. Jsou přihlašovací údaje vpořádku?</string>
+    <string name="snackbar_lunches_order_fail_internal">Nepodařilo se objednat oběd. Došlo k interní chybě.</string>
+    <string name="snackbar_lunches_order_fail_connect">Chyba připojení. Objednání oběda selhalo.</string>
+    <string name="snackbar_lunches_order_fail_login">Přihlášení selhalo. Jsou přihlašovací údaje vpořádku?</string>
+    <string name="snackbar_lunches_order_fail_unknown">Objednání oběda selhalo.</string>
+    <string name="snackbar_lunches_to_burza_fail_internal">Nepodařilo se přesunout oběd do burzy. Došlo k interní chybě.</string>
+    <string name="snackbar_lunches_to_burza_fail_connect">Chyba připojení. Nepodařilo se přesunout oběd do burzy.</string>
+    <string name="snackbar_lunches_to_burza_fail_login">Přihlášení selhalo. Jsou přihlašovací údaje vpořádku?</string>
+    <string name="snackbar_lunches_to_burza_fail_unknown">Nepodařilo se přesunout oběd do burzy.</string>
+    <string name="snackbar_lunches_from_burza_fail_internal">Nepodařilo se přesunout oběd z burzy. Došlo k interní chybě.</string>
+    <string name="snackbar_lunches_from_burza_fail_connect">Chyba připojení. Nepodařilo se přesunout oběd z burzy.</string>
+    <string name="snackbar_lunches_from_burza_fail_login">Přihlášení selhalo. Jsou přihlašovací údaje vpořádku?</string>
+    <string name="snackbar_lunches_from_burza_fail_unknown">Nepodařilo se přesunout oběd z burzy.</string>
+    <string name="snackbar_lunches_refresh_fail_unknown">Poslední pokus o obnovení obědů selhal.</string>
+    <string name="snackbar_lunches_refresh_fail_connect">Chyba připojení. Obnovení obědů selhalo.</string>
+    <string name="snackbar_lunches_refresh_fail_login">Přihlášení selhalo. Jsou přihlašovací údaje vpořádku?</string>
+    <string name="snackbar_lunches_fail_no_account">Žádný účet není k dispozici, načtení obědů selhalo.</string>
+    <string name="snackbar_lunches_fetch_burza_fail_connect">Chyba připojení. Načtení obědů z burzy selhalo.</string>
+    <string name="snackbar_lunches_fetch_burza_fail_login">Přihlášení selhalo. Jsou přihlašovací údaje vpořádku?</string>
+    <string name="snackbar_lunches_fetch_burza_fail_unknown">Načtení obědů z burzy selhalo.</string>
+    <string name="snackbar_grades_widget_add_fail_no_account">Nevybral jsi žádný účet. Nelze přidat widget.</string>
+    <string name="snackbar_grades_widget_add_fail_no_grades_sort">Nevybral jsi způsob zobrazení. Nelze přidat widget.</string>
+    <string name="snackbar_lunches_dashboard_credit_warning_disabled">Varování o nízkém kreditu bylo vypnuto.</string>
+    <string name="snackbar_updates_download_update_failed">Stažení aktualizace selhalo.</string>
+    <string name="snackbar_updates_download_update_invalid">Stažený soubor je poškozen.</string>
+    <string name="snackbar_lunches_no_previous_lunch">Žádný předchozí oběd.</string>
+    <string name="snackbar_lunches_no_next_lunch">Žádný další oběd.</string>
+    <string name="snackbar_next_lunch_widget_add_fail_no_account">Nevybral jsi žádný účet. Nelze přidat widget.</string>
+    <string name="snackbar_action_grades_retry">Znovu</string>
+    <string name="snackbar_action_grades_logout">Odhlásit</string>
+    <string name="snackbar_action_updates_retry">Znovu</string>
+    <string name="snackbar_action_lunches_retry">Znovu</string>
+    <string name="snackbar_action_lunches_logout">Odhlásit</string>
+    <string name="snackbar_invalid_account_name">Neplatné uživatelské jméno.</string>
+    <string name="dialog_title_wifi_unknown">Neznámá WiFi</string>
+    <string name="dialog_text_wifi_unknown">Jsi připojen k neznámé WiFi. Opravdu chceš pokračovat?</string>
+    <string name="content_description_logo">Logo</string>
+    <string name="content_description_image_ready">Obrázek připraven</string>
+    <string name="content_description_image_error">Obrázek chyba</string>
+    <string name="content_description_widget_preview_image">Náhled widgetu</string>
+    <string name="pref_header_preferences">Nastavení</string>
+    <string name="pref_header_system">Systém</string>
+    <string name="pref_header_other">Ostatní</string>
+    <string name="pref_header_grades">Známky</string>
+    <string name="pref_header_lunches">Obědy</string>
+    <string name="pref_about">O aplikaci</string>
+    <string name="pref_update">Kontrola aktualizací</string>
+    <string name="pref_grades_bad_average">Co je špatný průměr</string>
+    <string name="pref_lunches_show_dashboard_credit_warning">Varování o nízkém kreditu na dashboardu</string>
+    <string name="pref_lunches_notify_lunches_new">Upozornění na nové obědy</string>
+    <string name="pref_show_app_settings">Nastavení</string>
+    <string name="snackbar_account_create_failed">Vytvoření účtu selhalo, účet se stejným jménem již pravděpodobně existuje.</string>
+    <string name="snackbar_account_edit_failed">Upravení účtu selhalo, účet se stejným jménem již pravděpodobně existuje.</string>
+    <string-array name="pref_grades_bad_average_entries">
+        <item>Průměr 1.25 a vyšší</item>
+        <item>Průměr 1.50 a vyšší</item>
+        <item>Průměr 1.75 a vyšší</item>
+        <item>Průměr 2.00 a vyšší</item>
+        <item>Průměr 2.25 a vyšší</item>
+        <item>Průměr 2.50 a vyšší</item>
+        <item>Průměr 2.75 a vyšší</item>
+        <item>Průměr 3.00 a vyšší</item>
+        <item>Průměr 3.25 a vyšší</item>
+        <item>Průměr 3.50 a vyšší</item>
+        <item>Průměr 3.75 a vyšší</item>
+        <item>Průměr 4.00 a vyšší</item>
+        <item>Průměr 4.25 a vyšší</item>
+        <item>Průměr 4.50 a vyšší</item>
+        <item>Průměr 4.75 a vyšší</item>
+    </string-array>
+    <string-array name="version_changes_1">
+        <item>První vydání předělané aplikace Purkyňka.</item>
+    </string-array>
 </resources>

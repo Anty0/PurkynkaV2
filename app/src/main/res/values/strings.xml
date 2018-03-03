@@ -325,6 +325,8 @@
 
     <string name="dialog_uninstall_old_app_title">Old application</string>
     <string name="dialog_uninstall_old_app_message">We found old version of application Purkynka installed on your phone. Should we remove it?</string>
+    <string name="dialog_title_wifi_unknown">Unknown WiFi</string>
+    <string name="dialog_text_wifi_unknown">You\'re connected to unknown WiFi. Do you really want to continue?</string>
 
     <string name="toast_browser_failed">Failed to open URL in browser</string>
     <string name="toast_wifi_logging_start">Sending login request to WiFi &lt;i&gt;%1$s&lt;/i&gt;</string>
@@ -376,19 +378,15 @@
     <string name="snackbar_lunches_no_previous_lunch">No previous lunch.</string>
     <string name="snackbar_lunches_no_next_lunch">No next lunch.</string>
     <string name="snackbar_next_lunch_widget_add_fail_no_account">"No account selected, can't add widget."</string>
+    <string name="snackbar_invalid_account_name">Invalid account name.</string>
+    <string name="snackbar_account_create_failed">Account create failed, account with same name probably exists.</string>
+    <string name="snackbar_account_edit_failed">Account edit failed, account with same name probably exists.</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>
     <string name="snackbar_action_updates_retry">Retry</string>
     <string name="snackbar_action_lunches_retry">Retry</string>
     <string name="snackbar_action_lunches_logout">Logout</string>
-
-    <string name="snackbar_invalid_account_name">Invalid account name</string>
-    <string name="snackbar_login_failed">Login failed, account with same name probably exists</string>
-    <string name="snackbar_edit_failed">Edit failed, account with same name probably exists</string>
-
-    <string name="dialog_title_wifi_unknown">Unknown WiFi</string>
-    <string name="dialog_text_wifi_unknown">"You're connected to unknown WiFi. Do you want to continue?"</string>
 
     <string name="content_description_logo">Logo</string>
     <string name="content_description_image_ready">Ready image</string>
@@ -459,8 +457,8 @@
     <string name="id_transition_lunch_options_group_item" translatable="false">lunch_options_group_item</string>
     <string name="id_transition_lunch_burza_item" translatable="false">lunch_burza_item</string>
 
-    <string name="version_changes_line_dot">\u2022</string>
-    <string name="version_changes_line_prefix">" "<b>\u2022</b>"    "</string>
+    <string name="version_changes_line_dot" translatable="false">\u2022</string>
+    <string name="version_changes_line_prefix" translatable="false">" "<b>\u2022</b>"    "</string>
 
     <string-array name="version_changes_1">
         <item>First release of reworked Application Purkynka.</item>
