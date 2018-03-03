@@ -44,6 +44,7 @@ import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
+import cz.anty.purkynka.lunches.widget.NextLunchWidgetProvider
 import cz.anty.purkynka.settings.AppPreferences
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
@@ -208,6 +209,10 @@ class AppInit : MultiDexApplication() {
 
         // Init Evernote's JobManager used here for app updates checking
         initJobManager()
+
+        // Initialize sync adapters login listening
+        GradesSyncAdapter.listenForChanges(this)
+        LunchesSyncAdapter.listenForChanges(this)
     }
 
     private fun initProcessProviders() {
@@ -215,11 +220,9 @@ class AppInit : MultiDexApplication() {
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
         GradesPreferences.initialize(this)
+        LunchesData.initialize(this)
         LunchesLoginData.initialize(this)
-
-        // Initialize sync adapters login listening
-        GradesSyncAdapter.listenForChanges(this)
-        LunchesSyncAdapter.listenForChanges(this)
+        LunchesPreferences.initialize(this)
 
         // When notify data is updated, update widgets
         BroadcastsConnector.connect(
@@ -252,6 +255,29 @@ class AppInit : MultiDexApplication() {
                         GradesWidgetProvider.getUpdateIntent(this)
                 )
         )
+
+        // When lunches data is updated, update next lunch widgets
+        BroadcastsConnector.connect(
+                GradesData.instance.broadcastActionChanged,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.ORDERED_GLOBAL,
+                        NextLunchWidgetProvider.getUpdateIntent(this)
+                )
+        )
+        BroadcastsConnector.connect(
+                GradesLoginData.instance.broadcastActionChanged,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        NextLunchWidgetProvider.getUpdateIntent(this)
+                )
+        )
+        BroadcastsConnector.connect(
+                GradesPreferences.instance.broadcastActionChanged,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        NextLunchWidgetProvider.getUpdateIntent(this)
+                )
+        )
     }
 
     private fun initProcessSyncs() {
@@ -264,6 +290,7 @@ class AppInit : MultiDexApplication() {
         WifiLoginData.initialize(this)
         LunchesData.initialize(this)
         LunchesLoginData.initialize(this)
+        LunchesPreferences.initialize(this)
     }
 
     private fun initProcessWidgets() {
@@ -271,6 +298,9 @@ class AppInit : MultiDexApplication() {
         GradesData.initialize(this)
         GradesLoginData.initialize(this)
         GradesPreferences.initialize(this)
+        LunchesData.initialize(this)
+        LunchesLoginData.initialize(this)
+        LunchesPreferences.initialize(this)
     }
 
     private fun initProcessNotifyManager() {

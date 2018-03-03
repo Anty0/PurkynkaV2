@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.widget
+package cz.anty.purkynka.lunches.widget
 
 import android.accounts.Account
 import android.appwidget.AppWidgetManager
@@ -27,9 +27,7 @@ import android.os.Bundle
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.ui.AccountSpinnerItem
-import cz.anty.purkynka.grades.save.GradesPreferences
-import cz.anty.purkynka.grades.ui.GradesSortSpinnerItem
-import cz.anty.purkynka.grades.util.GradesSort
+import cz.anty.purkynka.lunches.save.LunchesPreferences
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.edit
@@ -41,7 +39,7 @@ import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.container.adapter.CustomItemAdapter
 import eu.codetopic.utils.ui.container.adapter.forSpinner
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
-import kotlinx.android.synthetic.main.activity_widget_grades_configure.*
+import kotlinx.android.synthetic.main.activity_widget_next_lunch_configure.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
@@ -51,19 +49,18 @@ import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
- * The configuration screen for the [GradesWidgetProvider] AppWidget.
+ * The configuration screen for the [NextLunchWidgetProvider] AppWidget.
  */
-class GradesWidgetConfigureActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule()) {
+class NextLunchWidgetConfigureActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule()) {
 
     companion object {
 
-        private const val LOG_TAG = "GradesWidgetConfigureActivity"
+        private const val LOG_TAG = "NextLunchWidgetConfigureActivity"
     }
 
     private val updateReceiver = receiver { _, _ -> update() }
 
     private var accountsAdapter: CustomItemAdapter<AccountSpinnerItem>? = null
-    private var sortsAdapter: CustomItemAdapter<GradesSortSpinnerItem>? = null
 
     private var appWidgetId: Int = AppWidgetManager.INVALID_APPWIDGET_ID
 
@@ -76,7 +73,7 @@ class GradesWidgetConfigureActivity : LoadingModularActivity(ToolbarModule(), Ba
         // out of the widget placement if the user presses the back button.
         setResult(RESULT_CANCELED)
 
-        setContentView(R.layout.activity_widget_grades_configure)
+        setContentView(R.layout.activity_widget_next_lunch_configure)
 
         // Get the widget id from the intent.
         appWidgetId = intent?.getIntExtra(
@@ -94,10 +91,8 @@ class GradesWidgetConfigureActivity : LoadingModularActivity(ToolbarModule(), Ba
         }
 
         accountsAdapter = CustomItemAdapter(this)
-        sortsAdapter = CustomItemAdapter(this)
 
         boxAccountsSpinner.adapter = accountsAdapter?.forSpinner()
-        boxSortSpinner.adapter = sortsAdapter?.forSpinner()
 
         butAddWidget.onClick {
             val appWidgetId = appWidgetId
@@ -105,28 +100,19 @@ class GradesWidgetConfigureActivity : LoadingModularActivity(ToolbarModule(), Ba
                     ?: run {
                         longSnackbar(
                                 view = butAddWidget,
-                                message = R.string.snackbar_grades_widget_add_fail_no_account
-                        )
-                        return@onClick
-                    }
-            val gradesSort = boxSortSpinner.selectedItem.to<GradesSortSpinnerItem>()?.sort
-                    ?: run {
-                        longSnackbar(
-                                view = butAddWidget,
-                                message = R.string.snackbar_grades_widget_add_fail_no_grades_sort
+                                message = R.string.snackbar_next_lunch_widget_add_fail_no_account
                         )
                         return@onClick
                     }
 
             val holder = holder
-            val self = this@GradesWidgetConfigureActivity.asReference()
+            val self = this@NextLunchWidgetConfigureActivity.asReference()
             val appContext = applicationContext
             launch(UI) {
                 holder.showLoading()
 
-                GradesPreferences.instance.apply {
+                LunchesPreferences.instance.apply {
                     setAppWidgetAccountId(appWidgetId, accountId)
-                    setAppWidgetSort(appWidgetId, gradesSort)
                 }
 
                 delay(500) // Wait for preferences update
@@ -134,7 +120,7 @@ class GradesWidgetConfigureActivity : LoadingModularActivity(ToolbarModule(), Ba
                 // It is the responsibility of the configuration activity
                 //  to update the app widget
                 appContext.sendSuspendOrderedBroadcast(
-                        GradesWidgetProvider
+                        NextLunchWidgetProvider
                                 .getUpdateIntent(appContext, intArrayOf(appWidgetId))
                                 .also {
                                     if (Build.VERSION.SDK_INT >= 16)
@@ -214,14 +200,6 @@ class GradesWidgetConfigureActivity : LoadingModularActivity(ToolbarModule(), Ba
             clear()
             accountsMap?.map { AccountSpinnerItem(it.value, it.key) }
                     ?.let { addAll(it) }
-
-            notifyAllItemsChanged()
-        }
-
-        sortsAdapter?.edit {
-            clear()
-            GradesSort.values().map { GradesSortSpinnerItem(it) }
-                    .let { addAll(it) }
 
             notifyAllItemsChanged()
         }

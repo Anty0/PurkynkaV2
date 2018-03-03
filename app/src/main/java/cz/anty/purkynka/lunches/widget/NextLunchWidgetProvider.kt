@@ -16,7 +16,7 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.anty.purkynka.grades.widget
+package cz.anty.purkynka.lunches.widget
 
 import android.accounts.Account
 import android.app.PendingIntent
@@ -27,40 +27,45 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.view.ContextThemeWrapper
+import android.view.View
 import android.widget.RemoteViews
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
-import cz.anty.purkynka.grades.save.GradesLoginData
-import cz.anty.purkynka.grades.save.GradesPreferences
-import cz.anty.purkynka.grades.sync.GradesSyncAdapter
-import cz.anty.purkynka.grades.util.GradesSort
-import cz.anty.purkynka.utils.ICON_GRADES
+import cz.anty.purkynka.lunches.save.LunchesData
+import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.lunches.save.LunchesPreferences
+import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
+import cz.anty.purkynka.lunches.ui.LunchOptionsGroupItem
+import cz.anty.purkynka.utils.ICON_LUNCHES
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId
+import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import java.util.*
 
 /**
  * Implementation of App Widget functionality.
- * App Widget Configuration implemented in [GradesWidgetConfigureActivity]
+ * App Widget Configuration implemented in [NextLunchWidgetConfigureActivity]
  */
-class GradesWidgetProvider : AppWidgetProvider() {
+class NextLunchWidgetProvider : AppWidgetProvider() {
+
     companion object {
 
-        private const val LOG_TAG = "GradesWidgetProvider"
+        private const val LOG_TAG = "NextLunchWidgetProvider"
 
         private const val EXTRA_REQUEST_REFRESH =
-                "cz.anty.purkynka.grades.widget.$LOG_TAG.EXTRA_REQUEST_REFRESH"
+                "cz.anty.purkynka.lunches.widget.$LOG_TAG.EXTRA_REQUEST_REFRESH"
 
         private val ID_TYPE_REFRESH =
-                Identifiers.Type("cz.anty.purkynka.grades.widget.$LOG_TAG.ID_REFRESH")
+                Identifiers.Type("cz.anty.purkynka.lunches.widget.$LOG_TAG.ID_REFRESH")
 
         private fun getUpdateIntent(context: Context, appWidgetIds: IntArray, requestRefresh: Boolean): Intent =
-                Intent(context.applicationContext, GradesWidgetProvider::class.java)
+                Intent(context.applicationContext, NextLunchWidgetProvider::class.java)
                         .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
                         .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
                         .putExtra(EXTRA_REQUEST_REFRESH, requestRefresh)
@@ -76,16 +81,7 @@ class GradesWidgetProvider : AppWidgetProvider() {
 
         fun getAllWidgetIds(context: Context): IntArray =
                 AppWidgetManager.getInstance(context)
-                        .getAppWidgetIds(ComponentName(context, GradesWidgetProvider::class.java))
-
-        fun notifyItemsChanged(context: Context) {
-            notifyItemsChanged(context, getAllWidgetIds(context))
-        }
-
-        fun notifyItemsChanged(context: Context, appWidgetIds: IntArray) {
-            AppWidgetManager.getInstance(context)
-                    .notifyAppWidgetViewDataChanged(appWidgetIds, R.id.boxList)
-        }
+                        .getAppWidgetIds(ComponentName(context, NextLunchWidgetProvider::class.java))
     }
 
     private var intent: Intent? = null
@@ -97,10 +93,10 @@ class GradesWidgetProvider : AppWidgetProvider() {
                 R.id.txtTitle,
                 account?.name?.let {
                     context.getFormattedText(
-                            R.string.title_widget_grades_with_user,
+                            R.string.title_widget_next_lunch_with_user,
                             it
                     )
-                } ?: context.getText(R.string.title_widget_grades)
+                } ?: context.getText(R.string.title_widget_next_lunch)
         )
         setImageViewBitmap(
                 R.id.butRefresh,
@@ -110,7 +106,7 @@ class GradesWidgetProvider : AppWidgetProvider() {
         setOnClickPendingIntent(R.id.boxToolbar, PendingIntent.getBroadcast(
                 context,
                 0,
-                GradesWidgetLaunchReceiver
+                NextLunchWidgetLaunchReceiver
                         .getIntent(context, accountId)
                         .also {
                             if (Build.VERSION.SDK_INT >= 16)
@@ -134,7 +130,7 @@ class GradesWidgetProvider : AppWidgetProvider() {
                             appWidgetId: Int, accountId: String?, account: Account?) {
         val loadingViews = RemoteViews(
                 context.packageName,
-                R.layout.widget_grades
+                R.layout.widget_next_lunch
         )
         doBasicSetup(context, loadingViews,
                 account, accountId, appWidgetId)
@@ -145,7 +141,7 @@ class GradesWidgetProvider : AppWidgetProvider() {
                 R.id.boxContent,
                 RemoteViews(
                         context.packageName,
-                        R.layout.widget_grades_content_loading
+                        R.layout.widget_next_lunch_content_loading
                 )
         )
 
@@ -159,13 +155,13 @@ class GradesWidgetProvider : AppWidgetProvider() {
         Log.v(LOG_TAG, "onUpdate()" +
                 " -> (accountId=$accountId, account=$account)" +
                 " -> Requesting sync")
-        GradesSyncAdapter.requestSync(account)
+        LunchesSyncAdapter.requestSync(account)
     }
 
     private fun showContent(context: Context, appWidgetManager: AppWidgetManager,
                             appWidgetId: Int, accountId: String?, account: Account?) {
         // Construct the RemoteViews object
-        val views = RemoteViews(context.packageName, R.layout.widget_grades)
+        val views = RemoteViews(context.packageName, R.layout.widget_next_lunch)
         doBasicSetup(context, views, account, accountId, appWidgetId)
 
         // Setup widget content
@@ -176,7 +172,7 @@ class GradesWidgetProvider : AppWidgetProvider() {
                         R.id.boxContent,
                         RemoteViews(
                                 context.packageName,
-                                R.layout.widget_grades_content_no_account
+                                R.layout.widget_next_lunch_content_no_account
                         ).also content@ {
                             it.setImageViewBitmap(
                                     R.id.imgError,
@@ -188,12 +184,12 @@ class GradesWidgetProvider : AppWidgetProvider() {
                             )
                         }
                 )
-            !GradesLoginData.loginData.isLoggedIn(accountId) ->
+            !LunchesLoginData.loginData.isLoggedIn(accountId) ->
                 views.addView(
                         R.id.boxContent,
                         RemoteViews(
                                 context.packageName,
-                                R.layout.widget_grades_content_not_logged_in
+                                R.layout.widget_next_lunch_content_not_logged_in
                         ).also content@ {
                             it.setImageViewBitmap(
                                     R.id.imgError,
@@ -206,37 +202,54 @@ class GradesWidgetProvider : AppWidgetProvider() {
                         }
                 )
             else -> {
-                val gradesSort = GradesPreferences.instance
-                        .getAppWidgetSort(appWidgetId)
-                        ?: GradesSort.GRADES_DATE
-                val badAverage = GradesPreferences.instance.badAverage
-
-
                 views.addView(
                         R.id.boxContent,
                         RemoteViews(
                                 context.packageName,
-                                R.layout.widget_grades_content
+                                R.layout.widget_next_lunch_content
                         ).also content@ {
                             it.setImageViewBitmap(
                                     R.id.imgEmpty,
-                                    context.getIconics(ICON_GRADES)
+                                    context.getIconics(ICON_LUNCHES)
                                             .sizeDp(72).toBitmap()
                             )
-
-                            it.setEmptyView(R.id.boxList, R.id.boxEmptyView)
                         }
                 )
 
-                views.setRemoteAdapter(
-                        R.id.boxList,
-                        GradesWidgetAdapterService.getIntent(
-                                context = context,
-                                accountId = accountId,
-                                sort = gradesSort,
-                                badAverage = badAverage
-                        )
-                )
+                val nextLunch = run nextLunch@ {
+                    val time = run time@ {
+                        Calendar.getInstance().apply {
+                            if (get(Calendar.HOUR_OF_DAY) >= 15) {
+                                set(Calendar.DAY_OF_MONTH, get(Calendar.DAY_OF_MONTH) + 1)
+                            }
+                            set(Calendar.HOUR_OF_DAY, 0)
+                            set(Calendar.MINUTE, 0)
+                            set(Calendar.SECOND, 0)
+                            set(Calendar.MILLISECOND, 0)
+                        }.timeInMillis
+                    }
+
+                    return@nextLunch LunchesData.instance.getLunches(accountId)
+                            .filter { it.date >= time }.minBy { it.date }
+                }
+
+                if (nextLunch != null) {
+                    views.setViewVisibility(R.id.boxEmptyView, View.GONE)
+                    views.setViewVisibility(R.id.boxNextLunch, View.VISIBLE)
+
+                    views.addView(
+                            R.id.boxNextLunch,
+                            run genView@{
+                                val item = LunchOptionsGroupItem(accountId, nextLunch)
+                                val holder = item.createRemoteViewHolder(context)
+                                item.bindRemoteViewHolder(holder, CustomItem.NO_POSITION)
+                                return@genView holder.itemView
+                            }
+                    )
+                } else {
+                    views.setViewVisibility(R.id.boxEmptyView, View.VISIBLE)
+                    views.setViewVisibility(R.id.boxNextLunch, View.GONE)
+                }
             }
         }
 
@@ -250,7 +263,7 @@ class GradesWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         // Put intent in temporary location, so we can access intent in onUpdate
         this.intent = intent
-        val themedContext = ContextThemeWrapper(context, R.style.AppTheme_Grades)
+        val themedContext = ContextThemeWrapper(context, R.style.AppTheme_Lunches)
         super.onReceive(themedContext, intent)
         this.intent = null
     }
@@ -269,7 +282,7 @@ class GradesWidgetProvider : AppWidgetProvider() {
 
         // Extract ids AccountIds of widgets
         val availableAccounts = Accounts.getAllWIthIds(context)
-        val appWidgetIdsMap = GradesPreferences.instance.let createMap@ { prefs ->
+        val appWidgetIdsMap = LunchesPreferences.instance.let createMap@ { prefs ->
             return@createMap appWidgetIds.map {
                 it to prefs.getAppWidgetAccountId(it)
                         ?.takeIf { it in availableAccounts }
@@ -308,7 +321,7 @@ class GradesWidgetProvider : AppWidgetProvider() {
                                 return@requestSync false
                             }
 
-                            if (!GradesLoginData.loginData.isLoggedIn(accountId)) {
+                            if (!LunchesLoginData.loginData.isLoggedIn(accountId)) {
                                 Log.w(LOG_TAG, "onUpdate()" +
                                         " -> Failed to request sync of '$account'" +
                                         " with id '$accountId'" +
@@ -337,10 +350,9 @@ class GradesWidgetProvider : AppWidgetProvider() {
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         // When the user deletes the widget, delete the preferences associated with it.
-        val prefs = GradesPreferences.instance
+        val prefs = LunchesPreferences.instance
         appWidgetIds.forEach {
             prefs.removeAppWidgetAccountId(it)
-            prefs.removeAppWidgetSort(it)
         }
     }
 }

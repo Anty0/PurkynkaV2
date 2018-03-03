@@ -22,9 +22,7 @@ import android.animation.Animator
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
-import eu.codetopic.java.utils.to
 import eu.codetopic.utils.simple.SimpleAnimatorListener
-import eu.codetopic.utils.ui.view.getTag
 import eu.codetopic.utils.ui.view.setTag
 import kotlin.math.ceil
 
@@ -40,6 +38,7 @@ class EasterEggAnimation private constructor(private val img: View) {
         private const val VIEW_TAG = "cz.anty.purkynka.easter.$LOG_TAG.INSTANCE"
 
         private const val FULL_ROTATION = 360F
+        private const val QUARTER_ROTATION = 90F
 
         private const val STEP_DURATION = 500L
         private const val STEP_DELAY = 0L
@@ -96,7 +95,10 @@ class EasterEggAnimation private constructor(private val img: View) {
 
         val width = img.width
         val height = img.height
-        val targetRotation = img.rotation.let { FULL_ROTATION * (ceil(it / FULL_ROTATION) + 1F) }
+        val targetRotation = img.rotation.let {
+            val rotationsCount = ceil((it - QUARTER_ROTATION) / FULL_ROTATION) + 1F
+            return@let FULL_ROTATION * rotationsCount + QUARTER_ROTATION
+        }
         val targetScaleX = img.scaleX.let { it + ((STEP_SCALE_MAX - it) / STEP_SCALE_FACTOR) }
         val targetScaleY = img.scaleY.let { it + ((STEP_SCALE_MAX - it) / STEP_SCALE_FACTOR) }
         val targetTranslationX = img.translationX.let { width * (targetScaleX - 1F) / 2F }

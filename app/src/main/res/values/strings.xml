@@ -87,6 +87,7 @@
     <string name="title_activity_lunch_options_group_with_date">Order lunch on %1$s</string>
     <string name="title_activity_lunches_burza_lunch">Order lunch</string>
     <string name="title_activity_lunches_burza_lunch_with_date">Order lunch on $1$s</string>
+    <string name="title_activity_lunches_next_lunch_widget">Setup next lunch widget</string>
 
     <string name="title_fragment_dashboard">Dashboard</string>
     <string name="title_fragment_grades">Grades</string>
@@ -98,7 +99,9 @@
     <string name="title_fragment_attendance_search">Attendance</string>
 
     <string name="title_widget_grades">Grades</string>
-    <string name="title_widget_grades_with_user">"%1$s's Grades"</string>
+    <string name="title_widget_grades_with_user">"%1$s's grades"</string>
+    <string name="title_widget_next_lunch">Next lunch</string>
+    <string name="title_widget_next_lunch_with_user">"%1$s's next lunch"</string>
 
     <string name="shortcut_grades_label_short">Grades</string>
     <string name="shortcut_grades_label_long">Show grades</string>
@@ -114,7 +117,8 @@
     <string name="shortcut_attendance_label_long">Show attendance search</string>
 
     <string name="label_receiver_wifi_changed">WiFi change receiver for WiFi auto login</string>
-    <string name="label_receiver_grades_widget">Grades</string>
+    <string name="label_receiver_grades_widget">Purkynka Grades</string>
+    <string name="label_receiver_next_lunch_widget">Purkynka Next lunch</string>
 
     <string name="label_service_authenticator">Account authenticator</string>
     <string name="label_service_sync_grades">Grades sync service</string>
@@ -232,6 +236,10 @@
     <string name="widget_grades_no_account_text_small">Did you remove that account?</string>
     <string name="widget_grades_not_logged_in_text">You are not logged in</string>
     <string name="widget_grades_not_logged_in_text_small">Login to your account and your grades will appear here.</string>
+    <string name="widget_next_lunch_no_account_text">Account not found</string>
+    <string name="widget_next_lunch_no_account_text_small">Did you remove that account?</string>
+    <string name="widget_next_lunch_not_logged_in_text">You are not logged in</string>
+    <string name="widget_next_lunch_not_logged_in_text_small">Login to your account and your next lunch will appear here.</string>
 
     <string name="txt_grade_statistics_coming_soon">Grade statistics coming soon!</string>
 
@@ -313,6 +321,8 @@
     <string name="empty_view_text_small_no_burza_lunches">All lunches in burza will appear here.</string>
     <string name="empty_view_text_attendance_people">No people found</string>
     <string name="empty_view_text_small_attendance_people">People found by search in attendance will appear here.</string>
+    <string name="empty_view_text_no_next_lunch">No next lunch</string>
+    <string name="empty_view_text_small_no_next_lunch">Your next lunch will appear here.</string>
 
     <string name="dialog_uninstall_old_app_title">Old application</string>
     <string name="dialog_uninstall_old_app_message">We found old version of application Purkynka installed on your phone. Should we remove it?</string>
@@ -366,6 +376,7 @@
     <string name="snackbar_updates_download_update_invalid">Downloaded file is corrupted.</string>
     <string name="snackbar_lunches_no_previous_lunch">No previous lunch.</string>
     <string name="snackbar_lunches_no_next_lunch">No next lunch.</string>
+    <string name="snackbar_next_lunch_widget_add_fail_no_account">"No account selected, can't add widget."</string>
 
     <string name="snackbar_action_grades_retry">Retry</string>
     <string name="snackbar_action_grades_logout">Logout</string>

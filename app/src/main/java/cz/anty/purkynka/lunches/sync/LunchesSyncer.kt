@@ -30,6 +30,8 @@ import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.lunches.save.LunchesPreferences
+import cz.anty.purkynka.lunches.widget.NextLunchWidgetProvider
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
 import eu.codetopic.utils.notifications.manager.requestShowAll
@@ -50,11 +52,14 @@ object LunchesSyncer {
             syncResult: SyncResult? = null
     ) {
         var data: LunchesData? = null
+        var preferences: LunchesPreferences? = null
+
         var accountId: String? = null
 
         try {
             data = LunchesData.instance
             val loginData = LunchesLoginData.loginData
+            preferences = LunchesPreferences.instance
 
             accountId = Accounts.getId(context, account)
 
@@ -128,7 +133,7 @@ object LunchesSyncer {
             }
 
             throw e
-        }/* finally {
+        } finally {
             try {
                 if (preferences != null) {
                     context.sendBroadcast(
@@ -143,7 +148,7 @@ object LunchesSyncer {
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "Failed to refresh next lunch widgets", e)
             }
-        }*/
+        }
     }
 
     private fun checkForDifferences(

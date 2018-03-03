@@ -1,0 +1,82 @@
+<!--
+  ~ app
+  ~ Copyright (C)   2018  anty
+  ~
+  ~ This program is free  software: you can redistribute it and/or modify
+  ~ it under the terms  of the GNU General Public License as published by
+  ~ the Free Software  Foundation, either version 3 of the License, or
+  ~ (at your option) any  later version.
+  ~
+  ~ This program is distributed in the hope that it  will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied  warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You  should have received a copy of the GNU General Public License
+  ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_margin">
+
+    <RelativeLayout
+        android:id="@+id/boxToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryLunches"
+        android:focusable="true"
+        android:clickable="true"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp">
+
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/butRefresh"
+            android:layout_toStartOf="@+id/butRefresh"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:lines="1"
+            android:ellipsize="end"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/materialWhite"
+            android:text="@string/title_widget_next_lunch" />
+
+        <ImageButton
+            android:id="@+id/butRefresh"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/menu_item_text_refresh" /> <!--Icon will be added after inflating-->
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/boxContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:background="@color/widgetColorLunches"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp">
+
+        <include layout="@layout/widget_next_lunch_content_loading" />
+    </FrameLayout>
+
+</LinearLayout>

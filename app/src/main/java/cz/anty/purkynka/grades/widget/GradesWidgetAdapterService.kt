@@ -26,6 +26,8 @@ import android.widget.RemoteViewsService
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.util.GradesSort
 import eu.codetopic.java.utils.to
+import eu.codetopic.utils.intentFilter
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.forWidget
 
 /**
@@ -56,6 +58,29 @@ class GradesWidgetAdapterService : RemoteViewsService() {
                 .also { it.data = Uri.parse(it.toUri(Intent.URI_INTENT_SCHEME)) }
     }
 
+    private val updateReceiver = receiver { _, _ -> adapters.forEach { it.updateItems() } }
+
+    private val adapters = mutableListOf<GradesWidgetAdapter>()
+
+    override fun onCreate() {
+        super.onCreate()
+
+        registerReceiver(
+                updateReceiver,
+                intentFilter(
+                        GradesWidgetUpdateReceiver.ACTION_WIDGET_UPDATE_ITEMS
+                )
+        )
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(updateReceiver)
+
+        adapters.onEach { it.cleanUp() }.clear()
+
+        super.onDestroy()
+    }
+
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
         val accountId = intent.getStringExtra(EXTRA_ACCOUNT_ID)
                 ?: throw IllegalArgumentException("No accountId received in intent")
@@ -66,8 +91,10 @@ class GradesWidgetAdapterService : RemoteViewsService() {
                 ?: throw IllegalArgumentException("No badAverage received in intent")
 
         val themedContext = ContextThemeWrapper(this, R.style.AppTheme_Grades)
-        return GradesWidgetAdapter(themedContext, accountId, sort, badAverage).forWidget(
-                loadingView = GradesWidgetAdapter.generateLoadingView(themedContext)
-        )
+        return GradesWidgetAdapter(themedContext, accountId, sort, badAverage)
+                .also { adapters.add(it) }
+                .forWidget(
+                        loadingView = GradesWidgetAdapter.generateLoadingView(themedContext)
+                )
     }
 }

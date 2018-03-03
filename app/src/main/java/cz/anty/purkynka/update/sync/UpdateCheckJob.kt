@@ -54,7 +54,7 @@ class UpdateCheckJob : Job() {
                         .setRequiresBatteryNotLow(true)
                         .setUpdateCurrent(true)
                         .build()
-                        .schedule()
+                        .scheduleAsync()
 
                 UpdateData.instance.jobScheduleVersion = BuildConfig.VERSION_CODE
             } catch (e: Exception) {

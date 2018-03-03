@@ -21,8 +21,10 @@ package cz.anty.purkynka.lunches.save
 import android.content.Context
 import android.content.SharedPreferences
 import cz.anty.purkynka.utils.SHOW_DASHBOARD_CREDIT_WARNING
+import cz.anty.purkynka.utils.WIDGET_ACCOUNT_ID
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.BooleanPreference
+import eu.codetopic.utils.data.preferences.preference.StringPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
@@ -60,6 +62,24 @@ class LunchesPreferences private constructor(context: Context) :
             provider = accessProvider,
             defaultValue = true
     )
+
+    private val appWidgetAccountIdPref = StringPreference(
+            key = WIDGET_ACCOUNT_ID,
+            provider = accessProvider,
+            defaultValue = "" // empty string == not set
+    )
+
+    fun getAppWidgetAccountId(appWidgetId: Int): String? =
+            appWidgetAccountIdPref[this, appWidgetId.toString()]
+                    .takeIf { it.isNotEmpty() }
+
+    fun setAppWidgetAccountId(appWidgetId: Int, accountId: String) {
+        appWidgetAccountIdPref[this, appWidgetId.toString()] = accountId
+    }
+
+    fun removeAppWidgetAccountId(appWidgetId: Int) {
+        appWidgetAccountIdPref.unset(this, appWidgetId.toString())
+    }
 
     private class Getter : PreferencesGetterAbs<LunchesPreferences>() {
 

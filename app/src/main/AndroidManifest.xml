@@ -127,6 +127,15 @@
             android:name=".lunches.ui.LunchBurzaActivity"
             android:label="@string/title_activity_lunches_burza_lunch"
             android:theme="@style/AppTheme.NoActionBar.Lunches" />
+        <activity
+            android:name=".lunches.widget.NextLunchWidgetConfigureActivity"
+            android:label="@string/title_activity_lunches_next_lunch_widget"
+            android:theme="@style/AppTheme.NoActionBar.Lunches">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
 
         <receiver
             android:name=".update.receiver.AppUpdatedReceiver"
@@ -233,7 +242,39 @@
                 <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_RENAMED" />
             </intent-filter>
         </receiver>
-        <!-- TODO: next lunch widget -->
+        <receiver
+            android:name=".lunches.widget.NextLunchWidgetProvider"
+            android:enabled="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Lunches"
+            android:label="@string/label_receiver_next_lunch_widget"
+            android:process=":widgets">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_next_lunch_info" />
+        </receiver>
+        <receiver
+            android:name=".lunches.widget.NextLunchWidgetLaunchReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Lunches"
+            android:process=":widgets" />
+        <receiver
+            android:name=".lunches.widget.NextLunchWidgetResetReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Lunches"
+            android:process=":widgets">
+
+            <intent-filter>
+                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNTS_CHANGED" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".account.service.AuthenticatorService"

@@ -19,27 +19,18 @@
 package cz.anty.purkynka.lunches.sync
 
 import android.accounts.Account
-import android.content.*
+import android.content.AbstractThreadedSyncAdapter
+import android.content.ContentProviderClient
+import android.content.Context
+import android.content.SyncResult
 import android.os.Bundle
-import cz.anty.purkynka.utils.*
-import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
-import cz.anty.purkynka.account.notify.AccountNotifyGroup
-import cz.anty.purkynka.exceptions.WrongLoginDataException
-import cz.anty.purkynka.lunches.data.LunchOptionsGroup
-import cz.anty.purkynka.lunches.load.LunchesFetcher
-import cz.anty.purkynka.lunches.load.LunchesParser
-import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.receiver.UpdateLunchesSyncReceiver
-import cz.anty.purkynka.lunches.save.LunchesData
-import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesDataProvider
 import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.utils.SYNC_FREQUENCY_LUNCHES
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.broadcast.BroadcastsConnector
-import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
-import eu.codetopic.utils.notifications.manager.requestShowAll
-import java.io.IOException
 
 /**
  * @author anty

@@ -65,14 +65,13 @@ const val LOGIN_COUNTER = "LOGIN_COUNTER"
 const val FILE_NAME_WIFI_LOGIN_DATA = "WifiLoginData"
 
 // Lunches
-/// LunchesData
+/// LunchesData    // + FIRST_SYNC SYNC_RESULT
 const val FILE_NAME_LUNCHES_DATA = "LunchesData"
-//// FIRST_SYNC SYNC_RESULT
 const val LUNCHES_LIST = "LUNCHES"
 const val CREDIT = "CREDIT"
 const val INVALID = "INVALID"
 /// LunchesLoginData
 const val FILE_NAME_LUNCHES_LOGIN_DATA = "LunchesLoginData"
-/// LunchesPreferences
+/// LunchesPreferences    // + WIDGET_ACCOUNT_ID
 const val FILE_NAME_LUNCHES_PREFERENCES = "LunchesPreferences"
 const val SHOW_DASHBOARD_CREDIT_WARNING = "SHOW_DASHBOARD_CREDIT_WARNING"

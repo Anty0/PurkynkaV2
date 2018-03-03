@@ -134,8 +134,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlin_serialization_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:$kotlin_immutable_version"
 
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation "org.jetbrains.anko:anko-coroutines:$anko_version"
@@ -157,11 +157,11 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.11.2'
     implementation 'io.michaelrocks:bimap:1.0.2'
-    implementation 'com.evernote:android-job:1.2.2'
+    implementation 'com.evernote:android-job:1.2.4'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.infstory:proguard-annotations:1.0.2'
     implementation 'com.google.android.gms:play-services-gcm:11.8.0'
-    implementation('com.mikepenz:aboutlibraries:6.0.3@aar') {
+    implementation('com.mikepenz:aboutlibraries:6.0.6@aar') {
         transitive = true
     }
 }

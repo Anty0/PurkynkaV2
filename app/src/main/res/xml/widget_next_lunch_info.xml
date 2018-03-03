@@ -19,12 +19,12 @@
 
 <appwidget-provider
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="cz.anty.purkynka.grades.widget.GradesWidgetConfigureActivity"
-    android:initialKeyguardLayout="@layout/widget_grades"
-    android:initialLayout="@layout/widget_grades"
-    android:minHeight="220dp"
+    android:configure="cz.anty.purkynka.lunches.widget.NextLunchWidgetConfigureActivity"
+    android:initialKeyguardLayout="@layout/widget_next_lunch"
+    android:initialLayout="@layout/widget_next_lunch"
+    android:minHeight="110dp"
     android:minWidth="220dp"
-    android:previewImage="@drawable/widget_grades_preview"
+    android:previewImage="@drawable/widget_next_lunch_preview"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="0"
+    android:updatePeriodMillis="3600000"
     android:widgetCategory="home_screen" />

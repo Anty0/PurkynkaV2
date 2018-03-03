@@ -32,6 +32,7 @@ import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.getFormattedQuantityText
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
+import eu.codetopic.utils.ui.container.items.custom.CustomItemRemoteViewHolder
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_lunch_options_group.*
 import org.jetbrains.anko.textColorResource
@@ -66,12 +67,12 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
                     }
                     .let { holder.context.getText(it) }
             textColorResource = when {
-                // Lunch is ordered
+            // Lunch is ordered
                 base.orderedOption != null -> R.color.materialGreen
-                // TODO: If lunch is not ordered (and can't be ordered) and is available in burza use materialRed
-                // Lunch is not ordered and can't be ordered
+            // TODO: If lunch is not ordered (and can't be ordered) and is available in burza use materialRed
+            // Lunch is not ordered and can't be ordered
                 base.options?.all { !it.enabled } != false -> R.color.materialBlue
-                // Lunch is not ordered, but still can be ordered
+            // Lunch is not ordered, but still can be ordered
                 else -> R.color.materialOrange
             }
         }
@@ -126,6 +127,76 @@ class LunchOptionsGroupItem(val accountId: String, val base: LunchOptionsGroup) 
     }
 
     override fun getLayoutResId(context: Context): Int = R.layout.item_lunch_options_group
+
+    override fun onBindRemoteViewHolder(holder: CustomItemRemoteViewHolder, itemPosition: Int) {
+        holder.itemView.setTextViewText(
+                R.id.txtDay,
+                Calendar.getInstance()
+                        .apply { timeInMillis = base.date }
+                        .get(Calendar.DAY_OF_WEEK)
+                        .let {
+                            when (it) {
+                                Calendar.SUNDAY -> R.string.txt_day_short_sunday
+                                Calendar.MONDAY -> R.string.txt_day_short_monday
+                                Calendar.TUESDAY -> R.string.txt_day_short_tuesday
+                                Calendar.WEDNESDAY -> R.string.txt_day_short_wednesday
+                                Calendar.THURSDAY -> R.string.txt_day_short_thursday
+                                Calendar.FRIDAY -> R.string.txt_day_short_friday
+                                Calendar.SATURDAY -> R.string.txt_day_short_saturday
+                                else -> R.string.txt_day_short_unknown
+                            }
+                        }
+                        .let { holder.context.getText(it) }
+        )
+        holder.itemView.setTextColor(
+                R.id.txtDay,
+                when {
+                // Lunch is ordered
+                    base.orderedOption != null -> R.color.materialGreen
+                // TODO: If lunch is not ordered (and can't be ordered) and is available in burza use materialRed
+                // Lunch is not ordered and can't be ordered
+                    base.options?.all { !it.enabled } != false -> R.color.materialBlue
+                // Lunch is not ordered, but still can be ordered
+                    else -> R.color.materialOrange
+                }.let { ContextCompat.getColor(holder.context, it) }
+        )
+
+        holder.itemView.setTextViewText(
+                R.id.txtDate,
+                base.dateStrShort.fillToLen(7, Anchor.RIGHT)
+        )
+
+        val (orderedIndex, orderedLunch) = base.orderedOption ?: null to null
+
+        holder.itemView.setTextViewText(
+                R.id.txtName,
+                orderedLunch?.name
+                        ?: holder.context.getText(R.string.text_view_lunches_no_lunch_ordered)
+        )
+
+        holder.itemView.setTextViewText(
+                R.id.txtOrderedIndex,
+                orderedIndex
+                        ?.let { it + 1 }
+                        ?.let {
+                            holder.context.getFormattedText(R.string.text_view_lunches_ordered_index, it)
+                        }
+                        ?: run {
+                            base.options
+                                    ?.filter { it.enabled }
+                                    ?.count()
+                                    .letIfNull { 0 }
+                                    .let {
+                                        holder.context.getFormattedQuantityText(
+                                                R.plurals.text_view_lunches_available_count,
+                                                it, it
+                                        )
+                                    }
+                        }
+        )
+    }
+
+    override fun getRemoteLayoutResId(context: Context): Int = R.layout.item_lunch_options_group_widget
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ app
   ~ Copyright (C)   2018  anty
@@ -17,14 +16,9 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<appwidget-provider
+<ProgressBar
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="cz.anty.purkynka.grades.widget.GradesWidgetConfigureActivity"
-    android:initialKeyguardLayout="@layout/widget_grades"
-    android:initialLayout="@layout/widget_grades"
-    android:minHeight="220dp"
-    android:minWidth="220dp"
-    android:previewImage="@drawable/widget_grades_preview"
-    android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="0"
-    android:widgetCategory="home_screen" />
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:indeterminate="true"/>

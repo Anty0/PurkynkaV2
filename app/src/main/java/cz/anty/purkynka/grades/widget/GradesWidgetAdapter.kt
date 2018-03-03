@@ -38,6 +38,7 @@ import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.RemoteCustomItemAdapter
+import eu.codetopic.utils.ui.container.adapter.UniversalAdapterBase
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.LoadingItem
 
@@ -65,30 +66,15 @@ class GradesWidgetAdapter(
         }
     }
 
-    private val updateReceiver = receiver { _, _ -> updateItems() }
-
-    override fun onAttachToContainer(container: Any?) {
-        context.registerReceiver(
-                updateReceiver,
-                intentFilter(
-                        GradesWidgetUpdateReceiver.ACTION_WIDGET_UPDATE_ITEMS
-                )
-        )
+    override fun onBaseAttached(base: UniversalAdapterBase) {
+        super.onBaseAttached(base)
 
         updateItems()
-
-        super.onAttachToContainer(container)
     }
 
-    override fun onDetachFromContainer(container: Any?) {
-        super.onDetachFromContainer(container)
+    fun cleanUp() = edit { clear() }
 
-        context.unregisterReceiver(updateReceiver)
-
-        edit { clear() }
-    }
-
-    private fun updateItems() {
+    fun updateItems() {
         val gradesMap = GradesData.instance.getGrades(accountId)
         val gradesChanges = NotifyManager.getAllData(
                 groupId = AccountNotifyGroup.idFor(accountId),
