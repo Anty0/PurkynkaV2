@@ -66,15 +66,13 @@ class GradesWidgetAdapter(
         }
     }
 
-    override fun onBaseAttached(base: UniversalAdapterBase) {
-        super.onBaseAttached(base)
+    override fun onDataSetChanged() {
+        super.onDataSetChanged()
 
         updateItems()
     }
 
-    fun cleanUp() = edit { clear() }
-
-    fun updateItems() {
+    private fun updateItems() {
         val gradesMap = GradesData.instance.getGrades(accountId)
         val gradesChanges = NotifyManager.getAllData(
                 groupId = AccountNotifyGroup.idFor(accountId),
@@ -90,41 +88,40 @@ class GradesWidgetAdapter(
         edit {
             clear()
 
-            gradesMap[Semester.AUTO.value]?.let { gradesList ->
+            val gradesList = gradesMap[Semester.AUTO.value] ?: return@edit
 
-                val getGrades = {
-                    gradesList.map {
-                        GradeItem(
-                                base = it,
-                                isBad = badAverage <= it.value,
-                                changes = gradesChanges[it.id]
-                        )
-                    }
+            val getGrades = {
+                gradesList.map {
+                    GradeItem(
+                            base = it,
+                            isBad = badAverage <= it.value,
+                            changes = gradesChanges[it.id]
+                    )
                 }
-                val getSubjects = {
-                    gradesList.toSubjects().map {
-                        SubjectItem(
-                                base = it,
-                                isBad = badAverage <= it.average,
-                                changes = it.grades.mapNotNull { grade ->
-                                    gradesChanges[grade.id]?.let { grade.id to it }
-                                }.toMap()
-                        )
-                    }
-                }
-
-                @Suppress("REDUNDANT_ELSE_IN_WHEN")
-                addAll(when (sort) {
-                    GRADES_DATE -> run(getGrades)
-                    GRADES_VALUE -> run(getGrades).sortedBy { it.base.value }
-                    GRADES_SUBJECT -> run(getGrades).sortedBy { it.base.subjectShort }
-                    SUBJECTS_NAME -> run(getSubjects)
-                    SUBJECTS_AVERAGE_BEST -> run(getSubjects).sortedBy { it.base.average }
-                    SUBJECTS_AVERAGE_WORSE ->
-                        run(getSubjects).sortedByDescending { it.base.average }
-                    else -> run(getGrades)
-                })
             }
+            val getSubjects = {
+                gradesList.toSubjects().map {
+                    SubjectItem(
+                            base = it,
+                            isBad = badAverage <= it.average,
+                            changes = it.grades.mapNotNull { grade ->
+                                gradesChanges[grade.id]?.let { grade.id to it }
+                            }.toMap()
+                    )
+                }
+            }
+
+            @Suppress("REDUNDANT_ELSE_IN_WHEN")
+            addAll(when (sort) {
+                GRADES_DATE -> run(getGrades)
+                GRADES_VALUE -> run(getGrades).sortedBy { it.base.value }
+                GRADES_SUBJECT -> run(getGrades).sortedBy { it.base.subjectShort }
+                SUBJECTS_NAME -> run(getSubjects)
+                SUBJECTS_AVERAGE_BEST -> run(getSubjects).sortedBy { it.base.average }
+                SUBJECTS_AVERAGE_WORSE ->
+                    run(getSubjects).sortedByDescending { it.base.average }
+                else -> run(getGrades)
+            })
         }
     }
 }
