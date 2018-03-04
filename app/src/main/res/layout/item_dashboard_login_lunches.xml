@@ -65,7 +65,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:lines="1"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:text="@string/item_login_lunches_title" />
@@ -75,6 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="2"
+                android:ellipsize="end"
                 android:gravity="end"
                 android:textSize="14sp"
                 android:text="@string/item_login_lunches_subtitle"/>

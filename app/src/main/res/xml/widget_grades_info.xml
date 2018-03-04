@@ -23,7 +23,7 @@
     android:configure="cz.anty.purkynka.grades.widget.GradesWidgetConfigureActivity"
     android:initialKeyguardLayout="@layout/widget_grades"
     android:initialLayout="@layout/widget_grades"
-    android:minHeight="220dp"
+    android:minHeight="110dp"
     android:minWidth="220dp"
     android:previewImage="@drawable/widget_grades_preview"
     android:resizeMode="horizontal|vertical"

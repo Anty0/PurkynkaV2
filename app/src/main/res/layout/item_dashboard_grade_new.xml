@@ -46,6 +46,8 @@
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:textSize="14sp"
             android:text="@string/item_grades_new_grade_title_main" />
 
@@ -141,7 +143,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:lines="1"
+                    android:singleLine="true"
+                    android:ellipsize="end"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -150,7 +153,8 @@
                     android:id="@+id/txtTeacher"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:lines="1"
+                    android:singleLine="true"
+                    android:ellipsize="end"
                     android:gravity="end"
                     android:textSize="14sp" />
             </LinearLayout>

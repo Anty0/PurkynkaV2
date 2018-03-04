@@ -57,7 +57,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:lines="1"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:text="@string/empty_view_text_no_next_lunch"
                 android:textColor="@color/materialWhite"
                 android:textSize="18sp" />
@@ -68,6 +69,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center_horizontal"
                 android:maxWidth="300dp"
+                android:ellipsize="end"
                 android:text="@string/empty_view_text_small_no_next_lunch"
                 android:textColor="@color/materialWhite"
                 android:textSize="14sp" />
