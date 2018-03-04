@@ -22,6 +22,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
@@ -68,7 +69,10 @@ class LunchesBurzaWatcherStatusChannel : NotifyChannel(ID, false) {
 
     override fun handleContentIntent(context: Context, group: NotifyGroup,
                                      notifyId: NotifyId, data: Bundle) {
-        MainActivity.start(context, LunchesBurzaWatcherFragment::class.java)
+        context.startActivity(
+                MainActivity.getStartIntent(context, LunchesBurzaWatcherFragment::class.java)
+                        .addFlags(FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     private fun buildNotificationBase(context: Context, group: NotifyGroup): NotificationCompat.Builder =

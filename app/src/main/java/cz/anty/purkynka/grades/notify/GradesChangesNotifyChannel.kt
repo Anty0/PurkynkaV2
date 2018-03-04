@@ -155,7 +155,10 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrid
                     GradeActivity.getStartIntent(context, grade, false, changes = changes)
             ))
         } else {
-            MainActivity.getStartIntent(context, GradesFragment::class.java)
+            context.startActivity(
+                    MainActivity.getStartIntent(context, GradesFragment::class.java)
+                            .addFlags(FLAG_ACTIVITY_NEW_TASK)
+            )
         }
     }
 
@@ -170,7 +173,10 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrid
 
         accountId?.let { ActiveAccount.set(it) }
 
-        MainActivity.start(context, GradesFragment::class.java)
+        context.startActivity(
+                MainActivity.getStartIntent(context, GradesFragment::class.java)
+                        .addFlags(FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     private fun buildNotificationBase(context: Context, group: NotifyGroup,

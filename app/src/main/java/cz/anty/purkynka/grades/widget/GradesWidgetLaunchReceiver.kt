@@ -47,6 +47,9 @@ class GradesWidgetLaunchReceiver : BroadcastReceiver() {
 
         accountId?.let { ActiveAccount.set(it) }
 
-        MainActivity.start(context, GradesFragment::class.java)
+        context.startActivity(
+                MainActivity.getStartIntent(context, GradesFragment::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 }

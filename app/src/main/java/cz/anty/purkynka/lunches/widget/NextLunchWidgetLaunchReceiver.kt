@@ -21,6 +21,7 @@ package cz.anty.purkynka.lunches.widget
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.lunches.LunchesDecideFragment
@@ -49,12 +50,15 @@ class NextLunchWidgetLaunchReceiver : BroadcastReceiver() {
 
         accountId?.let { ActiveAccount.set(it) }
 
-        MainActivity.start(
-                context = context,
-                fragmentClass = LunchesDecideFragment::class.java,
-                fragmentExtras = bundleOf(
-                        LunchesDecideFragment.EXTRA_TARGET_CLASS to LunchesOrderFragment::class.java
-                )
+        context.startActivity(
+                MainActivity.getStartIntent(
+                        context = context,
+                        fragmentClass = LunchesDecideFragment::class.java,
+                        fragmentExtras = bundleOf(
+                                LunchesDecideFragment.EXTRA_TARGET_CLASS to
+                                        LunchesOrderFragment::class.java
+                        )
+                ).addFlags(FLAG_ACTIVITY_NEW_TASK)
         )
     }
 }

@@ -96,11 +96,6 @@ class MainActivity : NavigationActivity() {
                 Intent(context, MainActivity::class.java)
                         .putExtra(EXTRA_FRAGMENT_CLASS, fragmentClass)
                         .putExtra(EXTRA_FRAGMENT_EXTRAS, fragmentExtras)
-
-        @JvmOverloads
-        fun start(context: Context, fragmentClass: Class<out Fragment>? = null,
-                  fragmentExtras: Bundle? = null) =
-                context.startActivity(getStartIntent(context, fragmentClass, fragmentExtras))
     }
 
     override val mainFragmentClass: Class<out Fragment>?

@@ -21,6 +21,7 @@ package cz.anty.purkynka.lunches.notify
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
@@ -96,7 +97,10 @@ class LunchesBurzaWatcherResultChannel : NotifyChannel(ID, true) {
 
         accountId?.let { ActiveAccount.set(it) }
 
-        MainActivity.start(context, LunchesOrderFragment::class.java)
+        context.startActivity(
+                MainActivity.getStartIntent(context, LunchesOrderFragment::class.java)
+                        .addFlags(FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     private fun buildNotificationBase(context: Context, group: NotifyGroup): NotificationCompat.Builder =

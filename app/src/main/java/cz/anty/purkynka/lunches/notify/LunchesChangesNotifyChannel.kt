@@ -115,7 +115,10 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(
                     LunchOptionsGroupActivity.getIntent(context, accountId, lunchGroup)
             ))
         } else {
-            MainActivity.start(context, LunchesOrderFragment::class.java)
+            context.startActivity(
+                    MainActivity.getStartIntent(context, LunchesOrderFragment::class.java)
+                            .addFlags(FLAG_ACTIVITY_NEW_TASK)
+            )
         }
     }
 
@@ -130,7 +133,10 @@ class LunchesChangesNotifyChannel : SummarizedNotifyChannel(
 
         accountId?.let { ActiveAccount.set(it) }
 
-        MainActivity.start(context, LunchesOrderFragment::class.java)
+        context.startActivity(
+                MainActivity.getStartIntent(context, LunchesOrderFragment::class.java)
+                        .addFlags(FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     private fun buildNotificationBase(context: Context, group: NotifyGroup): NotificationCompat.Builder =

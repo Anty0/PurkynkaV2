@@ -44,6 +44,8 @@ import javax.net.ssl.HttpsURLConnection
  */
 object UpdateFetcher {
 
+    // FIXME: apks downloaded into internal storage cannot be installed on api below N
+
     private const val LOG_TAG = "UpdateFetcher"
 
     private val API_VERSION = if (DebugMode.isEnabled) "dev" else "v1"
