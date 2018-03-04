@@ -59,7 +59,7 @@ android {
         def proguardArray = Iterables.toArray(proguardList, Object.class)
 
         release {
-            versionNameSuffix '-beta'
+            //versionNameSuffix '-beta'
 
             pseudoLocalesEnabled false
 

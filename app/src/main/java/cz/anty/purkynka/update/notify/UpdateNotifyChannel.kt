@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import cz.anty.purkynka.update.ui.UpdateActivity
 import eu.codetopic.java.utils.letIf
@@ -44,7 +45,7 @@ class UpdateNotifyChannel : NotifyChannel(ID, checkForIdOverrides = false) {
     companion object {
 
         private const val LOG_TAG = "UpdateNotifyChannel"
-        const val ID = "cz.anty.purkynka.update.notify.$LOG_TAG"
+        const val ID = "${BuildConfig.APPLICATION_ID}.update.notify.available"
         const val NOTIFY_ID = 0
 
         private const val PARAM_VERSION_CODE = "VERSION_CODE"

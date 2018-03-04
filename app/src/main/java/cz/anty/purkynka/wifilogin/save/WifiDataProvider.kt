@@ -20,6 +20,7 @@ package cz.anty.purkynka.wifilogin.save
 
 import android.content.Context
 import android.content.SharedPreferences
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.utils.FILE_NAME_WIFI_DATA
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
@@ -31,7 +32,7 @@ import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPrefe
 class WifiDataProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, WifiData.SAVE_VERSION) {
 
     companion object {
-        const val AUTHORITY = "cz.anty.purkynka.wifilogin.data"
+        const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.wifilogin.data"
     }
 
     override fun onPreparePreferencesProvider(): ISharedPreferencesProvider<SharedPreferences> {

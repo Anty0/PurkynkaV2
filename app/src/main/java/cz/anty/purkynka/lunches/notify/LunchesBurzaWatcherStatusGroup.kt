@@ -22,6 +22,7 @@ import android.app.NotificationChannelGroup
 import android.content.Context
 import android.os.Build
 import android.support.annotation.RequiresApi
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 
@@ -33,7 +34,7 @@ class LunchesBurzaWatcherStatusGroup : NotifyGroup(ID, LunchesBurzaWatcherStatus
     companion object {
 
         private const val LOG_TAG = "LunchesBurzaWatcherStatusGroup"
-        const val ID = "LUNCHES_BURZA_WATCHER_STATUS_GROUP"
+        const val ID = "${BuildConfig.APPLICATION_ID}.lunches.notify.burza_watcher_status_group"
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

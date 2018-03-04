@@ -17,14 +17,8 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<appwidget-provider
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="cz.anty.purkynka.lunches.widget.NextLunchWidgetConfigureActivity"
-    android:initialKeyguardLayout="@layout/widget_next_lunch"
-    android:initialLayout="@layout/widget_next_lunch"
-    android:minHeight="72dp"
-    android:minWidth="220dp"
-    android:previewImage="@drawable/widget_next_lunch_preview"
-    android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="3600000"
-    android:widgetCategory="home_screen" />
+<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accountType="cz.anty.purkynka.debug.account"
+    android:icon="@mipmap/ic_launcher_round"
+    android:label="@string/app_name"
+    android:accountPreferences="@xml/account_preferences" />

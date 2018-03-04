@@ -28,6 +28,7 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
@@ -59,7 +60,7 @@ class GradesChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverrid
     companion object {
 
         private const val LOG_TAG = "GradesChangesNotifyChannel"
-        const val ID = "GRADES_CHANGES"
+        const val ID = "${BuildConfig.APPLICATION_ID}.grades.notify.changes"
 
         private val idType = Identifiers.Type(ID)
 

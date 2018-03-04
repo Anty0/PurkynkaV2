@@ -28,6 +28,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.account.save.ActiveAccount
@@ -47,12 +48,12 @@ object Accounts {
 
     private const val LOG_TAG = "Accounts"
 
-    const val ACCOUNT_TYPE = "cz.anty.purkynka.account"
+    const val ACCOUNT_TYPE = "${BuildConfig.APPLICATION_ID}.account"
 
-    const val ACTION_ACCOUNT_ADDED = "cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED"
-    const val ACTION_ACCOUNT_REMOVED = "cz.anty.purkynka.account.ACTION_ACCOUNT_REMOVED" // TODO: remove all account data when account is removed
-    const val ACTION_ACCOUNT_RENAMED = "cz.anty.purkynka.account.ACTION_ACCOUNT_RENAMED"
-    const val ACTION_ACCOUNTS_CHANGED = "cz.anty.purkynka.account.ACTION_ACCOUNTS_CHANGED"
+    const val ACTION_ACCOUNT_ADDED = "${BuildConfig.APPLICATION_ID}.account.ACTION_ACCOUNT_ADDED"
+    const val ACTION_ACCOUNT_REMOVED = "${BuildConfig.APPLICATION_ID}.account.ACTION_ACCOUNT_REMOVED" // TODO: remove all account data when account is removed
+    const val ACTION_ACCOUNT_RENAMED = "${BuildConfig.APPLICATION_ID}.account.ACTION_ACCOUNT_RENAMED"
+    const val ACTION_ACCOUNTS_CHANGED = "${BuildConfig.APPLICATION_ID}.account.ACTION_ACCOUNTS_CHANGED"
 
     const val EXTRA_OLD_ACCOUNT = "cz.anty.purkynka.account.EXTRA_OLD_ACCOUNT"
     const val EXTRA_ACCOUNT = "cz.anty.purkynka.account.EXTRA_ACCOUNT"

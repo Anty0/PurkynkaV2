@@ -22,6 +22,7 @@ import android.app.NotificationChannelGroup
 import android.content.Context
 import android.os.Build
 import android.support.annotation.RequiresApi
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import eu.codetopic.utils.notifications.manager.util.NotifyGroup
 
@@ -33,7 +34,7 @@ class UpdateNotifyGroup : NotifyGroup(ID, UpdateNotifyChannel.ID, VersionChanges
     companion object {
 
         private const val LOG_TAG = "UpdateNotifyGroup"
-        const val ID = "cz.anty.purkynka.update.notify.$LOG_TAG"
+        const val ID = "${BuildConfig.APPLICATION_ID}.update.notify.group"
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

@@ -151,7 +151,7 @@
             </intent-filter>
 
             <intent-filter>
-                <action android:name="cz.anty.purkynka.update.FAKE_MY_PACKAGE_REPLACED" />
+                <action android:name="${applicationId}.update.FAKE_MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -315,7 +315,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="cz.anty.purkynka.files"
+            android:authorities="${applicationId}.files"
             android:exported="false"
             android:grantUriPermissions="true"
             android:process=":providers">
@@ -326,80 +326,80 @@
         </provider>
         <provider
             android:name=".settings.AppPreferencesProvider"
-            android:authorities="cz.anty.purkynka.preferences"
+            android:authorities="${applicationId}.preferences"
             android:exported="false"
             android:label="@string/label_provider_app_preferences"
             android:process=":providers" />
         <provider
             android:name=".account.save.ActiveAccountProvider"
-            android:authorities="cz.anty.purkynka.account.active"
+            android:authorities="${applicationId}.account.active"
             android:exported="false"
             android:label="@string/label_provider_account_active"
             android:process=":providers" />
         <provider
             android:name=".update.save.UpdateDataProvider"
-            android:authorities="cz.anty.purkynka.update.data"
+            android:authorities="${applicationId}.update.data"
             android:exported="false"
             android:label="@string/label_provider_update"
             android:process=":providers" />
         <provider
             android:name=".feedback.save.FeedbackDataProvider"
-            android:authorities="cz.anty.purkynka.feedback.data"
+            android:authorities="${applicationId}.feedback.data"
             android:exported="false"
             android:label="@string/label_provider_feedback"
             android:process=":providers" />
         <provider
             android:name=".grades.save.GradesDataProvider"
-            android:authorities="cz.anty.purkynka.grades.data"
+            android:authorities="${applicationId}.grades.data"
             android:exported="false"
             android:theme="@style/AppTheme.Grades"
             android:label="@string/label_provider_grades"
             android:process=":providers" />
         <provider
             android:name=".grades.save.GradesLoginDataProvider"
-            android:authorities="cz.anty.purkynka.grades.login"
+            android:authorities="${applicationId}.grades.login"
             android:exported="false"
             android:theme="@style/AppTheme.Grades"
             android:label="@string/label_provider_grades_login"
             android:process=":providers" />
         <provider
             android:name=".grades.save.GradesPreferencesProvider"
-            android:authorities="cz.anty.purkynka.grades.preferences"
+            android:authorities="${applicationId}.grades.preferences"
             android:exported="false"
             android:theme="@style/AppTheme.Grades"
             android:label="@string/label_provider_grades_preferences"
             android:process=":providers" />
         <provider
             android:name=".wifilogin.save.WifiDataProvider"
-            android:authorities="cz.anty.purkynka.wifilogin.data"
+            android:authorities="${applicationId}.wifilogin.data"
             android:exported="false"
             android:theme="@style/AppTheme.WifiLogin"
             android:label="@string/label_provider_wifi"
             android:process=":providers" />
         <provider
             android:name=".wifilogin.save.WifiLoginDataProvider"
-            android:authorities="cz.anty.purkynka.wifilogin.login"
+            android:authorities="${applicationId}.wifilogin.login"
             android:exported="false"
             android:theme="@style/AppTheme.WifiLogin"
             android:label="@string/label_provider_wifi_login"
             android:process=":providers" />
         <provider
             android:name=".lunches.save.LunchesDataProvider"
-            android:authorities="cz.anty.purkynka.lunches.data"
+            android:authorities="${applicationId}.lunches.data"
             android:exported="false"
             android:theme="@style/AppTheme.Lunches"
             android:label="@string/label_provider_lunches"
             android:process=":providers" />
         <provider
             android:name=".lunches.save.LunchesLoginDataProvider"
-            android:authorities="cz.anty.purkynka.lunches.login"
+            android:authorities="${applicationId}.lunches.login"
             android:exported="false"
             android:theme="@style/AppTheme.Lunches"
             android:label="@string/label_provider_lunches_login"
             android:process=":providers" />
         <provider
             android:name=".lunches.save.LunchesPreferencesProvider"
-            android:authorities="cz.anty.purkynka.lunches.preferences"
+            android:authorities="${applicationId}.lunches.preferences"
             android:exported="false"
             android:theme="@style/AppTheme.Lunches"
             android:label="@string/label_provider_lunches_preferences"

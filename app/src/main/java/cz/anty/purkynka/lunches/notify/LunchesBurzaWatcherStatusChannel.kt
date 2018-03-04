@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
 import cz.anty.purkynka.lunches.LunchesBurzaWatcherFragment
@@ -44,7 +45,7 @@ class LunchesBurzaWatcherStatusChannel : NotifyChannel(ID, false) {
     companion object {
 
         private const val LOG_TAG = "LunchesBurzaWatcherStatusChannel"
-        const val ID = "LUNCHES_BURZA_WATCHER_STATUS"
+        const val ID = "${BuildConfig.APPLICATION_ID}.lunches.notify.burza_watcher_status"
 
         const val NOTIFY_ID = 73528
     }

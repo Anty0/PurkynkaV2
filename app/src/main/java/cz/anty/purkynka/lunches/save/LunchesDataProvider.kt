@@ -20,6 +20,7 @@ package cz.anty.purkynka.lunches.save
 
 import android.content.Context
 import android.content.SharedPreferences
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.utils.FILE_NAME_LUNCHES_DATA
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
@@ -31,7 +32,7 @@ import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPrefe
 class LunchesDataProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, LunchesData.SAVE_VERSION) {
 
     companion object {
-        const val AUTHORITY = "cz.anty.purkynka.lunches.data"
+        const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.lunches.data"
     }
 
     override fun onPreparePreferencesProvider(): ISharedPreferencesProvider<SharedPreferences> {

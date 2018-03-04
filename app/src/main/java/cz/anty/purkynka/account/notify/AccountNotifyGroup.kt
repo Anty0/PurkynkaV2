@@ -25,6 +25,7 @@ import android.content.Context
 import android.os.Build
 import android.support.annotation.MainThread
 import android.support.annotation.RequiresApi
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.account.Accounts
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.intentFilter
@@ -43,7 +44,8 @@ class AccountNotifyGroup(val accountId: String, val account: Account, vararg cha
 
         private var channelIds: Array<out String>? = null
 
-        fun idFor(accountId: String) = "GROUP_ID{$accountId}"
+        fun idFor(accountId: String) =
+                "${BuildConfig.APPLICATION_ID}.account.notify.group.$accountId"
 
         private val accountAddedReceiver: BroadcastReceiver =
                 receiver { context, intent ->

@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.MainActivity
 import cz.anty.purkynka.R
 import cz.anty.purkynka.update.CHANGELOG_MAP
@@ -52,7 +53,7 @@ class VersionChangesNotifyChannel : SummarizedNotifyChannel(ID, checkForIdOverri
     companion object {
 
         private const val LOG_TAG = "VersionChangesNotifyChannel"
-        const val ID = "cz.anty.purkynka.update.notify.$LOG_TAG"
+        const val ID = "${BuildConfig.APPLICATION_ID}.update.notify.version_changes"
 
         private val idType = Identifiers.Type(ID)
 

@@ -99,7 +99,7 @@ class AppPreferences private constructor(context: Context) :
 class AppPreferencesProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, AppPreferences.SAVE_VERSION) {
 
     companion object {
-        const val AUTHORITY = "cz.anty.purkynka.preferences"
+        const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.preferences"
     }
 
     override fun onPreparePreferencesProvider(): ISharedPreferencesProvider<SharedPreferences> {

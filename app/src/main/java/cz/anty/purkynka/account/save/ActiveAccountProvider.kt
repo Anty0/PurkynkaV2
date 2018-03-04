@@ -20,6 +20,7 @@ package cz.anty.purkynka.account.save
 
 import android.content.Context
 import android.content.SharedPreferences
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.utils.FILE_NAME_ACTIVE_ACCOUNT_DATA
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
@@ -31,7 +32,7 @@ import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPrefe
 class ActiveAccountProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, ActiveAccount.SAVE_VERSION) {
 
     companion object {
-        const val AUTHORITY = "cz.anty.purkynka.account.active"
+        const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.account.active"
     }
 
     override fun onPreparePreferencesProvider(): ISharedPreferencesProvider<android.content.SharedPreferences> {

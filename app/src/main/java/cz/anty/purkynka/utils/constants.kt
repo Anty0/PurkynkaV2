@@ -20,6 +20,7 @@ package cz.anty.purkynka.utils
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import cz.anty.purkynka.BuildConfig
 
 /**
  * @author anty
@@ -29,7 +30,7 @@ const val APP_OLD_PACKAGE_NAME = "cz.anty.purkynkamanager"
 
 //---------------------------------------------------------------------
 
-const val AUTHORITY_PROVIDER_FILES = "cz.anty.purkynka.files"
+const val AUTHORITY_PROVIDER_FILES = "${BuildConfig.APPLICATION_ID}.files"
 
 //---------------------------------------------------------------------
 

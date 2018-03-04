@@ -23,6 +23,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.support.annotation.WorkerThread
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.grades.data.Grade
@@ -50,7 +51,7 @@ object GradesSyncer {
     private const val LOG_TAG = "GradesSyncer"
 
     const val ACTION_NEW_GRADES_CHANGES =
-            "cz.anty.purkynka.grades.sync.$LOG_TAG.NEW_GRADES_CHANGES"
+            "${BuildConfig.APPLICATION_ID}.grades.sync.$LOG_TAG.NEW_GRADES_CHANGES"
     const val EXTRA_ACCOUNT_ID =
             "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_ACCOUNT_ID"
     const val EXTRA_GRADES_CHANGES =

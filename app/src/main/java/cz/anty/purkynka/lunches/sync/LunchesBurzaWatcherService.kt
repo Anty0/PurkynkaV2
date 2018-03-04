@@ -24,6 +24,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.exceptions.LoginExpiredException
@@ -60,18 +61,18 @@ class LunchesBurzaWatcherService : Service() {
         private const val LOG_TAG = "LunchesBurzaWatcherService"
 
         private const val ACTION_START_WATCHER =
-                "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_START_WATCHER"
+                "${BuildConfig.APPLICATION_ID}.lunches.sync.$LOG_TAG.ACTION_START_WATCHER"
         private const val ACTION_STOP_WATCHER =
-                "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_STOP_WATCHER"
+                "${BuildConfig.APPLICATION_ID}.lunches.sync.$LOG_TAG.ACTION_STOP_WATCHER"
         private const val ACTION_STOP_ALL_WATCHERS =
-                "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_STOP_ALL_WATCHERS"
+                "${BuildConfig.APPLICATION_ID}.lunches.sync.$LOG_TAG.ACTION_STOP_ALL_WATCHERS"
         private const val ACTION_REQUEST_STATUS_UPDATE =
-                "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_REQUEST_STATUS_UPDATE"
+                "${BuildConfig.APPLICATION_ID}.lunches.sync.$LOG_TAG.ACTION_REQUEST_STATUS_UPDATE"
         private const val EXTRA_ACCOUNT_ID = "$LOG_TAG.EXTRA_ACCOUNT_ID"
         private const val EXTRA_ARGUMENTS = "$LOG_TAG.EXTRA_ARGUMENTS"
 
         const val ACTION_STATUS_UPDATE =
-                "cz.anty.purkynka.lunches.sync.$LOG_TAG.ACTION_STATUS_UPDATE"
+                "${BuildConfig.APPLICATION_ID}.lunches.sync.$LOG_TAG.ACTION_STATUS_UPDATE"
         const val EXTRA_STATUS_MAP = "$LOG_TAG.EXTRA_STATUS_MAP"
         val EXTRA_STATUS_MAP_SERIALIZER =
                 (StringSerializer to kSerializer<BurzaWatcherStatus>()).map

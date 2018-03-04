@@ -20,6 +20,7 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.utils.FILE_NAME_GRADES_PREFERENCES
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
@@ -31,7 +32,7 @@ import eu.codetopic.utils.data.preferences.support.VersionedContentProviderPrefe
 class GradesPreferencesProvider : VersionedContentProviderPreferences<SharedPreferences>(AUTHORITY, GradesPreferences.SAVE_VERSION) {
 
     companion object {
-        const val AUTHORITY = "cz.anty.purkynka.grades.preferences"
+        const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.grades.preferences"
     }
 
     override fun onPreparePreferencesProvider(): ISharedPreferencesProvider<SharedPreferences> {

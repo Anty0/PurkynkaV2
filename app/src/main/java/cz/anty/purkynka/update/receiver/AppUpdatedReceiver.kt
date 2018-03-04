@@ -42,7 +42,7 @@ class AppUpdatedReceiver : BroadcastReceiver() {
         private const val LOG_TAG = "AppUpdatedReceiver"
 
         const val ACTION_FAKE_MY_PACKAGE_REPLACED =
-                "cz.anty.purkynka.update.FAKE_MY_PACKAGE_REPLACED"
+                "${BuildConfig.APPLICATION_ID}.update.FAKE_MY_PACKAGE_REPLACED"
     }
 
     override fun onReceive(context: Context, intent: Intent) {

@@ -19,6 +19,7 @@
 package cz.anty.purkynka.grades.save
 
 import android.content.SharedPreferences
+import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.utils.FILE_NAME_GRADES_LOGIN_DATA
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
@@ -36,7 +37,7 @@ class GradesLoginDataProvider :
         ) {
 
     companion object {
-        const val AUTHORITY = "cz.anty.purkynka.grades.login"
+        const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.grades.login"
     }
 
     override fun onPreparePreferencesProvider():
