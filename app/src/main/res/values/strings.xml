@@ -433,7 +433,7 @@
         <item>Average 4.50 and higher</item>
         <item>Average 4.75 and higher</item>
     </string-array>
-    <string-array name="pref_grades_bad_average_entry_values">
+    <string-array name="pref_grades_bad_average_entry_values" translatable="false">
         <item>1.25</item>
         <item>1.50</item>
         <item>1.75</item>
