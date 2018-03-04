@@ -21,7 +21,6 @@ package cz.anty.purkynka.grades.notify
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import android.os.Bundle
@@ -38,8 +37,8 @@ import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Grade.Companion.valueColor
 import cz.anty.purkynka.grades.data.Subject.Companion.averageColor
 import cz.anty.purkynka.grades.ui.GradeActivity
-import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.alsoIfNull
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.ids.Identifiers
 import eu.codetopic.utils.ids.Identifiers.Companion.nextId

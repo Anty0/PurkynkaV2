@@ -56,7 +56,8 @@
                 android:inputType="textPersonName|textNoSuggestions"
                 android:hint="@string/insert_account_name"
                 android:importantForAutofill="yes"
-                android:autofillHints="name" />
+                android:autofillHints="name"
+                tools:ignore="UnusedAttribute" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.v7.widget.AppCompatButton

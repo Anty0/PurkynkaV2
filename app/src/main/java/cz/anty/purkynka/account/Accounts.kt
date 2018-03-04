@@ -33,11 +33,8 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.account.save.ActiveAccount
 import eu.codetopic.java.utils.runIf
-import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.UtilsBase
-import eu.codetopic.utils.broadcast.BroadcastsConnector
-import eu.codetopic.utils.broadcast.BroadcastsConnector.Connection
-import eu.codetopic.utils.broadcast.BroadcastsConnector.BroadcastTargetingType
+import org.jetbrains.anko.accountManager
 import org.jetbrains.anko.bundleOf
 import java.util.*
 

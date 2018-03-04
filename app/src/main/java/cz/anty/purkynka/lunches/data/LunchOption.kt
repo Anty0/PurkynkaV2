@@ -18,7 +18,6 @@
 
 package cz.anty.purkynka.lunches.data
 
-import cz.anty.purkynka.lunches.load.LunchesParser
 import kotlinx.serialization.Serializable
 
 /**

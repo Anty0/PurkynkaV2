@@ -40,7 +40,8 @@
         android:textSize="24sp"
         android:fontFamily="monospace"
         android:typeface="monospace"
-        android:textColor="@color/materialWhite" />
+        android:textColor="@color/materialWhite"
+        tools:ignore="UnusedAttribute" />
 
     <LinearLayout
         android:layout_width="match_parent"

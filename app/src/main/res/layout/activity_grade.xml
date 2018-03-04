@@ -34,7 +34,8 @@
         android:outlineProvider="bounds"
         android:elevation="4dp"
         android:paddingBottom="4dp"
-        android:paddingTop="4dp">
+        android:paddingTop="4dp"
+        tools:ignore="UnusedAttribute">
 
         <!--Here will be inflated layout item_grade-->
     </FrameLayout>

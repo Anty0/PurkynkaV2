@@ -17,9 +17,7 @@
   ~ along  with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".lunches.ui.LunchOptionsGroupActivity"
     android:layout_width="match_parent"
@@ -34,7 +32,8 @@
         android:outlineProvider="bounds"
         android:elevation="4dp"
         android:paddingBottom="4dp"
-        android:paddingTop="4dp">
+        android:paddingTop="4dp"
+        tools:ignore="UnusedAttribute">
 
         <!--Here will be inflated item_lunch_burza-->
     </FrameLayout>

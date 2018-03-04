@@ -19,7 +19,6 @@
 package cz.anty.purkynka.update.dashboard
 
 import android.content.Context
-import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem

@@ -27,7 +27,6 @@ import android.os.Bundle
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
 import cz.anty.purkynka.grades.data.Semester
-import cz.anty.purkynka.grades.receiver.NewGradesChangesReceiver
 import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.GradesDataProvider
 import cz.anty.purkynka.grades.save.GradesLoginData

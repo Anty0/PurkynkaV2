@@ -60,7 +60,8 @@
                 android:inputType="textNoSuggestions"
                 android:hint="@string/insert_username"
                 android:importantForAutofill="yes"
-                android:autofillHints="username" />
+                android:autofillHints="username"
+                tools:ignore="UnusedAttribute" />
         </android.support.design.widget.TextInputLayout>
 
         <!-- Password Label -->
@@ -78,7 +79,8 @@
                 android:inputType="textPassword"
                 android:hint="@string/insert_password"
                 android:importantForAutofill="yes"
-                android:autofillHints="password" />
+                android:autofillHints="password"
+                tools:ignore="UnusedAttribute" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.v7.widget.AppCompatButton

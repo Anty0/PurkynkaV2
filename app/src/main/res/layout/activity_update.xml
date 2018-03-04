@@ -177,7 +177,8 @@
                     android:gravity="end"
                     android:lines="2"
                     android:fontFamily="monospace"
-                    android:typeface="monospace" />
+                    android:typeface="monospace"
+                    tools:ignore="UnusedAttribute" />
 
                 <TextView
                     style="?attr/textAppearanceListItem"

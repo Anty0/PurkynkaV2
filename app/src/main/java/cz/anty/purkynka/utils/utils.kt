@@ -32,8 +32,6 @@ import android.widget.ImageView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.RequestCreator
 import cz.anty.purkynka.BuildConfig
-import cz.anty.purkynka.account.Syncs
-import eu.codetopic.java.utils.alsoIfTrue
 import eu.codetopic.java.utils.ifNull
 import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.join
@@ -46,7 +44,6 @@ import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.suspendCancellableCoroutine
 import kotlinx.coroutines.experimental.withTimeoutOrNull
 import java.io.File
-import kotlin.coroutines.experimental.suspendCoroutine
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round

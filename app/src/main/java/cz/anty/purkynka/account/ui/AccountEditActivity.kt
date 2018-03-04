@@ -29,12 +29,12 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.utils.FBA_ACCOUNT_EDIT
-import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.view.hideKeyboard
 import kotlinx.android.synthetic.main.activity_edit_account.*
+import org.jetbrains.anko.accountManager
 
 /**
  * @author anty

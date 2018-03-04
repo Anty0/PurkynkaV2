@@ -22,8 +22,8 @@ import android.content.Context
 import android.widget.RemoteViews
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
-import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.data.Semester
+import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataChanges
@@ -34,11 +34,8 @@ import cz.anty.purkynka.grades.ui.SubjectItem
 import cz.anty.purkynka.grades.util.GradesSort
 import cz.anty.purkynka.grades.util.GradesSort.*
 import eu.codetopic.utils.edit
-import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.notifications.manager.NotifyManager
-import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.RemoteCustomItemAdapter
-import eu.codetopic.utils.ui.container.adapter.UniversalAdapterBase
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.LoadingItem
 

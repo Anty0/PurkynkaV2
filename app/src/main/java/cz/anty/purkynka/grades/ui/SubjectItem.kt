@@ -29,11 +29,11 @@ import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.data.Subject.Companion.averageColor
 import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.fillToLen
-import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.java.utils.format
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.getFormattedQuantityText
+import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemRemoteViewHolder
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_subject.*
@@ -52,7 +52,7 @@ class SubjectItem(val base: Subject, val isBad: Boolean,
     private val average: Double = base.average
     private val averageColor: Int = base.averageColor
 
-    val isChnaged get() = changes.isNotEmpty()
+    val isChanged get() = changes.isNotEmpty()
 
     override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
         holder.txtNameShort.apply {
@@ -76,7 +76,7 @@ class SubjectItem(val base: Subject, val isBad: Boolean,
                 )
 
         holder.boxColoredBackground.setBackgroundResource(
-                if (!isChnaged) android.R.color.transparent
+                if (!isChanged) android.R.color.transparent
                 else R.color.cardview_dark_background
         )
 
@@ -130,7 +130,7 @@ class SubjectItem(val base: Subject, val isBad: Boolean,
                 "setBackgroundColor",
                 ContextCompat.getColor(
                         holder.context,
-                        if (!isChnaged) android.R.color.transparent
+                        if (!isChanged) android.R.color.transparent
                         else R.color.navigationBarColorGrades
                 )
         )

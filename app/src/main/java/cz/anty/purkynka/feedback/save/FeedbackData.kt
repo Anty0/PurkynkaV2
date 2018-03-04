@@ -23,7 +23,6 @@ import android.content.SharedPreferences
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.utils.LAST_ERROR_VERSION
 import eu.codetopic.utils.data.preferences.PreferencesData
-import eu.codetopic.utils.data.preferences.preference.FloatPreference
 import eu.codetopic.utils.data.preferences.preference.IntPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences

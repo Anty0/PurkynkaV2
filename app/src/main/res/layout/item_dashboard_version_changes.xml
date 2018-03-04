@@ -63,7 +63,8 @@
                 android:lines="1"
                 android:textSize="24sp"
                 android:fontFamily="monospace"
-                android:typeface="monospace" />
+                android:typeface="monospace"
+                tools:ignore="UnusedAttribute" />
 
             <android.support.v4.widget.Space
                 android:layout_width="wrap_content"

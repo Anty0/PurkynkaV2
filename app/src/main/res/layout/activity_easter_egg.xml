@@ -43,7 +43,8 @@
             android:textSize="28sp"
             android:typeface="monospace"
             android:fontFamily="monospace"
-            android:text="@string/title_activity_easter_egg" />
+            android:text="@string/title_activity_easter_egg"
+            tools:ignore="UnusedAttribute" />
 
         <ImageView
             android:id="@+id/imgAppIcon"
@@ -52,6 +53,6 @@
             android:layout_marginTop="16dp"
             android:src="@mipmap/ic_launcher_launch_screen"
             android:transitionName="@string/id_transition_easter_egg_img"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription,UnusedAttribute" />
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

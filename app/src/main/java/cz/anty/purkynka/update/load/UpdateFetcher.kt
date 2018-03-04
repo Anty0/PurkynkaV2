@@ -19,20 +19,18 @@
 package cz.anty.purkynka.update.load
 
 import android.content.Context
-import android.net.Uri
-import android.os.Build
-import android.os.Environment
 import android.support.annotation.WorkerThread
-import cz.anty.purkynka.utils.*
-import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.debug.DebugMode
-import org.jsoup.Jsoup
-import android.support.v4.content.FileProvider
 import cz.anty.purkynka.update.data.AvailableVersionInfo
+import cz.anty.purkynka.utils.isExternalStorageReadable
+import cz.anty.purkynka.utils.isExternalStorageWritable
+import cz.anty.purkynka.utils.userAgent
+import eu.codetopic.java.utils.debug.DebugMode
 import eu.codetopic.java.utils.letIfNull
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.thread.progress.ProgressReporter
 import kotlinx.serialization.json.JSON
+import org.jsoup.Jsoup
 import java.io.*
 import java.math.BigInteger
 import java.net.URL

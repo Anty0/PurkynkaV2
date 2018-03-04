@@ -24,10 +24,10 @@ import android.support.v7.widget.SearchView
 import android.view.*
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.utils.ICON_ATTENDANCE
 import cz.anty.purkynka.R
 import cz.anty.purkynka.attendance.ui.AttendanceAdapter
 import cz.anty.purkynka.utils.FBA_ATTENDANCE_SEARCH
+import cz.anty.purkynka.utils.ICON_ATTENDANCE
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
@@ -40,7 +40,6 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.appcompat.v7.coroutines.onClose
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextListener
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.support.v4.ctx

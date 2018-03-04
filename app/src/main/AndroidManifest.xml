@@ -271,7 +271,8 @@
             android:exported="true"
             android:theme="@style/AppTheme.Grades"
             android:label="@string/label_service_sync_grades"
-            android:process=":syncs">
+            android:process=":syncs"
+            tools:ignore="ExportedService">
 
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
@@ -295,7 +296,8 @@
             android:exported="true"
             android:theme="@style/AppTheme.Lunches"
             android:label="@string/label_service_sync_lunches"
-            android:process=":syncs">
+            android:process=":syncs"
+            tools:ignore="ExportedService">
 
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />

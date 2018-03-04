@@ -25,9 +25,6 @@ import android.view.ContextThemeWrapper
 import android.widget.RemoteViewsService
 import cz.anty.purkynka.R
 import cz.anty.purkynka.grades.util.GradesSort
-import eu.codetopic.java.utils.to
-import eu.codetopic.utils.intentFilter
-import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.forWidget
 
 /**

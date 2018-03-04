@@ -22,32 +22,18 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.design.widget.NavigationView
-import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Bundle
+import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
+import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import eu.codetopic.utils.Constants.ICON_DEBUG
-import eu.codetopic.utils.Constants.ICON_SETTINGS
-import cz.anty.purkynka.utils.ICON_ATTENDANCE
-import cz.anty.purkynka.utils.ICON_DONATE
-import cz.anty.purkynka.utils.ICON_FACEBOOK
-import cz.anty.purkynka.utils.ICON_GRADES
-import cz.anty.purkynka.utils.ICON_HOME_DASHBOARD
-import cz.anty.purkynka.utils.ICON_LUNCHES
-import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA
-import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA_WATCHER
-import cz.anty.purkynka.utils.ICON_LUNCHES_ORDER
-import cz.anty.purkynka.utils.ICON_WEB
-import cz.anty.purkynka.utils.ICON_WIFI_LOGIN
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.account.ui.AccountEditActivity
@@ -65,9 +51,13 @@ import eu.codetopic.java.utils.debug.DebugMode
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.*
+import eu.codetopic.utils.Constants.ICON_DEBUG
+import eu.codetopic.utils.Constants.ICON_SETTINGS
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.ui.activity.navigation.NavigationActivity
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.accountManager
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
@@ -219,15 +209,15 @@ class MainActivity : NavigationActivity() {
         super.onStop()
     }
 
-    override fun onResume() {
+    /*override fun onResume() {
         super.onResume()
 
-        /*EasterEggAnimation.resetOn(
+        EasterEggAnimation.resetOn(
                 findViewById<NavigationView>(R.id.navigationView)
                         .getHeaderView(0)
                         .findViewById(R.id.imgAppIcon)
-        )*/
-    }
+        )
+    }*/
 
     private fun register() {
         registerReceiver(

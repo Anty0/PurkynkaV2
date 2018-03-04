@@ -34,8 +34,6 @@ import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.items.custom.CustomItemRemoteViewHolder
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_grade.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 /**
  * @author anty
@@ -56,7 +54,7 @@ class GradeItem(val base: Grade, val isBad: Boolean, val showSubject: Boolean = 
     val isChanged
         get() = changes?.isNotEmpty() == true
 
-    val hasChnges
+    val hasChanges
         get() = changes != null
 
     override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
@@ -85,7 +83,7 @@ class GradeItem(val base: Grade, val isBad: Boolean, val showSubject: Boolean = 
         holder.txtTeacher.text = base.teacher
 
         holder.boxColoredBackground.setBackgroundResource(
-                if (!hasChnges) android.R.color.transparent
+                if (!hasChanges) android.R.color.transparent
                 else R.color.cardview_dark_background
         )
 
@@ -157,7 +155,7 @@ class GradeItem(val base: Grade, val isBad: Boolean, val showSubject: Boolean = 
                 "setBackgroundColor",
                 ContextCompat.getColor(
                         holder.context,
-                        if (!hasChnges) android.R.color.transparent
+                        if (!hasChanges) android.R.color.transparent
                         else R.color.navigationBarColorGrades
                 )
         )

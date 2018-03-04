@@ -23,7 +23,6 @@ import android.content.Intent
 import android.os.Bundle
 import cz.anty.purkynka.R
 import cz.anty.purkynka.update.CHANGELOG_MAP
-import cz.anty.purkynka.update.getChangesText
 import cz.anty.purkynka.update.inflateChangesLayout
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
 import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel

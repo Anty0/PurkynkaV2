@@ -23,7 +23,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
-    android:transitionName="@string/id_transition_grade_item">
+    android:transitionName="@string/id_transition_grade_item"
+    tools:ignore="UnusedAttribute">
 
     <LinearLayout
         android:id="@+id/boxClickTarget"
@@ -46,7 +47,8 @@
             android:lines="1"
             android:textSize="28sp"
             android:fontFamily="monospace"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            tools:ignore="UnusedAttribute" />
 
         <LinearLayout
             android:layout_width="wrap_content"

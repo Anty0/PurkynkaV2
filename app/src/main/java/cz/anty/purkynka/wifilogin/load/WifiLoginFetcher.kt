@@ -22,10 +22,9 @@ import android.content.Context
 import android.support.annotation.MainThread
 import android.support.annotation.UiThread
 import cz.anty.purkynka.R
-import eu.codetopic.utils.wifiManager
-import eu.codetopic.utils.getFormattedText
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.substringOrNull
+import eu.codetopic.utils.getFormattedText
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
@@ -36,10 +35,10 @@ import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.coroutines.experimental.Ref
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.wifiManager
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import kotlin.coroutines.experimental.suspendCoroutine
-
 
 /**
  * @author anty
@@ -48,7 +47,7 @@ object WifiLoginFetcher {
 
     private const val LOG_TAG = "WifiLoginFetcher"
 
-    private val WIFI_NAME = "ISSWF1"
+    private const val WIFI_NAME = "ISSWF1"
 
     private const val TEST_URL = "http://www.sspbrno.cz/"
     private const val LOGIN_URL_BASE = "wifi.sspbrno.cz"
@@ -144,7 +143,7 @@ object WifiLoginFetcher {
             toastCh { it.getText(block(it)) }
 
     private fun testWifi(context: Context): Pair<Boolean, String?> =
-            context.wifiManager.connectionInfo?.ssid
+            context.applicationContext.wifiManager.connectionInfo?.ssid
                     .let { (it == WIFI_NAME) to it }
 
     private fun checkForLoginUrl(): String? = try {

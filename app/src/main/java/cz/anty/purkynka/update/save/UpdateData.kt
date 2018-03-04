@@ -22,7 +22,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.update.data.AvailableVersionInfo
-import cz.anty.purkynka.utils.*
+import cz.anty.purkynka.utils.LAST_KNOWN_VERSION
+import cz.anty.purkynka.utils.LATEST_VERSION
+import cz.anty.purkynka.utils.SCHEDULE_VERSION
 import eu.codetopic.java.utils.kSerializer
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.IntPreference
@@ -31,9 +33,6 @@ import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesPr
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
-import kotlinx.serialization.internal.IntSerializer
-import kotlinx.serialization.internal.PairSerializer
-import kotlinx.serialization.internal.StringSerializer
 
 /**
  * @author anty

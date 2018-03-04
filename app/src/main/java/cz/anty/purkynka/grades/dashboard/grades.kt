@@ -22,7 +22,6 @@ import android.content.Context
 import android.graphics.Typeface
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
-import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
@@ -38,10 +37,11 @@ import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_GRADES_NEW
 import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.fillToLen
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.*
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.notifications.manager.NotifyManager
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_grade_new.*

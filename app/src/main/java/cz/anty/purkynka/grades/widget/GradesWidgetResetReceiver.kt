@@ -21,7 +21,6 @@ package cz.anty.purkynka.grades.widget
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import cz.anty.purkynka.account.Accounts
 
 /**
  * @author anty

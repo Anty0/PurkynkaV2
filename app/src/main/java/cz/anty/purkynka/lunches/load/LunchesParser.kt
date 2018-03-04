@@ -22,10 +22,9 @@ import android.content.SyncResult
 import cz.anty.purkynka.lunches.data.LunchBurza
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
-import eu.codetopic.java.utils.letIf
-import eu.codetopic.java.utils.substringOrNull
 import eu.codetopic.java.utils.letIfNull
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.java.utils.substringOrNull
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import java.text.ParseException

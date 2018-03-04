@@ -57,7 +57,8 @@
             android:orientation="horizontal"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:transitionName="@string/id_transition_subject_item">
+            android:transitionName="@string/id_transition_subject_item"
+            tools:ignore="UnusedAttribute">
 
             <TextView
                 style="?attr/textAppearanceListItem"
@@ -70,7 +71,8 @@
                 android:lines="1"
                 android:textSize="28sp"
                 android:fontFamily="monospace"
-                android:typeface="monospace" />
+                android:typeface="monospace"
+                tools:ignore="UnusedAttribute" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

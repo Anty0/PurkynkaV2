@@ -22,16 +22,15 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
-import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.Accounts
+import cz.anty.purkynka.utils.ACTIVE_ACCOUNT_ID
 import eu.codetopic.java.utils.asPair
-import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
 import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
 import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
+import org.jetbrains.anko.accountManager
 
 /**
  * @author anty

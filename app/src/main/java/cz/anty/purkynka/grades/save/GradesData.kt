@@ -20,18 +20,19 @@ package cz.anty.purkynka.grades.save
 
 import android.content.Context
 import android.content.SharedPreferences
-import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Semester
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
+import cz.anty.purkynka.utils.GRADES_MAP
+import cz.anty.purkynka.utils.SYNC_RESULT
 import eu.codetopic.java.utils.kSerializer
-
 import eu.codetopic.utils.data.preferences.PreferencesData
-import eu.codetopic.utils.data.preferences.preference.BooleanPreference
 import eu.codetopic.utils.data.preferences.preference.EnumPreference
 import eu.codetopic.utils.data.preferences.preference.KSerializedPreference
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
-import eu.codetopic.utils.data.preferences.support.*
+import eu.codetopic.utils.data.preferences.support.ContentProviderSharedPreferences
+import eu.codetopic.utils.data.preferences.support.PreferencesCompanionObject
+import eu.codetopic.utils.data.preferences.support.PreferencesGetterAbs
 import kotlinx.serialization.internal.IntSerializer
 import kotlinx.serialization.list
 import kotlinx.serialization.map
