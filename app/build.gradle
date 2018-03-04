@@ -150,7 +150,7 @@ dependencies {
     implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
     implementation 'com.mikepenz:community-material-typeface:2.0.46.1@aar'
 
-    implementation 'org.jsoup:jsoup:1.11.2'
+    implementation 'org.jsoup:jsoup:1.10.3' // TODO: skip version 1.11.2 (contains bug)
     implementation 'io.michaelrocks:bimap:1.0.2'
     implementation 'com.evernote:android-job:1.2.4'
     implementation 'com.squareup.picasso:picasso:2.5.2'

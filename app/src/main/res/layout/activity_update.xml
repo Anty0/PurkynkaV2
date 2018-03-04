@@ -103,6 +103,31 @@
                     android:textSize="18sp"
                     android:text="@string/updates_text_update_available" />
 
+                <LinearLayout
+                    android:id="@+id/boxUpdateAvailableNotes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/materialYellow"
+                        android:text="@string/txt_title_release_notes" />
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:id="@+id/txtUpdateAvailableNotes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/butDownloadUpdate"
@@ -166,6 +191,31 @@
                     android:gravity="center_horizontal"
                     android:textSize="18sp"
                     android:text="@string/updates_text_update_downloading" />
+
+                <LinearLayout
+                    android:id="@+id/boxUpdateDownloadingNotes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/materialYellow"
+                        android:text="@string/txt_title_release_notes" />
+
+                    <TextView
+                        style="?attr/textAppearanceListItem"
+                        android:id="@+id/txtUpdateDownloadingNotes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
             </LinearLayout>
 

@@ -20,10 +20,14 @@ package cz.anty.purkynka.utils
 
 import android.accounts.Account
 import android.content.ContentResolver
+import android.content.Context
 import android.content.SyncStatusObserver
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.support.annotation.ColorInt
+import android.support.v4.content.FileProvider
 import android.widget.ImageView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.RequestCreator
@@ -41,6 +45,7 @@ import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.suspendCancellableCoroutine
 import kotlinx.coroutines.experimental.withTimeoutOrNull
+import java.io.File
 import kotlin.coroutines.experimental.suspendCoroutine
 import kotlin.math.max
 import kotlin.math.min
@@ -90,7 +95,7 @@ val userAgent: String
             "Linux; rv:${BuildConfig.VERSION_CODE}; cz-cs) Mozilla/5.0 Gecko/20100101 Firefox/58.0"
 
 //////////////////////////////////////
-//////REGION - SYNCS//////////////////
+///// REGION - SYNCS /////////////////
 //////////////////////////////////////
 
 private const val TIMEOUT_SYNC_ADD_MILIS = 10L * 1_000L
@@ -182,7 +187,7 @@ private suspend inline fun awaitForSyncState(crossinline condition: () -> Boolea
         }
 
 //////////////////////////////////////
-//////REGION - BiMap//////////////////
+///// REGION - BiMap /////////////////
 //////////////////////////////////////
 
 fun <K : Any, V : Any> biMapOf(vararg pairs: Pair<K, V>): BiMap<K, V> =
@@ -192,7 +197,7 @@ fun <K : Any, V : Any> mutableBiMapOf(vararg pairs: Pair<K, V>): MutableBiMap<K,
         pairs.toMap(HashBiMap(pairs.size))
 
 //////////////////////////////////////
-//////REGION - PICASSO////////////////
+///// REGION - PICASSO ///////////////
 //////////////////////////////////////
 
 fun RequestCreator.suspendInto(target: ImageView): Deferred<Nothing?> {
@@ -211,3 +216,24 @@ fun RequestCreator.suspendInto(target: ImageView): Deferred<Nothing?> {
 
     return result
 }
+
+//////////////////////////////////////
+///// REGION - FILES /////////////////
+//////////////////////////////////////
+
+fun uriFor(context: Context, file: File): Uri =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            FileProvider.getUriForFile(
+                    context,
+                    AUTHORITY_PROVIDER_FILES,
+                    file
+            )
+        } else {
+            Uri.fromFile(file)
+        }
+
+fun isExternalStorageWritable(): Boolean =
+        Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
+
+fun isExternalStorageReadable(): Boolean = Environment.getExternalStorageState() in
+        arrayOf(Environment.MEDIA_MOUNTED, Environment.MEDIA_MOUNTED_READ_ONLY)

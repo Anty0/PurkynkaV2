@@ -21,6 +21,7 @@ package cz.anty.purkynka.update.load
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.support.annotation.WorkerThread
 import cz.anty.purkynka.utils.*
 import eu.codetopic.java.utils.log.Log
@@ -56,22 +57,17 @@ object UpdateFetcher {
     private fun getApkNameFor(versionInfo: AvailableVersionInfo): String =
             "app-v${versionInfo.code}.apk"
 
-    private fun getApksDir(context: Context): File =
+    private fun getInternalApksDir(context: Context): File =
+            File(context.filesDir, DIR_UPDATES)
+
+    private fun getExternalApksDir(context: Context): File =
             File(context.externalCacheDir, DIR_UPDATES)
 
-    fun getApkFileFor(context: Context, versionInfo: AvailableVersionInfo): File =
-            File(context.externalCacheDir, "$DIR_UPDATES/${getApkNameFor(versionInfo)}")
+    private fun getInternalApkFileFor(context: Context, versionInfo: AvailableVersionInfo): File =
+            File(context.filesDir, "$DIR_UPDATES/${getApkNameFor(versionInfo)}")
 
-    fun getApkUriFor(context: Context, versionInfo: AvailableVersionInfo): Uri =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                FileProvider.getUriForFile(
-                        context,
-                        AUTHORITY_PROVIDER_FILES,
-                        getApkFileFor(context, versionInfo)
-                )
-            } else {
-                Uri.fromFile(getApkFileFor(context, versionInfo))
-            }
+    private fun getExternalApkFileFor(context: Context, versionInfo: AvailableVersionInfo): File =
+            File(context.externalCacheDir, "$DIR_UPDATES/${getApkNameFor(versionInfo)}")
 
     @WorkerThread
     fun fetchVersionInfo(): AvailableVersionInfo? = try {
@@ -88,23 +84,40 @@ object UpdateFetcher {
     }
 
     @WorkerThread
-    fun checkApk(appContext: Context, versionInfo: AvailableVersionInfo): Boolean {
+    fun checkApk(appContext: Context, versionInfo: AvailableVersionInfo): File? {
         val sha512sum = versionInfo.sha512sum
-        val apkFile = getApkFileFor(appContext, versionInfo)
 
         if (sha512sum.isNullOrEmpty()) {
             Log.d(LOG_TAG, "checkApk()" +
                     " -> Can't check apk" +
                     " -> SHA-512 string empty or null")
-            return false
+            return null
         }
 
+        val apkFile: File = run getFile@ {
+            if (isExternalStorageReadable()) {
+                val file = getExternalApkFileFor(appContext, versionInfo)
 
-        if (!apkFile.isFile) {
+                if (file.isFile) return@getFile file
+
+                Log.d(LOG_TAG, "checkApk()" +
+                        " -> Can't check external apk" +
+                        " -> no apk file found")
+            } else {
+                Log.d(LOG_TAG, "checkApk()" +
+                        " -> Can't check external apk" +
+                        " -> external storage is not readable")
+            }
+
+            val file = getInternalApkFileFor(appContext, versionInfo)
+
+            if (file.isFile) return@getFile file
+
             Log.d(LOG_TAG, "checkApk()" +
-                    " -> Can't check apk" +
+                    " -> Can't check internal apk" +
                     " -> no apk file found")
-            return false
+
+            return null
         }
 
         val apkSha512sum = run calcSHA@ {
@@ -123,42 +136,77 @@ object UpdateFetcher {
                         " -> Failed to check apk", e)
                 return@calcSHA null
             }
-        } ?: return false
+        } ?: return null
 
         Log.v(LOG_TAG, "checkApk() -> (calculatedSum=$apkSha512sum)")
         Log.v(LOG_TAG, "checkApk() -> (targetSum=$sha512sum)")
 
-        return apkSha512sum.equals(sha512sum, ignoreCase = true)
+        val success = apkSha512sum.equals(sha512sum, ignoreCase = true)
+
+        return apkFile.takeIf { success }
     }
 
     @WorkerThread
     fun removeApk(appContext: Context, versionInfo: AvailableVersionInfo) {
-        val apkFile = getApkFileFor(appContext, versionInfo)
+        if (isExternalStorageWritable()) run external@{
+            try {
+                val apkFile = getExternalApkFileFor(appContext, versionInfo)
 
-        try {
-            if (!apkFile.isFile) return
-            apkFile.delete()
-        } catch (e: Exception) {
-            Log.w(LOG_TAG, "removeApk()", e)
+                if (!apkFile.isFile) return@external
+                if (!apkFile.delete()) throw IOException("Failed to remove $apkFile")
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "removeApk()", e)
+            }
+        }
+
+        run internal@{
+            try {
+                val apkFile = getInternalApkFileFor(appContext, versionInfo)
+
+                if (!apkFile.isFile) return@internal
+                if (!apkFile.delete()) throw IOException("Failed to remove $apkFile")
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "removeApk()", e)
+            }
         }
     }
 
     @WorkerThread
     fun cleanupApksDir(appContext: Context, ignoredVersionInfo: AvailableVersionInfo) {
-        val apksDir = getApksDir(appContext)
-        val ignoredApkFile = getApkFileFor(appContext, ignoredVersionInfo)
+        if (isExternalStorageWritable()) run external@{
+            try {
+                val apksDir = getExternalApksDir(appContext)
+                val ignoredApkFile = getExternalApkFileFor(appContext, ignoredVersionInfo)
 
-        try {
-            if (!apksDir.isDirectory) return
-            apksDir.listFiles { it -> it != ignoredApkFile }.forEach {
-                try {
-                    it.delete()
-                } catch (e: Exception) {
-                    Log.w(LOG_TAG, "cleanupApksDir() -> Remove apk", e)
+                if (!apksDir.isDirectory) return@external
+                apksDir.listFiles { it -> it != ignoredApkFile }.forEach {
+                    try {
+                        if (!it.delete()) throw IOException("Failed to remove $it")
+                    } catch (e: Exception) {
+                        Log.w(LOG_TAG, "cleanupApksDir() -> Remove apk", e)
+                    }
                 }
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "cleanupApksDir()", e)
             }
-        } catch (e: Exception) {
-            Log.w(LOG_TAG, "cleanupApksDir()", e)
+        }
+
+        run internal@{
+            try {
+                val apksDir = getInternalApksDir(appContext)
+                val ignoredApkFile = getInternalApkFileFor(appContext, ignoredVersionInfo)
+
+                if (!apksDir.isDirectory) return@internal
+                apksDir.listFiles { it -> it != ignoredApkFile }.forEach {
+                    try {
+                        if (!it.delete()) throw IOException("Failed to remove $it")
+                    } catch (e: Exception) {
+                        Log.w(LOG_TAG, "cleanupApksDir() -> Remove apk", e)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(LOG_TAG, "cleanupApksDir()", e)
+            }
         }
     }
 
@@ -167,14 +215,31 @@ object UpdateFetcher {
                  reporter: ProgressReporter): Boolean {
         try {
             val url = versionInfo.url?.let { "$URL_BASE/$it" } ?: run {
-                Log.w(LOG_TAG, "Can't fetch apk -> No download url available")
+                Log.w(LOG_TAG, "fetchApk() -> Can't fetch apk -> No download url available")
                 return false
             }
 
-            val apkFile = getApkFileFor(appContext, versionInfo)
-            if (apkFile.isFile) apkFile.delete()
+            val (apksDir, apkFile) = run target@ {
+                if (isExternalStorageWritable()) {
+                    return@target getExternalApksDir(appContext) to
+                            getExternalApkFileFor(appContext, versionInfo)
+                } else {
+                    return@target getInternalApksDir(appContext) to
+                            getInternalApkFileFor(appContext, versionInfo)
+                }
+            }
 
-            getApksDir(appContext).mkdirs()
+            if (apkFile.isFile && !apkFile.delete()) {
+                Log.w(LOG_TAG, "fetchApk() -> Failed to remove old apk -> (apkFile=$apkFile)")
+            }
+
+            if (!apksDir.isDirectory && !apksDir.mkdirs()) {
+                Log.w(LOG_TAG, "fetchApk() -> Failed to create parent dirs for apk download")
+            }
+
+            if (!apkFile.createNewFile()) {
+                Log.w(LOG_TAG, "fetchApk() -> Failed to create apk file -> (apkFile=$apkFile)")
+            }
 
             val c = URL(url).openConnection()
                     .to<HttpsURLConnection>()

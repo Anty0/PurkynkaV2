@@ -21,7 +21,7 @@
 buildscript {
     ext.anko_version='0.10.4'
     ext.support_libs_version = '27.1.0'
-    ext.kotlin_version = '1.2.21' // TODO: upgrade (1.2.30 skipped due to compiler bug)
+    ext.kotlin_version = '1.2.21' // TODO: skip version 1.2.30 (due to compiler bug)
     ext.kotlin_serialization_version = '0.4.1'
     ext.kotlin_coroutines_version = '0.22.3'
     ext.kotlin_immutable_version = '0.1'

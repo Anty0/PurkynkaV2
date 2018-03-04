@@ -20,7 +20,6 @@ package cz.anty.purkynka.update.ui
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -40,10 +39,8 @@ import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.update.sync.Updater
 import cz.anty.purkynka.utils.FBA_UPDATE_DOWNLOAD
 import cz.anty.purkynka.utils.FBA_UPDATE_INSTALL
-import eu.codetopic.java.utils.Anchor
+import cz.anty.purkynka.utils.uriFor
 import eu.codetopic.java.utils.alsoIf
-import eu.codetopic.java.utils.fillToLen
-import eu.codetopic.java.utils.ifFalse
 import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.thread.LooperUtils
@@ -66,6 +63,7 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import java.io.File
 import java.lang.ref.WeakReference
 
 /**
@@ -102,8 +100,11 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     private val updateAvailable: Boolean
         get() = versionCurrent.code != versionAvailable.code
 
+    private var downloadedFile: File? = null
+
     private var isDownloading: Boolean = false
-    private var isDownloaded: Boolean = false
+    private val isDownloaded: Boolean
+        get() = downloadedFile != null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -248,7 +249,9 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
 
             reporter.stopShowingProgress()
 
-            val valid = success && bg { UpdateFetcher.checkApk(appContext, versionInfo) }.await()
+            val validFile = if (!success) null else {
+                bg { UpdateFetcher.checkApk(appContext, versionInfo) }.await()
+            }
 
             delay(500) // Wait few loops to make sure, that content was updated.
 
@@ -257,7 +260,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
                         view = self().progressDownload,
                         message = R.string.snackbar_updates_download_update_failed
                 )
-            } else if (!valid) {
+            } else if (validFile == null) {
                 longSnackbar(
                         view = self().progressDownload,
                         message = R.string.snackbar_updates_download_update_invalid
@@ -272,7 +275,9 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     private fun installUpdate() {
         if (!isDownloaded || !updateAvailable || isDownloading) return
 
-        val apkUri = UpdateFetcher.getApkUriFor(this, versionAvailable)
+        val apkFile = downloadedFile ?: return
+        val apkUri = uriFor(this, apkFile)
+
         startActivity(
                 Intent(Intent.ACTION_INSTALL_PACKAGE)
                         .setData(apkUri)
@@ -313,8 +318,10 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
             val availableVersion = bg { UpdateData.instance.latestVersion }.await()
             self().versionAvailable = availableVersion
 
-            self().isDownloaded = self().updateAvailable && !self().isDownloading
-                    && bg { UpdateFetcher.checkApk(appContext, availableVersion) }.await()
+            self().downloadedFile =
+                    if (!self().updateAvailable || self().isDownloading) null else {
+                        bg { UpdateFetcher.checkApk(appContext, availableVersion) }.await()
+                    }
 
             self().updateUi()
         }
@@ -331,6 +338,12 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
                         R.string.updates_text_update_downloading,
                         versionCurrent.name, versionAvailable.name
                 )
+
+                val notes = versionAvailable.notes
+                boxUpdateDownloadingNotes.visibility = (notes != null).asViewVisibility()
+                txtUpdateDownloadingNotes.text = notes?.let {
+                    return@let AndroidUtils.fromHtml(it)
+                }
             }
             isDownloaded -> {
                 boxUpdateDownloaded.visibility = View.VISIBLE
@@ -351,6 +364,12 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
                         R.string.updates_text_update_available,
                         versionCurrent.name, versionAvailable.name
                 )
+
+                val notes = versionAvailable.notes
+                boxUpdateAvailableNotes.visibility = (notes != null).asViewVisibility()
+                txtUpdateAvailableNotes                         .text = notes?.let {
+                    return@let AndroidUtils.fromHtml(it)
+                }
             }
             else -> {
                 boxUpToDate.visibility = View.VISIBLE
