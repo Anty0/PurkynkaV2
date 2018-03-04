@@ -24,6 +24,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
+import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
 import cz.anty.purkynka.lunches.receiver.UpdateLunchesSyncReceiver
 import cz.anty.purkynka.lunches.save.LunchesDataProvider
@@ -53,6 +54,21 @@ class LunchesSyncAdapter(context: Context) :
                             UpdateLunchesSyncReceiver.getIntent(context)
                     )
             )
+            BroadcastsConnector.connect(
+                    Accounts.ACTION_ACCOUNT_ADDED,
+                    BroadcastsConnector.Connection(
+                            BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                            UpdateLunchesSyncReceiver.getIntent(context)
+                    )
+            )
+            BroadcastsConnector.connect(
+                    Accounts.ACTION_ACCOUNT_RENAMED,
+                    BroadcastsConnector.Connection(
+                            BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                            UpdateLunchesSyncReceiver.getIntent(context)
+                    )
+            )
+
             context.sendBroadcast(UpdateLunchesSyncReceiver.getIntent(context))
         }
 

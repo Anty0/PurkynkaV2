@@ -24,8 +24,10 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
+import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.Syncs
 import cz.anty.purkynka.grades.data.Semester
+import cz.anty.purkynka.grades.receiver.NewGradesChangesReceiver
 import cz.anty.purkynka.grades.receiver.UpdateGradesSyncReceiver
 import cz.anty.purkynka.grades.save.GradesDataProvider
 import cz.anty.purkynka.grades.save.GradesLoginData
@@ -57,6 +59,21 @@ class GradesSyncAdapter(context: Context) :
                             UpdateGradesSyncReceiver.getIntent(context)
                     )
             )
+            BroadcastsConnector.connect(
+                    Accounts.ACTION_ACCOUNT_ADDED,
+                    BroadcastsConnector.Connection(
+                            BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                            UpdateGradesSyncReceiver.getIntent(context)
+                    )
+            )
+            BroadcastsConnector.connect(
+                    Accounts.ACTION_ACCOUNT_RENAMED,
+                    BroadcastsConnector.Connection(
+                            BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                            UpdateGradesSyncReceiver.getIntent(context)
+                    )
+            )
+
             context.sendBroadcast(UpdateGradesSyncReceiver.getIntent(context))
         }
 

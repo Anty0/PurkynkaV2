@@ -28,9 +28,12 @@ import cz.anty.purkynka.account.Accounts
  */
 class GradesWidgetResetReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Accounts.ACTION_ACCOUNTS_CHANGED) return
+    companion object {
 
+        fun getIntent(context: Context) = Intent(context, GradesWidgetResetReceiver::class.java)
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
         context.sendBroadcast(GradesWidgetProvider.getUpdateIntent(context))
     }
 }

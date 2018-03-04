@@ -21,16 +21,18 @@ package cz.anty.purkynka.lunches.widget
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import cz.anty.purkynka.account.Accounts
 
 /**
  * @author anty
  */
 class NextLunchWidgetResetReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Accounts.ACTION_ACCOUNTS_CHANGED) return
+    companion object {
 
+        fun getIntent(context: Context) = Intent(context, NextLunchWidgetResetReceiver::class.java)
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
         context.sendBroadcast(NextLunchWidgetProvider.getUpdateIntent(context))
     }
 }

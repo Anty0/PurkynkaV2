@@ -29,12 +29,10 @@ class GradesWidgetUpdateReceiver : BroadcastReceiver() {
 
     companion object {
 
-        const val ACTION_WIDGET_UPDATE_ITEMS = "cz.anty.purkynka.grades.widget.UPDATE_ITEMS"
+        fun getIntent(context: Context) = Intent(context, GradesWidgetUpdateReceiver::class.java)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != ACTION_WIDGET_UPDATE_ITEMS) return
-
         GradesWidgetProvider.notifyItemsChanged(context)
     }
 }

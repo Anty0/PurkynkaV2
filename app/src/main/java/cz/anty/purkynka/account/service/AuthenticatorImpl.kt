@@ -26,8 +26,6 @@ import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.ui.AccountCreateActivity
 import cz.anty.purkynka.account.ui.AccountEditActivity
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.java.utils.reflect.field.FieldsSearch
-import eu.codetopic.java.utils.reflect.field.SimpleFieldsFilter
 import org.jetbrains.anko.bundleOf
 import java.util.*
 

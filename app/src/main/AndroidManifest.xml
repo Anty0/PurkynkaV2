@@ -145,6 +145,9 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+
+            <intent-filter>
                 <action android:name="cz.anty.purkynka.update.FAKE_MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
@@ -168,24 +171,13 @@
             android:enabled="true"
             android:exported="false"
             android:theme="@style/AppTheme.Grades"
-            android:process=":syncs">
-
-            <intent-filter>
-                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED" />
-                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_RENAMED" />
-            </intent-filter>
-        </receiver>
+            android:process=":syncs" />
         <receiver
             android:name=".grades.receiver.NewGradesChangesReceiver"
             android:enabled="true"
             android:exported="false"
             android:theme="@style/AppTheme.Grades"
-            android:process=":syncs">
-
-            <intent-filter android:priority="-1">
-                <action android:name="cz.anty.purkynka.grades.sync.GradesSyncer.NEW_GRADES_CHANGES" />
-            </intent-filter>
-        </receiver>
+            android:process=":syncs" />
         <receiver
             android:name=".grades.widget.GradesWidgetProvider"
             android:enabled="true"
@@ -213,35 +205,19 @@
             android:enabled="true"
             android:exported="false"
             android:theme="@style/AppTheme.Grades"
-            android:process=":widgets">
-
-            <intent-filter android:priority="-1">
-                <action android:name="cz.anty.purkynka.grades.widget.UPDATE_ITEMS" />
-            </intent-filter>
-        </receiver>
+            android:process=":widgets" />
         <receiver
             android:name=".grades.widget.GradesWidgetResetReceiver"
             android:enabled="true"
             android:exported="false"
             android:theme="@style/AppTheme.Grades"
-            android:process=":widgets">
-
-            <intent-filter>
-                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNTS_CHANGED" />
-            </intent-filter>
-        </receiver>
+            android:process=":widgets" />
         <receiver
             android:name=".lunches.receiver.UpdateLunchesSyncReceiver"
             android:enabled="true"
             android:exported="false"
             android:theme="@style/AppTheme.Lunches"
-            android:process=":syncs">
-
-            <intent-filter>
-                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_ADDED" />
-                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNT_RENAMED" />
-            </intent-filter>
-        </receiver>
+            android:process=":syncs" />
         <receiver
             android:name=".lunches.widget.NextLunchWidgetProvider"
             android:enabled="true"
@@ -269,12 +245,7 @@
             android:enabled="true"
             android:exported="false"
             android:theme="@style/AppTheme.Lunches"
-            android:process=":widgets">
-
-            <intent-filter>
-                <action android:name="cz.anty.purkynka.account.ACTION_ACCOUNTS_CHANGED" />
-            </intent-filter>
-        </receiver>
+            android:process=":widgets" />
 
         <service
             android:name=".account.service.AuthenticatorService"

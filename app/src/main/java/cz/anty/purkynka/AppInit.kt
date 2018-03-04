@@ -29,13 +29,16 @@ import com.mikepenz.iconics.Iconics
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.feedback.save.FeedbackData
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
+import cz.anty.purkynka.grades.receiver.NewGradesChangesReceiver
 import cz.anty.purkynka.grades.widget.GradesWidgetUpdateReceiver
 import cz.anty.purkynka.grades.save.GradesData
 import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesPreferences
 import cz.anty.purkynka.grades.save.GradesUiData
 import cz.anty.purkynka.grades.sync.GradesSyncAdapter
+import cz.anty.purkynka.grades.sync.GradesSyncer
 import cz.anty.purkynka.grades.widget.GradesWidgetProvider
+import cz.anty.purkynka.grades.widget.GradesWidgetResetReceiver
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherResultChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusChannel
 import cz.anty.purkynka.lunches.notify.LunchesBurzaWatcherStatusGroup
@@ -45,6 +48,7 @@ import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
 import cz.anty.purkynka.lunches.widget.NextLunchWidgetProvider
+import cz.anty.purkynka.lunches.widget.NextLunchWidgetResetReceiver
 import cz.anty.purkynka.settings.AppPreferences
 import cz.anty.purkynka.update.notify.UpdateNotifyChannel
 import cz.anty.purkynka.update.notify.UpdateNotifyGroup
@@ -213,6 +217,21 @@ class AppInit : MultiDexApplication() {
         // Initialize sync adapters login listening
         GradesSyncAdapter.listenForChanges(this)
         LunchesSyncAdapter.listenForChanges(this)
+
+        BroadcastsConnector.connect(
+                Accounts.ACTION_ACCOUNTS_CHANGED,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        GradesWidgetResetReceiver.getIntent(this)
+                )
+        )
+        BroadcastsConnector.connect(
+                Accounts.ACTION_ACCOUNTS_CHANGED,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        NextLunchWidgetResetReceiver.getIntent(this)
+                )
+        )
     }
 
     private fun initProcessProviders() {
@@ -229,7 +248,7 @@ class AppInit : MultiDexApplication() {
                 NotifyManager.getOnChangeBroadcastAction(),
                 BroadcastsConnector.Connection(
                         BroadcastsConnector.BroadcastTargetingType.GLOBAL,
-                        GradesWidgetUpdateReceiver.ACTION_WIDGET_UPDATE_ITEMS
+                        GradesWidgetUpdateReceiver.getIntent(this)
                 )
         )
 
@@ -238,7 +257,7 @@ class AppInit : MultiDexApplication() {
                 GradesData.instance.broadcastActionChanged,
                 BroadcastsConnector.Connection(
                         BroadcastsConnector.BroadcastTargetingType.ORDERED_GLOBAL,
-                        GradesWidgetUpdateReceiver.ACTION_WIDGET_UPDATE_ITEMS
+                        GradesWidgetUpdateReceiver.getIntent(this)
                 )
         )
         BroadcastsConnector.connect(
@@ -291,6 +310,14 @@ class AppInit : MultiDexApplication() {
         LunchesData.initialize(this)
         LunchesLoginData.initialize(this)
         LunchesPreferences.initialize(this)
+
+        BroadcastsConnector.connect(
+                GradesSyncer.ACTION_NEW_GRADES_CHANGES,
+                BroadcastsConnector.Connection(
+                        BroadcastsConnector.BroadcastTargetingType.GLOBAL,
+                        NewGradesChangesReceiver.getIntent(this)
+                )
+        )
     }
 
     private fun initProcessWidgets() {

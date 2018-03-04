@@ -295,7 +295,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             val username = inUsername.text.toString()
             val password = inPassword.text.toString()
 
-            val firebaseAnalyticsRef = firebaseAnalytics?.logEvent(FBA_GRADES_LOGIN, null)
+            firebaseAnalytics?.logEvent(FBA_GRADES_LOGIN, null)
 
             val appContext = boxLogin.context.applicationContext
             val boxLoginRef = boxLogin.asReference()
@@ -507,8 +507,11 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                     intentFilter(GradesUiData.getter))
             LocalBroadcast.registerReceiver(preferencesDataChangedReceiver,
                     intentFilter(GradesPreferences.getter))
-            boxRecycler.context.registerReceiver(newGradesChangesReceiver,
-                    intentFilter(GradesSyncer.ACTION_NEW_GRADES_CHANGES))
+            boxRecycler.context.registerReceiver(
+                    newGradesChangesReceiver,
+                    intentFilter(GradesSyncer.ACTION_NEW_GRADES_CHANGES)
+                            .apply { priority = 100 }
+            )
 
             return update()
         }

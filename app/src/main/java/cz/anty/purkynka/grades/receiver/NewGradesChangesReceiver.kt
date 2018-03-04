@@ -39,6 +39,9 @@ class NewGradesChangesReceiver : BroadcastReceiver() {
     companion object {
 
         private const val LOG_TAG = "NewGradesChangesReceiver"
+
+        fun getIntent(context: Context) =
+                Intent(context, NewGradesChangesReceiver::class.java)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
