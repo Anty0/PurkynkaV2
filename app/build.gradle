@@ -16,8 +16,6 @@
  * along  with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.google.common.collect.Iterables
-
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.google.firebase.firebase-perf'
@@ -48,15 +46,15 @@ android {
         applicationId "cz.anty.purkynka"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 2
-        versionName "v5.0.1"
+        versionCode 3
+        versionName "v5.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
     buildTypes {
         def proguardList = [getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro']
         proguardList.addAll(file('./proguard/').listFiles().collect())
-        def proguardArray = Iterables.toArray(proguardList, Object.class)
+        def proguardArray = proguardList.toArray()
 
         release {
             //versionNameSuffix '-beta'

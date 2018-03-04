@@ -378,4 +378,11 @@
     <string-array name="version_changes_1">
         <item>První vydání předělané aplikace Purkyňka.</item>
     </string-array>
+    <string-array name="version_changes_2">
+        <item>Opraveny některé vizuální chyby.</item>
+        <item>Opraveny některé chyby v českém překladu.</item>
+    </string-array>
+    <string-array name="version_changes_3">
+        <item>Opravena chyba, které způsobovala pád aplikace, při otevírání aplikace z widgetu či notifikace.</item>
+    </string-array>
 </resources>

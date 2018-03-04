@@ -463,4 +463,11 @@
     <string-array name="version_changes_1">
         <item>First release of reworked Application Purkynka.</item>
     </string-array>
+    <string-array name="version_changes_2">
+        <item>Fixed some visual bugs.</item>
+        <item>Fixed some bugs in czech translation.</item>
+    </string-array>
+    <string-array name="version_changes_3">
+        <item>Fixed crash of application by clicking on widget or notification.</item>
+    </string-array>
 </resources>
