@@ -58,13 +58,13 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.Job as KJob
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlinx.coroutines.experimental.Job as KJob
 
 /**
  * @author anty
@@ -176,7 +176,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     }
 
     private fun refreshWithLoading() {
-        if (isDownloading || isDownloaded) return // Update is being prepared,
+        if (isDownloading) return // Update is being prepared,
         //  refreshing available version here will have no effect.
 
         val holder = holder
@@ -191,7 +191,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     }
 
     private fun refreshWithRefreshLayout() {
-        if (isDownloading || isDownloaded) {
+        if (isDownloading) {
             // If update is being prepared, refreshing available version will have no effect.
             boxRefreshLayout.isRefreshing = false
             return
@@ -331,6 +331,7 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
         arrayOf(boxUpToDate, boxUpdateAvailable, boxUpdateDownloading, boxUpdateDownloaded)
                 .forEach { it.visibility = View.GONE }
 
+        // TODO: info line, that update can be downloaded from web page
         when {
             isDownloading -> {
                 boxUpdateDownloading.visibility = View.VISIBLE
