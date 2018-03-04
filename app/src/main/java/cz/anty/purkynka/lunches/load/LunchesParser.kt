@@ -22,6 +22,7 @@ import android.content.SyncResult
 import cz.anty.purkynka.lunches.data.LunchBurza
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
+import eu.codetopic.java.utils.letIf
 import eu.codetopic.java.utils.substringOrNull
 import eu.codetopic.java.utils.letIfNull
 import eu.codetopic.java.utils.log.Log
@@ -112,11 +113,19 @@ object LunchesParser {
     }
 
     fun parseLunchOption(lunchElement: Element): LunchOption {
-        val name = lunchElement.child(0).child(1).text()
-                .split("\n").firstOrNull()?.trim()
-                ?: throw IllegalArgumentException(
-                        "Failed to parse name from lunchElement: $lunchElement"
-                )
+        val name = run name@ {
+            lunchElement.child(0).children().let {
+                var children = it
+                while (children.count() > 0) {
+                    if (children.count() >= 2)
+                        return@let children
+                    children = children[0].children()
+                }
+                return@let null
+            }?.last()?.text()?.split("\n")?.firstOrNull()?.trim()
+        } ?: throw IllegalArgumentException(
+                "Failed to parse name from lunchElement: $lunchElement"
+        )
 
         val (enabled, ordered) = when {
             lunchElement.select("a.enabled").isNotEmpty() -> true to false

@@ -22,6 +22,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.*
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.utils.ICON_LUNCHES_ORDER
@@ -96,6 +97,8 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         update()
     }
 
+    private var firebaseAnalytics: FirebaseAnalytics? = null
+
     private var userLoggedIn: Boolean = false
     private var credit: Float? = null
     private var lunchesList: List<LunchOptionsGroup>? = null
@@ -122,6 +125,18 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                 self().switchFragment(LunchesLoginFragment::class.java)
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(ctx)
+    }
+
+    override fun onDestroy() {
+        firebaseAnalytics = null
+
+        super.onDestroy()
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -419,6 +434,8 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
             longSnackbar(view, R.string.snackbar_no_account_logout)
             return null
         }
+
+        firebaseAnalytics?.logEvent(FBA_LUNCHES_LOGOUT, null)
 
         val self = this.asReference()
         val holder = holder

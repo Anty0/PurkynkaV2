@@ -21,6 +21,7 @@ package cz.anty.purkynka.lunches
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA
@@ -34,6 +35,7 @@ import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.ui.LunchBurzaItem
 import cz.anty.purkynka.lunches.ui.LunchesCreditItem
+import cz.anty.purkynka.utils.FBA_LUNCHES_LOGOUT
 import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.*
@@ -90,6 +92,8 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         update()
     }
 
+    private var firebaseAnalytics: FirebaseAnalytics? = null
+
     private var userLoggedIn: Boolean = false
     private var credit: Float? = null
     private var burzaList: List<LunchBurza>? = null
@@ -109,6 +113,18 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                 self().switchFragment(LunchesLoginFragment::class.java)
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(ctx)
+    }
+
+    override fun onDestroy() {
+        firebaseAnalytics = null
+
+        super.onDestroy()
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -342,6 +358,8 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
             longSnackbar(view, R.string.snackbar_no_account_logout)
             return null
         }
+
+        firebaseAnalytics?.logEvent(FBA_LUNCHES_LOGOUT, null)
 
         val self = this.asReference()
         val holder = holder

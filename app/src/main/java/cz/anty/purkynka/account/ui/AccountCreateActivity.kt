@@ -25,8 +25,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
+import com.google.firebase.analytics.FirebaseAnalytics
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
+import cz.anty.purkynka.utils.FBA_ACCOUNT_CREATE
 import eu.codetopic.utils.accountManager
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
@@ -45,6 +47,7 @@ class AccountCreateActivity : ModularActivity(ToolbarModule(), BackButtonModule(
     private lateinit var accountManager: AccountManager
 
     private var accountAuthenticatorResponse: AccountAuthenticatorResponse? = null
+    private var firebaseAnalytics: FirebaseAnalytics? = null
 
     var accountAuthenticatorResult: Bundle? = null
 
@@ -53,6 +56,8 @@ class AccountCreateActivity : ModularActivity(ToolbarModule(), BackButtonModule(
 
         // Set the result to CANCELED.
         setResult(RESULT_CANCELED)
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         setContentView(R.layout.activity_create_account)
 
@@ -69,25 +74,26 @@ class AccountCreateActivity : ModularActivity(ToolbarModule(), BackButtonModule(
         currentFocus?.hideKeyboard()
 
         val userName = inAccountName.text.toString()
-                .trim().takeIf { it.isNotEmpty() } ?:
-                run {
-                    Snackbar.make(v, R.string.snackbar_invalid_account_name, Snackbar.LENGTH_LONG).show()
-                    return
-                }
-
-        val account = Accounts.add(this, accountManager, userName)
-        if (account != null) {
-            val intent = Intent()
-                    .putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name)
-                    .putExtra(AccountManager.KEY_ACCOUNT_TYPE, account.type)
-
-            accountAuthenticatorResult = intent.extras
-            setResult(RESULT_OK, intent)
-            finish()
+                .trim().takeIf { it.isNotEmpty() } ?: run {
+            Snackbar.make(v, R.string.snackbar_invalid_account_name, Snackbar.LENGTH_LONG).show()
             return
         }
 
-        Snackbar.make(v, R.string.snackbar_account_create_failed, Snackbar.LENGTH_LONG).show()
+        val account = Accounts.add(this, accountManager, userName) ?: run {
+            Snackbar.make(v, R.string.snackbar_account_create_failed, Snackbar.LENGTH_LONG).show()
+            return
+        }
+
+        val intent = Intent()
+                .putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name)
+                .putExtra(AccountManager.KEY_ACCOUNT_TYPE, account.type)
+
+        accountAuthenticatorResult = intent.extras
+        setResult(RESULT_OK, intent)
+
+        firebaseAnalytics?.logEvent(FBA_ACCOUNT_CREATE, null)
+
+        finish()
     }
 
     override fun finish() {
@@ -106,5 +112,6 @@ class AccountCreateActivity : ModularActivity(ToolbarModule(), BackButtonModule(
         super.onDestroy()
 
         accountAuthenticatorResponse = null
+        firebaseAnalytics = null
     }
 }

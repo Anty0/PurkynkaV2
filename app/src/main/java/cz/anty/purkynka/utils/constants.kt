@@ -57,6 +57,21 @@ const val URL_WEB_PAGE = "https://anty.codetopic.eu/purkynka/" // TODO: 6/16/17 
 
 //---------------------------------------------------------------------
 
+const val FBA_ACCOUNT_CREATE = "purkynka_account_create"
+const val FBA_ACCOUNT_EDIT = "purkynka_account_edit"
+const val FBA_EASTER_EGG_CLICKED = "purkynka_easter_egg_clicked"
+const val FBA_ATTENDANCE_SEARCH = "purkynka_attendance_search"
+const val FBA_GRADES_LOGIN = "purkynka_grades_login"
+const val FBA_GRADES_LOGOUT = "purkynka_grades_logout"
+const val FBA_LUNCHES_LOGIN = "purkynka_lunches_login"
+const val FBA_LUNCHES_LOGOUT = "purkynka_lunches_logout"
+const val FBA_WIFI_ENABLE = "purkynka_wifi_enable"
+const val FBA_WIFI_DISABLE = "purkynka_wifi_disable"
+const val FBA_UPDATE_DOWNLOAD = "purkynka_update_download"
+const val FBA_UPDATE_INSTALL = "purkynka_update_install"
+
+//---------------------------------------------------------------------
+
 const val CONNECTION_TIMEOUT_SAS: Int = 1000 * 60
 
 const val SYNC_FREQUENCY_GRADES: Long = 60 * 60 * 1 // 1 hour in seconds

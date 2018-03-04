@@ -30,6 +30,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.evernote.android.job.Job
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
@@ -37,6 +38,8 @@ import cz.anty.purkynka.update.data.AvailableVersionInfo
 import cz.anty.purkynka.update.load.UpdateFetcher
 import cz.anty.purkynka.update.save.UpdateData
 import cz.anty.purkynka.update.sync.Updater
+import cz.anty.purkynka.utils.FBA_UPDATE_DOWNLOAD
+import cz.anty.purkynka.utils.FBA_UPDATE_INSTALL
 import eu.codetopic.java.utils.Anchor
 import eu.codetopic.java.utils.alsoIf
 import eu.codetopic.java.utils.fillToLen
@@ -82,6 +85,10 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
                 context.startActivity(getIntent(context))
     }
 
+    private val updateDataChangedReceiver = receiver { _, _ -> update() }
+
+    private var firebaseAnalytics: FirebaseAnalytics? = null
+
     private val versionCurrent: AvailableVersionInfo =
             AvailableVersionInfo(
                     code = BuildConfig.VERSION_CODE,
@@ -98,23 +105,35 @@ class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule(
     private var isDownloading: Boolean = false
     private var isDownloaded: Boolean = false
 
-    private val updateDataChangedReceiver = receiver { _, _ -> update() }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         boxRefreshLayout.setOnRefreshListener {
             refreshWithRefreshLayout()
         }
 
-        butDownloadUpdate.onClick { downloadUpdate() }
-        butInstallUpdate.onClick { installUpdate() }
+        butDownloadUpdate.onClick {
+            firebaseAnalytics?.logEvent(FBA_UPDATE_DOWNLOAD, null)
+            downloadUpdate()
+        }
+        butInstallUpdate.onClick {
+            firebaseAnalytics?.logEvent(FBA_UPDATE_INSTALL, null)
+            installUpdate()
+        }
         butShowChangelog.onClick { showChangelog() }
 
         if (savedInstanceState == null) refreshWithLoading()
 
         updateWithLoading()
+    }
+
+    override fun onDestroy() {
+        firebaseAnalytics = null
+
+        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

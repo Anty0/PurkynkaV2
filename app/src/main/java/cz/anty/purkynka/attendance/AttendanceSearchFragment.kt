@@ -22,10 +22,12 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v7.widget.SearchView
 import android.view.*
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.utils.ICON_ATTENDANCE
 import cz.anty.purkynka.R
 import cz.anty.purkynka.attendance.ui.AttendanceAdapter
+import cz.anty.purkynka.utils.FBA_ATTENDANCE_SEARCH
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
@@ -67,11 +69,24 @@ class AttendanceSearchFragment : NavigationFragment(SoftKeyboardSupportLoadingVH
     override val icon: Bitmap
         get() = ctx.getIconics(ICON_ATTENDANCE).sizeDp(48).toBitmap()
 
+    private var firebaseAnalytics: FirebaseAnalytics? = null
     private var recyclerManager: Recycler.RecyclerManagerImpl? = null
     private var adapter: AttendanceAdapter? = null
 
     init {
         setHasOptionsMenu(true)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(ctx)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        firebaseAnalytics = null
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -141,6 +156,8 @@ class AttendanceSearchFragment : NavigationFragment(SoftKeyboardSupportLoadingVH
                             val self = this@AttendanceSearchFragment.asReference()
                             onQueryTextSubmit(returnValue = true) {
                                 holder.showLoading()
+
+                                self().firebaseAnalytics?.logEvent(FBA_ATTENDANCE_SEARCH, null)
 
                                 self().adapter?.setQuery(it ?: "")?.join()
 

@@ -30,6 +30,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import cz.anty.purkynka.utils.ICON_GRADES
@@ -213,6 +214,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             updateWithLoading()
         }
 
+        private var firebaseAnalytics: FirebaseAnalytics? = null
+
         private var userLoggedIn = false
         private var username = ""
 
@@ -221,6 +224,9 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
         }
 
         fun bindView(view: View) {
+            firebaseAnalytics = view.context.baseActivity
+                    ?.let { FirebaseAnalytics.getInstance(it) }
+
             containerView = view.boxLogin
             butLogin.setOnClickListener {
                 boxLogin.context.baseActivity?.currentFocus?.hideKeyboard()
@@ -230,6 +236,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
 
         fun unbindView() {
             containerView = null
+            firebaseAnalytics = null
+
             clearFindViewByIdCache()
         }
 
@@ -287,6 +295,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             val username = inUsername.text.toString()
             val password = inPassword.text.toString()
 
+            val firebaseAnalyticsRef = firebaseAnalytics?.logEvent(FBA_GRADES_LOGIN, null)
+
             val appContext = boxLogin.context.applicationContext
             val boxLoginRef = boxLogin.asReference()
             launch(UI) {
@@ -337,6 +347,8 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
                 longSnackbar(boxLogin, R.string.snackbar_no_account_logout)
                 return
             }
+
+            firebaseAnalytics?.logEvent(FBA_GRADES_LOGOUT, null)
 
             val appContext = boxLogin.context.applicationContext
             launch(UI) {

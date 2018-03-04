@@ -26,6 +26,7 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.analytics.FirebaseAnalytics
 import cz.anty.purkynka.utils.ICON_LUNCHES
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
@@ -35,6 +36,7 @@ import cz.anty.purkynka.lunches.notify.LunchesChangesNotifyChannel
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesSyncer
+import cz.anty.purkynka.utils.FBA_LUNCHES_LOGIN
 import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.*
@@ -141,6 +143,8 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
 
     private val accountHolder = ActiveAccountHolder(holder)
 
+    private var firebaseAnalytics: FirebaseAnalytics? = null
+
     private var userLoggedIn = false
     private var username = ""
 
@@ -159,6 +163,18 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                 self().switchFragment(LunchesOrderFragment::class.java)
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(ctx)
+    }
+
+    override fun onDestroy() {
+        firebaseAnalytics = null
+
+        super.onDestroy()
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -270,6 +286,8 @@ class LunchesLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         }
         val username = inUsername.text.toString()
         val password = inPassword.text.toString()
+
+        firebaseAnalytics?.logEvent(FBA_LUNCHES_LOGIN, null)
 
         val appContext = view.context.applicationContext
         val self = this.asReference()

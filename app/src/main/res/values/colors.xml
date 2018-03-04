@@ -32,7 +32,7 @@
     <color name="colorPrimaryDarkGrades">#303F9F</color>
     <color name="colorPrimaryExtraDarkGrades">#283593</color>
     <color name="navigationBarColorGrades">#1A237E</color>
-    <color name="widgetColorGrades">#DD1A237E</color>
+    <color name="widgetColorGrades">#DD0D123F</color>
     <color name="colorAccentGrades">#00B8D4</color>
 
     <color name="colorPrimaryAttendance">#009688</color>
@@ -45,7 +45,7 @@
     <color name="colorPrimaryDarkLunches">#E64A19</color>
     <color name="colorPrimaryExtraDarkLunches">#D84315</color>
     <color name="navigationBarColorLunches">#BF360C</color>
-    <color name="widgetColorLunches">#DDBF360C</color>
+    <color name="widgetColorLunches">#DD601B06</color>
     <color name="colorAccentLunches">#BCAAA4</color>
 
     <color name="colorPrimaryWifiLogin">#607D8B</color>

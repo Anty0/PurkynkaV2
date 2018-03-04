@@ -25,10 +25,13 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.analytics.FirebaseAnalytics
 import cz.anty.purkynka.utils.ICON_WIFI_LOGIN
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.ActiveAccountHolder
+import cz.anty.purkynka.utils.FBA_WIFI_DISABLE
+import cz.anty.purkynka.utils.FBA_WIFI_ENABLE
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher
 import cz.anty.purkynka.wifilogin.load.WifiLoginFetcher.LoginResult.*
 import cz.anty.purkynka.wifilogin.save.WifiData
@@ -69,6 +72,11 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     override val icon: Bitmap
         get() = ctx.getIconics(ICON_WIFI_LOGIN).sizeDp(48).toBitmap()
 
+    private val wifiLoginDataChangeReceiver = receiver { _, _ -> update() }
+    private val wifiDataChangeReceiver = receiver { _, _ -> update() }
+
+    private var firebaseAnalytics: FirebaseAnalytics?  = null
+
     private val accountHolder = ActiveAccountHolder(holder)
 
     private var accountPrimary: Boolean? = null
@@ -78,15 +86,23 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
     private var loginCount: Int? = null
 
-    private val wifiLoginDataChangeReceiver = receiver { _, _ -> update() }
-
-    private val wifiDataChangeReceiver = receiver { _, _ -> update() }
-
     init {
         val self = this.asReference()
         accountHolder.addChangeListener {
             self().update()?.join()
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(ctx)
+    }
+
+    override fun onDestroy() {
+        firebaseAnalytics = null
+
+        super.onDestroy()
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, container: ViewGroup?,
@@ -225,8 +241,10 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
                 return longSnackbar(boxScrollView, R.string.snackbar_no_account_enable).show()
         val username = inUsername.text.toString()
         val password = inPassword.text.toString()
-        val holder = holder
 
+        firebaseAnalytics?.logEvent(FBA_WIFI_ENABLE, null)
+
+        val holder = holder
         launch(UI) {
             holder.showLoading()
 
@@ -241,8 +259,10 @@ class WifiLoginFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
     private fun onDisableClick(v: View) {
         val accountId = accountHolder.accountId ?:
                 return longSnackbar(boxScrollView, R.string.snackbar_no_account_disable).show()
-        val holder = holder
 
+        firebaseAnalytics?.logEvent(FBA_WIFI_DISABLE, null)
+
+        val holder = holder
         launch(UI) {
             holder.showLoading()
 

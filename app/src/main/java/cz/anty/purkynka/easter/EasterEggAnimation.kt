@@ -22,6 +22,9 @@ import android.animation.Animator
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import com.google.firebase.analytics.FirebaseAnalytics
+import cz.anty.purkynka.utils.FBA_EASTER_EGG_CLICKED
+import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.simple.SimpleAnimatorListener
 import eu.codetopic.utils.ui.view.setTag
 import kotlin.math.ceil
@@ -153,6 +156,8 @@ class EasterEggAnimation private constructor(private val img: View) {
     }
 
     fun enable() {
+        val firebaseAnalytics = img.context.baseActivity
+                ?.let { FirebaseAnalytics.getInstance(it) }
         img.setOnClickListener {
             /*countStep()
             if (!checkStep()) {
@@ -161,6 +166,9 @@ class EasterEggAnimation private constructor(private val img: View) {
                 resetCount()
                 img.setOnClickListener(null)
             }*/
+
+            firebaseAnalytics?.logEvent(FBA_EASTER_EGG_CLICKED, null)
+
             animateStep()
         }
     }
