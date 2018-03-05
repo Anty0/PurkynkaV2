@@ -18,7 +18,7 @@
   -->
 
 <resources>
-    <string name="app_name">Purkynka</string>
+    <string name="app_name">Purkynka</string> <!-- TODO: make some strings build type aware -->
 
     <string name="notify_group_update">App updates</string>
     <string name="notify_channel_update_available">Available updates</string>
@@ -469,5 +469,8 @@
     </string-array>
     <string-array name="version_changes_3">
         <item>Fixed crash of application by clicking on widget or notification.</item>
+    </string-array>
+    <string-array name="version_changes_4">
+        <item>Lot of bug fixes.</item>
     </string-array>
 </resources>
