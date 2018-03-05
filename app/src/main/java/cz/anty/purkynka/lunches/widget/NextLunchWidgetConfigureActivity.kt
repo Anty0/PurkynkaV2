@@ -35,6 +35,7 @@ import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.sendSuspendOrderedBroadcast
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
+import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.container.adapter.CustomItemAdapter
 import eu.codetopic.utils.ui.container.adapter.forSpinner
@@ -51,7 +52,9 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 /**
  * The configuration screen for the [NextLunchWidgetProvider] AppWidget.
  */
-class NextLunchWidgetConfigureActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule()) {
+class NextLunchWidgetConfigureActivity : LoadingModularActivity(
+        CoordinatorLayoutModule(), ToolbarModule(), BackButtonModule()
+) {
 
     companion object {
 

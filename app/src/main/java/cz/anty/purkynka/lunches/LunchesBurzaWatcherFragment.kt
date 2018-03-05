@@ -28,7 +28,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.DatePicker
-import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA_WATCHER
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.lunches.data.LunchOption
@@ -37,15 +36,12 @@ import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesBurzaWatcherService
+import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA_WATCHER
 import eu.codetopic.java.utils.ifTrue
-import eu.codetopic.java.utils.to
 import eu.codetopic.java.utils.letIf
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.getFormattedText
-import eu.codetopic.utils.receiver
-import eu.codetopic.utils.getIconics
-import eu.codetopic.utils.intentFilter
-import eu.codetopic.utils.getKSerializableExtra
+import eu.codetopic.java.utils.to
+import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
@@ -132,10 +128,12 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
         val self = this.asReference()
         accountHolder.addChangeListener {
             self().update().join()
-            if (!self().userLoggedIn) {
-                // App was switched to not logged in user
-                // Let's switch fragment
-                self().switchFragment(LunchesLoginFragment::class.java)
+            self().apply {
+                if (!userLoggedIn && view != null) {
+                    // App was switched to not logged in user
+                    // Let's switch fragment
+                    switchFragment(LunchesLoginFragment::class.java)
+                }
             }
         }
     }

@@ -20,6 +20,7 @@ package cz.anty.purkynka.grades.ui
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -28,8 +29,8 @@ import cz.anty.purkynka.grades.data.Grade
 import cz.anty.purkynka.grades.data.Grade.Companion.dateStr
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
-import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.getKSerializableExtra
+import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
@@ -119,5 +120,12 @@ class GradeActivity : ModularActivity(ToolbarModule(), TransitionBackButtonModul
                     visibility = View.VISIBLE
                     startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.slide_down))
                 }
+    }
+
+    override fun finishAfterTransition() {
+        // fixes bug in Android M (5), that crashes application
+        //  if shared element is missing in previous activity.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) super.finishAfterTransition()
+        else finish()
     }
 }

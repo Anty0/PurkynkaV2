@@ -20,6 +20,7 @@ package cz.anty.purkynka.grades.ui
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -118,5 +119,12 @@ class SubjectActivity : ModularActivity(ToolbarModule(), TransitionBackButtonMod
                     visibility = View.VISIBLE
                     startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.slide_down))
                 }
+    }
+
+    override fun finishAfterTransition() {
+        // fixes bug in Android M (5), that crashes application
+        //  if shared element is missing in previous activity.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) super.finishAfterTransition()
+        else finish()
     }
 }

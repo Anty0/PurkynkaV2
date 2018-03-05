@@ -24,13 +24,14 @@ import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
-import cz.anty.purkynka.update.ui.UpdateActivity
 import cz.anty.purkynka.update.save.UpdateData
+import cz.anty.purkynka.update.sync.Updater
+import cz.anty.purkynka.update.ui.UpdateActivity
 import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_UPDATE_AVAILABLE
-import eu.codetopic.utils.receiver
-import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.getFormattedText
+import eu.codetopic.utils.intentFilter
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_update_available.*
@@ -73,7 +74,15 @@ class UpdateCheckDashboardManager(context: Context, accountHolder: ActiveAccount
     }
 
     override fun update(): Job? {
+        val contextRef = context.asReference()
         val adapterRef = adapter.asReference()
+
+        // asynchronously check for updates
+        launch(UI) {
+            bg { Updater.fetchUpdates() }.await()
+                    .also { Updater.suspendNotifyAboutUpdate(contextRef) }
+        }
+
         return launch(UI) {
             adapterRef().mapReplaceAll(
                     id = ID,

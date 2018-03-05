@@ -24,7 +24,6 @@ import android.view.*
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.exceptions.WrongLoginDataException
@@ -36,12 +35,14 @@ import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.ui.LunchBurzaItem
 import cz.anty.purkynka.lunches.ui.LunchesCreditItem
 import cz.anty.purkynka.utils.FBA_LUNCHES_LOGOUT
+import cz.anty.purkynka.utils.ICON_LUNCHES_BURZA
 import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.*
+import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.edit
 import eu.codetopic.utils.getIconics
-import eu.codetopic.utils.broadcast.LocalBroadcast
+import eu.codetopic.utils.intentFilter
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -58,6 +59,7 @@ import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
 import java.io.IOException
@@ -107,10 +109,12 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         val self = this.asReference()
         accountHolder.addChangeListener {
             self().update()?.join()
-            if (!self().userLoggedIn) {
-                // App was switched to not logged in user
-                // Let's switch fragment
-                self().switchFragment(LunchesLoginFragment::class.java)
+            self().apply {
+                if (!userLoggedIn && view != null) {
+                    // App was switched to not logged in user
+                    // Let's switch fragment
+                    switchFragment(LunchesLoginFragment::class.java)
+                }
             }
         }
     }
@@ -317,7 +321,7 @@ class LunchesBurzaFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         }
 
         // Allow menu visibility changes based on userLoggedIn state
-        activity?.invalidateOptionsMenu()
+        act.invalidateOptionsMenu()
     }
 
     private fun requestSyncWithLoading(): Job? {

@@ -41,7 +41,7 @@ import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.notifications.manager.data.NotifyId
-import eu.codetopic.utils.notifications.manager.data.requestCancel
+import eu.codetopic.utils.notifications.manager.data.cancel
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
 import kotlinx.android.synthetic.main.item_dashboard_lunches_new.*
@@ -130,7 +130,7 @@ class NewLunchDashboardItem(val notifyId: NotifyId, val accountId: String,
     override fun getSwipeDirections(holder: CustomItemViewHolder): Int = LEFT or RIGHT
 
     override fun onSwiped(holder: CustomItemViewHolder, direction: Int) {
-        notifyId.requestCancel(holder.context)
+        notifyId.cancel(holder.context)
     }
 
     override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
@@ -195,7 +195,7 @@ class NewLunchDashboardItem(val notifyId: NotifyId, val accountId: String,
 
         if (itemPosition != NO_POSITION) { // detects usage in header
             holder.boxClickTarget.setOnClickListener {
-                notifyId.requestCancel(holder.context)
+                notifyId.cancel(holder.context)
 
                 /*val contextRef = holder.context.asReference()
                 launch(UI) fragment@ {

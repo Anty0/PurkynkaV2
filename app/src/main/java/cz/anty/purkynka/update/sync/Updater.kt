@@ -31,8 +31,8 @@ import cz.anty.purkynka.update.save.UpdateData
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.data.NotifyId
-import eu.codetopic.utils.notifications.manager.data.requestCancel
-import eu.codetopic.utils.notifications.manager.requestShow
+import eu.codetopic.utils.notifications.manager.data.cancel
+import eu.codetopic.utils.notifications.manager.show
 import eu.codetopic.utils.thread.LooperUtils
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -100,7 +100,7 @@ object Updater {
                 groupId = UpdateNotifyGroup.ID,
                 channelId = UpdateNotifyChannel.ID,
                 id = UpdateNotifyChannel.NOTIFY_ID
-        ).requestCancel(this)
+        ).cancel(this)
     }
 
     @MainThread
@@ -116,6 +116,6 @@ object Updater {
                                 name = versionName
                         )
                     }
-            ).requestShow(this)
+            ).show(this)
     }
 }

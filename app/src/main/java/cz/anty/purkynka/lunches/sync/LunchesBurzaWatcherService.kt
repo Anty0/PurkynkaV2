@@ -38,12 +38,12 @@ import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import eu.codetopic.java.utils.kSerializer
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.putKSerializableExtra
 import eu.codetopic.utils.getKSerializableExtra
-import eu.codetopic.utils.notifications.manager.build
+import eu.codetopic.utils.notifications.manager.buildOrNull
 import eu.codetopic.utils.notifications.manager.create.NotificationBuilder
 import eu.codetopic.utils.notifications.manager.data.NotifyId
-import eu.codetopic.utils.notifications.manager.requestShow
+import eu.codetopic.utils.notifications.manager.show
+import eu.codetopic.utils.putKSerializableExtra
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.serialization.Serializable
@@ -115,6 +115,7 @@ class LunchesBurzaWatcherService : Service() {
     }
 
     private var isForeground = false
+    private var isRunningForeground = false
     private var lastStopRequest: Pair<String, Int>? = null
     private val status = mutableMapOf<String, BurzaWatcherStatus>()
 
@@ -138,22 +139,25 @@ class LunchesBurzaWatcherService : Service() {
             persistent = true
             refreshable = true
             data = LunchesBurzaWatcherResultChannel.dataFor(success)
-        }.requestShow(this)
+        }.show(this)
     }
 
-    private fun buildForegroundNotification(): Pair<NotifyId, Notification> =
+    private fun buildForegroundNotification(): Pair<NotifyId, Notification>? =
             NotificationBuilder
                     .create(
                             groupId = LunchesBurzaWatcherStatusGroup.ID,
                             channelId = LunchesBurzaWatcherStatusChannel.ID
                     )
-                    .build(this, false)
+                    .buildOrNull(this, false)
 
     private fun checkStartForeground() {
         if (isForeground) return
 
         isForeground = true
-        val (notifyId, notification) = buildForegroundNotification()
+
+        val (notifyId, notification) = buildForegroundNotification() ?: return
+
+        isRunningForeground = true
         startForeground(notifyId.idNotify, notification)
     }
 
@@ -164,7 +168,11 @@ class LunchesBurzaWatcherService : Service() {
         if (status.any { it.value.running }) return
 
         isForeground = false
-        stopForeground(true)
+
+        if (isRunningForeground) {
+            isRunningForeground = false
+            stopForeground(true)
+        }
 
     }
 

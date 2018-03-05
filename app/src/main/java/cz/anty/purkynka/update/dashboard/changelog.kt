@@ -35,7 +35,7 @@ import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.notifications.manager.NotifyManager
-import eu.codetopic.utils.notifications.manager.data.requestCancel
+import eu.codetopic.utils.notifications.manager.data.cancel
 import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
@@ -120,7 +120,7 @@ class VersionChangesDashboardItem(val versionCode: Int,
                 }?.key
             }.await() ?: return@notifyCancel
 
-            notifyId.requestCancel(contextRef())
+            notifyId.cancel(contextRef())
         }
     }
 

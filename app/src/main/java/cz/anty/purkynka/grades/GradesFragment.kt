@@ -356,7 +356,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
 
                 bg { GradesLoginData.loginData.logout(accountId) }.await()
 
-                NotifyManager.requestCancelAll(
+                NotifyManager.cancelAll(
                         context = appContext,
                         groupId = AccountNotifyGroup.idFor(accountId),
                         channelId = GradesChangesNotifyChannel.ID
@@ -637,7 +637,7 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
             accountHolder.accountId?.let { accountId ->
                 // All grades changes will be displayed to user, so let's remove them all
                 NotifyManager
-                        .requestSuspendCancelAll(
+                        .sCancelAll(
                                 context = boxRecycler?.context ?: return@let,
                                 groupId = AccountNotifyGroup.idFor(accountId),
                                 channelId = GradesChangesNotifyChannel.ID

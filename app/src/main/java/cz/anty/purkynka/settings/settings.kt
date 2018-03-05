@@ -164,7 +164,7 @@ class CustomDataStorage(private val context: Context) : PreferenceDataStore() {
         R.string.pref_key_lunches_show_dashboard_credit_warning ->
             LunchesPreferences.instance.showDashboardCreditWarning = value
         R.string.pref_key_lunches_notify_lunches_new ->
-                NotifyManager.requestSetChannelEnabled(
+                NotifyManager.setChannelEnabled(
                         context = context,
                         groupId = null,
                         channelId = LunchesChangesNotifyChannel.ID,

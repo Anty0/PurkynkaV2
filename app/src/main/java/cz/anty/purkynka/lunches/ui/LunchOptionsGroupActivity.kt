@@ -20,37 +20,37 @@ package cz.anty.purkynka.lunches.ui
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutCompat
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.suspendInto
-import cz.anty.purkynka.lunches.data.LunchOptionsGroup
-import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
-import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.getKSerializableExtra
-import eu.codetopic.utils.putKSerializableExtra
-import eu.codetopic.utils.getIconics
-import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
-import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
-import eu.codetopic.utils.ui.container.items.custom.CustomItem
-import kotlinx.android.synthetic.main.activity_lunch_options_group.*
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.squareup.picasso.Picasso
+import cz.anty.purkynka.R
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.data.LunchOption
+import cz.anty.purkynka.lunches.data.LunchOptionsGroup
+import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
 import cz.anty.purkynka.lunches.load.LunchesFetcher
 import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.utils.suspendInto
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
+import eu.codetopic.utils.getIconics
+import eu.codetopic.utils.getKSerializableExtra
+import eu.codetopic.utils.putKSerializableExtra
+import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
+import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
+import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
+import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
+import kotlinx.android.synthetic.main.activity_lunch_options_group.*
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -61,13 +61,16 @@ import org.jetbrains.anko.appcompat.v7.tintedRadioButton
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.io.IOException
-
 
 /**
  * @author anty
  */
-class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), TransitionBackButtonModule()) {
+class LunchOptionsGroupActivity : LoadingModularActivity(
+        CoordinatorLayoutModule(), ToolbarModule(), TransitionBackButtonModule()
+) {
 
     companion object {
 
@@ -452,5 +455,12 @@ class LunchOptionsGroupActivity : LoadingModularActivity(ToolbarModule(), Transi
                     visibility = View.VISIBLE
                     startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.slide_down))
                 }
+    }
+
+    override fun finishAfterTransition() {
+        // fixes bug in Android M (5), that crashes application
+        //  if shared element is missing in previous activity.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) super.finishAfterTransition()
+        else finish()
     }
 }

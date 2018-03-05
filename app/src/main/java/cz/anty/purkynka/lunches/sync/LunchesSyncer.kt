@@ -34,7 +34,7 @@ import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.lunches.widget.NextLunchWidgetProvider
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
-import eu.codetopic.utils.notifications.manager.requestShowAll
+import eu.codetopic.utils.notifications.manager.showAll
 import java.io.IOException
 
 /**
@@ -211,6 +211,6 @@ object LunchesSyncer {
             data = interestingChanges.map {
                 LunchesChangesNotifyChannel.dataFor(it)
             }
-        }.requestShowAll(context)
+        }.showAll(context)
     }
 }

@@ -28,7 +28,7 @@ import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.create.MultiNotificationBuilder
-import eu.codetopic.utils.notifications.manager.requestShowAll
+import eu.codetopic.utils.notifications.manager.showAll
 import kotlinx.serialization.list
 
 /**
@@ -63,6 +63,6 @@ class NewGradesChangesReceiver : BroadcastReceiver() {
                     refreshable = true
                     data = gradesChanges
                 }
-        ).requestShowAll(context)
+        ).showAll(context)
     }
 }

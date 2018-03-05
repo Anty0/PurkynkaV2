@@ -20,6 +20,7 @@ package cz.anty.purkynka.easter
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import cz.anty.purkynka.R
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
@@ -41,5 +42,12 @@ class EasterEggActivity : ModularActivity(TransitionBackButtonModule()) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_easter_egg)
+    }
+
+    override fun finishAfterTransition() {
+        // fixes bug in Android M (5), that crashes application
+        //  if shared element is missing in previous activity.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) super.finishAfterTransition()
+        else finish()
     }
 }

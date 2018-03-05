@@ -21,11 +21,12 @@ package cz.anty.purkynka.lunches
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import cz.anty.purkynka.utils.ICON_LUNCHES
+import android.view.View
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.save.ActiveAccount
 import cz.anty.purkynka.dashboard.DashboardFragment
 import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.utils.ICON_LUNCHES
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.getIconics
@@ -37,6 +38,7 @@ import kotlinx.android.extensions.ContainerOptions
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.bundleOf
+import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.Keep
@@ -67,6 +69,8 @@ class LunchesDecideFragment : NavigationFragment(), ThemeProvider, IconProvider 
     override val icon: Bitmap
         get() = ctx.getIconics(ICON_LUNCHES).sizeDp(48).toBitmap()
 
+    private var destroyed = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -96,27 +100,45 @@ class LunchesDecideFragment : NavigationFragment(), ThemeProvider, IconProvider 
             return
         }
 
+        val self = this.asReference()
         val holder = holder
         launch(UI) {
             holder.showLoading()
 
             run switcher@ {
-                val accountId = bg { ActiveAccount.getWithId().first }.await() ?: run {
+                val accountId = bg { ActiveAccount.getWithId().first }.await() ?: self().run {
                     Log.w(LOG_TAG, "onCreate()" +
                             " -> No active account, switching to login")
-                    switchFragment(LunchesLoginFragment::class.java)
+                    if (!destroyed) {
+                        switchFragment(LunchesLoginFragment::class.java)
+                    }
                     return@switcher
                 }
 
                 val userLoggedId = bg { LunchesLoginData.loginData.isLoggedIn(accountId) }.await()
 
-                navigationActivity?.replaceFragment(
-                        if (userLoggedId) targetClass
-                        else LunchesLoginFragment::class.java
-                )
+                self().run {
+                    if (!destroyed) {
+                        navigationActivity?.replaceFragment(
+                                if (userLoggedId) targetClass
+                                else LunchesLoginFragment::class.java
+                        )
+                    }
+                }
             }
 
             holder.hideLoading()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        destroyed = false
+    }
+
+
+    override fun onDestroyView() {
+        destroyed = true
+        super.onDestroyView()
     }
 }

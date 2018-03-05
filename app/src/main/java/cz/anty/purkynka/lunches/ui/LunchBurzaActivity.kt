@@ -20,6 +20,7 @@ package cz.anty.purkynka.lunches.ui
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -35,6 +36,7 @@ import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.getKSerializableExtra
 import eu.codetopic.utils.putKSerializableExtra
+import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.activity.modular.module.TransitionBackButtonModule
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
@@ -52,7 +54,9 @@ import java.io.IOException
 /**
  * @author anty
  */
-class LunchBurzaActivity : LoadingModularActivity(ToolbarModule(), TransitionBackButtonModule()) {
+class LunchBurzaActivity : LoadingModularActivity(
+        CoordinatorLayoutModule(), ToolbarModule(), TransitionBackButtonModule()
+) {
 
     companion object {
 
@@ -169,5 +173,12 @@ class LunchBurzaActivity : LoadingModularActivity(ToolbarModule(), TransitionBac
                     visibility = View.VISIBLE
                     startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.slide_down))
                 }
+    }
+
+    override fun finishAfterTransition() {
+        // fixes bug in Android M (5), that crashes application
+        //  if shared element is missing in previous activity.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) super.finishAfterTransition()
+        else finish()
     }
 }

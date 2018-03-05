@@ -150,7 +150,9 @@ class MainActivity : NavigationActivity() {
 
                 self().apply {
                     UninstallOldAppDialogFragment().show(
-                            supportFragmentManager,
+                            supportFragmentManager
+                                    .takeUnless { it.isStateSaved }
+                                    ?: return@apply,
                             TAG_DIALOG_UNINSTALL_OLD_APP
                     )
                 }

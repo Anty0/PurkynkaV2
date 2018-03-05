@@ -29,7 +29,7 @@ import cz.anty.purkynka.update.notify.VersionChangesNotifyChannel
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
 import eu.codetopic.utils.notifications.manager.NotifyManager
-import eu.codetopic.utils.notifications.manager.data.requestCancel
+import eu.codetopic.utils.notifications.manager.data.cancel
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
@@ -96,7 +96,7 @@ class VersionChangesActivity : ModularActivity(ToolbarModule(), BackButtonModule
                 }?.key
             }.await() ?: return@notifyCancel
 
-            notifyId.requestCancel(self())
+            notifyId.cancel(self())
         }
     }
 }

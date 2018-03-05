@@ -32,6 +32,7 @@ import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.account.save.ActiveAccount
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.runIf
 import eu.codetopic.utils.UtilsBase
 import org.jetbrains.anko.accountManager
@@ -183,7 +184,13 @@ object Accounts {
             getId(context.accountManager, account)
 
     fun getId(accountManager: AccountManager, account: Account): String =
-            accountManager.getUserData(account.checkType(), KEY_ACCOUNT_ID)
+            accountManager.getUserData(account.checkType(), KEY_ACCOUNT_ID) ?: run {
+                Log.e(LOG_TAG, "getId()", RuntimeException("Id not found in user data"))
+
+                val newAccountId = UUID.randomUUID().toString()
+                accountManager.setUserData(account, KEY_ACCOUNT_ID, newAccountId)
+                return@run newAccountId
+            }
 
     fun getAllWIthIds(context: Context): Map<String, Account> =
             getAllWIthIds(context.accountManager)

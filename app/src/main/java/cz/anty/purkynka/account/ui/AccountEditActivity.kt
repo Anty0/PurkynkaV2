@@ -23,7 +23,6 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.View
 import com.google.firebase.analytics.FirebaseAnalytics
 import cz.anty.purkynka.R
@@ -31,15 +30,17 @@ import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.utils.FBA_ACCOUNT_EDIT
 import eu.codetopic.utils.ui.activity.modular.ModularActivity
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
+import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.view.hideKeyboard
 import kotlinx.android.synthetic.main.activity_edit_account.*
 import org.jetbrains.anko.accountManager
+import org.jetbrains.anko.design.longSnackbar
 
 /**
  * @author anty
  */
-class AccountEditActivity : ModularActivity(ToolbarModule(), BackButtonModule()) {
+class AccountEditActivity : ModularActivity(CoordinatorLayoutModule(), ToolbarModule(), BackButtonModule()) {
 
     companion object {
 
@@ -77,12 +78,12 @@ class AccountEditActivity : ModularActivity(ToolbarModule(), BackButtonModule())
 
         val userName = inAccountName.text.toString()
                 .trim().takeIf { it.isNotEmpty() } ?: run {
-            Snackbar.make(v, R.string.snackbar_invalid_account_name, Snackbar.LENGTH_LONG).show()
+            longSnackbar(v, R.string.snackbar_invalid_account_name)
             return
         }
 
         val newAccount = Accounts.rename(this, accountManager, account, userName) ?: run {
-            Snackbar.make(v, R.string.snackbar_account_edit_failed, Snackbar.LENGTH_LONG).show()
+            longSnackbar(v, R.string.snackbar_account_edit_failed)
             return
         }
 

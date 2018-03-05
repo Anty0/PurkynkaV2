@@ -33,6 +33,7 @@ import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.save.LunchesPreferences
 import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_LUNCHES_CREDIT
+import eu.codetopic.java.utils.log.Log
 import eu.codetopic.java.utils.to
 import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.broadcast.LocalBroadcast
@@ -129,14 +130,18 @@ class LunchesCreditDashboardItem(val credit: Float) : SwipeableDashboardItem() {
 
     override fun onSwiped(holder: CustomItemViewHolder, direction: Int) {
         bg { LunchesPreferences.instance.showDashboardCreditWarning = false }
-        longSnackbar(
-                view = holder.itemView,
-                message = R.string.snackbar_lunches_dashboard_credit_warning_disabled,
-                actionText = R.string.but_undo,
-                action = {
-                    bg { LunchesPreferences.instance.showDashboardCreditWarning = true }
-                }
-        )
+        try {
+            longSnackbar(
+                    view = holder.itemView,
+                    message = R.string.snackbar_lunches_dashboard_credit_warning_disabled,
+                    actionText = R.string.but_undo,
+                    action = {
+                        bg { LunchesPreferences.instance.showDashboardCreditWarning = true }
+                    }
+            )
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "onSwiped()")
+        }
     }
 
     override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {

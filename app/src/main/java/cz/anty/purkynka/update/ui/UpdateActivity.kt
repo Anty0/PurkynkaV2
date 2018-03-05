@@ -47,6 +47,7 @@ import eu.codetopic.utils.thread.LooperUtils
 import eu.codetopic.utils.thread.progress.ProgressBarReporter
 import eu.codetopic.utils.thread.progress.ProgressInfo
 import eu.codetopic.utils.ui.activity.modular.module.BackButtonModule
+import eu.codetopic.utils.ui.activity.modular.module.CoordinatorLayoutModule
 import eu.codetopic.utils.ui.activity.modular.module.ToolbarModule
 import eu.codetopic.utils.ui.view.asViewVisibility
 import eu.codetopic.utils.ui.view.holder.loading.LoadingModularActivity
@@ -70,7 +71,9 @@ import kotlinx.coroutines.experimental.Job as KJob
  * @author anty
  */
 @ContainerOptions(CacheImplementation.SPARSE_ARRAY)
-class UpdateActivity : LoadingModularActivity(ToolbarModule(), BackButtonModule()) {
+class UpdateActivity : LoadingModularActivity(
+        CoordinatorLayoutModule(), ToolbarModule(), BackButtonModule()
+) {
 
     companion object {
 

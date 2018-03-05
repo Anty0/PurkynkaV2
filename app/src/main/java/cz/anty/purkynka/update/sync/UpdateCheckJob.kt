@@ -43,11 +43,11 @@ class UpdateCheckJob : Job() {
         fun schedule() {
             Log.d(LOG_TAG, "schedule")
 
-            if (UpdateData.instance.jobScheduleVersion == BuildConfig.VERSION_CODE
-                    && JobManager.instance().getAllJobRequestsForTag(JOB_TAG).isNotEmpty())
-                return
-
             try {
+                if (UpdateData.instance.jobScheduleVersion == BuildConfig.VERSION_CODE
+                        && JobManager.instance().getAllJobRequestsForTag(JOB_TAG).isNotEmpty())
+                    return
+
                 JobRequest.Builder(JOB_TAG)
                         .setPeriodic(INTERVAL, FLEX)
                         .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)

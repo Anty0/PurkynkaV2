@@ -25,9 +25,7 @@ import android.view.*
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.utils.ICON_LUNCHES_ORDER
 import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
@@ -36,17 +34,20 @@ import cz.anty.purkynka.lunches.save.LunchesData
 import cz.anty.purkynka.lunches.save.LunchesData.SyncResult.*
 import cz.anty.purkynka.lunches.save.LunchesLoginData
 import cz.anty.purkynka.lunches.sync.LunchesSyncAdapter
-import cz.anty.purkynka.lunches.ui.LunchesCreditItem
 import cz.anty.purkynka.lunches.ui.LunchOptionsGroupItem
+import cz.anty.purkynka.lunches.ui.LunchesCreditItem
+import cz.anty.purkynka.utils.FBA_LUNCHES_LOGOUT
+import cz.anty.purkynka.utils.ICON_LUNCHES_ORDER
+import cz.anty.purkynka.utils.awaitForSyncCompleted
 import eu.codetopic.java.utils.ifFalse
 import eu.codetopic.java.utils.ifTrue
 import eu.codetopic.java.utils.log.Log
-import eu.codetopic.utils.*
+import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.edit
 import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.intentFilter
-import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.notifications.manager.NotifyManager
+import eu.codetopic.utils.receiver
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -64,6 +65,7 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
 
@@ -119,10 +121,12 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         val self = this.asReference()
         accountHolder.addChangeListener {
             self().update().join()
-            if (!self().userLoggedIn) {
-                // App was switched to not logged in user
-                // Let's switch fragment
-                self().switchFragment(LunchesLoginFragment::class.java)
+            self().apply {
+                if (!userLoggedIn && view != null) {
+                    // App was switched to not logged in user
+                    // Let's switch fragment
+                    switchFragment(LunchesLoginFragment::class.java)
+                }
             }
         }
     }
@@ -268,8 +272,8 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                         bg { LunchesData.instance.getLastSyncResult(it) }.await()
                     }
             self().accountHolder.accountId?.let {
-                NotifyManager.requestSuspendCancelAll(
-                        context = self().ctx,
+                NotifyManager.sCancelAll(
+                        context = self().takeIf { it.view != null }?.ctx ?: return@let,
                         groupId = AccountNotifyGroup.idFor(it),
                         channelId = LunchesChangesNotifyChannel.ID)
             }
@@ -305,7 +309,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         }
 
         // Allow menu visibility changes based on userLoggedIn state
-        activity?.invalidateOptionsMenu()
+        act.invalidateOptionsMenu()
 
         updateUiSyncResult()
 
@@ -325,6 +329,7 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
         if (!force && showingSyncResult == lastSyncResult &&
                 syncStatusSnackbar?.isShownOrQueued != false) return
 
+        val self = this.asReference()
         when (lastSyncResult) {
             FAIL_UNKNOWN -> syncStatusSnackbar = indefiniteSnackbar(
                     view,
@@ -332,8 +337,8 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                     R.string.snackbar_action_lunches_retry,
                     {
                         launch(UI) {
-                            requestSyncWithLoading()?.join()
-                            updateUiSyncResult(true)
+                            self().requestSyncWithLoading()?.join()
+                            self().updateUiSyncResult(true)
                         }
                     }
             )
@@ -343,8 +348,8 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                     R.string.snackbar_action_lunches_retry,
                     {
                         launch(UI) {
-                            requestSyncWithLoading()?.join()
-                            updateUiSyncResult(true)
+                            self().requestSyncWithLoading()?.join()
+                            self().updateUiSyncResult(true)
                         }
                     }
             )
@@ -354,8 +359,8 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
                     R.string.snackbar_action_lunches_logout,
                     {
                         launch(UI) {
-                            logout()?.join()
-                            updateUiSyncResult(true)
+                            self().logout()?.join()
+                            self().updateUiSyncResult(true)
                         }
                     }
             )
@@ -424,11 +429,12 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
     }
 
     private fun logout(): Job? {
+        val view = view ?: return null
+
         if (!userLoggedIn) {
             switchFragment(LunchesLoginFragment::class.java)
             return null
         }
-        val view = view ?: return null
 
         val accountId = accountHolder.accountId ?: run {
             longSnackbar(view, R.string.snackbar_no_account_logout)
@@ -446,7 +452,8 @@ class LunchesOrderFragment : NavigationFragment(), TitleProvider, ThemeProvider,
             LunchesLoginFragment.doLogout(appContext, accountId) ifTrue {
                 // Success :D
                 // Let's switch fragment
-                self().switchFragment(LunchesLoginFragment::class.java)
+                self().takeIf { it.view != null }
+                        ?.switchFragment(LunchesLoginFragment::class.java)
             }
 
             delay(500) // Wait few loops to make sure, that content was updated.
