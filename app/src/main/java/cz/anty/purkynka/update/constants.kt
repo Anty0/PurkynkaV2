@@ -35,7 +35,8 @@ val CHANGELOG_MAP = immutableMapOf(
         1 to VersionInfo("v5.0.0", R.array.version_changes_1),
         2 to VersionInfo("v5.0.1", R.array.version_changes_2),
         3 to VersionInfo("v5.0.2", R.array.version_changes_3),
-        4 to VersionInfo("v5.0.3", R.array.version_changes_4)
+        4 to VersionInfo("v5.0.3", R.array.version_changes_4),
+        5 to VersionInfo("v5.0.4", R.array.version_changes_5)
 )
 
 data class VersionInfo(val name: String, @get:ArrayRes @param:ArrayRes val changesTextRes: Int)

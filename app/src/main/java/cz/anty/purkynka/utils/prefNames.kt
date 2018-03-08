@@ -26,7 +26,7 @@ package cz.anty.purkynka.utils
 /// AppPreferences
 const val FILE_NAME_APP_PREFERENCES = "AppPreferences"
 const val ENABLE_DEBUG_MODE = "ENABLE_DEBUG_MODE"
-const val SHOW_TRY_SWIPE_ITEM = "SHOW_TRY_SWIPE_ITEM"
+const val SHOW_WELCOME_ITEM = "SHOW_WELCOME_ITEM"
 /// UpdateData
 const val FILE_NAME_UPDATE_DATA = "UpdateData"
 const val SCHEDULE_VERSION = "SCHEDULE_VERSION"

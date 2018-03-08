@@ -47,7 +47,7 @@ object WifiLoginFetcher {
 
     private const val LOG_TAG = "WifiLoginFetcher"
 
-    private const val WIFI_NAME = "ISSWF1"
+    private const val WIFI_NAME = "ISSWF"
 
     private const val TEST_URL = "http://www.sspbrno.cz/"
     private const val LOGIN_URL_BASE = "wifi.sspbrno.cz"
@@ -144,7 +144,7 @@ object WifiLoginFetcher {
 
     private fun testWifi(context: Context): Pair<Boolean, String?> =
             context.applicationContext.wifiManager.connectionInfo?.ssid
-                    .let { (it == WIFI_NAME) to it }
+                    .let { (it?.contains(WIFI_NAME) ?: false) to it }
 
     private fun checkForLoginUrl(): String? = try {
         @Suppress("DEPRECATION")

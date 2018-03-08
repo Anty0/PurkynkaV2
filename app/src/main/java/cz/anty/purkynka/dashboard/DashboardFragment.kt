@@ -22,10 +22,14 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.view.*
+import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
-import cz.anty.purkynka.dashboard.util.TrySwipeDashboardManager
+import cz.anty.purkynka.dashboard.util.BroadcastRejectionWarningDashboardManager
+import cz.anty.purkynka.dashboard.util.WelcomeDashboardManager
 import cz.anty.purkynka.feedback.dashboard.ErrorFeedbackDashboardManager
 import cz.anty.purkynka.grades.dashboard.BadSubjectAverageDashboardItem
 import cz.anty.purkynka.grades.dashboard.GradesLoginDashboardManager
@@ -38,9 +42,9 @@ import cz.anty.purkynka.update.dashboard.VersionChangesDashboardManager
 import cz.anty.purkynka.utils.ICON_HOME_DASHBOARD
 import cz.anty.purkynka.wifilogin.dashboard.WifiLoginDashboardManager
 import eu.codetopic.java.utils.letIf
-import eu.codetopic.utils.getIconics
-import eu.codetopic.java.utils.to
 import eu.codetopic.java.utils.letIfNull
+import eu.codetopic.java.utils.to
+import eu.codetopic.utils.getIconics
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
 import eu.codetopic.utils.ui.activity.fragment.TitleProvider
@@ -137,7 +141,8 @@ class DashboardFragment : NavigationFragment(), TitleProvider, ThemeProvider, Ic
 
         managers = listOf(
                 // Helpers
-                ::TrySwipeDashboardManager,
+                ::BroadcastRejectionWarningDashboardManager,
+                ::WelcomeDashboardManager,
 
                 // System
                 ::UpdateCheckDashboardManager,

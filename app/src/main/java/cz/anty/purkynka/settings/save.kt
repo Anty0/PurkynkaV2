@@ -23,10 +23,11 @@ import android.content.SharedPreferences
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.utils.ENABLE_DEBUG_MODE
 import cz.anty.purkynka.utils.FILE_NAME_APP_PREFERENCES
-import cz.anty.purkynka.utils.SHOW_TRY_SWIPE_ITEM
+import cz.anty.purkynka.utils.SHOW_WELCOME_ITEM
 import eu.codetopic.java.utils.debug.DebugMode
 import eu.codetopic.utils.data.preferences.PreferencesData
 import eu.codetopic.utils.data.preferences.preference.BooleanPreference
+import eu.codetopic.utils.data.preferences.preference.PreferenceAbs
 import eu.codetopic.utils.data.preferences.provider.BasicSharedPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ContentProviderPreferencesProvider
 import eu.codetopic.utils.data.preferences.provider.ISharedPreferencesProvider
@@ -49,16 +50,37 @@ class AppPreferences private constructor(context: Context) :
     ) {
 
         private const val LOG_TAG = "AppPreferences"
-        internal const val SAVE_VERSION = 0
+        internal const val SAVE_VERSION = 1
 
         @Suppress("UNUSED_PARAMETER")
-        internal fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
+        internal fun onUpgrade(
+                preferences: SharedPreferences,
+                editor: SharedPreferences.Editor,
+                from: Int,
+                to: Int
+        ) {
             // This function will be executed by provider in provider process
-            when (from) {
-                -1 -> {
-                    // First start, nothing to do
-                }
-            } // No more versions yet
+            for (i in from until to) {
+                when (i) {
+                    -1 -> {
+                        // First start, nothing to do
+                    }
+                    0 -> {
+                        run restoreShowWelcomeItem@{
+                            val oldKey = "SHOW_TRY_SWIPE_ITEM"
+                            val oldVal = preferences
+                                    .takeIf { it.contains(oldKey) }
+                                    ?.getBoolean(
+                                            PreferenceAbs.keyFor(oldKey),
+                                            true
+                                    ) ?: return@restoreShowWelcomeItem
+
+                            val newKey = SHOW_WELCOME_ITEM
+                            editor.putBoolean(newKey, oldVal)
+                        }
+                    }
+                } // No more versions yet
+            }
         }
     }
 
@@ -81,8 +103,8 @@ class AppPreferences private constructor(context: Context) :
             defaultValue = BuildConfig.DEBUG
     )
 
-    var showTrySwipeItem by BooleanPreference(
-            key = SHOW_TRY_SWIPE_ITEM,
+    var showWelcomeItem by BooleanPreference(
+            key = SHOW_WELCOME_ITEM,
             provider = accessProvider,
             defaultValue = true
     )
@@ -107,6 +129,6 @@ class AppPreferencesProvider : VersionedContentProviderPreferences<SharedPrefere
     }
 
     override fun onUpgrade(editor: SharedPreferences.Editor, from: Int, to: Int) {
-        AppPreferences.onUpgrade(editor, from, to)
+        AppPreferences.onUpgrade(preferences, editor, from, to)
     }
 }

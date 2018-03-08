@@ -18,36 +18,36 @@
 
 package cz.anty.purkynka.dashboard.util
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.content.Context
+import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.dashboard.DashboardItem
 import cz.anty.purkynka.dashboard.DashboardManager
 import cz.anty.purkynka.dashboard.SwipeableDashboardItem
 import cz.anty.purkynka.settings.AppPreferences
-import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_TRY_SWIPE
+import cz.anty.purkynka.utils.DASHBOARD_PRIORITY_WELCOME
+import eu.codetopic.java.utils.letIfNull
+import eu.codetopic.utils.baseActivity
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.intentFilter
 import eu.codetopic.utils.receiver
+import eu.codetopic.utils.simple.SimpleAnimatorListener
 import eu.codetopic.utils.ui.container.adapter.MultiAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItemViewHolder
+import eu.codetopic.utils.ui.view.getTag
+import eu.codetopic.utils.ui.view.setTag
+import kotlinx.android.synthetic.main.item_dashboard_welcome.view.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
-import android.animation.ObjectAnimator
-import android.view.View
-import android.widget.TextView
-import eu.codetopic.utils.ui.view.getTag
-import eu.codetopic.utils.ui.view.setTag
-import kotlinx.android.synthetic.main.item_dashboard_try_swipe.view.*
-import android.animation.Animator
-import android.widget.FrameLayout
-import android.widget.ImageView
-import eu.codetopic.java.utils.letIfNull
-import eu.codetopic.utils.baseActivity
-import eu.codetopic.utils.simple.SimpleAnimatorListener
 import org.jetbrains.anko.dip
 import kotlin.math.min
 
@@ -55,14 +55,14 @@ import kotlin.math.min
 /**
  * @author anty
  */
-class TrySwipeDashboardManager(context: Context, accountHolder: ActiveAccountHolder,
-                               adapter: MultiAdapter<DashboardItem>) :
+class WelcomeDashboardManager(context: Context, accountHolder: ActiveAccountHolder,
+                              adapter: MultiAdapter<DashboardItem>) :
         DashboardManager(context, accountHolder, adapter) {
 
     companion object {
 
-        private const val LOG_TAG = "TrySwipeDashboardManager"
-        private const val ID = "cz.anty.purkynka.dashboard.util.trySwipe"
+        private const val LOG_TAG = "WelcomeDashboardManager"
+        private const val ID = "cz.anty.purkynka.dashboard.util.welcome"
     }
 
     private val updateReceiver = receiver { _, _ -> update() }
@@ -91,11 +91,11 @@ class TrySwipeDashboardManager(context: Context, accountHolder: ActiveAccountHol
             adapterRef().mapReplaceAll(
                     id = ID,
                     items = bg calcItems@ {
-                        val showItem = AppPreferences.instance.showTrySwipeItem
+                        val showItem = AppPreferences.instance.showWelcomeItem
                         if (!showItem) return@calcItems null
 
                         return@calcItems listOf(
-                                TrySwipeDashboardItem()
+                                WelcomeDashboardItem()
                         )
                     }.await() ?: emptyList()
             )
@@ -103,21 +103,21 @@ class TrySwipeDashboardManager(context: Context, accountHolder: ActiveAccountHol
     }
 }
 
-class TrySwipeDashboardItem : SwipeableDashboardItem() {
+class WelcomeDashboardItem : SwipeableDashboardItem() {
 
     companion object {
 
-        private const val LOG_TAG = "TrySwipeDashboardItem"
+        private const val LOG_TAG = "WelcomeDashboardItem"
         private const val TAG_ITEM_READY = "cz.anty.purkynka.dashboard.util.$LOG_TAG.ITEM_READY"
     }
 
     override val priority: Int
-        get() = DASHBOARD_PRIORITY_TRY_SWIPE
+        get() = DASHBOARD_PRIORITY_WELCOME
 
     override fun getSwipeDirections(holder: CustomItemViewHolder): Int = LEFT or RIGHT
 
     override fun onSwiped(holder: CustomItemViewHolder, direction: Int) {
-        bg { AppPreferences.instance.showTrySwipeItem = false }
+        bg { AppPreferences.instance.showWelcomeItem = false }
     }
 
     override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
@@ -133,7 +133,7 @@ class TrySwipeDashboardItem : SwipeableDashboardItem() {
         }
     }
 
-    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_try_swipe
+    override fun getLayoutResId(context: Context): Int = R.layout.item_dashboard_welcome
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -23,6 +23,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.support.annotation.WorkerThread
+import com.google.firebase.perf.metrics.AddTrace
 import cz.anty.purkynka.BuildConfig
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.exceptions.WrongLoginDataException
@@ -37,6 +38,7 @@ import cz.anty.purkynka.grades.save.GradesLoginData
 import cz.anty.purkynka.grades.save.GradesPreferences
 import cz.anty.purkynka.grades.save.MutableGradesMap
 import cz.anty.purkynka.grades.widget.GradesWidgetProvider
+import cz.anty.purkynka.utils.FBP_GRADES_SYNC
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.putKSerializableExtra
@@ -58,6 +60,7 @@ object GradesSyncer {
             "cz.anty.purkynka.grades.sync.$LOG_TAG.EXTRA_GRADES_CHANGES"
 
     @WorkerThread
+    @AddTrace(name = FBP_GRADES_SYNC)
     fun performSync(
             context: Context,
             account: Account,

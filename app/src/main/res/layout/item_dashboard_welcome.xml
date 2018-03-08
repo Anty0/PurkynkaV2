@@ -20,7 +20,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".dashboard.util.TrySwipeDashboardItem"
+    tools:context=".dashboard.util.WelcomeDashboardItem"
     style="?attr/cardViewTheme"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                     android:ellipsize="end"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:text="@string/item_dashboard_try_swipe_title" />
+                    android:text="@string/item_dashboard_welcome_title" />
 
                 <TextView
                     style="?attr/textAppearanceListItemSmall"
@@ -79,7 +79,7 @@
                     android:maxLines="2"
                     android:ellipsize="end"
                     android:textSize="14sp"
-                    android:text="@string/item_dashboard_try_swipe_subtitle"/>
+                    android:text="@string/item_dashboard_welcome_subtitle"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:textStyle="bold"
-                    android:text="@string/item_dashboard_try_swipe_txt_how_to_dismiss" />
+                    android:text="@string/item_dashboard_welcome_txt_swipe_to_dismiss" />
             </FrameLayout>
 
             <android.support.v4.widget.Space

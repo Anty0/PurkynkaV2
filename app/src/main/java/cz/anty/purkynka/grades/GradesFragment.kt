@@ -23,60 +23,59 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.view.ContextThemeWrapper
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import cz.anty.purkynka.utils.ICON_GRADES
-
 import cz.anty.purkynka.R
-import cz.anty.purkynka.utils.*
 import cz.anty.purkynka.account.ActiveAccountHolder
 import cz.anty.purkynka.account.notify.AccountNotifyGroup
 import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.grades.data.Semester
+import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.load.GradesParser.toSubjects
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataChanges
 import cz.anty.purkynka.grades.notify.GradesChangesNotifyChannel.Companion.readDataGrade
-import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
-import cz.anty.purkynka.grades.util.GradesSort.*
-import cz.anty.purkynka.grades.sync.GradesSyncAdapter
-import cz.anty.purkynka.grades.data.Subject.Companion.average
 import cz.anty.purkynka.grades.save.*
+import cz.anty.purkynka.grades.save.GradesData.SyncResult.*
+import cz.anty.purkynka.grades.sync.GradesSyncAdapter
 import cz.anty.purkynka.grades.sync.GradesSyncer
 import cz.anty.purkynka.grades.ui.GradeItem
 import cz.anty.purkynka.grades.ui.SubjectItem
 import cz.anty.purkynka.grades.util.GradesSort
+import cz.anty.purkynka.grades.util.GradesSort.*
+import cz.anty.purkynka.utils.FBA_GRADES_LOGIN
+import cz.anty.purkynka.utils.FBA_GRADES_LOGOUT
+import cz.anty.purkynka.utils.ICON_GRADES
+import cz.anty.purkynka.utils.awaitForSyncCompleted
 import eu.codetopic.java.utils.ifFalse
 import eu.codetopic.java.utils.log.Log
+import eu.codetopic.java.utils.to
 import eu.codetopic.utils.*
 import eu.codetopic.utils.broadcast.LocalBroadcast
 import eu.codetopic.utils.bundle.BundleSerializer
 import eu.codetopic.utils.notifications.manager.NotifyManager
 import eu.codetopic.utils.ui.activity.fragment.IconProvider
-import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.fragment.ThemeProvider
+import eu.codetopic.utils.ui.activity.fragment.TitleProvider
 import eu.codetopic.utils.ui.activity.navigation.NavigationFragment
 import eu.codetopic.utils.ui.container.adapter.CustomItemAdapter
 import eu.codetopic.utils.ui.container.items.custom.CustomItem
 import eu.codetopic.utils.ui.container.recycler.Recycler
 import eu.codetopic.utils.ui.view.hideKeyboard
 import eu.codetopic.utils.ui.view.holder.loading.LoadingVH
+import eu.codetopic.utils.ui.view.holder.loading.LoadingVHImpl
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_grades.*
 import kotlinx.android.synthetic.main.fragment_grades.view.*
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
 import kotlinx.serialization.internal.IntSerializer
 import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.json.JSON
@@ -114,7 +113,10 @@ class GradesFragment : NavigationFragment(), TitleProvider, ThemeProvider, IconP
     private val layGrades = LayoutGrades(accountHolder, layLogin, holder)
     private val laySyncStatus = LayoutSyncStatus(accountHolder, layLogin, layGrades)
 
-    init { setHasOptionsMenu(true) }
+    init {
+        setHasOptionsMenu(true)
+        holder.to<LoadingVHImpl>()?.loadingTextRes = R.string.loading_text_grades
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

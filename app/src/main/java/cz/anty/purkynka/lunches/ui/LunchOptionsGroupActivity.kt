@@ -35,10 +35,8 @@ import cz.anty.purkynka.exceptions.WrongLoginDataException
 import cz.anty.purkynka.lunches.data.LunchOption
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup
 import cz.anty.purkynka.lunches.data.LunchOptionsGroup.Companion.dateStrShort
-import cz.anty.purkynka.lunches.load.LunchesFetcher
-import cz.anty.purkynka.lunches.load.LunchesParser
 import cz.anty.purkynka.lunches.save.LunchesData
-import cz.anty.purkynka.lunches.save.LunchesLoginData
+import cz.anty.purkynka.lunches.sync.LunchesSyncer
 import cz.anty.purkynka.utils.suspendInto
 import eu.codetopic.java.utils.log.Log
 import eu.codetopic.utils.getFormattedText
@@ -61,8 +59,6 @@ import org.jetbrains.anko.appcompat.v7.tintedRadioButton
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.io.IOException
 
 /**
@@ -130,8 +126,12 @@ class LunchOptionsGroupActivity : LoadingModularActivity(
                 tag = null
                 textResource = R.string.but_no_lunch
                 id = 0
-                onCheckedChange { _, isChecked ->
-                    if (isChecked) butLunchOrder.isEnabled = this@button.tag != null
+                setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        butLunchOrder.isEnabled = this@button.tag != null
+                        butPrevious.isEnabled = this@button.tag == null
+                        butNext.isEnabled = this@button.tag == null
+                    }
                 }
             }
 
@@ -151,8 +151,12 @@ class LunchOptionsGroupActivity : LoadingModularActivity(
                         toCheck = this.id
                     }
 
-                    onCheckedChange { _, isChecked ->
-                        if (isChecked) butLunchOrder.isEnabled = this@button.tag != null
+                    setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            butLunchOrder.isEnabled = this@button.tag != null
+                            butPrevious.isEnabled = this@button.tag == null
+                            butNext.isEnabled = this@button.tag == null
+                        }
                     }
                 }
                 val progress = horizontalProgressBar {
@@ -230,7 +234,7 @@ class LunchOptionsGroupActivity : LoadingModularActivity(
         val self = this.asReference()
         val holder = holder
 
-        butLunchOrder.onClick {
+        butLunchOrder.setOnClickListener onClick@ {
             val lunchOptionToOrder = boxOptionsGroup
                     .findViewById<RadioButton>(
                             boxOptionsGroup.checkedRadioButtonId
@@ -248,64 +252,36 @@ class LunchOptionsGroupActivity : LoadingModularActivity(
                 return@onClick
             }*/
 
-            holder.showLoading()
+            launch(UI) {
+                holder.showLoading()
 
-            val success = bg {
-                try {
-                    val loginData = LunchesLoginData.loginData
+                val success = bg {
+                    try {
+                        LunchesSyncer.orderLunch(
+                                accountId = accountId,
+                                lunchOptionsGroup = lunchOptionsGroup,
+                                lunchOptionToOrderIndex = lunchOptionIndex
+                        )
+                        return@bg true
+                    } catch (e: Exception) {
+                        Log.w(LOG_TAG, "butLunchOrder.onClick(" +
+                                "lunchOptionToOrder=$lunchOptionToOrder)" +
+                                " -> Failed to order lunch", e)
 
-                    if (!loginData.isLoggedIn(accountId))
-                        throw IllegalStateException("User is not logged in")
-
-                    val (username, password) = loginData.getCredentials(accountId)
-
-                    if (username == null || password == null)
-                        throw IllegalStateException("Username or password is null")
-
-                    val cookies = LunchesFetcher.login(username, password)
-
-                    if (!LunchesFetcher.isLoggedIn(cookies))
-                        throw WrongLoginDataException("Failed to login user with provided credentials")
-
-                    val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, lunchOptionsGroup.date)
-                    val nLunchOptionsGroup = LunchesParser.parseLunchOptionsGroup(lunchHtml)
-                            .takeIf { it == lunchOptionsGroup }
-                            ?: throw IllegalStateException("Lunch options group to order not found")
-                    val nLunchOptionToOrder = nLunchOptionsGroup.options?.get(lunchOptionIndex)
-                            .takeIf {
-                                it == lunchOptionToOrder
-                                        && it.enabled == lunchOptionToOrder.enabled
-                                        && it.ordered == lunchOptionToOrder.ordered
-                            }
-                            ?: throw IllegalStateException("Lunch option to order not found")
-
-                    val url = nLunchOptionToOrder.orderOrCancelUrl
-                            ?: throw IllegalStateException("Lunch option url to order not found")
-
-                    LunchesFetcher.orderLunch(cookies, url)
-
-                    LunchesFetcher.logout(cookies)
-
-                    LunchesData.instance.invalidateData(accountId)
-                    return@bg true
-                } catch (e: Exception) {
-                    Log.w(LOG_TAG, "butLunchOrder.onClick(" +
-                            "lunchOptionToOrder=$lunchOptionToOrder)" +
-                            " -> Failed to order lunch", e)
-
-                    launch(UI) {
-                        longSnackbar(self().boxLunchOptionsGroup, when (e) {
-                            is WrongLoginDataException -> R.string.snackbar_lunches_order_fail_login
-                            is IOException -> R.string.snackbar_lunches_order_fail_connect
-                            else -> R.string.snackbar_lunches_order_fail_unknown
-                        })
+                        launch(UI) {
+                            longSnackbar(self().boxLunchOptionsGroup, when (e) {
+                                is WrongLoginDataException -> R.string.snackbar_lunches_order_fail_login
+                                is IOException -> R.string.snackbar_lunches_order_fail_connect
+                                else -> R.string.snackbar_lunches_order_fail_unknown
+                            })
+                        }
+                        return@bg false
                     }
-                    return@bg false
-                }
-            }.await()
+                }.await()
 
-            if (success) self().finish()
-            holder.hideLoading()
+                if (success) self().finish()
+                holder.hideLoading()
+            }
         }
 
         lunchOptionsGroup.orderedOption
@@ -320,10 +296,9 @@ class LunchOptionsGroupActivity : LoadingModularActivity(
                             if (isInBurza) butLunchFromBurza
                             else butLunchToBurza
 
-                    button.apply {
-                        visibility = View.VISIBLE
-                        onClick {
-                            /*val url = lunchOption.toOrFromBurzaUrl ?: run {
+                    button.visibility = View.VISIBLE
+                    button.setOnClickListener {
+                        /*val url = lunchOption.toOrFromBurzaUrl ?: run {
                                 longSnackbar(
                                         boxLunchOptionsGroup,
                                         if (isInBurza) R.string.snackbar_lunches_from_burza_fail_internal
@@ -332,41 +307,16 @@ class LunchOptionsGroupActivity : LoadingModularActivity(
                                 return@onClick
                             }*/
 
+                        launch(UI) {
                             holder.showLoading()
 
                             val success = bg {
                                 try {
-                                    val loginData = LunchesLoginData.loginData
-
-                                    if (!loginData.isLoggedIn(accountId))
-                                        throw IllegalStateException("User is not logged in")
-
-                                    val (username, password) = loginData.getCredentials(accountId)
-
-                                    if (username == null || password == null)
-                                        throw IllegalStateException("Username or password is null")
-
-                                    val cookies = LunchesFetcher.login(username, password)
-
-                                    if (!LunchesFetcher.isLoggedIn(cookies))
-                                        throw WrongLoginDataException("Failed to login user with provided credentials")
-
-                                    val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, lunchOptionsGroup.date)
-                                    val nLunchOptionsGroup = LunchesParser.parseLunchOptionsGroup(lunchHtml)
-                                            .takeIf { it == lunchOptionsGroup }
-                                            ?: throw IllegalStateException("Lunch options group to order not found")
-                                    val nLunchOption = nLunchOptionsGroup.options?.get(index)
-                                            .takeIf { it == lunchOption && it.isInBurza == lunchOption.isInBurza }
-                                            ?: throw IllegalStateException("Lunch option to order not found")
-
-                                    val url = nLunchOption.toOrFromBurzaUrl
-                                            ?: throw IllegalStateException("Lunch option url to order not found")
-
-                                    LunchesFetcher.orderLunch(cookies, url)
-
-                                    LunchesFetcher.logout(cookies)
-
-                                    LunchesData.instance.invalidateData(accountId)
+                                    LunchesSyncer.moveLunchToOrFromBurza(
+                                            accountId = accountId,
+                                            lunchOptionsGroup = lunchOptionsGroup,
+                                            lunchOptionToOrderIndex = index
+                                    )
                                     return@bg true
                                 } catch (e: Exception) {
                                     Log.w(LOG_TAG, "butLunchToOrFromBurza.onClick(" +
@@ -396,54 +346,58 @@ class LunchOptionsGroupActivity : LoadingModularActivity(
                     }
                 }
 
-        butPrevious.onClick {
-            holder.showLoading()
+        butPrevious.setOnClickListener {
+            launch(UI) {
+                holder.showLoading()
 
-            run switch@ {
-                val targetLunch = bg target@ {
-                    val lunchesList = LunchesData.instance
-                            .getLunches(accountId)
-                            .sortedBy { it.date }
-                    val selfIndex = lunchesList.indexOf(lunchOptionsGroup)
-                    val targetIndex = (selfIndex - 1).takeIf { it in lunchesList.indices }
-                    return@target targetIndex?.let { lunchesList[it] }
-                }.await() ?: run {
-                    longSnackbar(self().butPrevious, R.string.snackbar_lunches_no_previous_lunch)
-                    return@switch
+                run switch@{
+                    val targetLunch = bg target@{
+                        val lunchesList = LunchesData.instance
+                                .getLunches(accountId)
+                                .sortedBy { it.date }
+                        val selfIndex = lunchesList.indexOf(lunchOptionsGroup)
+                        val targetIndex = (selfIndex - 1).takeIf { it in lunchesList.indices }
+                        return@target targetIndex?.let { lunchesList[it] }
+                    }.await() ?: run {
+                        longSnackbar(self().butPrevious, R.string.snackbar_lunches_no_previous_lunch)
+                        return@switch
+                    }
+
+                    self().apply {
+                        startActivity(getIntent(this, accountId, targetLunch))
+                        finish()
+                    }
                 }
 
-                self().apply {
-                    startActivity(getIntent(this, accountId, targetLunch))
-                    finish()
-                }
+                holder.hideLoading()
             }
-
-            holder.hideLoading()
         }
 
-        butNext.onClick {
-            holder.showLoading()
+        butNext.setOnClickListener {
+            launch(UI) {
+                holder.showLoading()
 
-            run switch@ {
-                val targetLunch = bg target@ {
-                    val lunchesList = LunchesData.instance
-                            .getLunches(accountId)
-                            .sortedBy { it.date }
-                    val selfIndex = lunchesList.indexOf(lunchOptionsGroup)
-                    val targetIndex = (selfIndex + 1).takeIf { it in lunchesList.indices }
-                    return@target targetIndex?.let { lunchesList[it] }
-                }.await() ?: run {
-                    longSnackbar(self().butPrevious, R.string.snackbar_lunches_no_next_lunch)
-                    return@switch
+                run switch@{
+                    val targetLunch = bg target@{
+                        val lunchesList = LunchesData.instance
+                                .getLunches(accountId)
+                                .sortedBy { it.date }
+                        val selfIndex = lunchesList.indexOf(lunchOptionsGroup)
+                        val targetIndex = (selfIndex + 1).takeIf { it in lunchesList.indices }
+                        return@target targetIndex?.let { lunchesList[it] }
+                    }.await() ?: run {
+                        longSnackbar(self().butPrevious, R.string.snackbar_lunches_no_next_lunch)
+                        return@switch
+                    }
+
+                    self().apply {
+                        startActivity(getIntent(this, accountId, targetLunch))
+                        finish()
+                    }
                 }
 
-                self().apply {
-                    startActivity(getIntent(this, accountId, targetLunch))
-                    finish()
-                }
+                holder.hideLoading()
             }
-
-            holder.hideLoading()
         }
     }
 

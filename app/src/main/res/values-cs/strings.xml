@@ -202,9 +202,9 @@
     <string name="item_lunches_new_title_main">Nový oběd</string>
     <string name="item_loading_title">Načítání…</string>
     <string name="item_loading_subtitle">Prosím čekejte..</string>
-    <string name="item_dashboard_try_swipe_title">Vítejte v aplikaci Purkyňka</string>
-    <string name="item_dashboard_try_swipe_subtitle">Toto je tvůj dashboard. Všechno ůležité se automaticky objeví zde.</string>
-    <string name="item_dashboard_try_swipe_txt_how_to_dismiss">Zahoď pro odstranění</string>
+    <string name="item_dashboard_welcome_title">Vítejte v aplikaci Purkyňka</string>
+    <string name="item_dashboard_welcome_subtitle">Toto je tvůj dashboard. Všechno ůležité se automaticky objeví zde.</string>
+    <string name="item_dashboard_welcome_txt_swipe_to_dismiss">Zahoď pro odstranění</string>
     <string name="widget_grades_no_account_text">Účet nebyl nalezen</string>
     <string name="widget_grades_no_account_text_small">Nesmazal jsi ho náhodou?</string>
     <string name="widget_grades_not_logged_in_text">Nejsi přihlášen</string>
@@ -358,6 +358,44 @@
     <string name="pref_show_app_settings">Nastavení</string>
     <string name="snackbar_account_create_failed">Vytvoření účtu selhalo, účet se stejným jménem již pravděpodobně existuje.</string>
     <string name="snackbar_account_edit_failed">Upravení účtu selhalo, účet se stejným jménem již pravděpodobně existuje.</string>
+    <string name="item_dashboard_broadcast_rejection_warning_title">Pozor!</string>
+    <string name="item_dashboard_broadcast_rejection_warning_subtitle">
+        "Systém odmítá spustit některé části aplikace."\n
+        \n
+        "Toto je známý problém s některými ASUS zařízeními."\n
+        "Pro vyřešení tohoto problému postupujte takto:"\n
+        " "\u2022"    Otevřte 'Auto-start Manager'"\n
+        " "\u2022"    Vyberte záložku 'Lastest Items' nebo 'Downloaded'"\n
+        " "\u2022"    Najděte aplikaci 'Purkyňka'"\n
+        " "\u2022"    Vyberte povolit"\n
+        \n
+        "Toto varování automaticky zmizí po povolení aplikace v 'Auto-start Manageru' a pár spuštění aplikace"
+    </string>
+    <string name="loading_text_grades">
+        "Prosím čekejte…"\n
+        "Jekákoli akce zde může trvat i déle než minutu."\n
+        "Systém známek bývá někdy opravdu hodně pomalý."
+    </string>
+    <plurals name="notify_lunch_new_text">
+        <item quantity="one">%1$d druh oběda</item>
+        <item quantity="few">%1$d druhy oběda</item>
+        <item quantity="other">%1$d druhů oběda</item>
+    </plurals>
+    <plurals name="notify_lunches_new_summary_line">
+        <item quantity="one">%1$d druh oběda na %1$s</item>
+        <item quantity="few">%1$d druhy oběda na %1$s</item>
+        <item quantity="other">%1$d druhů oběda na %1$s</item>
+    </plurals>
+    <plurals name="text_view_grades_count">
+        <item quantity="one">%1$d Známka</item>
+        <item quantity="few">%1$d Známky</item>
+        <item quantity="other">%1$d Známek</item>
+    </plurals>
+    <plurals name="text_view_lunches_available_count">
+        <item quantity="one">%1$d oběd k obědnání</item>
+        <item quantity="few">%1$d obědy k obědnání</item>
+        <item quantity="other">%1$d obědů k obědnání</item>
+    </plurals>
     <string-array name="pref_grades_bad_average_entries">
         <item>Průměr 1.25 a vyšší</item>
         <item>Průměr 1.50 a vyšší</item>
@@ -387,5 +425,15 @@
     </string-array>
     <string-array name="version_changes_4">
         <item>Opraveno mnoho chyb. Aplikace by nyní měla být podstatně stabilnější.</item>
+    </string-array>
+    <string-array name="version_changes_5">
+        <item>Opraveno pár menších chyb.</item>
+        <item>Opraveno pár nedostatků v českém překladu.</item>
+        <item>Odstraněno automatické zobrazování klávesnice, při vstupu do aplikace pomocí widgetu.</item>
+        <item>Opravena chyba, která znemožnila funkčnost automatického přihlašvání k Wi-Fi a způsobila při pokusu o přihlášení zobrazování upozornění, že uživatel není připojen ke školní Wi-Fi.</item>
+        <item>
+            "Přidáno upozornění pro uživatele ASUS zařízení s nástrojem 'Auto-start Manager', který blokuje některé části aplikace."
+            "Na některých ASUS zařízeních tak nefungují notifikace…"
+        </item>
     </string-array>
 </resources>

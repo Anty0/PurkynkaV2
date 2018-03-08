@@ -176,6 +176,7 @@
         <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="android:windowSoftInputMode">stateHidden</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <item name="colorDrawable">@color/materialWhite</item>
@@ -207,6 +208,7 @@
         <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="android:windowSoftInputMode">stateHidden</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <item name="colorDrawable">@color/materialWhite</item>
@@ -238,6 +240,7 @@
         <item name="colorPrimaryExtraDark">@color/colorPrimaryExtraDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="android:windowSoftInputMode">stateHidden</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <item name="colorDrawable">@color/materialWhite</item>

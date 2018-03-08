@@ -44,6 +44,100 @@ object LunchesSyncer {
 
     private const val LOG_TAG = "LunchesSyncer"
 
+    fun moveLunchToOrFromBurza(
+            accountId: String,
+            lunchOptionsGroup: LunchOptionsGroup,
+            lunchOptionToOrderIndex: Int,
+            credentials: Pair<String, String>? = null
+    ) {
+        val lunchOptionToBurza = lunchOptionsGroup.options?.get(lunchOptionToOrderIndex)
+                ?: throw IllegalArgumentException("Invalid lunchOptionToOrderIndex")
+
+        val loginData = LunchesLoginData.loginData
+
+        if (credentials == null && !loginData.isLoggedIn(accountId))
+            throw IllegalStateException("User is not logged in")
+
+        val (username, password) = credentials ?: loginData.getCredentials(accountId)
+
+        if (username == null || password == null)
+            throw IllegalStateException("Username or password is null")
+
+        val cookies = LunchesFetcher.login(username, password)
+
+        if (!LunchesFetcher.isLoggedIn(cookies))
+            throw WrongLoginDataException("Failed to login user with provided credentials")
+
+        val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, lunchOptionsGroup.date)
+        val nLunchOptionsGroup = LunchesParser.parseLunchOptionsGroup(lunchHtml)
+                .takeIf { it == lunchOptionsGroup }
+                ?: throw IllegalStateException("Lunch options group to order not found")
+        val nLunchOption = nLunchOptionsGroup.options?.get(lunchOptionToOrderIndex)
+                .takeIf { it == lunchOptionToBurza && it.isInBurza == lunchOptionToBurza.isInBurza }
+                ?: throw IllegalStateException("Lunch option to order not found")
+
+        if (nLunchOptionsGroup.orderedOption != lunchOptionsGroup.orderedOption)
+            throw IllegalStateException("Lunch options group was modified.")
+
+        val url = nLunchOption.toOrFromBurzaUrl
+                ?: throw IllegalStateException("Lunch option url to order not found")
+
+        LunchesFetcher.orderLunch(cookies, url)
+
+        LunchesFetcher.logout(cookies)
+
+        LunchesData.instance.invalidateData(accountId)
+    }
+
+    fun orderLunch(
+            accountId: String,
+            lunchOptionsGroup: LunchOptionsGroup,
+            lunchOptionToOrderIndex: Int,
+            credentials: Pair<String, String>? = null
+    ) {
+        val lunchOptionToOrder = lunchOptionsGroup.options?.get(lunchOptionToOrderIndex)
+                ?: throw IllegalArgumentException("Invalid lunchOptionToOrderIndex")
+
+        val loginData = LunchesLoginData.loginData
+
+        if (credentials == null && !loginData.isLoggedIn(accountId))
+            throw IllegalStateException("User is not logged in")
+
+        val (username, password) = credentials ?: loginData.getCredentials(accountId)
+
+        if (username == null || password == null)
+            throw IllegalStateException("Username or password is null")
+
+        val cookies = LunchesFetcher.login(username, password)
+
+        if (!LunchesFetcher.isLoggedIn(cookies))
+            throw WrongLoginDataException("Failed to login user with provided credentials")
+
+        val lunchHtml = LunchesFetcher.getLunchOptionsGroupElement(cookies, lunchOptionsGroup.date)
+        val nLunchOptionsGroup = LunchesParser.parseLunchOptionsGroup(lunchHtml)
+                .takeIf { it == lunchOptionsGroup }
+                ?: throw IllegalStateException("Lunch options group to order not found")
+        val nLunchOptionToOrder = nLunchOptionsGroup.options?.get(lunchOptionToOrderIndex)
+                .takeIf {
+                    it == lunchOptionToOrder
+                            && it.enabled == lunchOptionToOrder.enabled
+                            && it.ordered == lunchOptionToOrder.ordered
+                }
+                ?: throw IllegalStateException("Lunch option to order not found")
+
+        if (nLunchOptionsGroup.orderedOption != lunchOptionsGroup.orderedOption)
+            throw IllegalStateException("Lunch options group was modified.")
+
+        val url = nLunchOptionToOrder.orderOrCancelUrl
+                ?: throw IllegalStateException("Lunch option url to order not found")
+
+        LunchesFetcher.orderLunch(cookies, url)
+
+        LunchesFetcher.logout(cookies)
+
+        LunchesData.instance.invalidateData(accountId)
+    }
+
     fun performSync(
             context: Context,
             account: Account,

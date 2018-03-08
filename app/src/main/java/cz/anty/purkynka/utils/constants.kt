@@ -73,7 +73,11 @@ const val FBA_UPDATE_INSTALL = "purkynka_update_install"
 
 //---------------------------------------------------------------------
 
-const val CONNECTION_TIMEOUT_SAS: Int = 1000 * 60
+const val FBP_GRADES_SYNC = "purkynka_grades_sync"
+
+//---------------------------------------------------------------------
+
+const val CONNECTION_TIMEOUT_SAS: Int = 1000 * 60 * 2 // 2 minutes in milliseconds
 
 const val SYNC_FREQUENCY_GRADES: Long = 60 * 60 * 1 // 1 hour in seconds
 const val SYNC_FREQUENCY_LUNCHES: Long = 60 * 60 * 3 // 3 hours in seconds
@@ -81,7 +85,8 @@ const val SYNC_FREQUENCY_LUNCHES: Long = 60 * 60 * 3 // 3 hours in seconds
 //---------------------------------------------------------------------
 
 // Helpers
-const val DASHBOARD_PRIORITY_TRY_SWIPE: Int = 13_000_000
+const val DASHBOARD_PRIORITY_WELCOME: Int = 14_000_000
+const val DASHBOARD_PRIORITY_BROADCAST_REJECTION_WARNING: Int = 13_000_000
 
 // System
 const val DASHBOARD_PRIORITY_UPDATE_AVAILABLE: Int = 12_000_000

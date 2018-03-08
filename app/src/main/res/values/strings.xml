@@ -227,9 +227,22 @@
     <string name="item_lunches_new_title_main">New lunch</string>
     <string name="item_loading_title">Loading…</string>
     <string name="item_loading_subtitle">Please wait…</string>
-    <string name="item_dashboard_try_swipe_title">Welcome to application Purkynka</string>
-    <string name="item_dashboard_try_swipe_subtitle">This is your dashboard. Everything important will automatically appear here.</string>
-    <string name="item_dashboard_try_swipe_txt_how_to_dismiss">Swipe to dismiss</string>
+    <string name="item_dashboard_welcome_title">Welcome to application Purkynka</string>
+    <string name="item_dashboard_welcome_subtitle">This is your dashboard. Everything important will automatically appear here.</string>
+    <string name="item_dashboard_welcome_txt_swipe_to_dismiss">Swipe to dismiss</string>
+    <string name="item_dashboard_broadcast_rejection_warning_title">Attention!</string>
+    <string name="item_dashboard_broadcast_rejection_warning_subtitle">
+        "Your system refuses to run some parts of the application."\n
+        \n
+        "This is know problem with some ASUS devices."\n
+        "To solve this problem follow these steps:"\n
+        " "\u2022"    Open 'Auto-start Manager'"\n
+        " "\u2022"    Select tab 'Lastest Items' or 'Downloaded'"\n
+        " "\u2022"    Find application Purkynka"\n
+        " "\u2022"    Change to Allow"\n
+        \n
+        "This warning will be automatically hidden, after enabling application in 'Auto-start Manager' and few starts of application."
+    </string>
 
     <string name="widget_grades_no_account_text">Account not found</string>
     <string name="widget_grades_no_account_text_small">Did you remove that account?</string>
@@ -322,6 +335,12 @@
     <string name="empty_view_text_small_attendance_people">People found by search in attendance will appear here.</string>
     <string name="empty_view_text_no_next_lunch">No next lunch</string>
     <string name="empty_view_text_small_no_next_lunch">Your next lunch will appear here.</string>
+
+    <string name="loading_text_grades">
+        "Please wait…"\n
+        "Any operation there can take even more then minute."\n
+        "Grades system is sometimes really slow."
+    </string>
 
     <string name="dialog_uninstall_old_app_title">Old application</string>
     <string name="dialog_uninstall_old_app_message">We found old version of application Purkynka installed on your phone. Should we remove it?</string>
@@ -472,5 +491,15 @@
     </string-array>
     <string-array name="version_changes_4">
         <item>Lot of bug fixes.</item>
+    </string-array>
+    <string-array name="version_changes_5">
+        <item>A few minor bugs fixed.</item>
+        <item>A few shortcomings in czech translation fixed.</item>
+        <item>Removed automatic keyboard showing, when starting application from widget.</item>
+        <item>Fixed bug in Wi-Fi detection of Wi-Fi auto login</item>
+        <item>
+            "Added warning for users of ASUS devices with 'Auto-start Manager' tool, that blocks some parts of application."
+            "So on some ASUS devices notifications aren't working…"
+        </item>
     </string-array>
 </resources>
