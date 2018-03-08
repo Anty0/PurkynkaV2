@@ -48,7 +48,6 @@ import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.ctx
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.io.IOException
 
 /**
@@ -108,60 +107,62 @@ class LunchBurzaActivity : LoadingModularActivity(
                 .also { boxLunchBurza.addView(it.itemView, 0) }
         lunchBurzaItem.bindViewHolder(itemVH, CustomItem.NO_POSITION)
 
-        val self = this.asReference()
-        butOrder.onClick {
-            holder.showLoading()
+        butOrder.setOnClickListener {
+            val self = this.asReference()
+            launch(UI) {
+                holder.showLoading()
 
-            val success = bg {
-                try {
-                    val loginData = LunchesLoginData.loginData
+                val success = bg {
+                    try {
+                        val loginData = LunchesLoginData.loginData
 
-                    if (!loginData.isLoggedIn(accountId))
-                        throw IllegalStateException("User is not logged in")
+                        if (!loginData.isLoggedIn(accountId))
+                            throw IllegalStateException("User is not logged in")
 
-                    val (username, password) = loginData.getCredentials(accountId)
+                        val (username, password) = loginData.getCredentials(accountId)
 
-                    if (username == null || password == null)
-                        throw IllegalStateException("Username or password is null")
+                        if (username == null || password == null)
+                            throw IllegalStateException("Username or password is null")
 
-                    val cookies = LunchesFetcher.login(username, password)
+                        val cookies = LunchesFetcher.login(username, password)
 
-                    if (!LunchesFetcher.isLoggedIn(cookies))
-                        throw WrongLoginDataException("Failed to login user with provided credentials")
+                        if (!LunchesFetcher.isLoggedIn(cookies))
+                            throw WrongLoginDataException("Failed to login user with provided credentials")
 
-                    val lunchesHtml = LunchesFetcher.getLunchesBurzaElements(cookies)
-                    val burzaLunches = LunchesParser.parseLunchesBurza(lunchesHtml)
-                    val nLunchBurza = burzaLunches.indexOf(lunchBurza)
-                            .takeIf { it != -1 }
-                            ?.let { burzaLunches[it] }
-                            ?: throw IllegalStateException("Lunch burza not found")
+                        val lunchesHtml = LunchesFetcher.getLunchesBurzaElements(cookies)
+                        val burzaLunches = LunchesParser.parseLunchesBurza(lunchesHtml)
+                        val nLunchBurza = burzaLunches.indexOf(lunchBurza)
+                                .takeIf { it != -1 }
+                                ?.let { burzaLunches[it] }
+                                ?: throw IllegalStateException("Lunch burza not found")
 
-                    val url = nLunchBurza.orderUrl
+                        val url = nLunchBurza.orderUrl
 
-                    LunchesFetcher.orderLunch(cookies, url)
+                        LunchesFetcher.orderLunch(cookies, url)
 
-                    LunchesFetcher.logout(cookies)
+                        LunchesFetcher.logout(cookies)
 
-                    LunchesData.instance.invalidateData(accountId)
-                    return@bg true
-                } catch (e: Exception) {
-                    Log.w(LOG_TAG, "butOrder.onClick(" +
-                            "lunchBurza=$lunchBurza)" +
-                            " -> Failed to order lunch", e)
+                        LunchesData.instance.invalidateData(accountId)
+                        return@bg true
+                    } catch (e: Exception) {
+                        Log.w(LOG_TAG, "butOrder.onClick(" +
+                                "lunchBurza=$lunchBurza)" +
+                                " -> Failed to order lunch", e)
 
-                    launch(UI) {
-                        longSnackbar(self().boxLunchBurza, when (e) {
-                            is WrongLoginDataException -> R.string.snackbar_lunches_order_fail_login
-                            is IOException -> R.string.snackbar_lunches_order_fail_connect
-                            else -> R.string.snackbar_lunches_order_fail_unknown
-                        })
+                        launch(UI) {
+                            longSnackbar(self().boxLunchBurza, when (e) {
+                                is WrongLoginDataException -> R.string.snackbar_lunches_order_fail_login
+                                is IOException -> R.string.snackbar_lunches_order_fail_connect
+                                else -> R.string.snackbar_lunches_order_fail_unknown
+                            })
+                        }
+                        return@bg false
                     }
-                    return@bg false
-                }
-            }.await()
+                }.await()
 
-            if (success) self().finish()
-            holder.hideLoading()
+                if (success) self().finish()
+                holder.hideLoading()
+            }
         }
     }
 

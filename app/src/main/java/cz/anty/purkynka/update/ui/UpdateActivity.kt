@@ -62,7 +62,6 @@ import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.io.File
 import java.lang.ref.WeakReference
 import kotlinx.coroutines.experimental.Job as KJob
@@ -119,15 +118,15 @@ class UpdateActivity : LoadingModularActivity(
             refreshWithRefreshLayout()
         }
 
-        butDownloadUpdate.onClick {
+        butDownloadUpdate.setOnClickListener {
             firebaseAnalytics?.logEvent(FBA_UPDATE_DOWNLOAD, null)
             downloadUpdate()
         }
-        butInstallUpdate.onClick {
+        butInstallUpdate.setOnClickListener {
             firebaseAnalytics?.logEvent(FBA_UPDATE_INSTALL, null)
             installUpdate()
         }
-        butShowChangelog.onClick { showChangelog() }
+        butShowChangelog.setOnClickListener { showChangelog() }
 
         if (savedInstanceState == null) refreshWithLoading()
 

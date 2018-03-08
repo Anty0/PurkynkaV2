@@ -58,7 +58,6 @@ import org.jetbrains.anko.appcompat.v7.tintedCheckBox
 import org.jetbrains.anko.childrenSequence
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.ctx
 import proguard.annotation.KeepName
 import java.util.*
@@ -160,8 +159,8 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
             ) { _, _, _, _ -> updateUi() }
         }
 
-        butStartWatcher.onClick {
-            val accountId = accountHolder.accountId ?: return@onClick
+        butStartWatcher.setOnClickListener click@ {
+            val accountId = accountHolder.accountId ?: return@click
             ContextCompat.startForegroundService(
                     ctx,
                     LunchesBurzaWatcherService.getStartWatcherIntent(
@@ -189,8 +188,8 @@ class LunchesBurzaWatcherFragment : NavigationFragment(), TitleProvider, ThemePr
             )
         }
 
-        butStopWatcher.onClick {
-            val accountId = accountHolder.accountId ?: return@onClick
+        butStopWatcher.setOnClickListener click@ {
+            val accountId = accountHolder.accountId ?: return@click
             ctx.startService(
                     LunchesBurzaWatcherService.getStopWatcherIntent(
                             context = ctx,

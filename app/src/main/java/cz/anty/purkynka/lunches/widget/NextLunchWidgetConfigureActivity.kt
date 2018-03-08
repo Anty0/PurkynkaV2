@@ -47,7 +47,6 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
  * The configuration screen for the [NextLunchWidgetProvider] AppWidget.
@@ -97,7 +96,7 @@ class NextLunchWidgetConfigureActivity : LoadingModularActivity(
 
         boxAccountsSpinner.adapter = accountsAdapter?.forSpinner()
 
-        butAddWidget.onClick {
+        butAddWidget.setOnClickListener click@ {
             val appWidgetId = appWidgetId
             val accountId = boxAccountsSpinner.selectedItem.to<AccountSpinnerItem>()?.accountId
                     ?: run {
@@ -105,7 +104,7 @@ class NextLunchWidgetConfigureActivity : LoadingModularActivity(
                                 view = butAddWidget,
                                 message = R.string.snackbar_next_lunch_widget_add_fail_no_account
                         )
-                        return@onClick
+                        return@click
                     }
 
             val holder = holder

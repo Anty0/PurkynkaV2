@@ -23,7 +23,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-
 import cz.anty.purkynka.R
 import cz.anty.purkynka.account.Accounts
 import cz.anty.purkynka.account.ui.AccountSpinnerItem
@@ -49,7 +48,6 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
  * The configuration screen for the [GradesWidgetProvider] AppWidget.
@@ -102,7 +100,7 @@ class GradesWidgetConfigureActivity : LoadingModularActivity(
         boxAccountsSpinner.adapter = accountsAdapter?.forSpinner()
         boxSortSpinner.adapter = sortsAdapter?.forSpinner()
 
-        butAddWidget.onClick {
+        butAddWidget.setOnClickListener click@ {
             val appWidgetId = appWidgetId
             val accountId = boxAccountsSpinner.selectedItem.to<AccountSpinnerItem>()?.accountId
                     ?: run {
@@ -110,7 +108,7 @@ class GradesWidgetConfigureActivity : LoadingModularActivity(
                                 view = butAddWidget,
                                 message = R.string.snackbar_grades_widget_add_fail_no_account
                         )
-                        return@onClick
+                        return@click
                     }
             val gradesSort = boxSortSpinner.selectedItem.to<GradesSortSpinnerItem>()?.sort
                     ?: run {
@@ -118,7 +116,7 @@ class GradesWidgetConfigureActivity : LoadingModularActivity(
                                 view = butAddWidget,
                                 message = R.string.snackbar_grades_widget_add_fail_no_grades_sort
                         )
-                        return@onClick
+                        return@click
                     }
 
             val holder = holder

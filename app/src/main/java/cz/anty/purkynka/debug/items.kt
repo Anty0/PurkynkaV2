@@ -37,7 +37,6 @@ import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.jetbrains.anko.longToast
-import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
  * @author anty
@@ -50,7 +49,7 @@ class AppDebugItem : CustomItem() {
     }
 
     override fun onBindViewHolder(holder: CustomItemViewHolder, itemPosition: Int) {
-        holder.butFakeUpdateFetch.onClick {
+        holder.butFakeUpdateFetch.setOnClickListener {
             val contextRef = holder.context.asReference()
             launch(UI) {
                 val result = bg { Updater.fetchFakeUpdates() }.await()
@@ -65,7 +64,7 @@ class AppDebugItem : CustomItem() {
             }
         }
 
-        holder.butFakeVersionChanges.onClick {
+        holder.butFakeVersionChanges.setOnClickListener {
             val contextRef = holder.context.asReference()
             launch(UI) {
                 bg {
