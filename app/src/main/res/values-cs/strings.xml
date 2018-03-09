@@ -436,4 +436,7 @@
             "Na některých ASUS zařízeních tak nefungují notifikace…"
         </item>
     </string-array>
+    <string-array name="version_changes_6">
+        <item>Opravena chyba, která znemožňovala zapnutí upozornění na nově obědy.</item>
+    </string-array>
 </resources>

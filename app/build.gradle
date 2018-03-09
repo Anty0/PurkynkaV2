@@ -46,8 +46,8 @@ android {
         applicationId "cz.anty.purkynka"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 5
-        versionName "v5.0.4"
+        versionCode 6
+        versionName "v5.0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
