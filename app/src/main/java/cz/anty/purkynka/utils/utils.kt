@@ -206,7 +206,7 @@ fun RequestCreator.suspendInto(target: ImageView): Deferred<Nothing?> {
             result.complete(null)
         }
 
-        override fun onError() {
+        override fun onError(e: Exception) {
             result.completeExceptionally(RuntimeException("Failed to load image"))
         }
     })

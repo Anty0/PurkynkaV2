@@ -202,7 +202,7 @@ class LunchOptionsGroupActivity : LoadingModularActivity(
                                 )
 
                                 return@mkJob it to imgUrl?.let {
-                                    Picasso.with(imgView.context).load(imgUrl)
+                                    Picasso.get().load(imgUrl)
                                             .error(imgView.context
                                                     .getIconics(GoogleMaterial.Icon.gmd_warning)
                                                     .sizeDp(96))

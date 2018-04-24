@@ -30,3 +30,11 @@
 #    static void checkExpressionValueIsNotNull(java.lang.Object, java.lang.String);
 #    static void throwUninitializedPropertyAccessException(java.lang.String);
 #}
+
+# okhttp badly handeled from some library
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
