@@ -1,16 +1,16 @@
-License
--------
+# Purkyňka (rewrite)
 
-    Copyright 2017 Jiří Kuchyňka (Anty)
+> [!WARNING]
+> (EN) The application no longer works as the school has changed the services it uses.
+>
+> (CZ) Aplikace již není funkční, jelikož škola přešla na jiné systémy.
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+Web: [https://anty.codetopic.eu/purkynka/](https://anty.codetopic.eu/purkynka/)
 
-       http://www.apache.org/licenses/LICENSE-2.0
+Facebook: [https://www.facebook.com/aplikacepurkynka](https://www.facebook.com/aplikacepurkynka)
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+Licence: [https://github.com/Anty0/Purkynka/blob/main/LICENSE](https://github.com/Anty0/Purkynka/blob/main/LICENSE)
+
+With the success of the original Purkyňka application (source code of which is available [here](https://github.com/Anty0/Purkynka)), I've decided to rewrite the application from scratch. I've learned a lot about Android development during the development of the original application and I wanted to apply that knowledge to create a better version of the application. There were multiple attempts to kickstart the rewrite, but I've always lost motivation at the beginning of the development and didn't finish the rewrite. Finally, in the beginning of school year 2017 I've started this rewrite attempt and I've managed to take it to the end releasing the new version at the beginning of the year 2018. Unfortunately, it wasn't all flowers and rainbows and final application ended up missing some features that were present in the original version, namely the timetable management is completely missing. But there are also some new features that were added.
+
+Same as the original application, this application no longer works as the school has changed the services it uses.
